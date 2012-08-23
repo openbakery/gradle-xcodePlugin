@@ -1,0 +1,32 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+dependencies {
+    compile gradleApi()
+    groovy localGroovy()
+}
+
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.+'
+    compile 'commons-io:commons-io:2.+'
+}
+
+group = 'org.openbakery'
+version = '0.5.1'
+
+
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('/Users/rene/tmp/repo'))
+        }
+    }
+}
