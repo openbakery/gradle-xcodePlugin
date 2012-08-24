@@ -1,9 +1,9 @@
 buildscript {
     repositories {
 
-        maven {
-						url uri('/Users/rene/tmp/repo/')
-			  }
+				maven {
+					url('http://openbakery.org/repository/')
+				}
 				mavenCentral()
     }
     dependencies {
