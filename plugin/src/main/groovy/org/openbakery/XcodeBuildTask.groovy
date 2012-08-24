@@ -21,8 +21,6 @@ class XcodeBuildTask extends AbstractXcodeTask {
                 project.xcodebuild.sdk,
                 "-target",
                 project.xcodebuild.target,
-                "-target",
-                project.xcodebuild.target,
                 "DSTROOT=" + project.xcodebuild.dstRoot,
                 "OBJROOT=" + project.xcodebuild.objRoot,
                 "SYMROOT=" + project.xcodebuild.symRoot,

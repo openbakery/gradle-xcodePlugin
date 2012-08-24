@@ -15,10 +15,11 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.+'
     compile 'commons-io:commons-io:2.+'
+    compile 'commons-configuration:commons-configuration:1.+'
 }
 
 group = 'org.openbakery'
-version = '0.5.1'
+version = '0.5.2'
 
 
 
@@ -30,3 +31,4 @@ uploadArchives {
         }
     }
 }
+
