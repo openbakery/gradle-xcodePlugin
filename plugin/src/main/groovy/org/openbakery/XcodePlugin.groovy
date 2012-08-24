@@ -27,7 +27,7 @@ class XcodePlugin implements Plugin<Project> {
         Task archive = project.task("archive", type: XcodebuildArchiveTask)
         Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeykitKitManifestTask);
         Task hockeyKitArchiveTask = project.task("hockeykit-archive", type: HockeyKitArchiveTask);
-        Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeykitKitImageTask);
+        Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeykitImageTask);
 
         Task hockey = project.task("hockeykit");
         hockey.description = "Creates a build that can be deployed on a hockeykit Server"

@@ -15,7 +15,7 @@ import org.gradle.api.tasks.TaskAction
  * Time: 22:30
  * To change this template use File | Settings | File Templates.
  */
-class HockeykitKitImageTask extends AbstractHockeykitTask {
+class HockeykitImageTask extends AbstractHockeykitTask {
 
     private static final int IMAGE_WIDTH = 114;
 
@@ -25,7 +25,7 @@ class HockeykitKitImageTask extends AbstractHockeykitTask {
         new BufferedImage( IMAGE_WIDTH, IMAGE_WIDTH, image.type ).with { i ->
             createGraphics().with {
                 setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC )
-                drawImage( image, 0, 0, HockeykitKitImageTask.IMAGE_WIDTH, HockeykitKitImageTask.IMAGE_WIDTH, null )
+                drawImage( image, 0, 0, HockeykitImageTask.IMAGE_WIDTH, HockeykitImageTask.IMAGE_WIDTH, null )
                 dispose()
             }
             ImageIO.write( i, 'png', new File(toImage) )
@@ -34,7 +34,7 @@ class HockeykitKitImageTask extends AbstractHockeykitTask {
 
     @TaskAction
     def imageCreate() {
-        def infoplist = getInfoPlist()
+        def infoplist = getAppBundleInfoPlist()
         println infoplist
         XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist));
         def list = config.getList("CFBundleIconFiles");
