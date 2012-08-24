@@ -3,10 +3,20 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.InvalidUserDataException
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.filefilter.TrueFileFilter
+import org.apache.commons.io.filefilter.SuffixFileFilter
+import org.apache.commons.io.FilenameUtils
 
 
 class AbstractXcodeTask extends DefaultTask {
 
+    /**
+     * Converts the command list array to a nice readable string
+     *
+     * @param commandList
+     * @return a readable string of the command
+     */
     def commandListToString(List<String> commandList) {
         def result = "";
         commandList.each{
@@ -15,19 +25,24 @@ class AbstractXcodeTask extends DefaultTask {
         return "'"  + result.trim() + "'";
     }
 
+    /**
+     * Copies a file to a new location
+     *
+     * @param source
+     * @param destination
+     */
     def copy(File source, File destination) {
         println "Copy '" + source + "' -> '" + destination + "'"
-
-        def input = source.newDataInputStream()
-        def output = destination.newDataOutputStream()
-
-        output << input
-
-        input.close()
-        output.close()
-
+        FileUtils.copyFile(source, destination);
     }
 
+    /**
+     * Downloads a file from the given address and stores it in the given directory
+     *
+     * @param toDirectory
+     * @param address
+     * @return
+     */
     def download(String toDirectory, String address) {
         File destinationDirectory = new File(toDirectory);
         if (!destinationDirectory.exists()) {
@@ -101,6 +116,10 @@ class AbstractXcodeTask extends DefaultTask {
         return result;
     }
 
+    /**
+     *
+     * @return the absolute path to the generated app bundle
+     */
     def getAppBundleName() {
         //println project.xcodebuild.symRoot
         def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
@@ -113,35 +132,63 @@ class AbstractXcodeTask extends DefaultTask {
         return buildOutputDirectory.absolutePath + "/" + fileList[0];
     }
 
-    def getValueFromPlist(plist, value) {
+    /**
+     * Reads the value for the given key from the given plist
+     *
+     * @param plist
+     * @param key
+     * @return returns the value for the given key
+     */
+    def getValueFromPlist(plist, key) {
         try {
             return runCommandWithResult([
                 "/usr/libexec/PlistBuddy",
                 plist,
                 "-c",
-                "Print :"+ value]);
+                "Print :"+ key]);
         } catch (IllegalStateException ex) {
             return null;
         }
     }
 
+    /**
+     *
+     * @return the path the the Info.plist for this project
+     */
     def getInfoPlist() {
         def infoPlist = project.xcodebuild.infoPlist
 
         if (infoPlist == null) {
-            fileList = new File('.').list(
-                    [accept:{d, f-> f ==~ /.*Info.plist/ }] as FilenameFilter
-            ).toList();
-            infoPlist = fileList[0]
-        }
 
-        return infoPlist
+            def fileList =  FileUtils.iterateFiles(
+                    new File("."),
+                    new SuffixFileFilter("Info.plist"),
+                    TrueFileFilter.INSTANCE)
+            infoPlist = fileList.next();
+        }
+        println "Using Info.plist: " + infoPlist;
+        return infoPlist.absolutePath
     }
 
     def getAppBundleInfoPlist() {
         File infoPlistFile = new File(getAppBundleName() + "/Info.plist");
         if (infoPlistFile.exists()) {
-            return infoPlistFile.absolutePath;
+
+            convertedPlist = new File(project.xcodebuild.buildRoot, FilenameUtils.getName(infoPlistFile.getName()));
+            //plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
+
+            convertCommand = [
+                    "plutil",
+                    "-convert",
+                    "xml1",
+                    infoPlistFile.absolutePath,
+                    "-o",
+                    convertedPlist.absolutePath
+            ]
+
+            runCommand(convertCommand)
+
+            return convertedPlist.absolutePath;
         }
         return null;
     }

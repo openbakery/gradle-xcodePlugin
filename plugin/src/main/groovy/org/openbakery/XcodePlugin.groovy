@@ -25,13 +25,15 @@ class XcodePlugin implements Plugin<Project> {
 		Task infoplistModify = project.task('infoplist-modify', type: InfoPlistModifyTask)
 		Task provisioningInstall = project.task('provisioning-install', type: ProvisioningInstallTask)
         Task archive = project.task("archive", type: XcodebuildArchiveTask)
-        Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeyKitManifestTask);
+        Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeykitKitManifestTask);
         Task hockeyKitArchiveTask = project.task("hockeykit-archive", type: HockeyKitArchiveTask);
+        Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeykitKitImageTask);
 
         Task hockey = project.task("hockeykit");
         hockey.description = "Creates a build that can be deployed on a hockeykit Server"
-        hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest);
+        hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask);
         hockey.setGroup(GROUP_NAME);
+
 
 
         keychainCreate.setGroup(GROUP_NAME);
@@ -41,6 +43,7 @@ class XcodePlugin implements Plugin<Project> {
         archive.setGroup(GROUP_NAME)
         hockeyKitManifest.setGroup(GROUP_NAME)
         hockeyKitArchiveTask.setGroup(GROUP_NAME)
+        hockeyKitImageTask.setGroup(GROUP_NAME)
 
         hockeyKitArchiveTask.dependsOn(archive);
         archive.dependsOn("clean")

@@ -8,11 +8,12 @@ class XcodebuildPluginExtension {
 	def String configuration = 'Debug'
 	def String sdk = 'iphonesimulator'
 	def String target = 'unknown'
-	def String dstRoot = 'build/Dst'
-	def String objRoot = 'build/Obj'
-	def String symRoot = 'build/Sym'
-	def String sharedPrecompsDir = 'build/shared'
-	def String sourceDirectory = '.'
+    def String buildRoot = 'build'
+	def String dstRoot = buildRoot + '/dst'
+	def String objRoot = buildRoot + '/obj'
+	def String symRoot = buildRoot + '/sym'
+    def String sharedPrecompsDir = buildRoot + '/shared'
+    def String sourceDirectory = '.'
 	def String signIdentity = null
 	def String additionalParameters = null
     def String archiveVersion = null
