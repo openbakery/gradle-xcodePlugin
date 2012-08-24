@@ -1,0 +1,20 @@
+buildscript {
+    repositories {
+        maven {
+            url uri('/Users/rene/tmp/repo')
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.5+'
+    }
+}
+buildscript {
+   configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+apply plugin: 'xcode'
+
+
+xcodebuild {
+  target = "my-target"
+}

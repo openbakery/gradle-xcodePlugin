@@ -1,0 +1,5 @@
+xcodePlugin.ipr
+xcodePlugin.iml
+xcodePlugin.iws
+build
+.gradle

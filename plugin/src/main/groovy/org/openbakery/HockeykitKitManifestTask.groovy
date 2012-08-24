@@ -1,6 +1,5 @@
 package org.openbakery
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FilenameUtils
@@ -12,13 +11,13 @@ import org.apache.commons.io.FilenameUtils
  * Time: 09:51
  * To change this template use File | Settings | File Templates.
  */
-class HockeyKitManifestTask extends AbstractXcodeTask {
+class HockeykitKitManifestTask extends AbstractHockeykitTask {
 
     static final String XML_DEF_LINE = '<?xml version="1.0" encoding="UTF-8"?>';
     static final String DOCTYPE_LINE = '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
 
 
-    HockeyKitManifestTask() {
+    HockeykitKitManifestTask() {
         super();
         this.description = "Creates the manifest that is needed to deploy on a HockeyKit Server"
     }
@@ -34,12 +33,8 @@ class HockeyKitManifestTask extends AbstractXcodeTask {
         def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
         def bundleVersion = getValueFromPlist(infoPlist, "CFBundleVersion")
 
-        File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + bundleIdentifier + "/" + project.hockeykit.version);
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs();
-        }
-
-        def manifestFilename = outputDirectory.absolutePath + "/" +  basename + ".plist";
+        def outputDirectory = getOutputDirectory();
+        def manifestFilename = outputDirectory + "/" +  basename + ".plist";
 
 
         def title = project.hockeykit.appName
