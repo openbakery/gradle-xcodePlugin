@@ -15,7 +15,8 @@ class AbstractHockeykitTask extends AbstractXcodeTask {
      * @return the output directory as absolute path
      */
     def getOutputDirectory() {
-        def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
+        def infoplist = getAppBundleInfoPlist()
+        def bundleIdentifier = getValueFromPlist(infoplist, "CFBundleIdentifier")
         File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + bundleIdentifier + "/" + project.hockeykit.version);
         if (!outputDirectory.exists()) {
             outputDirectory.mkdirs();

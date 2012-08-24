@@ -8,6 +8,7 @@ dependencies {
 
 apply plugin: 'maven'
 
+
 repositories {
     mavenCentral()
 }
@@ -15,7 +16,7 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.+'
     compile 'commons-io:commons-io:2.+'
-    compile 'commons-configuration:commons-configuration:1.+'
+    compile 'commons-configuration:commons-configuration:1.8+'
 }
 
 group = 'org.openbakery'

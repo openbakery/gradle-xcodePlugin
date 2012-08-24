@@ -1,20 +1,44 @@
 buildscript {
     repositories {
+
         maven {
-            url uri('/Users/rene/tmp/repo')
-        }
-        mavenCentral()
+						url uri('/Users/rene/tmp/repo/')
+			  }
+				mavenCentral()
     }
     dependencies {
         classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.5+'
     }
 }
-buildscript {
-   configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
 apply plugin: 'xcode'
 
 
-xcodebuild {
-  target = "my-target"
+buildscript {
+   configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
+
+xcodebuild {
+	sdk = 'iphoneos'
+	target = 'My-Target'
+	signIdentity = 'iPhone Developer'
+
+	//additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"
+	//archiveVersion = "-1.0.0"
+}
+
+
+keychain {
+	certificateUri = 'http://myhost/Development.p12'
+	certificatePassword = 'mypwd'
+}
+
+provisioning {
+	mobileprovisionUri = 'http://myhost/Development.mobileprovision'
+}
+
+
+infoplist {
+	//bundleIdentifier = "com.example.myidentifier"
+	//versionExtension = " #2345"
+}
+

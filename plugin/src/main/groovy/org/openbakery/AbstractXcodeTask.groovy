@@ -7,6 +7,10 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.filefilter.TrueFileFilter
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.filefilter.NameFileFilter
+import org.apache.commons.configuration.plist.PropertyListConfiguration
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine
 
 
 class AbstractXcodeTask extends DefaultTask {
@@ -159,15 +163,10 @@ class AbstractXcodeTask extends DefaultTask {
         def infoPlist = project.xcodebuild.infoPlist
 
         if (infoPlist == null) {
-
-            def fileList =  FileUtils.iterateFiles(
-                    new File("."),
-                    new SuffixFileFilter("Info.plist"),
-                    TrueFileFilter.INSTANCE)
-            infoPlist = fileList.next();
+            infoPlist = getInfoPlistFromProjectFile();
         }
         println "Using Info.plist: " + infoPlist;
-        return infoPlist.absolutePath
+        return infoPlist
     }
 
     def getAppBundleInfoPlist() {
@@ -191,5 +190,46 @@ class AbstractXcodeTask extends DefaultTask {
             return convertedPlist.absolutePath;
         }
         return null;
+    }
+
+    def getInfoPlistFromProjectFile() {
+        def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0];
+        def projectFile = new File(projectFileDirectory, "project.pbxproj");
+        def projectPlist = project.xcodebuild.buildRoot + "/project.plist";
+
+        // convert ascii plist to xml so that commons configuration can parse it!
+        runCommand(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist ])
+
+        XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist));
+        def rootObjectKey = config.getString("rootObject");
+        println rootObjectKey;
+
+        List<String> list = config.getList("objects." + rootObjectKey + ".targets");
+
+        for (target in list) {
+
+            def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList");
+            println "buildConfigurationList=" + buildConfigurationList
+            def targetName = config.getString("objects." + target + ".name");
+            println "targetName: " + targetName;
+
+
+            if (targetName.equals(project.xcodebuild.target)) {
+                def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations");
+                for (buildConfigurationsItem in  buildConfigurations) {
+                    def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
+
+                    println "  buildName: " + buildName +  " equals " + project.xcodebuild.configuration
+
+                    if (buildName.equals(project.xcodebuild.configuration)) {
+                        def productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
+                        def plistFile = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
+                        println "  productName: " + productName;
+                        println "  plistFile: " + plistFile;
+                        return plistFile
+                    }
+                }
+            }
+        }
     }
 }

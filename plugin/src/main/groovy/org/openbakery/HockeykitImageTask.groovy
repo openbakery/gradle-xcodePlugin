@@ -48,7 +48,7 @@ class HockeykitImageTask extends AbstractHockeykitTask {
             iconMap.put(image.width, item);
         }
         println "Images to choose from: " + iconMap;
-        def outputDirectory = getOutputDirectory();
+        def outputDirectory = new File(getOutputDirectory()).getParent();
 
         def selectedImage = iconMap.get(114)
 

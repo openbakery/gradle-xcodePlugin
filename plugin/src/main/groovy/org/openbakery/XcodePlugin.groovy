@@ -18,9 +18,14 @@ class XcodePlugin implements Plugin<Project> {
         project.extensions.create("hockeykit", HockeyKitPluginExtension)
 
 
-        project.properties.put("xcodebuild.keychain.name", "foobar");
-		
-		Task keychainCreate = project.task('keychain-create', type: KeychainCreateTask)
+
+        if (project.hasProperty('hockeykit.appName')) {
+            project.hockeykit.appName = project['hockeykit.appName']
+        }
+
+
+
+        Task keychainCreate = project.task('keychain-create', type: KeychainCreateTask)
 		Task xcodebuild = project.task('xcodebuild', type: XcodeBuildTask)
 		Task infoplistModify = project.task('infoplist-modify', type: InfoPlistModifyTask)
 		Task provisioningInstall = project.task('provisioning-install', type: ProvisioningInstallTask)
@@ -67,6 +72,94 @@ class XcodePlugin implements Plugin<Project> {
             //println project.xcodebuild.sdk
             //println project.xcodebuild.signIdentity
 
+
+
+            if (project.hasProperty('infoplist.bundleIdentifier')) {
+                project.infoplist.bundleIdentifier = project['infoplist.bundleIdentifier']
+            }
+            if (project.hasProperty('infoplist.versionExtension')) {
+                project.infoplist.versionExtension = project['infoplist.versionExtension']
+            }
+
+
+            if (project.hasProperty('xcodebuild.archiveVersion')) {
+                project.xcodebuild.archiveVersion = project['xcodebuild.archiveVersion']
+            }
+            if (project.hasProperty('xcodebuild.infoPlist')) {
+                project.xcodebuild.infoPlist = project['xcodebuild.infoPlist']
+            }
+            if (project.hasProperty('xcodebuild.configuration')) {
+                project.xcodebuild.configuration = project['xcodebuild.configuration']
+            }
+            if (project.hasProperty('xcodebuild.sdk')) {
+                project.xcodebuild.sdk = project['xcodebuild.sdk']
+            }
+            if (project.hasProperty('xcodebuild.target')) {
+                project.xcodebuild.target = project['xcodebuild.target']
+            }
+            if (project.hasProperty('xcodebuild.buildRoot')) {
+                project.xcodebuild.buildRoot = project['xcodebuild.buildRoot']
+            }
+            if (project.hasProperty('xcodebuild.dstRoot')) {
+                project.xcodebuild.dstRoot = project['xcodebuild.dstRoot']
+            }
+            if (project.hasProperty('xcodebuild.objRoot')) {
+                project.xcodebuild.objRoot = project['xcodebuild.objRoot']
+            }
+            if (project.hasProperty('xcodebuild.symRoot')) {
+                project.xcodebuild.symRoot = project['xcodebuild.symRoot']
+            }
+            if (project.hasProperty('xcodebuild.sharedPrecompsDir')) {
+                project.xcodebuild.sharedPrecompsDir = project['xcodebuild.sharedPrecompsDir']
+            }
+            if (project.hasProperty('xcodebuild.sourceDirectory')) {
+                project.xcodebuild.sourceDirectory = project['xcodebuild.sourceDirectory']
+            }
+            if (project.hasProperty('xcodebuild.signIdentity')) {
+                project.xcodebuild.signIdentity = project['xcodebuild.signIdentity']
+            }
+            if (project.hasProperty('xcodebuild.additionalParameters')) {
+                project.xcodebuild.additionalParameters = project['xcodebuild.additionalParameters']
+            }
+            if (project.hasProperty('xcodebuild.archiveVersion')) {
+                project.xcodebuild.archiveVersion = project['xcodebuild.archiveVersion']
+            }
+
+
+            if (project.hasProperty('hockeykit.appName')) {
+                project.hockeykit.appName = project['hockeykit.appName']
+            }
+            if (project.hasProperty('hockeykit.version')) {
+                project.hockeykit.version = project['hockeykit.version']
+            }
+            if (project.hasProperty('hockeykit.outputDirectory')) {
+                project.hockeykit.outputDirectory = project['hockeykit.outputDirectory']
+            }
+
+
+            if (project.hasProperty('keychain.certificateUri')) {
+                project.keychain.certificateUri = project['keychain.certificateUri']
+            }
+            if (project.hasProperty('keychain.certificatePassword')) {
+                project.keychain.certificatePassword = project['keychain.certificatePassword']
+            }
+            if (project.hasProperty('keychain.keychainPassword')) {
+                project.keychain.keychainPassword = project['keychain.keychainPassword']
+            }
+            if (project.hasProperty('keychain.destinationRoot')) {
+                project.keychain.destinationRoot = project['keychain.destinationRoot']
+            }
+            if (project.hasProperty('keychain.keychainName')) {
+                project.keychain.keychainName = project['keychain.keychainName']
+            }
+
+            if (project.hasProperty('keychain.mobileprovisionUri')) {
+                project.keychain.mobileprovisionUri = project['keychain.mobileprovisionUri']
+            }
+            if (project.hasProperty('keychain.destinationRoot')) {
+                project.keychain.destinationRoot = project['keychain.destinationRoot']
+            }
+
             if (project.xcodebuild.sdk.startsWith("iphoneos") &&
                     project.xcodebuild.signIdentity != null) {
 
@@ -76,13 +169,12 @@ class XcodePlugin implements Plugin<Project> {
             }
 
             if (project.infoplist.bundleIdentifier != null ||
-                project.infoplist.versionExtension != null) {
+                    project.infoplist.versionExtension != null) {
                 xcodebuild.dependsOn(infoplistModify);
             }
+
+
         }
-
-
-
 
 
 
