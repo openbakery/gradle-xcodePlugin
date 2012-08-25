@@ -21,18 +21,18 @@ xcodebuild Parameters:
   
 * _signIdentity_ - sign identity that should be used when building for the device
 
-  default value: <empty>
+  default value: 'empty'
 
 
 * _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 
   `additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"`
 
-  default value: <empty>
+  default value: 'empty'
     
 * _archiveVersion_ - String that should be appended to the generated app bundle. 
   e.g. the default app bundle name is 'Demo.App'. When you set `archiveVersion=-1.0.0` than the generated bundle is 'Demo-1.0.0.app'
   
-  default value: <empty>
+  default value: 'empty'
 
 * _buildRoot_ - build root directory for the build output
 
@@ -56,7 +56,7 @@ xcodebuild Parameters:
 
 * _infoPlist_ - override the Info.plist file that is configured in the xcode project file
 
-  default value: <empty>
+  default value: 'empty'
     
 
 provisioning Parameters:
@@ -64,7 +64,7 @@ provisioning Parameters:
 
 * _mobileprovisionUri_ - URI where the mobileprovision profile is located that should be used when signing the app
 
-  default value: <empty>
+  default value: 'empty'
     
     
 keychain Parameters:
@@ -72,11 +72,11 @@ keychain Parameters:
 
 * _certificateUri_ - Uri to the certificate that should be used to sign the app
 
-default value: <empty>
+default value: 'empty'
 
 * _certificatePassword_ - Password for the certificate file
 
-default value: <empty>
+default value: 'empty'
 
 * _keychainPassword_ - Password for the chain that is created
 
@@ -92,11 +92,11 @@ infoplist Parameters:
 
 * _bundleIdentifier_ - If set it override the bundle identifier in the Info.plist (CFBundleIdentifier)
 
-default value: <empty>
+default value: 'empty'
 
 * _versionExtension_ - If set this value is appended to the version in the bundle identifier (CFBundleVersion)
 
-default value: <empty>
+default value: 'empty'
 
 
 hockeykit Parameters:
@@ -105,7 +105,7 @@ hockeykit Parameters:
 * _appName_ - Title that should be used that is shown on the hockeykit site for the app. 
   If the value is not set then the bundle identifier is used
 
-default value: <empty>
+default value: 'empty'
   
 * _version_ - subdirectory that should be used for the app.
 
