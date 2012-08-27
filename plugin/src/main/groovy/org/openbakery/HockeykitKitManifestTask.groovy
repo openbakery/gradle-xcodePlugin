@@ -44,7 +44,7 @@ class HockeykitKitManifestTask extends AbstractHockeykitTask {
 
         def subtitle = getValueFromPlist(infoPlist, "CFBundleShortVersionString")
         if (subtitle == null) {
-            subtitle = title
+            subtitle = getValueFromPlist(infoPlist, "CFBundleVersion")
         }
 
 

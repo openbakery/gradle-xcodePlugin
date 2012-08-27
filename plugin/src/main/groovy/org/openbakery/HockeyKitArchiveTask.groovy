@@ -25,11 +25,7 @@ class HockeyKitArchiveTask extends AbstractXcodeTask{
             throw new IllegalArgumentException("hockeykit.version is missing");
         }
 
-        def bundleIdentifier = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
-        def title = project.hockeykit.appName
-        if (title == null) {
-            title = bundleIdentifier
-        }
+        def title = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
 
         File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + title + "/" + project.hockeykit.version);
         if (!outputDirectory.exists()) {
