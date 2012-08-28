@@ -7,42 +7,35 @@ import org.gradle.api.Plugin
 
 class XcodePlugin implements Plugin<Project> {
 
-
     private static final String GROUP_NAME = "Xcode"
 
     void apply(Project project) {
-        project.extensions.create("xcodebuild", XcodebuildPluginExtension)
+        project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
 		project.extensions.create("keychain", KeychainPluginExtension)
 		project.extensions.create("provisioning", ProvisioningPluginExtension)
         project.extensions.create("infoplist", InfoPlistExtension)
         project.extensions.create("hockeykit", HockeyKitPluginExtension)
 
-
-
         if (project.hasProperty('hockeykit.appName')) {
             project.hockeykit.appName = project['hockeykit.appName']
         }
-
-
 
         Task keychainCreate = project.task('keychain-create', type: KeychainCreateTask)
 		Task xcodebuild = project.task('xcodebuild', type: XcodeBuildTask)
 		Task infoplistModify = project.task('infoplist-modify', type: InfoPlistModifyTask)
 		Task provisioningInstall = project.task('provisioning-install', type: ProvisioningInstallTask)
-        Task archive = project.task("archive", type: XcodebuildArchiveTask)
-        Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeykitKitManifestTask);
-        Task hockeyKitArchiveTask = project.task("hockeykit-archive", type: HockeyKitArchiveTask);
-        Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeykitImageTask);
+        Task archive = project.task("archive", type: XcodeBuildArchiveTask)
+        Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeyKitManifestTask)
+        Task hockeyKitArchiveTask = project.task("hockeykit-archive", type: HockeyKitArchiveTask)
+        Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeyKitImageTask)
 
-        Task hockey = project.task("hockeykit");
+        Task hockey = project.task("hockeykit")
         hockey.description = "Creates a build that can be deployed on a hockeykit Server"
-        hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask);
-        hockey.setGroup(GROUP_NAME);
+        hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask)
+        hockey.setGroup(GROUP_NAME)
 
-
-
-        keychainCreate.setGroup(GROUP_NAME);
-        xcodebuild.setGroup(GROUP_NAME);
+        keychainCreate.setGroup(GROUP_NAME)
+        xcodebuild.setGroup(GROUP_NAME)
         infoplistModify.setGroup(GROUP_NAME)
         provisioningInstall.setGroup(GROUP_NAME)
         archive.setGroup(GROUP_NAME)
@@ -50,29 +43,24 @@ class XcodePlugin implements Plugin<Project> {
         hockeyKitArchiveTask.setGroup(GROUP_NAME)
         hockeyKitImageTask.setGroup(GROUP_NAME)
 
-        hockeyKitArchiveTask.dependsOn(archive);
+        hockeyKitArchiveTask.dependsOn(archive)
         archive.dependsOn("clean")
 
 
         Task keychainCleanup =     project.task('keychain-clean', type: KeychainCleanupTask)
 		Task xcodebuildCleanup =   project.task('clean', type: XcodeBuildCleanTask)
 		Task provisioningCleanup = project.task('provisioning-clean', type: ProvisioningCleanupTask)
-		Task hockeyKitCleanTask =  project.task('hockeykit-clean', type: HockeyKitCleanTask);
+		Task hockeyKitCleanTask =  project.task('hockeykit-clean', type: HockeyKitCleanTask)
 
-		xcodebuildCleanup.dependsOn(keychainCleanup);
-        xcodebuildCleanup.dependsOn(provisioningCleanup);
-        xcodebuildCleanup.dependsOn(hockeyKitCleanTask);
+		xcodebuildCleanup.dependsOn(keychainCleanup)
+        xcodebuildCleanup.dependsOn(provisioningCleanup)
+        xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
         xcodebuildCleanup.setGroup(GROUP_NAME)
 
         Task codesign = project.task('codesign', type: CodesignTask)
         codesign.setGroup(GROUP_NAME)
 
-
         project.afterEvaluate {
-            //println project.xcodebuild.sdk
-            //println project.xcodebuild.signIdentity
-
-
 
             if (project.hasProperty('infoplist.bundleIdentifier')) {
                 project.infoplist.bundleIdentifier = project['infoplist.bundleIdentifier']
@@ -80,7 +68,6 @@ class XcodePlugin implements Plugin<Project> {
             if (project.hasProperty('infoplist.versionExtension')) {
                 project.infoplist.versionExtension = project['infoplist.versionExtension']
             }
-
 
             if (project.hasProperty('xcodebuild.archiveVersion')) {
                 project.xcodebuild.archiveVersion = project['xcodebuild.archiveVersion']
@@ -125,7 +112,6 @@ class XcodePlugin implements Plugin<Project> {
                 project.xcodebuild.archiveVersion = project['xcodebuild.archiveVersion']
             }
 
-
             if (project.hasProperty('hockeykit.appName')) {
                 project.hockeykit.appName = project['hockeykit.appName']
             }
@@ -135,7 +121,6 @@ class XcodePlugin implements Plugin<Project> {
             if (project.hasProperty('hockeykit.outputDirectory')) {
                 project.hockeykit.outputDirectory = project['hockeykit.outputDirectory']
             }
-
 
             if (project.hasProperty('keychain.certificateUri')) {
                 project.keychain.certificateUri = project['keychain.certificateUri']
@@ -162,7 +147,6 @@ class XcodePlugin implements Plugin<Project> {
 
             if (project.xcodebuild.sdk.startsWith("iphoneos") &&
                     project.xcodebuild.signIdentity != null) {
-
                 archive.dependsOn(codesign)
             } else {
                 archive.dependsOn(xcodebuild)
@@ -170,13 +154,10 @@ class XcodePlugin implements Plugin<Project> {
 
             if (project.infoplist.bundleIdentifier != null ||
                     project.infoplist.versionExtension != null) {
-                xcodebuild.dependsOn(infoplistModify);
+                xcodebuild.dependsOn(infoplistModify)
             }
 
-
         }
-
-
 
     }
 

@@ -4,17 +4,10 @@ import org.gradle.api.tasks.TaskAction
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.FileUtils
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 23.08.12
- * Time: 11:13
- * To change this template use File | Settings | File Templates.
- */
 class HockeyKitArchiveTask extends AbstractXcodeTask{
 
     HockeyKitArchiveTask() {
-        super();
+        super()
         this.description = "Prepare the app bundle so that it can be uploaded to the Hockeykit Server"
     }
 
@@ -22,26 +15,26 @@ class HockeyKitArchiveTask extends AbstractXcodeTask{
     @TaskAction
     def archive() {
         if (project.hockeykit.version == null) {
-            throw new IllegalArgumentException("hockeykit.version is missing");
+            throw new IllegalArgumentException("hockeykit.version is missing")
         }
 
         def title = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
 
-        File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + title + "/" + project.hockeykit.version);
+        File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + title + "/" + project.hockeykit.version)
         if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs();
+            outputDirectory.mkdirs()
         }
 
-        def appName = getAppBundleName();
-        def baseName =  appName.substring(0, appName.size()-4);
+        def appName = getAppBundleName()
+        def baseName =  appName.substring(0, appName.size()-4)
 
-        File sourceIpa = new File(baseName + ".ipa");
+        File sourceIpa = new File(baseName + ".ipa")
         if (!sourceIpa.exists()) {
-            throw new IllegalArgumentException("cannot find ipa: " + sourceIpa);
+            throw new IllegalArgumentException("cannot find ipa: " + sourceIpa)
         }
-        File destinationIpa = new File(outputDirectory, FilenameUtils.getBaseName(appName) + ".ipa");
-        FileUtils.copyFile(sourceIpa, destinationIpa);
+        File destinationIpa = new File(outputDirectory, FilenameUtils.getBaseName(appName) + ".ipa")
+        FileUtils.copyFile(sourceIpa, destinationIpa)
 
-        println "Created hockeykit archive in " + outputDirectory;
+        println "Created hockeykit archive in " + outputDirectory
     }
 }

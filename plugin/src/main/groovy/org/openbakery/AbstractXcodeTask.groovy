@@ -22,11 +22,11 @@ class AbstractXcodeTask extends DefaultTask {
      * @return a readable string of the command
      */
     def commandListToString(List<String> commandList) {
-        def result = "";
+        def result = ""
         commandList.each{
-            item -> result += item + " ";
+            item -> result += item + " "
         }
-        return "'"  + result.trim() + "'";
+        return "'"  + result.trim() + "'"
     }
 
     /**
@@ -37,7 +37,7 @@ class AbstractXcodeTask extends DefaultTask {
      */
     def copy(File source, File destination) {
         println "Copy '" + source + "' -> '" + destination + "'"
-        FileUtils.copyFile(source, destination);
+        FileUtils.copyFile(source, destination)
     }
 
     /**
@@ -48,11 +48,11 @@ class AbstractXcodeTask extends DefaultTask {
      * @return
      */
     def download(String toDirectory, String address) {
-        File destinationDirectory = new File(toDirectory);
+        File destinationDirectory = new File(toDirectory)
         if (!destinationDirectory.exists()) {
-            destinationDirectory.mkdir();
+            destinationDirectory.mkdir()
         }
-        File destinationFile = new File(destinationDirectory, address.tokenize("/")[-1]);
+        File destinationFile = new File(destinationDirectory, address.tokenize("/")[-1])
         def file = new FileOutputStream(destinationFile)
         def out = new BufferedOutputStream(file)
         out << new URL(address).openStream()
@@ -64,27 +64,27 @@ class AbstractXcodeTask extends DefaultTask {
     def runCommand(String directory, List<String> commandList, Map<String, String> environment) {
         println "Run command: " + commandListToString(commandList)
         if (environment != null) {
-            println "with additional environment variables: " + environment;
+            println "with additional environment variables: " + environment
         }
         def processBuilder = new ProcessBuilder(commandList)
         processBuilder.redirectErrorStream(true)
         processBuilder.directory(new File(directory))
         if (environment != null) {
-            Map<String, String> env = processBuilder.environment();
-            env.putAll(environment);
+            Map<String, String> env = processBuilder.environment()
+            env.putAll(environment)
         }
         def process = processBuilder.start()
         process.inputStream.eachLine {
             println it
         }
-        process.waitFor();
+        process.waitFor()
         if (process.exitValue() > 0) {
-            throw new IllegalStateException("Command failed to run: " + commandListToString(commandList));
+            throw new IllegalStateException("Command failed to run: " + commandListToString(commandList))
         }
     }
 
     def runCommand(String directory, List<String> commandList) {
-        runCommand(directory, commandList, null);
+        runCommand(directory, commandList, null)
     }
 
     def runCommand(List<String> commandList) {
@@ -105,19 +105,19 @@ class AbstractXcodeTask extends DefaultTask {
         processBuilder.redirectErrorStream(true)
         processBuilder.directory(new File(directory))
         if (environment != null) {
-            Map<String, String> env = processBuilder.environment();
-            env.putAll(environment);
+            Map<String, String> env = processBuilder.environment()
+            env.putAll(environment)
         }
         def process = processBuilder.start()
-        def result = "";
+        def result = ""
         process.inputStream.eachLine {
             result += it
         }
-        process.waitFor();
+        process.waitFor()
         if (process.exitValue() > 0) {
-            throw new IllegalStateException("Command failed to run: " + commandListToString(commandList));
+            throw new IllegalStateException("Command failed to run: " + commandListToString(commandList))
         }
-        return result;
+        return result
     }
 
     /**
@@ -129,11 +129,11 @@ class AbstractXcodeTask extends DefaultTask {
         def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
         def fileList = buildOutputDirectory.list(
                 [accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
-        ).toList();
+        ).toList()
         if (fileList.count == 0) {
-            throw new IllegalStateException("No App Found in directory " + buildOutputDirectory.absolutePath);
+            throw new IllegalStateException("No App Found in directory " + buildOutputDirectory.absolutePath)
         }
-        return buildOutputDirectory.absolutePath + "/" + fileList[0];
+        return buildOutputDirectory.absolutePath + "/" + fileList[0]
     }
 
     /**
@@ -149,9 +149,9 @@ class AbstractXcodeTask extends DefaultTask {
                 "/usr/libexec/PlistBuddy",
                 plist,
                 "-c",
-                "Print :"+ key]);
+                "Print :"+ key])
         } catch (IllegalStateException ex) {
-            return null;
+            return null
         }
     }
 
@@ -163,17 +163,17 @@ class AbstractXcodeTask extends DefaultTask {
         def infoPlist = project.xcodebuild.infoPlist
 
         if (infoPlist == null) {
-            infoPlist = getInfoPlistFromProjectFile();
+            infoPlist = getInfoPlistFromProjectFile()
         }
-        println "Using Info.plist: " + infoPlist;
+        println "Using Info.plist: " + infoPlist
         return infoPlist
     }
 
     def getAppBundleInfoPlist() {
-        File infoPlistFile = new File(getAppBundleName() + "/Info.plist");
+        File infoPlistFile = new File(getAppBundleName() + "/Info.plist")
         if (infoPlistFile.exists()) {
 
-            def convertedPlist = new File(project.xcodebuild.buildRoot, FilenameUtils.getName(infoPlistFile.getName()));
+            def convertedPlist = new File(project.xcodebuild.buildRoot, FilenameUtils.getName(infoPlistFile.getName()))
             //plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
 
             def convertCommand = [
@@ -187,35 +187,35 @@ class AbstractXcodeTask extends DefaultTask {
 
             runCommand(convertCommand)
 
-            return convertedPlist.absolutePath;
+            return convertedPlist.absolutePath
         }
-        return null;
+        return null
     }
 
     def getInfoPlistFromProjectFile() {
-        def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0];
-        def projectFile = new File(projectFileDirectory, "project.pbxproj");
-        def projectPlist = project.xcodebuild.buildRoot + "/project.plist";
+        def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0]
+        def projectFile = new File(projectFileDirectory, "project.pbxproj")
+        def projectPlist = project.xcodebuild.buildRoot + "/project.plist"
 
         // convert ascii plist to xml so that commons configuration can parse it!
         runCommand(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist ])
 
-        XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist));
-        def rootObjectKey = config.getString("rootObject");
-        println rootObjectKey;
+        XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
+        def rootObjectKey = config.getString("rootObject")
+        println rootObjectKey
 
-        List<String> list = config.getList("objects." + rootObjectKey + ".targets");
+        List<String> list = config.getList("objects." + rootObjectKey + ".targets")
 
         for (target in list) {
 
-            def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList");
+            def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
             println "buildConfigurationList=" + buildConfigurationList
-            def targetName = config.getString("objects." + target + ".name");
-            println "targetName: " + targetName;
+            def targetName = config.getString("objects." + target + ".name")
+            println "targetName: " + targetName
 
 
             if (targetName.equals(project.xcodebuild.target)) {
-                def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations");
+                def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
                 for (buildConfigurationsItem in  buildConfigurations) {
                     def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
 
@@ -224,8 +224,8 @@ class AbstractXcodeTask extends DefaultTask {
                     if (buildName.equals(project.xcodebuild.configuration)) {
                         def productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
                         def plistFile = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
-                        println "  productName: " + productName;
-                        println "  plistFile: " + plistFile;
+                        println "  productName: " + productName
+                        println "  plistFile: " + plistFile
                         return plistFile
                     }
                 }
