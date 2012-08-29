@@ -111,6 +111,9 @@ class XcodePlugin implements Plugin<Project> {
             if (project.hasProperty('xcodebuild.archiveVersion')) {
                 project.xcodebuild.archiveVersion = project['xcodebuild.archiveVersion']
             }
+            if (project.hasProperty('xcodebuild.arch')) {
+                project.xcodebuild.arch = project['xcodebuild.arch']
+            }
 
             if (project.hasProperty('hockeykit.appName')) {
                 project.hockeykit.appName = project['hockeykit.appName']

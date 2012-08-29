@@ -24,7 +24,7 @@ version = '0.5.2'
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: uri('/Users/rene/tmp/repo'))
+            repository(url: uri('/tmp/repo'))
         }
     }
 }

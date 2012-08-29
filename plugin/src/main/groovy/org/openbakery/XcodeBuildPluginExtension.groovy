@@ -17,6 +17,7 @@ class XcodeBuildPluginExtension {
 	def String signIdentity = null
 	def String additionalParameters = null
     def String archiveVersion = null
+    def String arch = null
 	
 	
 }

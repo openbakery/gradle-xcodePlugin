@@ -3,6 +3,7 @@ buildscript {
 
 				maven {
 					url('http://openbakery.org/repository/')
+					//url uri('/tmp/repo')
 				}
 				mavenCentral()
     }

@@ -33,6 +33,12 @@ xcodebuild Parameters:
   e.g. the default app bundle name is 'Demo.App'. When you set `archiveVersion=-1.0.0` than the generated bundle is 'Demo-1.0.0.app'
   
   default value: 'empty'
+  
+* _arch_ - Use the architecture specified by architecture when building each target.
+  e.g. 'i386', 'armv6', 'armv7'
+  
+  default value: 'empty'
+
 
 * _buildRoot_ - build root directory for the build output
 

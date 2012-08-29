@@ -31,6 +31,11 @@ class XcodeBuildTask extends AbstractXcodeTask {
             commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signIdentity)
         }
 
+        if (project.xcodebuild.arch != null) {
+            commandList.add("-arch")
+            commandList.add(project.xcodebuild.arch)
+        }
+  
         if (project.xcodebuild.additionalParameters != null) {
             commandList.add(project.xcodebuild.additionalParameters)
         }
