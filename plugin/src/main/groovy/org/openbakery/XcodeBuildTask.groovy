@@ -1,7 +1,7 @@
 package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
-
+import java.io.File
 
 class XcodeBuildTask extends AbstractXcodeTask {
 
@@ -21,10 +21,10 @@ class XcodeBuildTask extends AbstractXcodeTask {
                 project.xcodebuild.sdk,
                 "-target",
                 project.xcodebuild.target,
-                "DSTROOT=" + project.xcodebuild.dstRoot,
-                "OBJROOT=" + project.xcodebuild.objRoot,
-                "SYMROOT=" + project.xcodebuild.symRoot,
-                "SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir
+                "DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath,
+                "OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath,
+                "SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath,
+                "SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath
         ]
 
         if (project.xcodebuild.signIdentity != null) {
