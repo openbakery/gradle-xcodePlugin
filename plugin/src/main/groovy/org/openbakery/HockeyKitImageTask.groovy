@@ -8,16 +8,9 @@ import java.awt.image.BufferedImage
 import java.awt.RenderingHints
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 23.08.12
- * Time: 22:30
- * To change this template use File | Settings | File Templates.
- */
-class HockeykitImageTask extends AbstractHockeykitTask {
+class HockeyKitImageTask extends AbstractHockeykitTask {
 
-    private static final int IMAGE_WIDTH = 114;
+    private static final int IMAGE_WIDTH = 114
 
     def resizeImage(fromImage, toImage) {
         def image = ImageIO.read( new File(fromImage) )
@@ -25,7 +18,7 @@ class HockeykitImageTask extends AbstractHockeykitTask {
         new BufferedImage( IMAGE_WIDTH, IMAGE_WIDTH, image.type ).with { i ->
             createGraphics().with {
                 setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC )
-                drawImage( image, 0, 0, HockeykitImageTask.IMAGE_WIDTH, HockeykitImageTask.IMAGE_WIDTH, null )
+                drawImage( image, 0, 0, HockeyKitImageTask.IMAGE_WIDTH, HockeyKitImageTask.IMAGE_WIDTH, null )
                 dispose()
             }
             ImageIO.write( i, 'png', new File(toImage) )
@@ -36,30 +29,30 @@ class HockeykitImageTask extends AbstractHockeykitTask {
     def imageCreate() {
         def infoplist = getAppBundleInfoPlist()
         println infoplist
-        XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist));
-        def list = config.getList("CFBundleIconFiles");
+        XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist))
+        def list = config.getList("CFBundleIconFiles")
         if (list.isEmpty()) {
             list = config.getList("CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles")
         }
         TreeMap<Integer, String> iconMap = new TreeMap<Integer, String>()
         list.each {
             item ->
-            def image = ImageIO.read(new File(item));
-            iconMap.put(image.width, item);
+            def image = ImageIO.read(new File(item))
+            iconMap.put(image.width, item)
         }
-        println "Images to choose from: " + iconMap;
-        def outputDirectory = new File(getOutputDirectory()).getParent();
+        println "Images to choose from: " + iconMap
+        def outputDirectory = new File(getOutputDirectory()).getParent()
 
         def selectedImage = iconMap.get(114)
 
-        def outputImageFile = new File(outputDirectory, "Icon.png");
+        def outputImageFile = new File(outputDirectory, "Icon.png")
         if (selectedImage != null) {
-            println "Copy file " + selectedImage + " to " + outputImageFile;
-            FileUtils.copyFile(new File(selectedImage), outputImageFile);
+            println "Copy file " + selectedImage + " to " + outputImageFile
+            FileUtils.copyFile(new File(selectedImage), outputImageFile)
         } else {
-            selectedImage = iconMap.lastEntry().value;
-            println "Resize file " + selectedImage + " to " + outputImageFile;
-            resizeImage(selectedImage, outputImageFile.absolutePath);
+            selectedImage = iconMap.lastEntry().value
+            println "Resize file " + selectedImage + " to " + outputImageFile
+            resizeImage(selectedImage, outputImageFile.absolutePath)
         }
 
     }

@@ -27,15 +27,15 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
                     "/usr/libexec/PlistBuddy",
                     infoPlist,
                     "-c",
-                    "Print :CFBundleVersion"]);
+                    "Print :CFBundleVersion"])
 
-            println "Modify CFBundleVersion from " + currentVersion + " to " + currentVersion + project.infoplist.versionExtension;
+            println "Modify CFBundleVersion from " + currentVersion + " to " + currentVersion + project.infoplist.versionExtension
 
             runCommand([
                     "/usr/libexec/PlistBuddy",
                     infoPlist,
                     "-c",
-                    "Set :CFBundleVersion " + currentVersion + project.infoplist.versionExtension]);
+                    "Set :CFBundleVersion " + currentVersion + project.infoplist.versionExtension])
 
         }
 

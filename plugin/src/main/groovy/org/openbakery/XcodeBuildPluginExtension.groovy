@@ -3,8 +3,8 @@ package org.openbakery
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 
-class XcodebuildPluginExtension {
-	def String infoPlist = null;
+class XcodeBuildPluginExtension {
+	def String infoPlist = null
 	def String configuration = 'Debug'
 	def String sdk = 'iphonesimulator'
 	def String target = 'unknown'
