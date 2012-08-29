@@ -4,21 +4,14 @@ import org.gradle.api.tasks.TaskAction
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FilenameUtils
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 23.08.12
- * Time: 09:51
- * To change this template use File | Settings | File Templates.
- */
-class HockeykitKitManifestTask extends AbstractHockeykitTask {
+class HockeyKitManifestTask extends AbstractHockeykitTask {
 
-    static final String XML_DEF_LINE = '<?xml version="1.0" encoding="UTF-8"?>';
+    static final String XML_DEF_LINE = '<?xml version="1.0" encoding="UTF-8"?>'
     static final String DOCTYPE_LINE = '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
 
 
-    HockeykitKitManifestTask() {
-        super();
+    HockeyKitManifestTask() {
+        super()
         this.description = "Creates the manifest that is needed to deploy on a HockeyKit Server"
     }
 
@@ -26,15 +19,15 @@ class HockeykitKitManifestTask extends AbstractHockeykitTask {
     def createManifest() {
 
         def appName = getAppBundleName()
-        def basename = FilenameUtils.getBaseName(appName);
+        def basename = FilenameUtils.getBaseName(appName)
 
         def infoPlist = getAppBundleInfoPlist()
 
         def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
         def bundleVersion = getValueFromPlist(infoPlist, "CFBundleVersion")
 
-        def outputDirectory = getOutputDirectory();
-        def manifestFilename = outputDirectory + "/" +  basename + ".plist";
+        def outputDirectory = getOutputDirectory()
+        def manifestFilename = outputDirectory + "/" +  basename + ".plist"
 
 
         def title = project.hockeykit.appName
@@ -47,11 +40,9 @@ class HockeykitKitManifestTask extends AbstractHockeykitTask {
             subtitle = getValueFromPlist(infoPlist, "CFBundleVersion")
         }
 
-
-
         def writer = new BufferedWriter(new FileWriter(manifestFilename))
-        writer.write(XML_DEF_LINE); writer.newLine();
-        writer.write(DOCTYPE_LINE); writer.newLine();
+        writer.writeLine(XML_DEF_LINE)
+        writer.writeLine(DOCTYPE_LINE)
         def xml = new MarkupBuilder(writer)
         xml.plist(version: "1.0") {
             dict() {
