@@ -3,7 +3,7 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-*Current version is 0.6 which is not compatible with 0.5 because some parameters have changed.* See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
+**Current version is 0.6 which is not compatible with 0.5 because some parameters have changed.** See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
 
 
 xcodebuild Parameters:
@@ -137,17 +137,17 @@ hockeykit Parameters:
 * _displayName_ - Title that should be used that is shown on the hockeykit site for the app. 
   If the value is not set then the bundle identifier is used
 
-default value: 'empty'
+	default value: 'empty'
   
 
 * _versionDirectoryName_ - subdirectory that should be used for the app.
 
-default value: "0"
+	default value: "0"
 
 
 * _outputDirectory_ - directory where to store the files that are generated for the hockeykit distribution
 
-default value "build/hockeykit";
+	default value "build/hockeykit";
 
 
     
