@@ -7,7 +7,7 @@ class XcodeBuildPluginExtension {
 	def String infoPlist = null
 	def String configuration = 'Debug'
 	def String sdk = 'iphonesimulator'
-	def String target = 'unknown'
+	def target = 'unknown'
 	def String buildRoot = 'build'
 	def String dstRoot = buildRoot + '/dst'
 	def String objRoot = buildRoot + '/obj'
