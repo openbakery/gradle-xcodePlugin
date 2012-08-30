@@ -29,8 +29,8 @@ xcodebuild Parameters:
 
   default value: 'empty'
     
-* _archiveVersion_ - String that should be appended to the generated app bundle. 
-  e.g. the default app bundle name is 'Demo.App'. When you set `archiveVersion=-1.0.0` than the generated bundle is 'Demo-1.0.0.app'
+* _bundleNameSuffix_ - String that should be appended to the generated app bundle. 
+  e.g. the default app bundle name is 'Demo.App'. When you set `bundleNameSuffix=-1.0.0` than the generated bundle is 'Demo-1.0.0.app'
   
   default value: 'empty'
   
@@ -78,19 +78,19 @@ keychain Parameters:
 
 * _certificateUri_ - Uri to the certificate that should be used to sign the app
 
-default value: 'empty'
+	default value: 'empty'
 
 * _certificatePassword_ - Password for the certificate file
 
-default value: 'empty'
+	default value: 'empty'
 
 * _keychainPassword_ - Password for the chain that is created
 
-default value: "This_is_the_default_keychain_password"
+	default value: "This_is_the_default_keychain_password"
 
 * _keychainName_ - name of the keychain that is created
 
-default value: 'gradle.keychain'
+	default value: 'gradle.keychain'
 
 
 infoplist Parameters:
@@ -98,24 +98,48 @@ infoplist Parameters:
 
 * _bundleIdentifier_ - If set it override the bundle identifier in the Info.plist (CFBundleIdentifier)
 
-default value: 'empty'
+	default value: 'empty'
 
-* _versionExtension_ - If set this value is appended to the version in the bundle identifier (CFBundleVersion)
+* _version_ - sets the CFBundleVersion to the given version
+  Note: _version=2.3.4_ and _versionSuffix=-Suffix_ and _versionPrefix=Prefix-_ results in 'Prefix-2.3.4-Suffix'
 
-default value: 'empty'
+	default value: 'empty'
+
+* _versionSuffix_ - adds the value to the CFBundleVersion e.g. 'CFBundleVersion=1.0.0' and 'versionSuffix=-Test' results in '1.0.0-Test'
+
+	default value: 'empty'
+
+* _versionPrefix_ - adds the value in front of the CFBundleVersion e.g. 'CFBundleVersion=1.0.0' and 'versionPrefix=Test-' results in 'Test-1.0.0'
+
+	default value: 'empty'
+
+* _shortVersionString_ - sets the CFBundleShortVersionString to the given shortVersionString
+
+	default value: 'empty'
+
+* _shortVersionStringSuffix_ - adds the value to the CFBundleVersion e.g. 'CFBundleShortVersionString=1.0.0' and 'versionSuffix=-Test' results in '1.0.0-Test'
+
+	default value: 'empty'
+
+* _shortVersionStringPrefix_ - adds the value in front of the CFBundleVersion e.g. 'CFBundleShortVersionString=1.0.0' and 'versionPrefix=Test-' results in 'Test-1.0.0'
+
+	default value: 'empty'
 
 
 hockeykit Parameters:
 ----------------------
 
-* _appName_ - Title that should be used that is shown on the hockeykit site for the app. 
+
+* _displayName_ - Title that should be used that is shown on the hockeykit site for the app. 
   If the value is not set then the bundle identifier is used
 
 default value: 'empty'
   
-* _version_ - subdirectory that should be used for the app.
+
+* _versionDirectoryName_ - subdirectory that should be used for the app.
 
 default value: "0"
+
 
 * _outputDirectory_ - directory where to store the files that are generated for the hockeykit distribution
 

@@ -14,13 +14,13 @@ class HockeyKitArchiveTask extends AbstractXcodeTask{
 
     @TaskAction
     def archive() {
-        if (project.hockeykit.version == null) {
-            throw new IllegalArgumentException("hockeykit.version is missing")
+        if (project.hockeykit.versionDirectoryName == null) {
+            throw new IllegalArgumentException("hockeykit.versionDirectoryName is missing")
         }
 
         def title = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
 
-        File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + title + "/" + project.hockeykit.version)
+        File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + title + "/" + project.hockeykit.versionDirectoryName)
         if (!outputDirectory.exists()) {
             outputDirectory.mkdirs()
         }

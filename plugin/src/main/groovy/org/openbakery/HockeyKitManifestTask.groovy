@@ -6,7 +6,7 @@ import org.apache.commons.io.FilenameUtils
 
 class HockeyKitManifestTask extends AbstractHockeykitTask {
 
-    static final String XML_DEF_LINE = '<?xml version="1.0" encoding="UTF-8"?>'
+    static final String XML_DEF_LINE = '<?xml versionDirectoryName="1.0" encoding="UTF-8"?>'
     static final String DOCTYPE_LINE = '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
 
 
@@ -30,7 +30,7 @@ class HockeyKitManifestTask extends AbstractHockeykitTask {
         def manifestFilename = outputDirectory + "/" +  basename + ".plist"
 
 
-        def title = project.hockeykit.appName
+        def title = project.hockeykit.displayName
         if (title == null) {
             title = bundleIdentifier
         }
