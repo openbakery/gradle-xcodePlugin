@@ -3,6 +3,8 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
+*Current version is 0.6 which is not compatible with 0.5 because some parameters have changed.* See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
+
 
 xcodebuild Parameters:
 ----------------------
