@@ -35,18 +35,26 @@ class XcodeBuildTask extends AbstractXcodeTask {
             commandList.add("-arch")
             commandList.add(project.xcodebuild.arch)
         }
-  
-        if (project.xcodebuild.additionalParameters != null) {
-            commandList.add(project.xcodebuild.additionalParameters)
-        }
+
+
+			if (project.xcodebuild.additionalParameters instanceof List) {
+				for (String value in project.xcodebuild.additionalParameters) {
+					commandList.add(value)
+				}
+			} else {
+				if (project.xcodebuild.additionalParameters != null) {
+					commandList.add(project.xcodebuild.additionalParameters)
+				}
+			}
+
 /*
-        if (project.xcodebuild.sdk.startsWith("iphoneos")) {
-            def keychainPath = System.getProperty("user.home") + "/Library/Keychains/" + project.keychain.keychainName
-            File keychainFile = new File(keychainPath)
-            if (keychainFile.exists()) {
-                commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + keychainPath)
-            }
-        }
+				if (project.xcodebuild.sdk.startsWith("iphoneos")) {
+						def keychainPath = System.getProperty("user.home") + "/Library/Keychains/" + project.keychain.keychainName
+						File keychainFile = new File(keychainPath)
+						if (keychainFile.exists()) {
+								commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + keychainPath)
+						}
+				}
 */
         runCommand(commandList)
 

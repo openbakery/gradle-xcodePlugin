@@ -25,7 +25,9 @@ xcodebuild Parameters:
 
 
 * _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 
-  `additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"`
+  `additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"`.
+
+	Also an array of parameters is excepted e.g. _["-xcconfig", "/path/to/the/xconfig" ]_
 
   default value: 'empty'
     

@@ -1,4 +1,4 @@
-## 0.6.0 (?)
+## 0.6.0 (August 30, 2012)
 
 Changes:
   - _xcodebuild.archiveVersion_ remame to _xcodebuild.bundleNameSuffix_
@@ -6,6 +6,7 @@ Changes:
 	- Short Version String can now be also set using _shortVersionString_, _shortVersionStringSuffix_ and _shortVersionStringPrefix_
 	- Renamed _hockeykit.appName_ to _hockeykit.displayName_
 	- Renamed _hockeykit.version_ to _hockeykit.versionDirectoryName_
+	- _xcodebuild.additionalParameters_ now also accepts arrays
 
 Bugfixes: 
   - changed to absolute file paths in build folders -> so cleanup with subprojects should now work

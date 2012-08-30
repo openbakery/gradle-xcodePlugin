@@ -15,7 +15,7 @@ class XcodeBuildPluginExtension {
 	def String sharedPrecompsDir = buildRoot + '/shared'
 	def String sourceDirectory = '.'
 	def String signIdentity = null
-	def String additionalParameters = null
+	def additionalParameters = null
 	def String bundleNameSuffix = null
 	def String arch = null
 }
