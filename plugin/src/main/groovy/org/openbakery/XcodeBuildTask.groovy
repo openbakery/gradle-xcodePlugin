@@ -14,19 +14,26 @@ class XcodeBuildTask extends AbstractXcodeTask {
 	@TaskAction
 	def xcodebuild() {
 
-		def commandList = [
-						"xcodebuild",
-						"-configuration",
-						project.xcodebuild.configuration,
-						"-sdk",
-						project.xcodebuild.sdk,
-						"-target",
-						project.xcodebuild.target,
-						"DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath,
-						"OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath,
-						"SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath,
-						"SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath
-		]
+
+        if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
+            throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
+        }
+
+        def commandList = [
+                "xcodebuild"
+        ]
+
+        if (project.xcodebuild.scheme) {
+            commandList.add("-scheme");
+            commandList.add(project.xcodebuild.scheme);
+        } else {
+            commandList.add("-configuration")
+            commandList.add(project.xcodebuild.configuration)
+            commandList.add("-sdk")
+            commandList.add(project.xcodebuild.sdk)
+            commandList.add("-target")
+            commandList.add(project.xcodebuild.target)
+        }
 
 		if (project.xcodebuild.signIdentity != null) {
 			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signIdentity)
@@ -48,14 +55,19 @@ class XcodeBuildTask extends AbstractXcodeTask {
 			}
 		}
 
+        commandList.add("DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath)
+        commandList.add("OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath)
+        commandList.add("SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath)
+        commandList.add("SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath)
+
 /*
-				if (project.xcodebuild.sdk.startsWith("iphoneos")) {
-						def keychainPath = System.getProperty("user.home") + "/Library/Keychains/" + project.keychain.keychainName
-						File keychainFile = new File(keychainPath)
-						if (keychainFile.exists()) {
-								commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + keychainPath)
-						}
-				}
+                if (project.xcodebuild.sdk.startsWith("iphoneos")) {
+                        def keychainPath = System.getProperty("user.home") + "/Library/Keychains/" + project.keychain.keychainName
+                        File keychainFile = new File(keychainPath)
+                        if (keychainFile.exists()) {
+                                commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + keychainPath)
+                        }
+                }
 */
 		runCommand(commandList)
 
