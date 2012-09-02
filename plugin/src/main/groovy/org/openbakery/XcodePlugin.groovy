@@ -10,7 +10,9 @@ class XcodePlugin implements Plugin<Project> {
 	private static final String GROUP_NAME = "Xcode"
 
 	void apply(Project project) {
-		project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
+        System.setProperty("java.awt.headless", "true");
+
+        project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
 		project.extensions.create("keychain", KeychainPluginExtension)
 		project.extensions.create("provisioning", ProvisioningPluginExtension)
 		project.extensions.create("infoplist", InfoPlistExtension)

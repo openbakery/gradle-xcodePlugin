@@ -2,6 +2,7 @@
 
 Changes:
   - Added support for Scheme with the new configuration parameter _xcodebuild.scheme_. Issue #1
+  - Added that after codesign the keychain and provisioning profile gets cleaned up. Issue #9
 
 ## 0.6.2 (August 31, 2012)
 

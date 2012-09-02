@@ -37,8 +37,12 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
         TreeMap<Integer, String> iconMap = new TreeMap<Integer, String>()
         list.each {
             item ->
-            def image = ImageIO.read(new File(item))
-            iconMap.put(image.width, item)
+            try {
+                def image = ImageIO.read(new File(item))
+                iconMap.put(image.width, item)
+            } catch (Exception ex) {
+                println "Cannot read image " + item + " so ignore it";
+            }
         }
         println "Images to choose from: " + iconMap
         def outputDirectory = new File(getOutputDirectory()).getParent()
