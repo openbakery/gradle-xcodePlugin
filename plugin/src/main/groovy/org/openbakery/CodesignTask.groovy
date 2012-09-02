@@ -1,6 +1,8 @@
 package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.Task
+import org.gradle.api.Action
 
 class CodesignTask extends AbstractXcodeTask {
 

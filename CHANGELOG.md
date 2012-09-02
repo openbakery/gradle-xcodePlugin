@@ -1,3 +1,20 @@
+## 0.6.3
+
+Changes:
+  - Added support for Scheme with the new configuration parameter _xcodebuild.scheme_. Issue #1
+
+## 0.6.2 (August 31, 2012)
+
+Bugfixes:
+  - fixed that the hockeykit manifest xml file was not valid xml
+
+## 0.6.1 (August 31, 2012)
+
+Bugfixes:
+ - fixed cleanup: Issue #8
+ - fixed that if the short version entry is missing in the Info.plist the plist modify task does not fail
+
+
 ## 0.6.0 (August 30, 2012)
 
 Changes:

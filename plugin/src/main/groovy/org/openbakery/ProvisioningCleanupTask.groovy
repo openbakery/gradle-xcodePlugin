@@ -13,6 +13,7 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 
 		def pattern = ~/.*\.mobileprovision/
 		provisionDestinationFile.eachFileMatch(pattern) { file ->
+            println file
 			def mobileprovisionContent = file.text
 			def matcher = mobileprovisionContent =~ "<key>UUID</key>\\s*\\n\\s*<string>(.*?)</string>"
 			def uuid = matcher[0][1]

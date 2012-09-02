@@ -156,8 +156,8 @@ class XcodePlugin implements Plugin<Project> {
 				project.keychain.keychainName = project['keychain.keychainName']
 			}
 
-			if (project.hasProperty('keychain.mobileprovisionUri')) {
-				project.keychain.mobileprovisionUri = project['keychain.mobileprovisionUri']
+			if (project.hasProperty('provisioning.mobileprovisionUri')) {
+				project.provisioning.mobileprovisionUri = project['provisioning.mobileprovisionUri']
 			}
 			if (project.hasProperty('keychain.destinationRoot')) {
 				project.keychain.destinationRoot = project['keychain.destinationRoot']
@@ -175,7 +175,22 @@ class XcodePlugin implements Plugin<Project> {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
-		}
+            if (project.provisioning.mobileprovisionUri != null) {
+                println "added cleanup for provisioning profile"
+                codesign.doLast {
+                    println "run provisioning cleanup"
+                    provisioningCleanup.execute()
+                }
+            }
+
+            if (project.keychain.certificateUri != null) {
+                println "added cleanup for certificate"
+                codesign.doLast {
+                    println "run certificate cleanup"
+                    keychainCleanup.execute()
+                }
+            }
+        }
 
 	}
 
