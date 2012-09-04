@@ -55,10 +55,14 @@ class XcodeBuildTask extends AbstractXcodeTask {
 			}
 		}
 
-        commandList.add("DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath)
-        commandList.add("OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath)
-        commandList.add("SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath)
-        commandList.add("SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath)
+		def uuid = getProvisioningProfileId()
+		if (uuid != null) {
+			commandList.add("PROVISIONING_PROFILE=" + uuid);
+		}
+		commandList.add("DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath)
+		commandList.add("OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath)
+		commandList.add("SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath)
+		commandList.add("SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath)
 
 /*
                 if (project.xcodebuild.sdk.startsWith("iphoneos")) {

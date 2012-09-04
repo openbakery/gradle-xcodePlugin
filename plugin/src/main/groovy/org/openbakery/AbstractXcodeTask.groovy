@@ -240,4 +240,24 @@ class AbstractXcodeTask extends DefaultTask {
 			}
 		}
 	}
+
+	def getProvisioningProfileId() {
+		File provisionDestinationFile = new File(project.provisioning.destinationRoot)
+		println provisionDestinationFile
+		if (!provisionDestinationFile.exists()) {
+			return
+		}
+
+		def fileList = provisionDestinationFile.list(
+						[accept: {d, f -> f ==~ /.*mobileprovision/ }] as FilenameFilter
+		).toList()
+
+		if (fileList.size() > 0) {
+			def mobileprovisionContent = new File(provisionDestinationFile, fileList[0]).text
+			def matcher = mobileprovisionContent =~ "<key>UUID</key>\\s*\\n\\s*<string>(.*?)</string>"
+			uuid = matcher[0][1]
+			return uuid;
+		}
+		return null;
+	}
 }

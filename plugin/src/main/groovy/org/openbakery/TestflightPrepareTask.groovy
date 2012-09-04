@@ -50,7 +50,9 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 
 		println "project.testflight.outputDirectory " + project.testflight.outputDirectory
-		def baseZipName = FilenameUtils.getBaseName(zipFileName);
+		int index = zipFileName.lastIndexOf('/')
+		def baseZipName = zipFileName.substring(index+1, zipFileName.length());
+
 		println "baseZipName " + baseZipName
 		println "buildOutputDirectory " + buildOutputDirectory;
 

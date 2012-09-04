@@ -6,24 +6,15 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 	
 	@TaskAction
 	def clean() {
-        File provisionDestinationFile = new File(project.provisioning.destinationRoot)
-        if (!provisionDestinationFile.exists()) {
-            return
-        }
+		new File(project.provisioning.destinationRoot).deleteDir()
 
-		def pattern = ~/.*\.mobileprovision/
-		provisionDestinationFile.eachFileMatch(pattern) { file ->
-            println file
-			def mobileprovisionContent = file.text
-			def matcher = mobileprovisionContent =~ "<key>UUID</key>\\s*\\n\\s*<string>(.*?)</string>"
-			def uuid = matcher[0][1]
-
+		def uuid = getProvisioningProfileId()
+		if (uuid != null) {
 			File mobileprovisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + uuid + ".mobileprovision")
 			if (mobileprovisionPath.exists()) {
 				println "Deleting " + mobileprovisionPath
 				mobileprovisionPath.delete()
 			}
 		}
-
 	}
 }
