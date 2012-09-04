@@ -1,6 +1,7 @@
-## 0.6.3
+## 0.6.3 (TBA)
 
 Changes:
+  - Added TestFlight support with testflight-prepare target that puts the ipa and zipped dSYM to build/testflight
   - Added support for Scheme with the new configuration parameter _xcodebuild.scheme_. Issue #1
   - Added that after codesign the keychain and provisioning profile gets cleaned up. Issue #9
 
