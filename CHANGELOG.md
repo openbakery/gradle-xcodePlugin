@@ -1,4 +1,4 @@
-## 0.7.0 (September 4, 2012)
+## 0.6.3 (September 4, 2012)
 
 Changes:
   - Added inital TestFlight support with _testflight_ target that uploads the build to TestFlight. (see Readme for the testflight parameters)
