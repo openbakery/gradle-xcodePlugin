@@ -138,7 +138,7 @@ class AbstractXcodeTask extends DefaultTask {
 		def fileList = buildOutputDirectory.list(
 						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
 		).toList()
-		if (fileList.count == 0) {
+		if (fileList.size() == 0) {
 			throw new IllegalStateException("No App Found in directory " + buildOutputDirectory.absolutePath)
 		}
 		return buildOutputDirectory.absolutePath + "/" + fileList[0]

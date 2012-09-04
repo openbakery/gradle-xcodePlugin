@@ -7,61 +7,61 @@ import org.apache.commons.io.FileUtils
 
 class TestFlightPrepareTask extends AbstractXcodeTask {
 
-    TestFlightPrepareTask() {
-        super()
-        dependsOn("codesign")
-        this.description = "Prepare the app bundle and dSYM to publish with using testflight"
-    }
+	TestFlightPrepareTask() {
+		super()
+		dependsOn("codesign")
+		this.description = "Prepare the app bundle and dSYM to publish with using testflight"
+	}
 
 
-    @TaskAction
-    def archive() {
-        def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+	@TaskAction
+	def archive() {
+		def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 
-        def appName = getAppBundleName()
-        def baseName =  appName.substring(0, appName.size()-4)
-        def ipaName =  baseName + ".ipa"
-        def dsymName = baseName + ".app.dSYM"
+		def appName = getAppBundleName()
+		def baseName = appName.substring(0, appName.size() - 4)
+		def ipaName = baseName + ".ipa"
+		def dsymName = baseName + ".app.dSYM"
 
-        def zipFileName = baseName
+		def zipFileName = baseName
 
-        File outputDirectory = new File(project.testflight.outputDirectory)
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs()
-        }
-
-
-        if (project.xcodebuild.bundleNameSuffix != null) {
-            println "Rename App"
-
-            File ipaFile = new File(ipaName)
-            if (ipaFile.exists()) {
-                ipaName = baseName + project.xcodebuild.bundleNameSuffix + ".ipa";
-                ipaFile.renameTo(ipaName)
-            }
-
-            File dsymFile = new File(dsymName)
-            if (dsymFile.exists()) {
-                dsymFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".app.dSYM")
-            }
-            zipFileName += project.xcodebuild.bundleNameSuffix
-
-        }
+		File outputDirectory = new File(project.testflight.outputDirectory)
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs()
+		}
 
 
-        println "project.testflight.outputDirectory " + project.testflight.outputDirectory
-        def baseZipName = FilenameUtils.getBaseName(zipFileName);
-        println "baseZipName " + baseZipName
-        println "buildOutputDirectory " + buildOutputDirectory;
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			println "Rename App"
+
+			File ipaFile = new File(ipaName)
+			if (ipaFile.exists()) {
+				ipaName = baseName + project.xcodebuild.bundleNameSuffix + ".ipa";
+				ipaFile.renameTo(ipaName)
+			}
+
+			File dsymFile = new File(dsymName)
+			if (dsymFile.exists()) {
+				dsymFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".app.dSYM")
+			}
+			zipFileName += project.xcodebuild.bundleNameSuffix
+
+		}
 
 
-        def ant = new AntBuilder()
-        ant.zip(destfile: project.testflight.outputDirectory + "/" + baseZipName + ".app.dSYM.zip",
-                basedir: buildOutputDirectory,
-                includes: "*dSYM")
-
-        FileUtils.copyFileToDirectory(new File(ipaName), new File(project.testflight.outputDirectory))
+		println "project.testflight.outputDirectory " + project.testflight.outputDirectory
+		def baseZipName = FilenameUtils.getBaseName(zipFileName);
+		println "baseZipName " + baseZipName
+		println "buildOutputDirectory " + buildOutputDirectory;
 
 
-    }
+		def ant = new AntBuilder()
+		ant.zip(destfile: project.testflight.outputDirectory + "/" + baseZipName + ".app.dSYM.zip",
+						basedir: buildOutputDirectory.absolutePath,
+						includes: "*dSYM*/**")
+
+		FileUtils.copyFileToDirectory(new File(ipaName), new File(project.testflight.outputDirectory))
+
+
+	}
 }

@@ -10,16 +10,16 @@ class XcodePlugin implements Plugin<Project> {
 	private static final String GROUP_NAME = "Xcode"
 
 	void apply(Project project) {
-        System.setProperty("java.awt.headless", "true");
+		System.setProperty("java.awt.headless", "true");
 
-        project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
+		project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
 		project.extensions.create("keychain", KeychainPluginExtension)
 		project.extensions.create("provisioning", ProvisioningPluginExtension)
 		project.extensions.create("infoplist", InfoPlistExtension)
-        project.extensions.create("hockeykit", HockeyKitPluginExtension)
-        project.extensions.create("testflight", TestFlightPluginExtension)
+		project.extensions.create("hockeykit", HockeyKitPluginExtension)
+		project.extensions.create("testflight", TestFlightPluginExtension)
 
-        Task keychainCreate = project.task('keychain-create', type: KeychainCreateTask)
+		Task keychainCreate = project.task('keychain-create', type: KeychainCreateTask)
 		Task xcodebuild = project.task('xcodebuild', type: XcodeBuildTask)
 		Task infoplistModify = project.task('infoplist-modify', type: InfoPlistModifyTask)
 		Task provisioningInstall = project.task('provisioning-install', type: ProvisioningInstallTask)
@@ -27,7 +27,8 @@ class XcodePlugin implements Plugin<Project> {
 		Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeyKitManifestTask)
 		Task hockeyKitArchiveTask = project.task("hockeykit-archive", type: HockeyKitArchiveTask)
 		Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeyKitImageTask)
-        Task testFlightPrepare = project.task("testflight-prepare", type:TestFlightPrepareTask)
+		Task testFlightPrepare = project.task("testflight-prepare", type: TestFlightPrepareTask)
+		Task testFlightUpload = project.task("testflight", type: TestFlightUploadTask);
 
 		Task hockey = project.task("hockeykit")
 		hockey.description = "Creates a build that can be deployed on a hockeykit Server"
@@ -42,7 +43,8 @@ class XcodePlugin implements Plugin<Project> {
 		hockeyKitManifest.setGroup(GROUP_NAME)
 		hockeyKitArchiveTask.setGroup(GROUP_NAME)
 		hockeyKitImageTask.setGroup(GROUP_NAME)
-        testFlightPrepare.setGroup(GROUP_NAME)
+		testFlightPrepare.setGroup(GROUP_NAME)
+		testFlightUpload.setGroup(GROUP_NAME)
 
 		hockeyKitArchiveTask.dependsOn(archive)
 		archive.dependsOn("clean")
@@ -52,12 +54,12 @@ class XcodePlugin implements Plugin<Project> {
 		Task xcodebuildCleanup = project.task('clean', type: XcodeBuildCleanTask)
 		Task provisioningCleanup = project.task('provisioning-clean', type: ProvisioningCleanupTask)
 		Task hockeyKitCleanTask = project.task('hockeykit-clean', type: HockeyKitCleanTask)
-        Task testFlightClean = project.task("testflight-clean", type: TestFlightCleanTask);
+		Task testFlightClean = project.task("testflight-clean", type: TestFlightCleanTask);
 
-        xcodebuildCleanup.dependsOn(keychainCleanup)
+		xcodebuildCleanup.dependsOn(keychainCleanup)
 		xcodebuildCleanup.dependsOn(provisioningCleanup)
 		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
-        xcodebuildCleanup.dependsOn(testFlightClean);
+		xcodebuildCleanup.dependsOn(testFlightClean);
 		xcodebuildCleanup.setGroup(GROUP_NAME)
 
 
@@ -92,10 +94,10 @@ class XcodePlugin implements Plugin<Project> {
 
 
 
-            if (project.hasProperty('xcodebuild.scheme')) {
-                project.xcodebuild.scheme = project['xcodebuild.scheme']
-            }
-            if (project.hasProperty('xcodebuild.infoPlist')) {
+			if (project.hasProperty('xcodebuild.scheme')) {
+				project.xcodebuild.scheme = project['xcodebuild.scheme']
+			}
+			if (project.hasProperty('xcodebuild.infoPlist')) {
 				project.xcodebuild.infoPlist = project['xcodebuild.infoPlist']
 			}
 			if (project.hasProperty('xcodebuild.configuration')) {
@@ -183,22 +185,22 @@ class XcodePlugin implements Plugin<Project> {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
-            if (project.provisioning.mobileprovisionUri != null) {
-                println "added cleanup for provisioning profile"
-                codesign.doLast {
-                    println "run provisioning cleanup"
-                    provisioningCleanup.execute()
-                }
-            }
+			if (project.provisioning.mobileprovisionUri != null) {
+				println "added cleanup for provisioning profile"
+				codesign.doLast {
+					println "run provisioning cleanup"
+					provisioningCleanup.execute()
+				}
+			}
 
-            if (project.keychain.certificateUri != null) {
-                println "added cleanup for certificate"
-                codesign.doLast {
-                    println "run certificate cleanup"
-                    keychainCleanup.execute()
-                }
-            }
-        }
+			if (project.keychain.certificateUri != null) {
+				println "added cleanup for certificate"
+				codesign.doLast {
+					println "run certificate cleanup"
+					keychainCleanup.execute()
+				}
+			}
+		}
 
 	}
 

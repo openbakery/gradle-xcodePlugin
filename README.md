@@ -153,6 +153,26 @@ hockeykit Parameters:
 * _outputDirectory_ - directory where to store the files that are generated for the hockeykit distribution
 
 	default value "build/hockeykit";
+	
+testflight Parameters:
+----------------------
+
+* _apiToken_ - The TestFlight API Token (https://testflightapp.com/account/#api-token)
+
+	default value: empty
+	
+* _teamToken_ - The TestFlight Team Token (https://testflightapp.com/dashboard/team/edit/?next=/api/doc/)
+
+  default value: empty
+  
+* _notes_ - Release notes for the build
+
+  default value: "This build was uploaded using the gradle xcodePlugin"
+
+* _outputDirectory_ - Output directory where the ipa an dSYM.zip is created
+
+  default value: "build/testflight"
+  	
 
 
     
