@@ -10,13 +10,28 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		def infoPlist = getInfoPlist()
 		println "Updating " + infoPlist
 
-
 		if (project.infoplist.bundleIdentifier != null) {
+
+			println "!!bundleIdentifier"
+
 			runCommand([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							"Set :CFBundleIdentifier " + project.infoplist.bundleIdentifier
+					  "/usr/libexec/PlistBuddy",
+					  infoPlist,
+					  "-c",
+					  "Set :CFBundleIdentifier " + project.infoplist.bundleIdentifier
+			])
+		}
+
+		// add suffix to bundleIdentifier
+		if (project.infoplist.bundleIdentifierSuffix != null) {
+			def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
+			println "!!bundleIdentifierSuffix"
+
+			runCommand([
+					  "/usr/libexec/PlistBuddy",
+					  infoPlist,
+					  "-c",
+					  "Set :CFBundleIdentifier " + bundleIdentifier + project.infoplist.bundleIdentifierSuffix
 			])
 		}
 
@@ -26,10 +41,10 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 			version = project.infoplist.version
 		} else {
 			version = runCommandWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							"Print :CFBundleVersion"])
+					  "/usr/libexec/PlistBuddy",
+					  infoPlist,
+					  "-c",
+					  "Print :CFBundleVersion"])
 		}
 
 		if (project.infoplist.versionSuffix) {
@@ -42,19 +57,19 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 		println "Modify CFBundleVersion to " + version
 		runCommand([
-						"/usr/libexec/PlistBuddy",
-						infoPlist,
-						"-c",
-						"Set :CFBundleVersion " + version])
+				  "/usr/libexec/PlistBuddy",
+				  infoPlist,
+				  "-c",
+				  "Set :CFBundleVersion " + version])
 
 
 		def shortVersionString
 		try {
-		shortVersionString = runCommandWithResult([
-						"/usr/libexec/PlistBuddy",
-						infoPlist,
-						"-c",
-						"Print :CFBundleShortVersionString"])
+			shortVersionString = runCommandWithResult([
+					  "/usr/libexec/PlistBuddy",
+					  infoPlist,
+					  "-c",
+					  "Print :CFBundleShortVersionString"])
 		} catch (IllegalStateException ex) {
 			// no CFBundleShortVersionString exists so noting can be modified!
 			return;
@@ -73,10 +88,10 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 		println "Modify CFBundleShortVersionString to " + shortVersionString
 		runCommand([
-						"/usr/libexec/PlistBuddy",
-						infoPlist,
-						"-c",
-						"Set :CFBundleShortVersionString " + shortVersionString])
+				  "/usr/libexec/PlistBuddy",
+				  infoPlist,
+				  "-c",
+				  "Set :CFBundleShortVersionString " + shortVersionString])
 
 	}
 

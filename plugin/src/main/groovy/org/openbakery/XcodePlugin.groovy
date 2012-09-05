@@ -71,6 +71,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('infoplist.bundleIdentifier')) {
 				project.infoplist.bundleIdentifier = project['infoplist.bundleIdentifier']
 			}
+			if (project.hasProperty('infoplist.bundleIdentifierSuffix')) {
+				project.infoplist.bundleIdentifierSuffix = project['infoplist.bundleIdentifierSuffix']
+			}
 			if (project.hasProperty('infoplist.version')) {
 				project.infoplist.version = project['infoplist.version']
 			}
@@ -174,14 +177,13 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 			if (project.xcodebuild.sdk.startsWith("iphoneos") &&
-							project.xcodebuild.signIdentity != null) {
+					  project.xcodebuild.signIdentity != null) {
 				archive.dependsOn(codesign)
 			} else {
 				archive.dependsOn(xcodebuild)
 			}
 
-			if (project.infoplist.bundleIdentifier != null ||
-							project.infoplist.versionSuffix != null) {
+			if (project.infoplist.bundleIdentifier != null || project.infoplist.bundleIdentifierSuffix || project.infoplist.versionSuffix != null) {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
@@ -201,9 +203,7 @@ class XcodePlugin implements Plugin<Project> {
 				}
 			}
 		}
-
 	}
-
 }
 
 

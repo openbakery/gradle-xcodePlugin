@@ -1,3 +1,8 @@
+## 0.6.4 (tba)
+
+Changes:
+  - Added bundleIdentifierSuffix #12
+
 ## 0.6.3 (September 4, 2012)
 
 Changes:
