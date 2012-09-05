@@ -113,6 +113,10 @@ infoplist Parameters:
 * _bundleIdentifier_ - If set it override the bundle identifier in the Info.plist (CFBundleIdentifier)
 
 	default value: empty
+	
+* _bundleIdentifierSuffix_ - If set it adds a suffix to the bundle identifier in the Info.plist (CFBundleIdentifier)
+
+	default value: empty
 
 * _version_ - sets the CFBundleVersion to the given version
   Note: _version=2.3.4_ and _versionSuffix=-Suffix_ and _versionPrefix=Prefix-_ results in 'Prefix-2.3.4-Suffix'
