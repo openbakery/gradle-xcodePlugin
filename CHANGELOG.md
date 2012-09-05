@@ -1,3 +1,6 @@
+## 0.6.4 (TBA)
+  - Added _xcodebuild.unitTestTarget_
+
 ## 0.6.3 (September 4, 2012)
 
 Changes:

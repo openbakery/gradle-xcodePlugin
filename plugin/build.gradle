@@ -21,7 +21,7 @@ dependencies {
 }
 
 group = 'org.openbakery'
-version = '0.6.3'
+version = '0.6.4'
 
 
 uploadArchives {
