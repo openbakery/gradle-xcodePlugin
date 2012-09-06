@@ -95,7 +95,9 @@ class XcodePlugin implements Plugin<Project> {
 				project.infoplist.shortVersionStringPrefix = project['infoplist.shortVersionStringPrefix']
 			}
 
-
+			if (project.hasProperty('infoplist.iconPath')) {
+				project.infoplist.iconPath = project['infoplist.iconPath']
+			}
 
 			if (project.hasProperty('xcodebuild.scheme')) {
 				project.xcodebuild.scheme = project['xcodebuild.scheme']

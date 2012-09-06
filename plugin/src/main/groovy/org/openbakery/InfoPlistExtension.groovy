@@ -12,4 +12,5 @@ class InfoPlistExtension {
 	def String shortVersionString = null
 	def String shortVersionStringSuffix = null
 	def String shortVersionStringPrefix = null
+	def String iconPath = null
 }

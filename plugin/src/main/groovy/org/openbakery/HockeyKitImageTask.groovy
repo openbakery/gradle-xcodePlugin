@@ -12,8 +12,8 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 
     private static final int IMAGE_WIDTH = 114
 
-    def resizeImage(fromImage, toImage) {
-        def image = ImageIO.read( new File(fromImage) )
+    def resizeImage(File fromImage, toImage) {
+        def image = ImageIO.read( fromImage)
 
         new BufferedImage( IMAGE_WIDTH, IMAGE_WIDTH, image.type ).with { i ->
             createGraphics().with {
@@ -38,8 +38,31 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
         list.each {
             item ->
             try {
-                def image = ImageIO.read(new File(item))
-                iconMap.put(image.width, item)
+               def image
+					File iconFile;
+
+					// get fileName of info.plist in project / target
+					def infoPlist = getInfoPlist()
+					def infoPlistFile = new File(infoPlist)
+
+					// get path from info.plist
+					String absolutePath = infoPlistFile.getAbsolutePath();
+					String appPath = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
+
+					if (project.infoplist.iconPath) {
+
+						// appPath + additional iconPath + name of iconFile
+						iconFile = new File(appPath + File.separator + project.infoplist.iconPath + File.separator + item)
+
+					} else {
+
+						// appPath + additional iconPath + name of iconFile
+						iconFile = new File(appPath + File.separator + item)
+					}
+
+					image = ImageIO.read(iconFile)
+
+					iconMap.put(image.width, iconFile)
             } catch (Exception ex) {
                 println "Cannot read image " + item + " so ignore it";
             }
