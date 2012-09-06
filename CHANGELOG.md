@@ -1,6 +1,7 @@
-## 0.6.4 (tba)
+## 0.6.4 (September 5, 2012)
 
 Changes:
+  - Added _xcodebuild.unitTestTarget_
   - Added bundleIdentifierSuffix #12
 
 ## 0.6.3 (September 4, 2012)

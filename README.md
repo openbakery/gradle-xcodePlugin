@@ -3,7 +3,7 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current version is 0.6.3 which is not compatible with 0.5 because some parameters have changed.** See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
+**Current version is 0.6.4 which is not compatible with 0.5 because some parameters have changed.** See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
 
 
 xcodebuild Parameters:
@@ -24,7 +24,12 @@ xcodebuild Parameters:
 
 * _target_ - the xcode build target that should be used
 
-  default value: 'unknown'
+  default value: empty
+
+* _unitTestTarget_ - Unit Test target that should be executed when running xcodebuild. Here first the _target_ is build and afterwards the _unitTestTarget_ is build and executed. This target only works when the iphonesimulator _sdk_ is used.
+
+  default value: empty
+
   
 * _signIdentity_ - sign identity that should be used when building for the device
 
