@@ -12,8 +12,6 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 		if (project.infoplist.bundleIdentifier != null) {
 
-			println "!!bundleIdentifier"
-
 			runCommand([
 					  "/usr/libexec/PlistBuddy",
 					  infoPlist,
@@ -25,7 +23,6 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		// add suffix to bundleIdentifier
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
-			println "!!bundleIdentifierSuffix"
 
 			runCommand([
 					  "/usr/libexec/PlistBuddy",
