@@ -22,13 +22,12 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		if (!mobileprovisionPath.exists()) {
 			mobileprovisionPath.mkdir()
 		}
-		
-		
-		File sourceFile  = new File(mobileprovisionFile)
+
+		File sourceFile = new File(mobileprovisionFile)
 		File destinationFile = new File(mobileprovisionPath, uuid + ".mobileprovision")
 
-        project.provisioning.mobileprovisionFile = destinationFile.absolutePath
+		project.provisioning.mobileprovisionFile = destinationFile.absolutePath
 
-        copy(sourceFile, destinationFile)
+		copy(sourceFile, destinationFile)
 	}
 }

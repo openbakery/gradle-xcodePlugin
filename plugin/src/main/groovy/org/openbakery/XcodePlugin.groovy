@@ -10,11 +10,14 @@ class XcodePlugin implements Plugin<Project> {
 	private static final String GROUP_NAME = "Xcode"
 
 	void apply(Project project) {
+		System.setProperty("java.awt.headless", "true");
+
 		project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
 		project.extensions.create("keychain", KeychainPluginExtension)
 		project.extensions.create("provisioning", ProvisioningPluginExtension)
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension)
+		project.extensions.create("testflight", TestFlightPluginExtension)
 
 		Task keychainCreate = project.task('keychain-create', type: KeychainCreateTask)
 		Task xcodebuild = project.task('xcodebuild', type: XcodeBuildTask)
@@ -24,6 +27,8 @@ class XcodePlugin implements Plugin<Project> {
 		Task hockeyKitManifest = project.task("hockeykit-manifest", type: HockeyKitManifestTask)
 		Task hockeyKitArchiveTask = project.task("hockeykit-archive", type: HockeyKitArchiveTask)
 		Task hockeyKitImageTask = project.task("hockeykit-image", type: HockeyKitImageTask)
+		Task testFlightPrepare = project.task("testflight-prepare", type: TestFlightPrepareTask)
+		Task testFlightUpload = project.task("testflight", type: TestFlightUploadTask);
 
 		Task hockey = project.task("hockeykit")
 		hockey.description = "Creates a build that can be deployed on a hockeykit Server"
@@ -38,6 +43,8 @@ class XcodePlugin implements Plugin<Project> {
 		hockeyKitManifest.setGroup(GROUP_NAME)
 		hockeyKitArchiveTask.setGroup(GROUP_NAME)
 		hockeyKitImageTask.setGroup(GROUP_NAME)
+		testFlightPrepare.setGroup(GROUP_NAME)
+		testFlightUpload.setGroup(GROUP_NAME)
 
 		hockeyKitArchiveTask.dependsOn(archive)
 		archive.dependsOn("clean")
@@ -47,11 +54,14 @@ class XcodePlugin implements Plugin<Project> {
 		Task xcodebuildCleanup = project.task('clean', type: XcodeBuildCleanTask)
 		Task provisioningCleanup = project.task('provisioning-clean', type: ProvisioningCleanupTask)
 		Task hockeyKitCleanTask = project.task('hockeykit-clean', type: HockeyKitCleanTask)
+		Task testFlightClean = project.task("testflight-clean", type: TestFlightCleanTask);
 
 		xcodebuildCleanup.dependsOn(keychainCleanup)
 		xcodebuildCleanup.dependsOn(provisioningCleanup)
 		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
+		xcodebuildCleanup.dependsOn(testFlightClean);
 		xcodebuildCleanup.setGroup(GROUP_NAME)
+
 
 		Task codesign = project.task('codesign', type: CodesignTask)
 		codesign.setGroup(GROUP_NAME)
@@ -60,6 +70,9 @@ class XcodePlugin implements Plugin<Project> {
 
 			if (project.hasProperty('infoplist.bundleIdentifier')) {
 				project.infoplist.bundleIdentifier = project['infoplist.bundleIdentifier']
+			}
+			if (project.hasProperty('infoplist.bundleIdentifierSuffix')) {
+				project.infoplist.bundleIdentifierSuffix = project['infoplist.bundleIdentifierSuffix']
 			}
 			if (project.hasProperty('infoplist.version')) {
 				project.infoplist.version = project['infoplist.version']
@@ -82,8 +95,13 @@ class XcodePlugin implements Plugin<Project> {
 				project.infoplist.shortVersionStringPrefix = project['infoplist.shortVersionStringPrefix']
 			}
 
+			if (project.hasProperty('infoplist.iconPath')) {
+				project.infoplist.iconPath = project['infoplist.iconPath']
+			}
 
-
+			if (project.hasProperty('xcodebuild.scheme')) {
+				project.xcodebuild.scheme = project['xcodebuild.scheme']
+			}
 			if (project.hasProperty('xcodebuild.infoPlist')) {
 				project.xcodebuild.infoPlist = project['xcodebuild.infoPlist']
 			}
@@ -126,6 +144,11 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.arch')) {
 				project.xcodebuild.arch = project['xcodebuild.arch']
 			}
+			if (project.hasProperty('xcodebuild.unitTestTarget')) {
+				project.xcodebuild.unitTestTarget = project['xcodebuild.unitTestTarget']
+			}
+
+
 
 			if (project.hasProperty('hockeykit.displayName')) {
 				project.hockeykit.displayName = project['hockeykit.displayName']
@@ -153,29 +176,41 @@ class XcodePlugin implements Plugin<Project> {
 				project.keychain.keychainName = project['keychain.keychainName']
 			}
 
-			if (project.hasProperty('keychain.mobileprovisionUri')) {
-				project.keychain.mobileprovisionUri = project['keychain.mobileprovisionUri']
+			if (project.hasProperty('provisioning.mobileprovisionUri')) {
+				project.provisioning.mobileprovisionUri = project['provisioning.mobileprovisionUri']
 			}
 			if (project.hasProperty('keychain.destinationRoot')) {
 				project.keychain.destinationRoot = project['keychain.destinationRoot']
 			}
 
 			if (project.xcodebuild.sdk.startsWith("iphoneos") &&
-							project.xcodebuild.signIdentity != null) {
+					  project.xcodebuild.signIdentity != null) {
 				archive.dependsOn(codesign)
 			} else {
 				archive.dependsOn(xcodebuild)
 			}
 
-			if (project.infoplist.bundleIdentifier != null ||
-							project.infoplist.versionSuffix != null) {
+			if (project.infoplist.bundleIdentifier != null || project.infoplist.bundleIdentifierSuffix || project.infoplist.versionSuffix != null) {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
+			if (project.provisioning.mobileprovisionUri != null) {
+				println "added cleanup for provisioning profile"
+				codesign.doLast {
+					println "run provisioning cleanup"
+					provisioningCleanup.execute()
+				}
+			}
+
+			if (project.keychain.certificateUri != null) {
+				println "added cleanup for certificate"
+				codesign.doLast {
+					println "run certificate cleanup"
+					keychainCleanup.execute()
+				}
+			}
 		}
-
 	}
-
 }
 
 

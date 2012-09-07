@@ -2,31 +2,33 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 
 dependencies {
-    compile gradleApi()
-    groovy localGroovy()
+	compile gradleApi()
+	groovy localGroovy()
 }
 
 apply plugin: 'maven'
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    testCompile 'junit:junit:4.+'
-    compile 'commons-io:commons-io:2.+'
-    compile 'commons-configuration:commons-configuration:1.8+'
+	testCompile 'junit:junit:4.+'
+	compile 'commons-io:commons-io:2.+'
+	compile 'commons-configuration:commons-configuration:1.8+'
+	compile 'org.apache.httpcomponents:httpclient:4.2+'
+	compile 'org.apache.httpcomponents:httpmime:4.2+'
 }
 
 group = 'org.openbakery'
-version = '0.6.2'
+version = '0.6.5'
 
 
 uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri('/tmp/repo'))
-        }
-    }
+	repositories {
+		mavenDeployer {
+			repository(url: uri('/tmp/repo'))
+		}
+	}
 }
 

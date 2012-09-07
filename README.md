@@ -3,11 +3,16 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current version is 0.6 which is not compatible with 0.5 because some parameters have changed.** See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
+**Current version is 0.6.4 which is not compatible with 0.5 because some parameters have changed.** See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
 
 
 xcodebuild Parameters:
 ----------------------
+
+* _scheme_ - the xcode build scheme that should be used. If the scheme is set the _configuration_, _sdk_ and
+  _target_ is ignored
+
+  default value: empty
 
 * _configuration_ - the build configuration name that should be used (e.g. 'Debug', 'Release')
 
@@ -19,11 +24,16 @@ xcodebuild Parameters:
 
 * _target_ - the xcode build target that should be used
 
-  default value: 'unknown'
+  default value: empty
+
+* _unitTestTarget_ - Unit Test target that should be executed when running xcodebuild. Here first the _target_ is build and afterwards the _unitTestTarget_ is build and executed. This target only works when the iphonesimulator _sdk_ is used.
+
+  default value: empty
+
   
 * _signIdentity_ - sign identity that should be used when building for the device
 
-  default value: 'empty'
+  default value: empty
 
 
 * _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 
@@ -31,17 +41,17 @@ xcodebuild Parameters:
 
 	Also an array of parameters is excepted e.g. _["-xcconfig", "/path/to/the/xconfig" ]_
 
-  default value: 'empty'
+  default value: empty
     
 * _bundleNameSuffix_ - String that should be appended to the generated app bundle. 
   e.g. the default app bundle name is 'Demo.App'. When you set `bundleNameSuffix=-1.0.0` than the generated bundle is 'Demo-1.0.0.app'
   
-  default value: 'empty'
+  default value: empty
   
 * _arch_ - Use the architecture specified by architecture when building each target.
   e.g. 'i386', 'armv6', 'armv7'
   
-  default value: 'empty'
+  default value: empty
 
 
 * _buildRoot_ - build root directory for the build output
@@ -66,7 +76,7 @@ xcodebuild Parameters:
 
 * _infoPlist_ - override the Info.plist file that is configured in the xcode project file
 
-  default value: 'empty'
+  default value: empty
     
 
 provisioning Parameters:
@@ -74,7 +84,7 @@ provisioning Parameters:
 
 * _mobileprovisionUri_ - URI where the mobileprovision profile is located that should be used when signing the app
 
-  default value: 'empty'
+  default value: empty
     
     
 keychain Parameters:
@@ -82,11 +92,11 @@ keychain Parameters:
 
 * _certificateUri_ - Uri to the certificate that should be used to sign the app
 
-	default value: 'empty'
+	default value: empty
 
 * _certificatePassword_ - Password for the certificate file
 
-	default value: 'empty'
+	default value: empty
 
 * _keychainPassword_ - Password for the chain that is created
 
@@ -102,32 +112,36 @@ infoplist Parameters:
 
 * _bundleIdentifier_ - If set it override the bundle identifier in the Info.plist (CFBundleIdentifier)
 
-	default value: 'empty'
+	default value: empty
+	
+* _bundleIdentifierSuffix_ - If set it adds a suffix to the bundle identifier in the Info.plist (CFBundleIdentifier)
+
+	default value: empty
 
 * _version_ - sets the CFBundleVersion to the given version
   Note: _version=2.3.4_ and _versionSuffix=-Suffix_ and _versionPrefix=Prefix-_ results in 'Prefix-2.3.4-Suffix'
 
-	default value: 'empty'
+	default value: empty
 
 * _versionSuffix_ - adds the value to the CFBundleVersion e.g. 'CFBundleVersion=1.0.0' and 'versionSuffix=-Test' results in '1.0.0-Test'
 
-	default value: 'empty'
+	default value: empty
 
 * _versionPrefix_ - adds the value in front of the CFBundleVersion e.g. 'CFBundleVersion=1.0.0' and 'versionPrefix=Test-' results in 'Test-1.0.0'
 
-	default value: 'empty'
+	default value: empty
 
 * _shortVersionString_ - sets the CFBundleShortVersionString to the given shortVersionString
 
-	default value: 'empty'
+	default value: empty
 
 * _shortVersionStringSuffix_ - adds the value to the CFBundleVersion e.g. 'CFBundleShortVersionString=1.0.0' and 'versionSuffix=-Test' results in '1.0.0-Test'
 
-	default value: 'empty'
+	default value: empty
 
 * _shortVersionStringPrefix_ - adds the value in front of the CFBundleVersion e.g. 'CFBundleShortVersionString=1.0.0' and 'versionPrefix=Test-' results in 'Test-1.0.0'
 
-	default value: 'empty'
+	default value: empty
 
 
 hockeykit Parameters:
@@ -137,7 +151,7 @@ hockeykit Parameters:
 * _displayName_ - Title that should be used that is shown on the hockeykit site for the app. 
   If the value is not set then the bundle identifier is used
 
-	default value: 'empty'
+	default value: the CFBundleDisplayName from the Info.plist file is used
   
 
 * _versionDirectoryName_ - subdirectory that should be used for the app.
@@ -148,6 +162,26 @@ hockeykit Parameters:
 * _outputDirectory_ - directory where to store the files that are generated for the hockeykit distribution
 
 	default value "build/hockeykit";
+	
+testflight Parameters:
+----------------------
+
+* _apiToken_ - The TestFlight API Token (https://testflightapp.com/account/#api-token)
+
+	default value: empty
+	
+* _teamToken_ - The TestFlight Team Token (https://testflightapp.com/dashboard/team/edit/?next=/api/doc/)
+
+  default value: empty
+  
+* _notes_ - Release notes for the build
+
+  default value: "This build was uploaded using the gradle xcodePlugin"
+
+* _outputDirectory_ - Output directory where the ipa an dSYM.zip is created
+
+  default value: "build/testflight"
+  	
 
 
     
