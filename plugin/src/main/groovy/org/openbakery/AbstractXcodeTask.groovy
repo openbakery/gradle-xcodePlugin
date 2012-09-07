@@ -203,6 +203,12 @@ class AbstractXcodeTask extends DefaultTask {
 	def getInfoPlistFromProjectFile() {
 		def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0]
 		def projectFile = new File(projectFileDirectory, "project.pbxproj")
+
+		def buildRoot = new File(project.xcodebuild.buildRoot)
+		if (!buildRoot.exists()) {
+			buildRoot.mkdirs()
+		}
+
 		def projectPlist = project.xcodebuild.buildRoot + "/project.plist"
 
 		// convert ascii plist to xml so that commons configuration can parse it!
