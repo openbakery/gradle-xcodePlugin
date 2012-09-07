@@ -151,7 +151,7 @@ hockeykit Parameters:
 * _displayName_ - Title that should be used that is shown on the hockeykit site for the app. 
   If the value is not set then the bundle identifier is used
 
-	default value: empty
+	default value: the CFBundleDisplayName from the Info.plist file is used
   
 
 * _versionDirectoryName_ - subdirectory that should be used for the app.

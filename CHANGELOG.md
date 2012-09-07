@@ -1,3 +1,8 @@
+## 0.6.5
+
+Changes:
+  - default _hockekit.displayName_ is now CFBundleDisplayName instead of CFBundleIdentifier
+
 ## 0.6.4 (September 5, 2012)
 
 Changes:
