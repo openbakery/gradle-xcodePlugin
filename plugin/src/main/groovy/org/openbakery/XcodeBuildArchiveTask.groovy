@@ -49,7 +49,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
         def ant = new AntBuilder()
         ant.zip(destfile: zipFileName + ".zip",
                 basedir: buildOutputDirectory,
-                includes: "*.app*")
+                includes: "*.app*/**")
 
     }
 }

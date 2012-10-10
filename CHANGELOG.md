@@ -1,3 +1,8 @@
+## 0.6.6
+
+Bugfixes:
+  - fixed the archive task: The *.app and *.app.dSYM directory were not included recursivly
+
 ## 0.6.5
 
 Changes:
