@@ -4,8 +4,8 @@ buildscript {
     repositories {
 
 				maven {
-					url('http://openbakery.org/repository/')
-					//url uri('/tmp/repo')
+					//url('http://openbakery.org/repository/')
+					url uri('/tmp/repo')
 				}
 				mavenCentral()
     }
