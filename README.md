@@ -3,7 +3,7 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current version is 0.6.6 which is not compatible with 0.5 because some parameters have changed.** See [Changelog](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md) for details
+**Current version is 0.7.0**
 
 __Introduction:__ http://openbakery.org/gradle.php
 
@@ -58,7 +58,7 @@ xcodebuild Parameters:
   
   default value: empty
 
-	_NOTE: when scheme and workspace is set and also the sdk value is 'iphonesimulator' that the arch is set per default to the value 'i386 armv7 armv7s', otherwise a simulator build fails_
+	_NOTE: when scheme and workspace is set and also the sdk value is 'iphonesimulator' that the arch is set per default to the value 'i386', otherwise a simulator build fails_
 
 
 * _buildRoot_ - build root directory for the build output

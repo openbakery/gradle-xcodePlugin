@@ -42,8 +42,8 @@ class XcodeBuildTask extends DefaultTask {
 				commandList.add(project.xcodebuild.sdk)
 				if (project.xcodebuild.sdk.equals("iphonesimulator") && project.xcodebuild.arch == null) {
 					commandList.add("ONLY_ACTIVE_ARCH=NO")
-					commandList.add("arch")
-					commandList.add("i386 armv7 armv7s")
+					commandList.add("-arch")
+					commandList.add("i386")
 				}
 			}
 
