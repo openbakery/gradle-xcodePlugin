@@ -1,5 +1,6 @@
 package org.openbakery
 
+import jarjar.org.codehaus.plexus.util.StringUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -25,9 +26,27 @@ class XcodeBuildTask extends DefaultTask {
 						"xcodebuild"
 		]
 
+
 		if (project.xcodebuild.scheme) {
 			commandList.add("-scheme");
 			commandList.add(project.xcodebuild.scheme);
+
+			// workspace makes only sense when using scheme
+			if (project.xcodebuild.workspace != null) {
+				commandList.add("-workspace")
+				commandList.add(project.xcodebuild.workspace)
+			}
+
+			if (project.xcodebuild.sdk != null) {
+				commandList.add("-sdk")
+				commandList.add(project.xcodebuild.sdk)
+				if (project.xcodebuild.sdk.equals("iphonesimulator") && project.xcodebuild.arch == null) {
+					commandList.add("ONLY_ACTIVE_ARCH=NO")
+					commandList.add("arch")
+					commandList.add("i386 armv7 armv7s")
+				}
+			}
+
 		} else {
 			commandList.add("-configuration")
 			commandList.add(project.xcodebuild.configuration)
@@ -37,6 +56,9 @@ class XcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.target)
 		}
 
+
+
+
 		if (project.xcodebuild.signIdentity != null) {
 			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signIdentity)
 		}
@@ -45,6 +67,7 @@ class XcodeBuildTask extends DefaultTask {
 			commandList.add("-arch")
 			commandList.add(project.xcodebuild.arch)
 		}
+
 
 
 		if (project.xcodebuild.additionalParameters instanceof List) {

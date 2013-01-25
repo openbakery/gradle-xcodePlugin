@@ -11,11 +11,14 @@ __Introduction:__ http://openbakery.org/gradle.php
 xcodebuild Parameters:
 ----------------------
 
-* _scheme_ - the xcode build scheme that should be used. If the scheme is set the _configuration_, _sdk_ and
-  _target_ is ignored
+* _scheme_ - the xcode build scheme that should be used. If the scheme is set the _configuration_ and _target_ is ignored
 
   default value: empty
 
+* _workspace_ - the workspace file that should be used for the build.
+
+	default value: empty
+	
 * _configuration_ - the build configuration name that should be used (e.g. 'Debug', 'Release')
 
   default value: 'Debug'
@@ -54,6 +57,8 @@ xcodebuild Parameters:
   e.g. 'i386', 'armv6', 'armv7'
   
   default value: empty
+
+	_NOTE: when scheme and workspace is set and also the sdk value is 'iphonesimulator' that the arch is set per default to the value 'i386 armv7 armv7s', otherwise a simulator build fails_
 
 
 * _buildRoot_ - build root directory for the build output

@@ -17,4 +17,5 @@ class XcodeBuildPluginExtension {
 	def additionalParameters = null
 	def String bundleNameSuffix = null
 	def String arch = null
+	def String workspace = null
 }

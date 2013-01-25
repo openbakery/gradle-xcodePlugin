@@ -3,3 +3,4 @@ xcodePlugin.iml
 xcodePlugin.iws
 build
 .gradle
+out
