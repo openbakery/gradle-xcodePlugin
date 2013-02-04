@@ -17,7 +17,7 @@ class ProvisioningProfileIdReader {
 		if (fileList.size() > 0) {
 			def mobileprovisionContent = new File(provisionDestinationFile, fileList[0]).text
 			def matcher = mobileprovisionContent =~ "<key>UUID</key>\\s*\\n\\s*<string>(.*?)</string>"
-			uuid = matcher[0][1]
+			def uuid = matcher[0][1]
 			return uuid;
 		}
 		return null;

@@ -1,3 +1,13 @@
+## 0.7.1
+
+Bugfixes:
+  - fixed reading the UUID from the mobile provisioning file
+
+## 0.7.0
+
+Changes:
+  - added workspace supported
+
 ## 0.6.6
 
 Bugfixes:
