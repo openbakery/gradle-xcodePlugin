@@ -77,9 +77,11 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 			println "Copy file " + selectedImage + " to " + outputImageFile
 			FileUtils.copyFile(new File(selectedImage), outputImageFile)
 		} else {
-			selectedImage = iconMap.lastEntry().value
-			println "Resize file " + selectedImage + " to " + outputImageFile
-			resizeImage(selectedImage, outputImageFile.absolutePath)
+			if (iconMap.size() > 0) {
+				selectedImage = iconMap.lastEntry().value
+				println "Resize file " + selectedImage + " to " + outputImageFile
+				resizeImage(selectedImage, outputImageFile.absolutePath)
+			}
 		}
 
 	}
