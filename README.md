@@ -125,6 +125,15 @@ infoplist Parameters:
 
 	default value: empty
 
+
+* _bundleDisplayName_ - If set it override the bundle display name in the Info.plist (CFBundleDisplayName)
+
+	default value: empty
+	
+* _bundleDisplayNameSuffix_ - If set it adds a suffix to the bundle display name in the Info.plist (CFBundleDisplayName)
+
+	default value: empty
+
 * _version_ - sets the CFBundleVersion to the given version
   Note: _version=2.3.4_ and _versionSuffix=-Suffix_ and _versionPrefix=Prefix-_ results in 'Prefix-2.3.4-Suffix'
 
