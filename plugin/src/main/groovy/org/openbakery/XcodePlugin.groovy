@@ -54,7 +54,14 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('infoplist.bundleIdentifierSuffix')) {
 				project.infoplist.bundleIdentifierSuffix = project['infoplist.bundleIdentifierSuffix']
 			}
-			if (project.hasProperty('infoplist.version')) {
+            if (project.hasProperty('infoplist.bundleDisplayName')) {
+                project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayName']
+            }
+            if (project.hasProperty('infoplist.bundleDisplayNameSuffix')) {
+                project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayNameSuffix']
+            }
+
+            if (project.hasProperty('infoplist.version')) {
 				project.infoplist.version = project['infoplist.version']
 			}
 			if (project.hasProperty('infoplist.versionPrefix')) {
@@ -171,7 +178,9 @@ class XcodePlugin implements Plugin<Project> {
 				archive.dependsOn(xcodebuild)
 			}
 
-			if (project.infoplist.bundleIdentifier != null || project.infoplist.bundleIdentifierSuffix || project.infoplist.versionSuffix != null) {
+			if (project.infoplist.bundleIdentifier != null || project.infoplist.bundleIdentifierSuffix != null
+                    || project.infoplist.bundleDisplayName != null || project.infoplist.bundleDisplayNameSuffix != null
+                    || project.infoplist.versionSuffix != null) {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
