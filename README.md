@@ -1,9 +1,11 @@
 gradle-xcodePlugin
 ==================
 
-gradle xcodePlugin to build iOS projects
+This project is a fork of the fantastic gradle xcodePlugin to build iOS projects. This version contains some extensions for
+uploading apps to HockeyApp and overriding some additional project properties. Hopefully the project will become obsolete if
+the suggested functionality can/would be integrated into the original project.
 
-**Current version is 0.7.1**
+**Current version is 0.7.3**
 
 __Introduction:__ http://openbakery.org/gradle.php
 
