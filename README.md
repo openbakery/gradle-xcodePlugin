@@ -8,6 +8,16 @@ gradle xcodePlugin to build iOS projects
 __Introduction:__ http://openbakery.org/gradle.php
 
 
+Use the following repository and dependency in your gradle files to use this patched/extended version of the plugin:
+	maven {
+		url ('https://raw.github.com/wfrank2509/gradle-xcodePlugin/master/plugin/repo/')
+	}
+
+	dependencies {
+    		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.7.+'
+  	}
+
+
 xcodebuild Parameters:
 ----------------------
 
