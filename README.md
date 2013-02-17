@@ -9,6 +9,7 @@ __Introduction:__ http://openbakery.org/gradle.php
 
 
 Use the following repository and dependency in your gradle files to use this patched/extended version of the plugin:
+
 	maven {
 		url ('https://raw.github.com/wfrank2509/gradle-xcodePlugin/master/plugin/repo/')
 	}
