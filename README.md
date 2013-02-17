@@ -210,5 +210,29 @@ testflight Parameters:
   default value: "build/testflight"
   	
 
+hockeyapp Parameters:
+----------------------
 
+* _apiToken_ - The HockeyApp API Token (http://support.hockeyapp.net/kb/api)
+
+  default value: empty
+
+* _outputDirectory_ - Optional, output directory where the ipa an dSYM.zip is created
+
+  default value: "build/hockeyapp"
+
+* _notes_ - Release notes for the build
+
+  default value: "This build was uploaded using the gradle xcodePlugin"
     
+* _status_ - Optional, download status (can only be set with full-access tokens):
+
+  default value: 2
+
+* _notify_ - Optional, notify testers
+
+  default value: 1
+
+* _notesType_ - Optional, type of release notes
+
+  default value: 1
