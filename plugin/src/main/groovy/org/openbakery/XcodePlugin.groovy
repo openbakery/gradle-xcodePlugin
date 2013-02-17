@@ -7,7 +7,10 @@ import org.gradle.api.Task
 
 class XcodePlugin implements Plugin<Project> {
 
-	def static final String GROUP_NAME = "Xcode"
+	def static final String XCODE_GROUP_NAME = "Xcode"
+    def static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
+    def static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
+    def static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
 
 	private Project project
 
@@ -38,11 +41,13 @@ class XcodePlugin implements Plugin<Project> {
 		Task provisioningCleanup = project.tasks.'provisioning-clean'
 		Task hockeyKitCleanTask = project.tasks.'hockeykit-clean'
 		Task testFlightClean = project.tasks.'testflight-clean'
+        Task hockeyAppClean = project.tasks.'hockeyapp-clean'
 
 		xcodebuildCleanup.dependsOn(keychainCleanup)
 		xcodebuildCleanup.dependsOn(provisioningCleanup)
 		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
 		xcodebuildCleanup.dependsOn(testFlightClean);
+        xcodebuildCleanup.dependsOn(hockeyAppClean);
 
 
 
@@ -209,27 +214,38 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension)
 		project.extensions.create("testflight", TestFlightPluginExtension)
+        project.extensions.create("hockeyapp", HockeyAppPluginExtension)
 	}
 
 	def void defineTasks() {
-		project.task('keychain-create', type: KeychainCreateTask, group: GROUP_NAME)
-		project.task('xcodebuild', type: XcodeBuildTask, group: GROUP_NAME)
-		project.task('infoplist-modify', type: InfoPlistModifyTask, group: GROUP_NAME)
-		project.task('provisioning-install', type: ProvisioningInstallTask, group: GROUP_NAME)
-		project.task('archive', type: XcodeBuildArchiveTask, group: GROUP_NAME)
-		project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: GROUP_NAME);
-		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: GROUP_NAME)
-		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: GROUP_NAME)
-		project.task('hockeykit-image', type: HockeyKitImageTask, group: GROUP_NAME)
-		project.task('testflight-prepare', type: TestFlightPrepareTask, group: GROUP_NAME)
-		project.task('testflight', type: TestFlightUploadTask, group: GROUP_NAME)
-		project.task('keychain-clean', type: KeychainCleanupTask, group: GROUP_NAME)
-		project.task('clean', type: XcodeBuildCleanTask, group: GROUP_NAME)
-		project.task('provisioning-clean', type: ProvisioningCleanupTask, group: GROUP_NAME)
-		project.task('hockeykit-clean', type: HockeyKitCleanTask, group: GROUP_NAME)
-		project.task('testflight-clean', type: TestFlightCleanTask, group: GROUP_NAME)
-		project.task('codesign', type: CodesignTask, group: GROUP_NAME)
-	}
+		project.task('keychain-create', type: KeychainCreateTask, group: XCODE_GROUP_NAME)
+		project.task('xcodebuild', type: XcodeBuildTask, group: XCODE_GROUP_NAME)
+		project.task('infoplist-modify', type: InfoPlistModifyTask, group: XCODE_GROUP_NAME)
+		project.task('provisioning-install', type: ProvisioningInstallTask, group: XCODE_GROUP_NAME)
+		project.task('archive', type: XcodeBuildArchiveTask, group: XCODE_GROUP_NAME)
+        project.task('keychain-clean', type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
+        project.task('clean', type: XcodeBuildCleanTask, group: XCODE_GROUP_NAME)
+        project.task('provisioning-clean', type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
+        project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
+
+        //
+		project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
+		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
+        project.task('hockeykit-clean', type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
+
+        //
+		project.task('testflight-prepare', type: TestFlightPrepareTask, group: TESTFLIGHT_GROUP_NAME)
+		project.task('testflight', type: TestFlightUploadTask, group: TESTFLIGHT_GROUP_NAME)
+		project.task('testflight-clean', type: TestFlightCleanTask, group: TESTFLIGHT_GROUP_NAME)
+
+        //
+        project.task('hockeyapp-clean', type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
+        project.task('hockeyapp-prepare', type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
+        project.task('hockeyapp', type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
+
+    }
 }
 
 
