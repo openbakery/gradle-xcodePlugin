@@ -6,6 +6,8 @@ import org.gradle.api.Plugin
 class InfoPlistExtension {
 	def String bundleIdentifier = null
 	def String bundleIdentifierSuffix = null
+    def String bundleDisplayName = null
+    def String bundleDisplayNameSuffix = null
 	def String version = null
 	def String versionSuffix = null
 	def String versionPrefix = null

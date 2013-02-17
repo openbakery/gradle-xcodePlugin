@@ -1,16 +1,14 @@
 package org.openbakery
 
-import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.ivy.util.FileUtil
 import org.apache.commons.io.FileUtils
+import org.gradle.api.tasks.TaskAction
 
-class TestFlightPrepareTask extends AbstractXcodeTask {
+class HockeyAppPrepareTask extends AbstractXcodeTask {
 
-	TestFlightPrepareTask() {
+	HockeyAppPrepareTask() {
 		super()
 		dependsOn("codesign")
-		this.description = "Prepare the app bundle and dSYM to publish with using testflight"
+		this.description = "Prepare the app bundle and dSYM to publish with using hockeyapp"
 	}
 
 
@@ -25,7 +23,7 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 		def zipFileName = baseName
 
-		File outputDirectory = new File(project.testflight.outputDirectory)
+		File outputDirectory = new File(project.hockeyapp.outputDirectory)
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
@@ -49,7 +47,7 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 		}
 
 
-		println "project.testflight.outputDirectory " + project.testflight.outputDirectory
+		println "project.hockeyapp.outputDirectory " + project.hockeyapp.outputDirectory
 		int index = zipFileName.lastIndexOf('/')
 		def baseZipName = zipFileName.substring(index+1, zipFileName.length());
 
@@ -58,11 +56,11 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 
 		def ant = new AntBuilder()
-		ant.zip(destfile: project.testflight.outputDirectory + "/" + baseZipName + ".app.dSYM.zip",
+		ant.zip(destfile: project.hockeyapp.outputDirectory + "/" + baseZipName + ".app.dSYM.zip",
 						basedir: buildOutputDirectory.absolutePath,
 						includes: "*dSYM*/**")
 
-		FileUtils.copyFileToDirectory(new File(ipaName), new File(project.testflight.outputDirectory))
+		FileUtils.copyFileToDirectory(new File(ipaName), new File(project.hockeyapp.outputDirectory))
 
 
 	}

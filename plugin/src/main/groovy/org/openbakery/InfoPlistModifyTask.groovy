@@ -32,6 +32,30 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 			])
 		}
 
+        // Modify bundle bundleDisplayName
+        if (project.infoplist.bundleDisplayName != null) {
+
+            runCommand([
+                    "/usr/libexec/PlistBuddy",
+                    infoPlist,
+                    "-c",
+                    "Set :CFBundleDisplayName " + project.infoplist.bundleDisplayName
+            ])
+        }
+
+        // add suffix to bundleDisplayName
+        if (project.infoplist.bundleDisplayNameSuffix != null) {
+            def bundleDisplayName = getValueFromPlist(infoPlist, "CFBundleDisplayName")
+
+            runCommand([
+                    "/usr/libexec/PlistBuddy",
+                    infoPlist,
+                    "-c",
+                    "Set :CFBundleDisplayName " + bundleDisplayName + project.infoplist.bundleDisplayNameSuffix
+            ])
+        }
+        println "\nINFO: You will need to freshly install the app to see the change of bundleDisplayName!\n"
+
 		println "project.infoplist.version: " + project.infoplist.version
 		def version;
 		if (project.infoplist.version != null) {
