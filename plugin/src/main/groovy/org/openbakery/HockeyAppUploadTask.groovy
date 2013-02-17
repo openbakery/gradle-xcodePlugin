@@ -41,14 +41,6 @@ class HockeyAppUploadTask extends DefaultTask {
 			throw new IllegalArgumentException("Cannot upload to HockeyApp because API Token is missing")
 		}
 
-		HttpClient httpClient = new DefaultHttpClient()
-
-		// for testing only
-		//HttpHost proxy = new HttpHost("localhost", 8888);
-		//httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-
-		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps")
-
 		def ipaFile = getFile("ipa");
 		def dSYMFile = getFile("dSYM.zip");
 
@@ -63,6 +55,21 @@ class HockeyAppUploadTask extends DefaultTask {
         println "notify "  + project.hockeyapp.notify
         println "notes_type " + project.hockeyapp.notesType
 
+
+        uploadIPAandDSYM(ipaFile, dSYMFile)
+        uploadProvisioningProfile()
+
+	}
+
+    def void uploadIPAandDSYM(File ipaFile, File dSYMFile) {
+        HttpClient httpClient = new DefaultHttpClient()
+
+        // for testing only
+        //HttpHost proxy = new HttpHost("localhost", 8888);
+        //httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+
+        HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps")
+
         MultipartEntity entity = new MultipartEntity();
 
         entity.addPart("status", new StringBody(project.hockeyapp.status))
@@ -70,26 +77,46 @@ class HockeyAppUploadTask extends DefaultTask {
         entity.addPart("notes_type", new StringBody(project.hockeyapp.notesType))
 
         entity.addPart("notes", new StringBody(project.hockeyapp.notes))
-		entity.addPart("ipa", new FileBody(ipaFile))
-		entity.addPart("dsym", new FileBody(dSYMFile))
+        entity.addPart("ipa", new FileBody(ipaFile))
+        entity.addPart("dsym", new FileBody(dSYMFile))
 
         httpPost.addHeader("X-HockeyAppToken", project.hockeyapp.apiToken)
 
-		httpPost.setEntity(entity);
+        httpPost.setEntity(entity);
 
         println "request " + httpPost.getRequestLine().toString()
-        println "requestbody " + httpPost.getEntity().toString()
 
-		HttpResponse response = httpClient.execute(httpPost)
-        response.getEntity().writeTo(System.out)
-		HttpEntity responseEntity = response.getEntity()
-		def entityString = EntityUtils.toString(responseEntity)
+        HttpResponse response = httpClient.execute(httpPost)
 
-		println "response " + entityString
-		if (response.getStatusLine().getStatusCode() != 200) {
-			throw new IllegalStateException("upload failed: " + response.getStatusLine().getReasonPhrase());
-		}
+        if (response.getStatusLine().getStatusCode() != 201) {
+            throw new IllegalStateException("file upload failed: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+        }
+    }
 
-	}
+    def void uploadProvisioningProfile() {
+        HttpClient httpClient = new DefaultHttpClient()
+
+        // for testing only
+        //HttpHost proxy = new HttpHost("localhost", 8888);
+        //httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+
+        HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps/" + project.hockeyapp.apiToken + "/provisioning_profiles")
+
+        MultipartEntity entity = new MultipartEntity();
+
+        entity.addPart("mobileprovision", new FileBody(new File(project.provisioning.mobileprovisionFile)))
+
+        httpPost.addHeader("X-HockeyAppToken", project.hockeyapp.apiToken)
+
+        httpPost.setEntity(entity);
+
+        println "request " + httpPost.getRequestLine().toString()
+
+        HttpResponse response = httpClient.execute(httpPost)
+
+        if (response.getStatusLine().getStatusCode() != 201) {
+            throw new IllegalStateException("file upload failed: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+        }
+    }
 
 }
