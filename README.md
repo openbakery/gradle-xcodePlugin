@@ -1,11 +1,24 @@
 gradle-xcodePlugin
 ==================
 
-gradle xcodePlugin to build iOS projects
+This project is a fork of the fantastic gradle xcodePlugin to build iOS projects. This version contains some extensions for
+uploading apps to HockeyApp and overriding some additional project properties. Hopefully the project will become obsolete if
+the suggested functionality can/would be integrated into the original project.
 
-**Current version is 0.7.1**
+**Current version is 0.7.3**
 
 __Introduction:__ http://openbakery.org/gradle.php
+
+
+Use the following repository and dependency in your gradle files to use this patched/extended version of the plugin:
+
+	maven {
+		url ('https://raw.github.com/wfrank2509/gradle-xcodePlugin/master/plugin/repo/')
+	}
+
+	dependencies {
+    		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.7.+'
+  	}
 
 
 xcodebuild Parameters:
@@ -199,5 +212,29 @@ testflight Parameters:
   default value: "build/testflight"
   	
 
+hockeyapp Parameters:
+----------------------
 
+* _apiToken_ - The HockeyApp API Token (http://support.hockeyapp.net/kb/api)
+
+  default value: empty
+
+* _outputDirectory_ - Optional, output directory where the ipa an dSYM.zip is created
+
+  default value: "build/hockeyapp"
+
+* _notes_ - Release notes for the build
+
+  default value: "This build was uploaded using the gradle xcodePlugin"
     
+* _status_ - Optional, download status (can only be set with full-access tokens):
+
+  default value: 2
+
+* _notify_ - Optional, notify testers
+
+  default value: 1
+
+* _notesType_ - Optional, type of release notes
+
+  default value: 1
