@@ -34,3 +34,6 @@ uploadArchives {
 	}
 }
 
+test {
+	useTestNG()
+}

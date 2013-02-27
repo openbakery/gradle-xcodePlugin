@@ -125,6 +125,15 @@ infoplist Parameters:
 
 	default value: empty
 
+
+* _bundleDisplayName_ - If set it override the bundle display name in the Info.plist (CFBundleDisplayName)
+
+	default value: empty
+	
+* _bundleDisplayNameSuffix_ - If set it adds a suffix to the bundle display name in the Info.plist (CFBundleDisplayName)
+
+	default value: empty
+
 * _version_ - sets the CFBundleVersion to the given version
   Note: _version=2.3.4_ and _versionSuffix=-Suffix_ and _versionPrefix=Prefix-_ results in 'Prefix-2.3.4-Suffix'
 
@@ -170,7 +179,7 @@ hockeykit Parameters:
 
 	default value "build/hockeykit";
 	
-testflight Parameters:
+TestFlight Parameters:
 ----------------------
 
 * _apiToken_ - The TestFlight API Token (https://testflightapp.com/account/#api-token)
@@ -188,7 +197,30 @@ testflight Parameters:
 * _outputDirectory_ - Output directory where the ipa an dSYM.zip is created
 
   default value: "build/testflight"
-  	
 
+HockeyApp Parameters:
+----------------------
 
+* _apiToken_ - The HockeyApp API Token (http://support.hockeyapp.net/kb/api)
+
+  default value: empty
+
+* _outputDirectory_ - Optional, output directory where the ipa an dSYM.zip is created
+
+  default value: "build/hockeyapp"
+
+* _notes_ - Release notes for the build
+
+  default value: "This build was uploaded using the gradle xcodePlugin"
     
+* _status_ - Optional, download status (can only be set with full-access tokens):
+
+  default value: 2
+
+* _notify_ - Optional, notify testers
+
+  default value: 1
+
+* _notesType_ - Optional, type of release notes
+
+  default value: 1

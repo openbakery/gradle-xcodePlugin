@@ -92,7 +92,15 @@ e.g. xcodeplugin-deploy-testflight and xcodeplugin-deploy-hockeykit. */
 	@Test
 	void group_tasks() {
 		project.tasks.each { task ->
-			assert task.group == XcodePlugin.GROUP_NAME
+			if (task.getClass().getName().startsWith("org.openbakery.Xcode")) {
+				assert task.group == XcodePlugin.XCODE_GROUP_NAME
+			}
+			if (task.getClass().getName().startsWith("org.openbakery.HockeyKit")) {
+				assert task.group == XcodePlugin.HOCKEYKIT_GROUP_NAME
+			}
+			if (task.getClass().getName().startsWith("org.openbakery.HockeyApp")) {
+				assert task.group == XcodePlugin.HOCKEYAPP_GROUP_NAME
+			}
 		}
 	}
 
