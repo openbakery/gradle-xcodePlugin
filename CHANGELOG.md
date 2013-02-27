@@ -1,3 +1,7 @@
+## 0.8.0
+Changes
+  - removed xcodebuild.buildRoot: the gradle buildDir variable is used instead
+
 ## 0.7.1
 
 Bugfixes:

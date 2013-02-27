@@ -20,7 +20,7 @@ class HockeyKitArchiveTask extends AbstractXcodeTask{
 
 		def title = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
 
-		File outputDirectory = new File(project.hockeykit.outputDirectory + "/" + title + "/" + project.hockeykit.versionDirectoryName)
+		File outputDirectory = new File(project.hockeykit.outputDirectory, title + "/" + project.hockeykit.versionDirectoryName)
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}

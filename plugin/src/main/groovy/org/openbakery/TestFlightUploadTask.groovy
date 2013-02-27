@@ -24,7 +24,7 @@ class TestFlightUploadTask extends DefaultTask {
 	}
 
 	def getFile(String extension) {
-		def buildOutputDirectory = new File(project.testflight.outputDirectory)
+		def buildOutputDirectory = project.testflight.outputDirectory
 		def pattern = Pattern.compile(".*" + extension)
 		def fileList = buildOutputDirectory.list(
 						[accept: {d, f -> f ==~ pattern }] as FilenameFilter

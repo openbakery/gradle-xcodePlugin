@@ -83,10 +83,10 @@ class XcodeBuildTask extends DefaultTask {
 		if (uuid != null) {
 			commandList.add("PROVISIONING_PROFILE=" + uuid);
 		}
-		commandList.add("DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath)
-		commandList.add("OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath)
-		commandList.add("SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath)
-		commandList.add("SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath)
+		commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
+		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
+		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
+		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 /*
                 if (project.xcodebuild.sdk.startsWith("iphoneos")) {
@@ -123,10 +123,10 @@ class XcodeBuildTask extends DefaultTask {
 							"TEST_AFTER_BUILD=YES"
 			]
 
-			commandList.add("DSTROOT=" + new File(project.xcodebuild.dstRoot).absolutePath)
-			commandList.add("OBJROOT=" + new File(project.xcodebuild.objRoot).absolutePath)
-			commandList.add("SYMROOT=" + new File(project.xcodebuild.symRoot).absolutePath)
-			commandList.add("SHARED_PRECOMPS_DIR=" + new File(project.xcodebuild.sharedPrecompsDir).absolutePath)
+			commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
+			commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
+			commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
+			commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 			commandRunner.runCommand(commandList)
 		}

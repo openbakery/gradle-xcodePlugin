@@ -13,6 +13,6 @@ class TestFlightCleanTask extends DefaultTask{
 
 	@TaskAction
 	def clean() {
-		new File(project.testflight.outputDirectory).deleteDir()
+		project.testflight.outputDirectory.deleteDir()
 	}
 }

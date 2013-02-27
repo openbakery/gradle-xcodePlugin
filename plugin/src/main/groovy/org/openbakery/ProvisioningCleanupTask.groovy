@@ -11,7 +11,7 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def clean() {
-		new File(project.provisioning.destinationRoot).deleteDir()
+		project.provisioning.destinationRoot.deleteDir()
 
 		def uuid = provisioningProfileIdReader.readProvisioningProfileIdFromDestinationRoot(project.provisioning.destinationRoot)
 		if (uuid != null) {

@@ -16,12 +16,6 @@ class AbstractXcodeTask extends DefaultTask {
 		commandRunner = new CommandRunner()
 	}
 
-	@Override
-	Task doFirst(Action<? super Task> action) {
-		// TODO clarify why each (sub-)task need to create "project/xcodebuild/buildRoot"
-		new File(project.xcodebuild.buildRoot).mkdirs()
-		return super.doFirst(action);
-	}
 
 	/**
 	 * Copies a file to a new location
@@ -41,12 +35,11 @@ class AbstractXcodeTask extends DefaultTask {
 	 * @param address
 	 * @return
 	 */
-	def download(String toDirectory, String address) {
-		File destinationDirectory = new File(toDirectory)
-		if (!destinationDirectory.exists()) {
-			destinationDirectory.mkdir()
+	def download(File toDirectory, String address) {
+		if (!toDirectory.exists()) {
+			toDirectory.mkdir()
 		}
-		File destinationFile = new File(destinationDirectory, address.tokenize("/")[-1])
+		File destinationFile = new File(toDirectory, address.tokenize("/")[-1])
 		def file = new FileOutputStream(destinationFile)
 		def out = new BufferedOutputStream(file)
 		out << new URL(address).openStream()
@@ -132,7 +125,7 @@ class AbstractXcodeTask extends DefaultTask {
 		File infoPlistFile = new File(getAppBundleName() + "/Info.plist")
 		if (infoPlistFile.exists()) {
 
-			def convertedPlist = new File(project.xcodebuild.buildRoot, FilenameUtils.getName(infoPlistFile.getName()))
+			def convertedPlist = new File(project.buildDir, FilenameUtils.getName(infoPlistFile.getName()))
 			//plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
 
 			def convertCommand = [
@@ -155,7 +148,7 @@ class AbstractXcodeTask extends DefaultTask {
 		def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0]
 		def projectFile = new File(projectFileDirectory, "project.pbxproj")
 
-		def buildRoot = new File(project.xcodebuild.buildRoot)
+		def buildRoot = new File(project.buildDir)
 		if (!buildRoot.exists()) {
 			buildRoot.mkdirs()
 		}

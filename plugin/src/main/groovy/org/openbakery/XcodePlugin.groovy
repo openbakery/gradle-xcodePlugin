@@ -59,14 +59,14 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('infoplist.bundleIdentifierSuffix')) {
 				project.infoplist.bundleIdentifierSuffix = project['infoplist.bundleIdentifierSuffix']
 			}
-            if (project.hasProperty('infoplist.bundleDisplayName')) {
-                project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayName']
-            }
-            if (project.hasProperty('infoplist.bundleDisplayNameSuffix')) {
-                project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayNameSuffix']
-            }
+			if (project.hasProperty('infoplist.bundleDisplayName')) {
+				project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayName']
+			}
+			if (project.hasProperty('infoplist.bundleDisplayNameSuffix')) {
+				project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayNameSuffix']
+			}
 
-            if (project.hasProperty('infoplist.version')) {
+			if (project.hasProperty('infoplist.version')) {
 				project.infoplist.version = project['infoplist.version']
 			}
 			if (project.hasProperty('infoplist.versionPrefix')) {
@@ -105,9 +105,6 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('xcodebuild.target')) {
 				project.xcodebuild.target = project['xcodebuild.target']
-			}
-			if (project.hasProperty('xcodebuild.buildRoot')) {
-				project.xcodebuild.buildRoot = project['xcodebuild.buildRoot']
 			}
 			if (project.hasProperty('xcodebuild.dstRoot')) {
 				project.xcodebuild.dstRoot = project['xcodebuild.dstRoot']
@@ -184,8 +181,8 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 			if (project.infoplist.bundleIdentifier != null || project.infoplist.bundleIdentifierSuffix != null
-                    || project.infoplist.bundleDisplayName != null || project.infoplist.bundleDisplayNameSuffix != null
-                    || project.infoplist.versionSuffix != null) {
+							|| project.infoplist.bundleDisplayName != null || project.infoplist.bundleDisplayNameSuffix != null
+							|| project.infoplist.versionSuffix != null) {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
@@ -208,13 +205,13 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	def void defineExtensions() {
-		project.extensions.create("xcodebuild", XcodeBuildPluginExtension)
-		project.extensions.create("keychain", KeychainPluginExtension)
-		project.extensions.create("provisioning", ProvisioningPluginExtension)
+		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
+		project.extensions.create("keychain", KeychainPluginExtension, project)
+		project.extensions.create("provisioning", ProvisioningPluginExtension, project)
 		project.extensions.create("infoplist", InfoPlistExtension)
-		project.extensions.create("hockeykit", HockeyKitPluginExtension)
-		project.extensions.create("testflight", TestFlightPluginExtension)
-        project.extensions.create("hockeyapp", HockeyAppPluginExtension)
+		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
+		project.extensions.create("testflight", TestFlightPluginExtension, project)
+		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 	}
 
 	def void defineTasks() {
@@ -223,29 +220,29 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('infoplist-modify', type: InfoPlistModifyTask, group: XCODE_GROUP_NAME)
 		project.task('provisioning-install', type: ProvisioningInstallTask, group: XCODE_GROUP_NAME)
 		project.task('archive', type: XcodeBuildArchiveTask, group: XCODE_GROUP_NAME)
-        project.task('keychain-clean', type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
-        project.task('clean', type: XcodeBuildCleanTask, group: XCODE_GROUP_NAME)
-        project.task('provisioning-clean', type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
-        project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
+		project.task('keychain-clean', type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
+		project.task('clean', type: XcodeBuildCleanTask, group: XCODE_GROUP_NAME)
+		project.task('provisioning-clean', type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
+		project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
 
-        //
+		//
 		project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
 		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
-        project.task('hockeykit-clean', type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-clean', type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
 
-        //
+		//
 		project.task('testflight-prepare', type: TestFlightPrepareTask, group: TESTFLIGHT_GROUP_NAME)
 		project.task('testflight', type: TestFlightUploadTask, group: TESTFLIGHT_GROUP_NAME)
 		project.task('testflight-clean', type: TestFlightCleanTask, group: TESTFLIGHT_GROUP_NAME)
 
-        //
-        project.task('hockeyapp-clean', type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
-        project.task('hockeyapp-prepare', type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
-        project.task('hockeyapp', type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
+		//
+		project.task('hockeyapp-clean', type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
+		project.task('hockeyapp-prepare', type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
+		project.task('hockeyapp', type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
 
-    }
+	}
 }
 
 

@@ -25,9 +25,8 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 		def zipFileName = baseName
 
-		File outputDirectory = new File(project.testflight.outputDirectory)
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
+		if (!project.testflight.outputDirectory.exists()) {
+			project.testflight.outputDirectory.mkdirs()
 		}
 
 
@@ -58,11 +57,11 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 
 		def ant = new AntBuilder()
-		ant.zip(destfile: project.testflight.outputDirectory + "/" + baseZipName + ".app.dSYM.zip",
+		ant.zip(destfile: project.testflight.outputDirectory.absolutePath + "/" + baseZipName + ".app.dSYM.zip",
 						basedir: buildOutputDirectory.absolutePath,
 						includes: "*dSYM*/**")
 
-		FileUtils.copyFileToDirectory(new File(ipaName), new File(project.testflight.outputDirectory))
+		FileUtils.copyFileToDirectory(new File(ipaName), project.testflight.outputDirectory)
 
 
 	}

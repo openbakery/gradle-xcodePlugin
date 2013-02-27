@@ -22,9 +22,11 @@ class XcodeBuildTaskTest {
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		project = ProjectBuilder.builder().build()
+		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
-		xcodeBuildTask = project.task('xcodeBuild', type: XcodeBuildTask)
-		xcodeBuildTask.commandRunner = commandRunnerMock
+
+		xcodeBuildTask = project.getTasks().getByPath('xcodebuild')
+		xcodeBuildTask.setProperty("commandRunner", commandRunnerMock)
 
 		expectedCommandList?.clear()
 		expectedCommandList = ["xcodebuild"]
@@ -74,15 +76,15 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
 
-		project.xcodebuild.dstRoot = currentDir + '/mydst'
-		project.xcodebuild.objRoot = currentDir + '/myobj'
-		project.xcodebuild.symRoot = currentDir + '/mysym'
-		project.xcodebuild.sharedPrecompsDir = currentDir + '/myshared'
+		project.xcodebuild.dstRoot = new File(currentDir + '/mydst')
+		project.xcodebuild.objRoot = new File(currentDir + '/myobj')
+		project.xcodebuild.symRoot = new File(currentDir + '/mysym')
+		project.xcodebuild.sharedPrecompsDir = new File(currentDir + '/myshared')
 
-		expectedCommandList.add("DSTROOT=" + project.xcodebuild.dstRoot)
-		expectedCommandList.add("OBJROOT=" + project.xcodebuild.objRoot)
-		expectedCommandList.add("SYMROOT=" + project.xcodebuild.symRoot)
-		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir)
+		expectedCommandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
+		expectedCommandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
+		expectedCommandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
+		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 		commandRunnerMock.runCommand(expectedCommandList).times(1)
 
