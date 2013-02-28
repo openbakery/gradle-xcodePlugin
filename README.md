@@ -3,7 +3,10 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current version is 0.7.1**
+**Current stable version is 0.7.2**
+
+**Lastest version is 0.8.0-beta1**
+
 
 __Introduction:__ http://openbakery.org/gradle.php
 
