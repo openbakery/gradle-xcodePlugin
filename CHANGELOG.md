@@ -10,7 +10,7 @@ Changes
   - removed _xcodebuild.buildRoot_: The gradle buildDir variable is used instead.
   - removed _keychain.keychainName_
 
-## 0.7.2
+## 0.7.2 (Februar 8, 2013)
 
 Bugfixes:
  - hockeykit image does not fail anymore when no icon image was found
