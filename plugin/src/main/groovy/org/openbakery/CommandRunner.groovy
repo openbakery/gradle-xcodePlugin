@@ -73,15 +73,17 @@ class CommandRunner {
 			env.putAll(environment)
 		}
 		def process = processBuilder.start()
-		def result = ""
+		StringBuilder builder = new StringBuilder()
 		process.inputStream.eachLine {
-			result += it
-			result += "\n"
+			if (builder.length() > 0) {
+				builder.append("\n");
+			}
+			builder.append(it);
 		}
 		process.waitFor()
 		if (process.exitValue() > 0) {
 			throw new IllegalStateException("Command failed to run: " + commandListToString(commandList))
 		}
-		return result
+		return builder.toString()
 	}
 }

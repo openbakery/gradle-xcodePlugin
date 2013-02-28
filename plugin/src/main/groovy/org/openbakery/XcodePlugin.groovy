@@ -23,15 +23,15 @@ import org.gradle.api.Task
 class XcodePlugin implements Plugin<Project> {
 
 	def static final String XCODE_GROUP_NAME = "Xcode"
-    def static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
-    def static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
-    def static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
+	def static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
+	def static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
+	def static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
 
 	private Project project
 
 	void apply(Project project) {
 		this.project = project
-		System.setProperty("java.awt.headless", "true"); // TODO: what is that for?
+		System.setProperty("java.awt.headless", "true");
 
 		defineExtensions()
 		defineTasks()
@@ -56,13 +56,13 @@ class XcodePlugin implements Plugin<Project> {
 		Task provisioningCleanup = project.tasks.'provisioning-clean'
 		Task hockeyKitCleanTask = project.tasks.'hockeykit-clean'
 		Task testFlightClean = project.tasks.'testflight-clean'
-        Task hockeyAppClean = project.tasks.'hockeyapp-clean'
+		Task hockeyAppClean = project.tasks.'hockeyapp-clean'
 
 		xcodebuildCleanup.dependsOn(keychainCleanup)
 		xcodebuildCleanup.dependsOn(provisioningCleanup)
 		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
 		xcodebuildCleanup.dependsOn(testFlightClean);
-        xcodebuildCleanup.dependsOn(hockeyAppClean);
+		xcodebuildCleanup.dependsOn(hockeyAppClean);
 
 
 
@@ -205,7 +205,7 @@ class XcodePlugin implements Plugin<Project> {
 				println "added cleanup for provisioning profile"
 				codesign.doLast {
 					println "run provisioning cleanup"
-					provisioningCleanup.execute()
+					provisioningCleanup.clean()
 				}
 			}
 
@@ -213,7 +213,7 @@ class XcodePlugin implements Plugin<Project> {
 				println "added cleanup for certificate"
 				codesign.doLast {
 					println "run certificate cleanup"
-					keychainCleanup.execute()
+					keychainCleanup.clean()
 				}
 			}
 		}

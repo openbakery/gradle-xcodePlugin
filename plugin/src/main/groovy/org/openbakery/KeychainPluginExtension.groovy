@@ -21,17 +21,19 @@ import org.gradle.api.Plugin
 class KeychainPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
-
-	String mobileprovisionUri = null
+	/**
+	 * public parameters
+	 */
 	String certificateUri = null
 	String certificatePassword = null
 	String keychainPassword = "This_is_the_default_keychain_password"
-	Object destinationRoot
 	File keychain
 
-
+	/**
+	 * interal parameters
+	 */
+	Object destinationRoot
 	Object internalKeychainPath
-
 	final Project project
 	final String keychainName =  KEYCHAIN_NAME_BASE + System.currentTimeMillis() +  ".keychain"
 

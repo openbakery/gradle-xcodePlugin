@@ -19,11 +19,25 @@ import org.gradle.api.Project
 import org.gradle.api.Plugin
 
 class ProvisioningPluginExtension {
-	def String mobileprovisionUri = null
-	def Object destinationRoot
 
-	private String mobileprovisionFile = null
+	public final static PROVISIONING_NAME_BASE = "gradle-"
+
+	/**
+	 * public parameter
+	 */
+	String mobileprovisionUri = null
+
+	/**
+	 * internal parameters
+	 */
+	Object destinationRoot
+	String mobileprovisionFile
+	Object mobileprovisionFileLinkToLibrary
+
+
 	private Project project
+	final String uniqueFileName =  PROVISIONING_NAME_BASE + System.currentTimeMillis() +  ".mobileprovision"
+
 
 	public ProvisioningPluginExtension(Project project) {
 		this.project = project;
@@ -31,6 +45,11 @@ class ProvisioningPluginExtension {
 		this.destinationRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("provisioning")
 		}
+
+		this.mobileprovisionFileLinkToLibrary = {
+			return new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + uniqueFileName);
+		}
+
 	}
 
 	File getDestinationRoot() {
@@ -39,5 +58,9 @@ class ProvisioningPluginExtension {
 
 	void setDestinationRoot(Object destinationRoot) {
 		this.destinationRoot = destinationRoot
+	}
+
+	File getMobileprovisionFileLinkToLibrary() {
+		return project.file(mobileprovisionFileLinkToLibrary)
 	}
 }

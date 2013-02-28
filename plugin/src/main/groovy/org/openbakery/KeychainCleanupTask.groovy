@@ -25,17 +25,19 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 	}
 
 	@TaskAction
-	def cleanup() {
+	def clean() {
 		if (project.keychain.keychain) {
 			println "Nothing to cleanup"
 			return;
 		}
 
-
+/*
 		if (project.keychain.internalKeychainPath.exists()) {
 			println "Delete Keychain '" + 	project.keychain.internalKeychainPath + "'"
 			project.keychain.internalKeychainPath.delete()
 		}
+*/
+		project.keychain.destinationRoot.deleteDir();
 
 		String result = runCommandWithResult(["security", "list"])
 		String[] keychains = result.split("\n")

@@ -27,6 +27,21 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		}
 
 		def mobileprovisionFile = download(project.provisioning.destinationRoot, project.provisioning.mobileprovisionUri)
+		File sourceFile = new File(mobileprovisionFile)
+		project.provisioning.mobileprovisionFile = sourceFile.absolutePath
+
+		runCommand(["/bin/ln", "-s", project.provisioning.mobileprovisionFile, project.provisioning.mobileprovisionFileLinkToLibrary.absolutePath])
+
+
+
+		//File softlinkDestination = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/gradle-" + System.currentTimeMillis() + ".mobileprovision");
+
+		//"/bin/ln -s /some/path symlink"
+
+
+
+/*
+		def mobileprovisionFile = download(project.provisioning.destinationRoot, project.provisioning.mobileprovisionUri)
 		println "Installing " + mobileprovisionFile
 
 		def mobileprovisionContent = new File(mobileprovisionFile).getText()
@@ -44,5 +59,6 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		project.provisioning.mobileprovisionFile = destinationFile.absolutePath
 
 		copy(sourceFile, destinationFile)
+		*/
 	}
 }
