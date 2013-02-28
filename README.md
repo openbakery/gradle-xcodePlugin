@@ -109,10 +109,11 @@ keychain Parameters:
 
 	default value: "This_is_the_default_keychain_password"
 
-* _keychainName_ - name of the keychain that is created
+* _keychain_ - Parameter to specify an existing keychain. If this parameters is set _no_ keychain is created and also the certificate is _not_ imported.
 
-	default value: 'gradle.keychain'
+	default value: empty
 
+	Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
 infoplist Parameters:
 ----------------------

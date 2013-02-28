@@ -1,6 +1,9 @@
 ## 0.8.0
 Changes
-  - removed xcodebuild.buildRoot: the gradle buildDir variable is used instead
+  - added new parameter _keychain.keychain_
+  - removed _keychain.keychainName_
+  - removed _xcodebuild.buildRoot_: The gradle buildDir variable is used instead.
+
 
 ## 0.7.1
 
