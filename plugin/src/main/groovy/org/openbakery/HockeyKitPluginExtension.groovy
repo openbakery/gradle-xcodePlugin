@@ -18,9 +18,10 @@ package org.openbakery
 import org.gradle.api.Project
 
 class HockeyKitPluginExtension {
-	def String displayName = null
-	def String versionDirectoryName = "0"
-	def Object outputDirectory
+	String displayName = null
+	String versionDirectoryName = "0"
+	String notes = null
+	Object outputDirectory
 
 	private final Project project
 

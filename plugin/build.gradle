@@ -20,6 +20,8 @@ dependencies {
 	compile 'commons-configuration:commons-configuration:1.8+'
 	compile 'org.apache.httpcomponents:httpclient:4.2+'
 	compile 'org.apache.httpcomponents:httpmime:4.2+'
+	compile 'org.pegdown:pegdown:1.2.+'
+
 }
 
 group = 'org.openbakery'

@@ -27,6 +27,12 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 
 	private static final int IMAGE_WIDTH = 114
 
+	public HockeyKitImageTask() {
+		super()
+		dependsOn("hockeykit-archive")
+		this.description = "Creates the image that is used on the HockeyKit Server"
+	}
+
 	def resizeImage(File fromImage, toImage) {
 		def image = ImageIO.read( fromImage)
 

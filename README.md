@@ -180,6 +180,11 @@ hockeykit Parameters:
 
 	default value "build/hockeykit";
 	
+
+* _notes_ - Release notes as HTML or Markdown for the build that is stored in a releasenotes.html.
+
+	default value: empty
+	
 TestFlight Parameters:
 ----------------------
 

@@ -43,9 +43,10 @@ class XcodePlugin implements Plugin<Project> {
 		Task hockeyKitManifest = project.tasks.'hockeykit-manifest'
 		Task hockeyKitArchiveTask = project.tasks.'hockeykit-archive'
 		Task hockeyKitImageTask = project.tasks.'hockeykit-image'
+		Task hockeyKitNotes = project.tasks.'hockeykit-notes'
 
 		Task hockey = project.tasks.'hockeykit'
-		hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask)
+		hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask, hockeyKitNotes)
 
 
 		hockeyKitArchiveTask.dependsOn(archive)
@@ -153,7 +154,6 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
-
 			if (project.hasProperty('hockeykit.displayName')) {
 				project.hockeykit.displayName = project['hockeykit.displayName']
 			}
@@ -162,6 +162,9 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('hockeykit.outputDirectory')) {
 				project.hockeykit.outputDirectory = project['hockeykit.outputDirectory']
+			}
+			if (project.hasProperty('hockeykit.notes')) {
+				project.hockeykit.notes = project['hockeykit.notes']
 			}
 
 			if (project.hasProperty('keychain.certificateUri')) {
@@ -188,8 +191,7 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 			Task codesign = project.tasks.'codesign'
-			if (project.xcodebuild.sdk.startsWith("iphoneos") &&
-							project.xcodebuild.signIdentity != null) {
+			if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signIdentity != null) {
 				archive.dependsOn(codesign)
 			} else {
 				archive.dependsOn(xcodebuild)
@@ -244,6 +246,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
 		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-notes', type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-clean', type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
 

@@ -27,6 +27,7 @@ class HockeyKitManifestTask extends AbstractHockeykitTask {
 
 	HockeyKitManifestTask() {
 		super()
+		dependsOn("hockeykit-archive")
 		this.description = "Creates the manifest that is needed to deploy on a HockeyKit Server"
 	}
 
