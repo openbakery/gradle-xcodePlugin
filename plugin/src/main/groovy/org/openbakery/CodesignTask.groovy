@@ -18,8 +18,6 @@ class CodesignTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def codesign() {
-
-
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
 			throw new IllegalArgumentException("Can only sign 'iphoneos' builds but the given sdk is '" + project.xcodebuild.sdk + "'")
 		}
@@ -29,7 +27,7 @@ class CodesignTask extends AbstractXcodeTask {
 		}
 
 		println project.xcodebuild.symRoot
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 		def fileList = buildOutputDirectory.list(
 						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
 		).toList()

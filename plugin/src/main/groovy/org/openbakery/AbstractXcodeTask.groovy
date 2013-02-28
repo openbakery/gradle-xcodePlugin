@@ -37,7 +37,7 @@ class AbstractXcodeTask extends DefaultTask {
 	 */
 	def download(File toDirectory, String address) {
 		if (!toDirectory.exists()) {
-			toDirectory.mkdir()
+			toDirectory.mkdirs()
 		}
 		File destinationFile = new File(toDirectory, address.tokenize("/")[-1])
 		def file = new FileOutputStream(destinationFile)
@@ -78,7 +78,7 @@ class AbstractXcodeTask extends DefaultTask {
 	 */
 	def getAppBundleName() {
 		//println project.xcodebuild.symRoot
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 		def fileList = buildOutputDirectory.list(
 						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
 		).toList()

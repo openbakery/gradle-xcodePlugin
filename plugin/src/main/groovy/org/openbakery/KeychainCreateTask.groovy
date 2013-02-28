@@ -23,7 +23,7 @@ class KeychainCreateTask extends AbstractXcodeTask {
 
 		def certificateFile = download(project.keychain.destinationRoot, project.keychain.certificateUri)
 
-		def keychainPath = System.getProperty("user.home") + "/Library/Keychains/" + project.keychain.keychainName
+		def keychainPath = new File(project.keychain.destinationRoot, project.keychain.keychainName).absolutePath
 
 		println "Create Keychain '" + project.keychain.keychainName + "'"
 
@@ -31,12 +31,12 @@ class KeychainCreateTask extends AbstractXcodeTask {
 			runCommand(["security", "create-keychain", "-p", project.keychain.keychainPassword, keychainPath])
 		}
 
-		//runCommand(["security", "default-keychain", "-s", project.keychain.keychainName])
+		runCommand(["security", "default-keychain", "-s", project.keychain.keychainName])
 		runCommand(["security", "unlock-keychain", "-p", project.keychain.keychainPassword, keychainPath])
 
 		runCommand(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.keychain.certificatePassword, "-T", "/usr/bin/codesign"])
 
-		runCommand(["security", "list"])
+		//runCommand(["security", "list"])
 	}
 
 

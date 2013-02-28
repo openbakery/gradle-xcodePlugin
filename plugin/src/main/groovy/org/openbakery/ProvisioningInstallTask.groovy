@@ -20,7 +20,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 		File mobileprovisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles")
 		if (!mobileprovisionPath.exists()) {
-			mobileprovisionPath.mkdir()
+			mobileprovisionPath.mkdirs()
 		}
 
 		File sourceFile = new File(mobileprovisionFile)

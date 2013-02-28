@@ -16,7 +16,7 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def archive() {
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot + "/" + project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 
 		def appName = getAppBundleName()
 		def baseName = appName.substring(0, appName.size() - 4)

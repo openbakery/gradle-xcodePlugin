@@ -46,6 +46,12 @@ class XcodeBuildTask extends DefaultTask {
 				}
 			}
 
+			if (project.xcodebuild.configuration != null) {
+				commandList.add("-configuration")
+				commandList.add(project.xcodebuild.configuration)
+			}
+
+
 		} else {
 			commandList.add("-configuration")
 			commandList.add(project.xcodebuild.configuration)
