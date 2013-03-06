@@ -11,6 +11,7 @@ See [README.md](https://github.com/openbakery/gradle-xcodePlugin/blob/3178ea10fe
 
 __Introduction:__ http://openbakery.org/gradle.php
 
+__Example:__[build.gradle](consumer/build.gradle)
 
 xcodebuild Parameters:
 ----------------------
