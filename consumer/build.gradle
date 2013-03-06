@@ -1,16 +1,17 @@
 // example build file
 
 buildscript {
-    repositories {
-				maven {
-					url('http://openbakery.org/repository/')
-				}
-				mavenCentral()
-    }
-    dependencies {
-        classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.8.+'
-    }
+	repositories {
+		maven {
+			url('http://openbakery.org/repository/')
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.8.+'
+	}
 }
+
 apply plugin: 'xcode'
 
 
@@ -20,13 +21,13 @@ xcodebuild {
 	target = 'My-Target'
 	//additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"
 	//archiveVersion = "-1.0.0"
-	
+
 	signing {
 		identity = 'iPhone Developer'
 		certificateURI = 'http://myhost/Development.p12'
 		certificatePassword = 'mypwd'
 		mobileProvisionURI = 'http://myhost/Development.mobileprovision'
-	}
+		}
 }
 
 
