@@ -3,9 +3,9 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current stable version is 0.7.2**
+**Current stable version is 0.7.2** See https://github.com/openbakery/gradle-xcodePlugin/blob/3178ea10fead837b34ddb6a4f369058b66fbf4b4/README.md
 
-**Lastest version is 0.8.0-beta1**
+**Lastest version is 0.8.0-beta2 !!!This version is not compatible with 0.7.x, the signing configuration has changed!!!**
 
 
 __Introduction:__ http://openbakery.org/gradle.php
@@ -39,9 +39,32 @@ xcodebuild Parameters:
   default value: empty
 
   
-* _signIdentity_ - sign identity that should be used when building for the device
+* _signing_ - signing configuration that should be used when building for the device
 
   default value: empty
+
+	* _mobileProvisionURI_ - URI where the mobile provision profile is located that should be used when signing the app
+
+		default value: empty
+
+	* _certificateURI_ - Uri to the certificate that should be used to sign the app
+
+		default value: empty
+
+	* _certificatePassword_ - Password for the certificate file
+
+		default value: empty
+
+	* _keychainPassword_ - Password for the chain that is created
+
+		default value: "This_is_the_default_keychain_password"
+
+	* _keychain_ - Parameter to specify an existing keychain. If this parameters is set _no_ keychain is created and also the certificate is _not_ imported.
+
+		default value: empty
+
+		Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
+
 
 
 * _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 
@@ -89,34 +112,6 @@ xcodebuild Parameters:
   default value: empty
     
 
-provisioning Parameters:
-----------------------
-
-* _mobileprovisionUri_ - URI where the mobileprovision profile is located that should be used when signing the app
-
-  default value: empty
-    
-    
-keychain Parameters:
-----------------------
-
-* _certificateUri_ - Uri to the certificate that should be used to sign the app
-
-	default value: empty
-
-* _certificatePassword_ - Password for the certificate file
-
-	default value: empty
-
-* _keychainPassword_ - Password for the chain that is created
-
-	default value: "This_is_the_default_keychain_password"
-
-* _keychain_ - Parameter to specify an existing keychain. If this parameters is set _no_ keychain is created and also the certificate is _not_ imported.
-
-	default value: empty
-
-	Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
 infoplist Parameters:
 ----------------------

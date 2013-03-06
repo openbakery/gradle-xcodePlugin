@@ -118,7 +118,7 @@ class HockeyAppUploadTask extends DefaultTask {
 
 		MultipartEntity entity = new MultipartEntity();
 
-		entity.addPart("mobileprovision", new FileBody(new File(project.provisioning.mobileprovisionFile)))
+		entity.addPart("mobileprovision", new FileBody(project.xcodebuild.signing.mobileProvisionFile))
 
 		httpPost.addHeader("X-HockeyAppToken", project.hockeyapp.apiToken)
 

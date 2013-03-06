@@ -1,6 +1,7 @@
 ## 0.8.0
 
 Features
+	- new _xcodebuild.signing_ parameters, replaces provisioning.mobileprovisionUri, keychain.certificateUri,	keychain.certificatePassword,	keychain.keychainPassword, keychain.keychain
   - added new parameter _hockeykit.notes_
   - added new parameter _keychain.keychain_
   - added hockeyapp target that was created by wfrank2509

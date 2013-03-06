@@ -124,15 +124,6 @@ e.g. xcodeplugin-deploy-testflight and xcodeplugin-deploy-hockeykit. */
 		assert project.extensions.findByName('xcodebuild') instanceof XcodeBuildPluginExtension
 	}
 
-	@Test
-	void contain_extension_keychain() {
-		assert project.extensions.findByName('keychain') instanceof KeychainPluginExtension
-	}
-
-	@Test
-	void contain_extension_provisioning() {
-		assert project.extensions.findByName('provisioning') instanceof ProvisioningPluginExtension
-	}
 
 	@Test
 	void contain_extension_infoplist() {

@@ -22,14 +22,14 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def install() {
-		if (project.provisioning.mobileprovisionUri == null) {
-			throw new InvalidUserDataException("Property project.provisioning.mobileprovisionUri is missing")
+		if (project.xcodebuild.signing.mobileProvisionURI == null) {
+			throw new InvalidUserDataException("Property project.xcodebuild.signing.mobileProvisionURI is missing")
 		}
 
-		def mobileprovisionFile = download(project.provisioning.destinationRoot, project.provisioning.mobileprovisionUri)
-		File sourceFile = new File(mobileprovisionFile)
-		project.provisioning.mobileprovisionFile = sourceFile.absolutePath
+		def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, project.xcodebuild.signing.mobileProvisionURI)
+		project.xcodebuild.signing.mobileProvisionFile = new File(mobileProvisionFile)
 
-		runCommand(["/bin/ln", "-s", project.provisioning.mobileprovisionFile, project.provisioning.mobileprovisionFileLinkToLibrary.absolutePath])
+
+		runCommand(["/bin/ln", "-s", project.xcodebuild.signing.mobileProvisionName, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
 	}
 }

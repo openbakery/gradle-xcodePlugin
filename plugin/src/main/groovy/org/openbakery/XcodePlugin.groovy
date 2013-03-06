@@ -22,10 +22,11 @@ import org.gradle.api.Task
 
 class XcodePlugin implements Plugin<Project> {
 
-	def static final String XCODE_GROUP_NAME = "Xcode"
-	def static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
-	def static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
-	def static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
+	static final String XCODE_GROUP_NAME = "Xcode"
+	static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
+	static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
+	static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
+	static final String UIAUTOMATION_GROUP_NAME = "UIAutomation"
 
 	private Project project
 
@@ -36,21 +37,22 @@ class XcodePlugin implements Plugin<Project> {
 		defineExtensions()
 		defineTasks()
 
-		// TODO s.th. like defineTaskDependencies
 		Task xcodebuild = project.tasks.'xcodebuild'
 		Task infoplistModify = project.tasks.'infoplist-modify'
 		Task archive = project.tasks."archive"
+		archive.dependsOn("clean")
+
+		Task uiautomation = project.tasks.'uiautomation'
+
 		Task hockeyKitManifest = project.tasks.'hockeykit-manifest'
 		Task hockeyKitArchiveTask = project.tasks.'hockeykit-archive'
 		Task hockeyKitImageTask = project.tasks.'hockeykit-image'
 		Task hockeyKitNotes = project.tasks.'hockeykit-notes'
-
 		Task hockey = project.tasks.'hockeykit'
 		hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask, hockeyKitNotes)
 
 
 		hockeyKitArchiveTask.dependsOn(archive)
-		archive.dependsOn("clean")
 
 		Task keychainCleanup = project.tasks.'keychain-clean'
 		Task xcodebuildCleanup = project.tasks.'clean'
@@ -137,9 +139,26 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.sourceDirectory')) {
 				project.xcodebuild.sourceDirectory = project['xcodebuild.sourceDirectory']
 			}
-			if (project.hasProperty('xcodebuild.signIdentity')) {
-				project.xcodebuild.signIdentity = project['xcodebuild.signIdentity']
+
+			if (project.hasProperty('xcodebuild.signing.identity')) {
+				project.xcodebuild.signing.identity = project['xcodebuild.signing.identity']
 			}
+			if (project.hasProperty('xcodebuild.signing.certificateURI')) {
+				project.xcodebuild.signing.certificateURI = project['xcodebuild.signing.certificateURI']
+			}
+			if (project.hasProperty('xcodebuild.signing.certificatePassword')) {
+				project.xcodebuild.signing.certificatePassword = project['xcodebuild.signing.certificatePassword']
+			}
+			if (project.hasProperty('xcodebuild.signing.mobileProvisionURI')) {
+				project.xcodebuild.signing.mobileProvisionURI = project['xcodebuild.signing.mobileProvisionURI']
+			}
+			if (project.hasProperty('xcodebuild.signing.keychain')) {
+				project.xcodebuild.signing.keychain = project['xcodebuild.signing.keychain']
+			}
+			if (project.hasProperty('xcodebuild.signing.keychainPassword')) {
+				project.xcodebuild.signing.keychainPassword = project['signing.keychainPassword']
+			}
+
 			if (project.hasProperty('xcodebuild.additionalParameters')) {
 				project.xcodebuild.additionalParameters = project['xcodebuild.additionalParameters']
 			}
@@ -167,31 +186,10 @@ class XcodePlugin implements Plugin<Project> {
 				project.hockeykit.notes = project['hockeykit.notes']
 			}
 
-			if (project.hasProperty('keychain.certificateUri')) {
-				project.keychain.certificateUri = project['keychain.certificateUri']
-			}
-			if (project.hasProperty('keychain.certificatePassword')) {
-				project.keychain.certificatePassword = project['keychain.certificatePassword']
-			}
-			if (project.hasProperty('keychain.keychainPassword')) {
-				project.keychain.keychainPassword = project['keychain.keychainPassword']
-			}
-			if (project.hasProperty('keychain.destinationRoot')) {
-				project.keychain.destinationRoot = project['keychain.destinationRoot']
-			}
-			if (project.hasProperty('keychain.keychain')) {
-				project.keychain.keychain = project['keychain.keychain']
-			}
 
-			if (project.hasProperty('provisioning.mobileprovisionUri')) {
-				project.provisioning.mobileprovisionUri = project['provisioning.mobileprovisionUri']
-			}
-			if (project.hasProperty('keychain.destinationRoot')) {
-				project.keychain.destinationRoot = project['keychain.destinationRoot']
-			}
 
 			Task codesign = project.tasks.'codesign'
-			if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signIdentity != null) {
+			if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing != null) {
 				archive.dependsOn(codesign)
 			} else {
 				archive.dependsOn(xcodebuild)
@@ -203,7 +201,8 @@ class XcodePlugin implements Plugin<Project> {
 				xcodebuild.dependsOn(infoplistModify)
 			}
 
-			if (project.provisioning.mobileprovisionUri != null) {
+
+			if (project.xcodebuild.signing.mobileProvisionURI != null) {
 				println "added cleanup for provisioning profile"
 				codesign.doLast {
 					println "run provisioning cleanup"
@@ -211,7 +210,7 @@ class XcodePlugin implements Plugin<Project> {
 				}
 			}
 
-			if (project.keychain.certificateUri != null) {
+			if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
 				println "added cleanup for certificate"
 				codesign.doLast {
 					println "run certificate cleanup"
@@ -223,12 +222,11 @@ class XcodePlugin implements Plugin<Project> {
 
 	def void defineExtensions() {
 		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
-		project.extensions.create("keychain", KeychainPluginExtension, project)
-		project.extensions.create("provisioning", ProvisioningPluginExtension, project)
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("testflight", TestFlightPluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
+		project.extensions.create("uiautomation", UIAutomationTestExtension)
 	}
 
 	def void defineTasks() {
@@ -243,12 +241,15 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
 
 		//
-		project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
-		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
-		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
-		project.task('hockeykit-notes', type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
-		project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
+		Task hockeyKitManifest = project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
+		Task hockeyKitArchive = project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
+		Task hockeyKitNotes = project.task('hockeykit-notes', type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
+		Task hockeyKitImage = project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-clean', type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
+
+		Task hockeykit = project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
+		hockeykit.dependsOn([hockeyKitArchive, hockeyKitManifest, hockeyKitNotes, hockeyKitImage]);
+
 
 		//
 		project.task('testflight-prepare', type: TestFlightPrepareTask, group: TESTFLIGHT_GROUP_NAME)
@@ -260,7 +261,13 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('hockeyapp-prepare', type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task('hockeyapp', type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
 
+		project.task('uiautomation', type: UIAutomationTestTask, group: UIAUTOMATION_GROUP_NAME)
+
+
 	}
+
+
+
 }
 
 

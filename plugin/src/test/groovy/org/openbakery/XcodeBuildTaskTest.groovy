@@ -61,6 +61,10 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
 
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.runCommand(expectedCommandList).times(1)
@@ -90,6 +94,10 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
 
 		project.xcodebuild.dstRoot = new File(currentDir + '/mydst')
 		project.xcodebuild.objRoot = new File(currentDir + '/myobj')
@@ -138,8 +146,12 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
 
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+
 		def signIdentity = 'mysign'
-		project.xcodebuild.signIdentity = signIdentity
+		project.xcodebuild.signing.identity = signIdentity
 		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
 
 		addExpectedDefaultDirs()
@@ -159,6 +171,8 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
 
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
 
 		project.xcodebuild.arch = 'myarch'
 
@@ -186,6 +200,10 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
 
 		addExpectedDefaultDirs()
 
@@ -239,6 +257,8 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-arch");
 		expectedCommandList.add("i386")
 
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
 
 		addExpectedDefaultDirs()
 
@@ -260,6 +280,9 @@ class XcodeBuildTaskTest {
 
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
 
 		project.xcodebuild.arch = 'i386'
 

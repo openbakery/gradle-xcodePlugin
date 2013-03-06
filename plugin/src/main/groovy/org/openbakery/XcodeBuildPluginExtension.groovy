@@ -16,11 +16,13 @@
 package org.openbakery
 
 import org.gradle.api.Project
-import org.gradle.api.internal.project.ProjectInternal
-
-import java.util.concurrent.Callable
+import org.gradle.util.ConfigureUtil
 
 class XcodeBuildPluginExtension {
+	public final static KEYCHAIN_NAME_BASE = "gradle-"
+
+
+
 	def String infoPlist = null
 	def String scheme = null
 	def String configuration = 'Debug'
@@ -32,16 +34,18 @@ class XcodeBuildPluginExtension {
 	def Object symRoot
 	def Object sharedPrecompsDir
 	def String sourceDirectory = '.'
-	def String signIdentity = null
+	def Signing signing= null
 	def additionalParameters = null
 	def String bundleNameSuffix = null
 	def String arch = null
 	def String workspace = null
 
+
 	private final Project project
 
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
+		this.signing = new Signing(project)
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -93,5 +97,10 @@ class XcodeBuildPluginExtension {
 		return project.file(sharedPrecompsDir)
 	}
 
+
+	void signing(Closure closure) {
+		ConfigureUtil.configure(closure, this.signing)
+		//println "signing: " + this.signing
+	}
 
 }

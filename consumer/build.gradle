@@ -2,42 +2,33 @@
 
 buildscript {
     repositories {
-
 				maven {
-					//url('http://openbakery.org/repository/')
-					url uri('/tmp/repo')
+					url('http://openbakery.org/repository/')
 				}
 				mavenCentral()
     }
     dependencies {
-        classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.6.+'
+        classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.8.+'
     }
 }
 apply plugin: 'xcode'
 
 
-buildscript {
-   configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
 
 xcodebuild {
 	sdk = 'iphoneos'
 	target = 'My-Target'
-	signIdentity = 'iPhone Developer'
-
 	//additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"
 	//archiveVersion = "-1.0.0"
+	
+	signing {
+		identity = 'iPhone Developer'
+		certificateURI = 'http://myhost/Development.p12'
+		certificatePassword = 'mypwd'
+		mobileProvisionURI = 'http://myhost/Development.mobileprovision'
+	}
 }
 
-
-keychain {
-	certificateUri = 'http://myhost/Development.p12'
-	certificatePassword = 'mypwd'
-}
-
-provisioning {
-	mobileprovisionUri = 'http://myhost/Development.mobileprovision'
-}
 
 
 infoplist {
@@ -45,6 +36,21 @@ infoplist {
 	//version = "1.0.2"
 	//versionPrefix = "PREFIX-"
 	//versionSuffix = "-SUFFIX"
-	
 }
 
+
+task appstore(dependsOn: 'archive')
+
+gradle.taskGraph.whenReady { taskGraph ->
+	if (taskGraph.hasTask(appstore)) {
+		println "CONFIGURE APPSTORE"
+		xcodebuild {
+			signing {
+				identity = 'iPhone Distribution'
+				certificateURI = 'http://myhost/Appstore.p12'
+				certificatePassword = 'mypwd'
+				mobileProvisionURI = 'http://myhost/AppStore.mobileprovision'
+			}
+		}
+	}
+}

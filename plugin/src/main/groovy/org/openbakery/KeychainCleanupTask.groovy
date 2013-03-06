@@ -26,18 +26,13 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def clean() {
-		if (project.keychain.keychain) {
+		if (project.xcodebuild.signing.keychain) {
 			println "Nothing to cleanup"
 			return;
 		}
 
-/*
-		if (project.keychain.internalKeychainPath.exists()) {
-			println "Delete Keychain '" + 	project.keychain.internalKeychainPath + "'"
-			project.keychain.internalKeychainPath.delete()
-		}
-*/
-		project.keychain.destinationRoot.deleteDir();
+
+		project.xcodebuild.signing.keychainDestinationRoot.deleteDir();
 
 		String result = runCommandWithResult(["security", "list"])
 		String[] keychains = result.split("\n")
@@ -45,7 +40,7 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 			def matcher = keychain =~ /^\s*"(.*)"$/
 			File keychainFile = new File(matcher[0][1])
 			if (!keychainFile.exists()) {
-				if (keychainFile.name.startsWith(KeychainPluginExtension.KEYCHAIN_NAME_BASE)) {
+				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
 					println "deleting keychain: " + keychainFile
 					try {
 					runCommand(["security", "delete-keychain", keychainFile.absolutePath])

@@ -16,9 +16,12 @@
 package org.openbakery
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.util.ConfigureUtil
 
 class XcodeBuildTask extends DefaultTask {
+
 
 	CommandRunner commandRunner
 	ProvisioningProfileIdReader provisioningProfileIdReader
@@ -35,6 +38,7 @@ class XcodeBuildTask extends DefaultTask {
 		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
+
 
 		def commandList = [
 						"xcodebuild"
@@ -79,8 +83,8 @@ class XcodeBuildTask extends DefaultTask {
 
 
 
-		if (project.xcodebuild.signIdentity != null) {
-			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signIdentity)
+		if (project.xcodebuild.signing != null && project.xcodebuild.signing.identity != null) {
+			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 		}
 
 		if (project.xcodebuild.arch != null) {
@@ -100,7 +104,7 @@ class XcodeBuildTask extends DefaultTask {
 			}
 		}
 
-		def uuid = provisioningProfileIdReader.readProvisioningProfileIdFromDestinationRoot(project.provisioning.destinationRoot)
+		def uuid = provisioningProfileIdReader.readProvisioningProfileIdFromDestinationRoot(project.xcodebuild.signing.mobileProvisionDestinationRoot)
 		if (uuid != null) {
 			commandList.add("PROVISIONING_PROFILE=" + uuid);
 		}
@@ -111,8 +115,8 @@ class XcodeBuildTask extends DefaultTask {
 
 /*
 		if (project.xcodebuild.sdk.startsWith("iphoneos")) {
-			if (project.keychain.internalKeychainPath.exists()) {
-				commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + project.keychain.internalKeychainPath.absolutePath)
+			if (project.xcodebuild.signing.keychainPathInternal.exists()) {
+				commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + project.xcodebuild.signing.keychainPathInternal.absolutePath)
 			}
 		}
 */
@@ -150,4 +154,6 @@ class XcodeBuildTask extends DefaultTask {
 			commandRunner.runCommand(commandList)
 		}
 	}
+
+
 }

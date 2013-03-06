@@ -16,8 +16,6 @@
 package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.Task
-import org.gradle.api.Action
 
 /**
  *
@@ -42,8 +40,8 @@ class CodesignTask extends AbstractXcodeTask {
 			throw new IllegalArgumentException("Can only sign 'iphoneos' builds but the given sdk is '" + project.xcodebuild.sdk + "'")
 		}
 
-		if (project.xcodebuild.signIdentity == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signidentity")
+		if (project.xcodebuild.signing == null) {
+			throw new IllegalArgumentException("cannot signed with unknown signing configuration")
 		}
 
 		println project.xcodebuild.symRoot
@@ -58,6 +56,8 @@ class CodesignTask extends AbstractXcodeTask {
 		def ipaName = appName.substring(0, appName.size()-4) + ".ipa"
 		println "Signing " + appName + " to create " + ipaName
 
+
+
 		def commandList = [
 						"xcrun",
 						"-sdk",
@@ -68,9 +68,9 @@ class CodesignTask extends AbstractXcodeTask {
 						"-o",
 						ipaName,
 						"--sign",
-						project.xcodebuild.signIdentity,
+						project.xcodebuild.signing.identity,
 						"--embed",
-						project.provisioning.mobileprovisionFile
+						project.signing.mobileProvisionFile
 		]
 /*
         if [ ! $CODESIGN_ALLOCATE ]

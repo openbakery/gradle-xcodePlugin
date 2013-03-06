@@ -30,32 +30,31 @@ class KeychainCreateTask extends AbstractXcodeTask {
 	@TaskAction
 	def create() {
 
-		if (project.keychain.keychain) {
-			println "Using keychain " + project.keychain.keychain
-			println "Internal keychain " + project.keychain.internalKeychainPath
+		if (project.xcodebuild.signing.keychain) {
+			println "Using keychain " + project.xcodebuild.signing.keychain
+			println "Internal keychain " + project.xcodebuild.signing.keychainPathInternal
 			return;
 		}
 
-		if (project.keychain.certificateUri == null) {
-			throw new InvalidUserDataException("Property project.keychain.certificateUri is missing")
+		if (project.xcodebuild.signing.certificateURI == null) {
+			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificateURI is missing")
 		}
-		if (project.keychain.certificatePassword == null) {
-			throw new InvalidUserDataException("Property project.keychain.certificatePassword is missing")
+		if (project.xcodebuild.signing.certificatePassword == null) {
+			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificatePassword is missing")
 		}
 
-		def certificateFile = download(project.keychain.destinationRoot, project.keychain.certificateUri)
+		def certificateFile = download(project.xcodebuild.signing.keychainDestinationRoot, project.xcodebuild.signing.certificateURI)
 
-		def keychainPath = project.keychain.internalKeychainPath.absolutePath
+		def keychainPath = project.xcodebuild.signing.keychainPathInternal.absolutePath
 
 		println "Create Keychain '" + keychainPath + "'"
 
 		if (!new File(keychainPath).exists()) {
-			runCommand(["security", "create-keychain", "-p", project.keychain.keychainPassword, keychainPath])
+			runCommand(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
 		}
 
 		//runCommand(["security", "default-keychain", "-s", getKeychainName()])
-		runCommand(["security", "unlock-keychain", "-p", project.keychain.keychainPassword, keychainPath])
-		runCommand(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.keychain.certificatePassword, "-T", "/usr/bin/codesign"])
+		runCommand(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
 		//runCommand(["security", "list"])
 	}
 
