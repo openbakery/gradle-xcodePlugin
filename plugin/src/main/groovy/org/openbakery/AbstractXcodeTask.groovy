@@ -169,12 +169,12 @@ class AbstractXcodeTask extends DefaultTask {
 		def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0]
 		def projectFile = new File(projectFileDirectory, "project.pbxproj")
 
-		def buildRoot = new File(project.buildDir)
+		def buildRoot = project.buildDir
 		if (!buildRoot.exists()) {
 			buildRoot.mkdirs()
 		}
 
-		def projectPlist = project.xcodebuild.buildRoot + "/project.plist"
+		def projectPlist = new File(buildRoot, "project.plist").absolutePath
 
 		// convert ascii plist to xml so that commons configuration can parse it!
 		runCommand(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
