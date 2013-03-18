@@ -30,6 +30,6 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		project.xcodebuild.signing.mobileProvisionFile = new File(mobileProvisionFile)
 
 
-		runCommand(["/bin/ln", "-s", project.xcodebuild.signing.mobileProvisionName, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
+		runCommand(["/bin/ln", "-s", mobileProvisionFile, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
 	}
 }

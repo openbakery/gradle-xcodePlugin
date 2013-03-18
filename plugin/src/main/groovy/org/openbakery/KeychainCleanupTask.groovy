@@ -52,6 +52,10 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 					println "keychain was not created by this plugin so leave it: " + keychainFile
 				}
 
+			} else if (keychainFile.name.equals("gradle.keychain")) {
+				// gradle.keychain is the xcodelugin version 0.7 keychain that also needs to be cleaned
+				println "deleting old 0.7 xcodeplugin keychain file"
+				runCommand(["security", "delete-keychain", keychainFile.absolutePath])
 			} else {
 				println "keychain exists so leave it: " + keychainFile
 			}

@@ -55,6 +55,8 @@ class KeychainCreateTask extends AbstractXcodeTask {
 
 		//runCommand(["security", "default-keychain", "-s", getKeychainName()])
 		runCommand(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
+
+
 		//runCommand(["security", "list"])
 	}
 

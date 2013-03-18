@@ -70,7 +70,7 @@ class CodesignTask extends AbstractXcodeTask {
 						"--sign",
 						project.xcodebuild.signing.identity,
 						"--embed",
-						project.signing.mobileProvisionFile
+						project.xcodebuild.signing.mobileProvisionFile.absolutePath
 		]
 /*
         if [ ! $CODESIGN_ALLOCATE ]
