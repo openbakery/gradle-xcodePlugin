@@ -36,36 +36,7 @@ class XcodePlugin implements Plugin<Project> {
 
 		defineExtensions()
 		defineTasks()
-
-		Task xcodebuild = project.tasks.'xcodebuild'
-		Task infoplistModify = project.tasks.'infoplist-modify'
-		Task archive = project.tasks."archive"
-		archive.dependsOn("clean")
-
-		Task uiautomation = project.tasks.'uiautomation'
-
-		Task hockeyKitManifest = project.tasks.'hockeykit-manifest'
-		Task hockeyKitArchiveTask = project.tasks.'hockeykit-archive'
-		Task hockeyKitImageTask = project.tasks.'hockeykit-image'
-		Task hockeyKitNotes = project.tasks.'hockeykit-notes'
-		Task hockey = project.tasks.'hockeykit'
-		hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask, hockeyKitNotes)
-
-
-		hockeyKitArchiveTask.dependsOn(archive)
-
-		Task keychainCleanup = project.tasks.'keychain-clean'
-		Task xcodebuildCleanup = project.tasks.'clean'
-		Task provisioningCleanup = project.tasks.'provisioning-clean'
-		Task hockeyKitCleanTask = project.tasks.'hockeykit-clean'
-		Task testFlightClean = project.tasks.'testflight-clean'
-		Task hockeyAppClean = project.tasks.'hockeyapp-clean'
-
-		xcodebuildCleanup.dependsOn(keychainCleanup)
-		xcodebuildCleanup.dependsOn(provisioningCleanup)
-		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
-		xcodebuildCleanup.dependsOn(testFlightClean);
-		xcodebuildCleanup.dependsOn(hockeyAppClean);
+		defineDependencies();
 
 
 
@@ -187,36 +158,7 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
-
-			Task codesign = project.tasks.'codesign'
-			if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing != null) {
-				archive.dependsOn(codesign)
-			} else {
-				archive.dependsOn(xcodebuild)
-			}
-
-			if (project.infoplist.bundleIdentifier != null || project.infoplist.bundleIdentifierSuffix != null
-							|| project.infoplist.bundleDisplayName != null || project.infoplist.bundleDisplayNameSuffix != null
-							|| project.infoplist.versionSuffix != null) {
-				xcodebuild.dependsOn(infoplistModify)
-			}
-
-
-			if (project.xcodebuild.signing.mobileProvisionURI != null) {
-				println "added cleanup for provisioning profile"
-				codesign.doLast {
-					println "run provisioning cleanup"
-					provisioningCleanup.clean()
-				}
-			}
-
-			if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
-				println "added cleanup for certificate"
-				codesign.doLast {
-					println "run certificate cleanup"
-					keychainCleanup.clean()
-				}
-			}
+			defineDynamicDependencies()
 		}
 	}
 
@@ -240,33 +182,94 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('provisioning-clean', type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 		project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
 
-		//
-		Task hockeyKitManifest = project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
-		Task hockeyKitArchive = project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
-		Task hockeyKitNotes = project.task('hockeykit-notes', type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
-		Task hockeyKitImage = project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-notes', type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
+		project.task('hockeykit-image', type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-clean', type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
 
-		Task hockeykit = project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
-		hockeykit.dependsOn([hockeyKitArchive, hockeyKitManifest, hockeyKitNotes, hockeyKitImage]);
+		project.task('hockeykit', type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
 
-
-		//
 		project.task('testflight-prepare', type: TestFlightPrepareTask, group: TESTFLIGHT_GROUP_NAME)
 		project.task('testflight', type: TestFlightUploadTask, group: TESTFLIGHT_GROUP_NAME)
 		project.task('testflight-clean', type: TestFlightCleanTask, group: TESTFLIGHT_GROUP_NAME)
 
-		//
 		project.task('hockeyapp-clean', type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task('hockeyapp-prepare', type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task('hockeyapp', type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
 
 		project.task('uiautomation', type: UIAutomationTestTask, group: UIAUTOMATION_GROUP_NAME)
 
+	}
+
+	def void defineDependencies() {
+
+
+		Task xcodebuild = project.tasks.'xcodebuild'
+		Task infoplistModify = project.tasks.'infoplist-modify'
+		Task archive = project.tasks."archive"
+		archive.dependsOn("clean")
+
+		Task uiautomation = project.tasks.'uiautomation'
+
+		Task hockeyKitManifest = project.tasks.'hockeykit-manifest'
+		Task hockeyKitArchiveTask = project.tasks.'hockeykit-archive'
+		Task hockeyKitImageTask = project.tasks.'hockeykit-image'
+		Task hockeyKitNotes = project.tasks.'hockeykit-notes'
+		Task hockey = project.tasks.'hockeykit'
+		hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask, hockeyKitNotes)
+		hockeyKitArchiveTask.dependsOn(archive)
+
+		Task keychainCleanup = project.tasks.'keychain-clean'
+		Task xcodebuildCleanup = project.tasks.'clean'
+		Task provisioningCleanup = project.tasks.'provisioning-clean'
+		Task hockeyKitCleanTask = project.tasks.'hockeykit-clean'
+		Task testFlightClean = project.tasks.'testflight-clean'
+		Task hockeyAppClean = project.tasks.'hockeyapp-clean'
+
+		xcodebuildCleanup.dependsOn(keychainCleanup)
+		xcodebuildCleanup.dependsOn(provisioningCleanup)
+		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
+		xcodebuildCleanup.dependsOn(testFlightClean);
+		xcodebuildCleanup.dependsOn(hockeyAppClean);
+		xcodebuildCleanup.dependsOn(hockeyAppClean);
+
+
+		xcodebuild.dependsOn(project.tasks.'keychain-create')
+		xcodebuild.dependsOn(project.tasks.'provisioning-install')
+		xcodebuild.dependsOn(infoplistModify)
+
+		Task codesign = project.tasks.'codesign'
+		archive.dependsOn(codesign)
+
 
 	}
 
+	def void defineDynamicDependencies() {
+		Task codesign = project.tasks.'codesign'
 
+		// TODO: create static dependency
+
+		Task provisioningCleanup = project.tasks.'provisioning-clean'
+
+		if (project.xcodebuild.signing.mobileProvisionURI != null) {
+			println "added cleanup for provisioning profile"
+			codesign.doLast {
+				println "run provisioning cleanup"
+				provisioningCleanup.clean()
+			}
+		}
+
+		Task keychainCleanup = project.tasks.'keychain-clean'
+
+		if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
+			println "added cleanup for certificate"
+			codesign.doLast {
+				println "run certificate cleanup"
+				keychainCleanup.clean()
+			}
+		}
+	}
 
 }
 

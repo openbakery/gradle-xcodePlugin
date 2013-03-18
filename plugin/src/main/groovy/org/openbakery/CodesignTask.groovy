@@ -15,6 +15,8 @@
  */
 package org.openbakery
 
+import org.gradle.api.Action
+import org.gradle.api.Task
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -26,8 +28,6 @@ class CodesignTask extends AbstractXcodeTask {
 
 	CodesignTask() {
 		super()
-		dependsOn("keychain-create")
-		dependsOn("provisioning-install")
 		dependsOn("xcodebuild")
 		this.description = "Signs the app bundle that was created by xcodebuild"
 	}
@@ -37,9 +37,9 @@ class CodesignTask extends AbstractXcodeTask {
 	@TaskAction
 	def codesign() {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			throw new IllegalArgumentException("Can only sign 'iphoneos' builds but the given sdk is '" + project.xcodebuild.sdk + "'")
+			println("not a device build, so no codesign needed")
+			return
 		}
-
 		if (project.xcodebuild.signing == null) {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration")
 		}
@@ -83,4 +83,5 @@ class CodesignTask extends AbstractXcodeTask {
 		def environment = [CODESIGN_ALLOCATE:codesignAllocateCommand]
 		runCommand(".", commandList, environment)
 	}
+
 }
