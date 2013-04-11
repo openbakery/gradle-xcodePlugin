@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 
 
@@ -23,6 +24,13 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 	@TaskAction
 	def prepare() {
 		def infoPlist = getInfoPlist()
+
+
+		if (StringUtils.isEmpty(infoPlist)) {
+			println "Info Plist not found, so skipping this task"
+			return
+		}
+
 		println "Updating " + infoPlist
 
 		if (project.infoplist.bundleIdentifier != null) {
