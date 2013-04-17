@@ -102,7 +102,10 @@ class TestFlightUploadTask extends DefaultTask {
 		entity.addPart("api_token", new StringBody(project.testflight.apiToken))
 		entity.addPart("team_token", new StringBody(project.testflight.teamToken))
 		entity.addPart("notes", new StringBody(project.testflight.notes))
-		entity.addPart("distribution_lists", new StringBody(project.testflight.distributionLists))
+		if (project.testflight.distributionLists != null){
+			entity.addPart("distribution_lists", new StringBody(project.testflight.distributionLists))
+			entity.addPart("notify", new StringBody("True"))
+		}
 		entity.addPart("file", new FileBody(ipaFile))
 		entity.addPart("dsym", new FileBody(dSYMFile))
 
