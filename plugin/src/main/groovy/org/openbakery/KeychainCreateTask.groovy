@@ -29,7 +29,7 @@ class KeychainCreateTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def create() {
-		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
+		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
 			println("not a device build, so no keychain needs to be created")
 			return
 		}

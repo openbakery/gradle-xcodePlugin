@@ -22,14 +22,10 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def install() {
-		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			println("not a device build, so no provisioning profile needs to be created")
-			return
-		}
-
 
 		if (project.xcodebuild.signing.mobileProvisionURI == null) {
-			throw new InvalidUserDataException("Property project.xcodebuild.signing.mobileProvisionURI is missing")
+			println("No provisioning profile specifed so do nothing here")
+			return
 		}
 
 		def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, project.xcodebuild.signing.mobileProvisionURI)

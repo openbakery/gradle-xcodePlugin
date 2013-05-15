@@ -58,6 +58,7 @@ class CodesignTask extends AbstractXcodeTask {
 
 
 
+
 		def commandList = [
 						"xcrun",
 						"-sdk",
@@ -66,12 +67,16 @@ class CodesignTask extends AbstractXcodeTask {
 						"-v",
 						appName,
 						"-o",
-						ipaName,
-						"--sign",
-						project.xcodebuild.signing.identity,
-						"--embed",
-						project.xcodebuild.signing.mobileProvisionFile.absolutePath
+						ipaName
 		]
+
+		if (project.xcodebuild.signing.identity != null && project.xcodebuild.signing.mobileProvisionFile != null) {
+			commandList.add("--sign");
+			commandList.add(project.xcodebuild.signing.identity)
+			commandList.add("--embed");
+			commandList.add(project.xcodebuild.signing.mobileProvisionFile.absolutePath)
+		}
+
 /*
         if [ ! $CODESIGN_ALLOCATE ]
         then
