@@ -1,16 +1,18 @@
 ## 0.8.0
 
-Features
-	- new _xcodebuild.signing_ parameters, replaces provisioning.mobileprovisionUri, keychain.certificateUri,	keychain.certificatePassword,	keychain.keychainPassword, keychain.keychain
+Features:
+  - new _xcodebuild.signing_ parameters, replaces provisioning.mobileprovisionUri, keychain.certificateUri,	keychain.certificatePassword,	keychain.keychainPassword, keychain.keychain
   - added new parameter _hockeykit.notes_
   - added new parameter _keychain.keychain_
   - added hockeyapp target that was created by wfrank2509
   - reworked keychain and provisioning file handling so that multiple parallel builds should work
 
-Changes
+Changes:
   - removed _xcodebuild.buildRoot_: The gradle buildDir variable is used instead.
   - removed _keychain.keychainName_
 
+Bugfixes:
+	
 ## 0.7.2 (Februar 8, 2013)
 
 Bugfixes:

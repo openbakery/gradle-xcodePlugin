@@ -113,13 +113,12 @@ class XcodeBuildTask extends DefaultTask {
 		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
-/*
-		if (project.xcodebuild.sdk.startsWith("iphoneos")) {
-			if (project.xcodebuild.signing.keychainPathInternal.exists()) {
-				commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + project.xcodebuild.signing.keychainPathInternal.absolutePath)
-			}
+
+
+		if (project.xcodebuild.signing.keychainPathInternal.exists()) {
+			commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + project.xcodebuild.signing.keychainPathInternal.path);
 		}
-*/
+
 		commandRunner.runCommand(commandList)
 		println "Done"
 		println "--------------------------------------------------------------------------------"

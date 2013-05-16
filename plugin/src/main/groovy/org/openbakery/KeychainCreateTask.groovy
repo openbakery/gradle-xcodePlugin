@@ -29,8 +29,9 @@ class KeychainCreateTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def create() {
-		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			println("not a device build, so no keychain needs to be created")
+
+		if (project.xcodebuild.signing.certificateURI == null) {
+			println("not certificateURI specifed so do not create the keychain")
 			return
 		}
 
