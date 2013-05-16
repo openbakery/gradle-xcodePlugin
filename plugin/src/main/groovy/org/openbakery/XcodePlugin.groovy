@@ -237,7 +237,13 @@ class XcodePlugin implements Plugin<Project> {
 
 		xcodebuild.dependsOn(project.tasks.'keychain-create')
 		xcodebuild.dependsOn(project.tasks.'provisioning-install')
-		xcodebuild.dependsOn(infoplistModify)
+
+        if (project.infoplist.bundleIdentifier != null
+                || project.infoplist.bundleIdentifierSuffix != null
+                || project.infoplist.versionSuffix != null)
+        {
+            xcodebuild.dependsOn(infoplistModify)
+        }
 
 		Task codesign = project.tasks.'codesign'
 		archive.dependsOn(codesign)
