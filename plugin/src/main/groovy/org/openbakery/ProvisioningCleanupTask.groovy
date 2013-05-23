@@ -27,6 +27,10 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def clean() {
+        if (!project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
+            println "Provisioning cleanup skipped because the destination directory does not exit"
+            return
+        }
 
 		println "deleting " + project.xcodebuild.signing.mobileProvisionDestinationRoot
 		project.xcodebuild.signing.mobileProvisionDestinationRoot.deleteDir()
