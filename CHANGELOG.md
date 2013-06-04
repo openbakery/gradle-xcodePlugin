@@ -1,4 +1,4 @@
-## 0.8.0
+## 0.8.0 (June 3, 2012)
 
 Features:
   - new _xcodebuild.signing_ parameters, replaces provisioning.mobileprovisionUri, keychain.certificateUri,	keychain.certificatePassword,	keychain.keychainPassword, keychain.keychain

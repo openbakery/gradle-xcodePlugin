@@ -25,13 +25,12 @@ dependencies {
 }
 
 group = 'org.openbakery'
-version = '0.8.0-beta7'
-
+version = '0.8.0'
 
 uploadArchives {
 	repositories {
 		mavenDeployer {
-			repository(url: uri('/tmp/repo'))
+			repository(url: uri('../../repository'))
 		}
 	}
 }
