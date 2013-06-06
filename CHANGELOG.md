@@ -1,4 +1,10 @@
-## 0.8.0 (June 3, 2012)
+## 0.8.1 (June 6, 2013)
+
+Bugfixes:
+- fixed executing unit test. Where skipped because was TEST_HOST was set.
+- fixed provisioning cleanup and create task that failed if the Provisioning Profiles directory does not exist 
+
+## 0.8.0 (June 3, 2013)
 
 Features:
   - new _xcodebuild.signing_ parameters, replaces provisioning.mobileprovisionUri, keychain.certificateUri,	keychain.certificatePassword,	keychain.keychainPassword, keychain.keychain

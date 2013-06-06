@@ -41,6 +41,10 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 
 		File mobileprovisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/")
 
+		if (!mobileprovisionPath.exists()) {
+			println "nothing to cleanup"
+		}
+
 		// find all the broken profile links that where created by this plugin
 		String profileLinksToDelete = runCommandWithResult(["find", "-L", mobileprovisionPath.absolutePath, "-name", Signing.PROVISIONING_NAME_BASE+"*", "-type", "l"]);
 		String[] profiles = profileLinksToDelete.split("\n")

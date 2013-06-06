@@ -31,6 +31,12 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, project.xcodebuild.signing.mobileProvisionURI)
 		project.xcodebuild.signing.mobileProvisionFile = new File(mobileProvisionFile)
 
+		File provisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
+		if (!provisionPath.exists()) {
+			provisionPath.mkdirs()
+		}
+
+
 
 		runCommand(["/bin/ln", "-s", mobileProvisionFile, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
 	}
