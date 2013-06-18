@@ -38,9 +38,8 @@ class HockeyAppPrepareTask extends AbstractXcodeTask {
 
 		def zipFileName = baseName
 
-		File outputDirectory = new File(project.hockeyapp.outputDirectory)
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
+		if (!project.hockeyapp.outputDirectory.exists()) {
+			project.hockeyapp.outputDirectory.mkdirs()
 		}
 
 
@@ -71,11 +70,11 @@ class HockeyAppPrepareTask extends AbstractXcodeTask {
 
 
 		def ant = new AntBuilder()
-		ant.zip(destfile: project.hockeyapp.outputDirectory + "/" + baseZipName + ".app.dSYM.zip",
+		ant.zip(destfile: project.hockeyapp.outputDirectory.path + "/" + baseZipName + ".app.dSYM.zip",
 						basedir: buildOutputDirectory.absolutePath,
 						includes: "*dSYM*/**")
 
-		FileUtils.copyFileToDirectory(new File(ipaName), new File(project.hockeyapp.outputDirectory))
+		FileUtils.copyFileToDirectory(new File(ipaName), project.hockeyapp.outputDirectory)
 
 
 	}

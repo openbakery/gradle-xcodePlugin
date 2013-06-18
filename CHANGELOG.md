@@ -1,4 +1,9 @@
-## 0.8.2
+## 0.8.3 (June 18, 2013)
+
+Bugfixes:
+- fixed exception in hockeyapp-prepare task: issue #28
+
+## 0.8.2 (June 18, 2013)
 
 Bugfixes:
 - fixed that on a simulator build the keychain is not created and provisioning profile is not installed
