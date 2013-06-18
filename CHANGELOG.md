@@ -1,3 +1,8 @@
+## 0.8.2
+
+Bugfixes:
+- fixed that on a simulator build the keychain is not created and provisioning profile is not installed
+
 ## 0.8.1 (June 6, 2013)
 
 Bugfixes:

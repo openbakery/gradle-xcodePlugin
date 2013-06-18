@@ -116,7 +116,7 @@ class XcodeBuildTask extends DefaultTask {
 
 
 		if (project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add("OTHER_CODE_SIGN_FLAGS=--keychain " + project.xcodebuild.signing.keychainPathInternal.path);
+			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 
 		commandRunner.runCommand(commandList)

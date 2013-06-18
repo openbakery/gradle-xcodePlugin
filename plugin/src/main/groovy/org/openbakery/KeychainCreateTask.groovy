@@ -30,6 +30,11 @@ class KeychainCreateTask extends AbstractXcodeTask {
 	@TaskAction
 	def create() {
 
+		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
+			println("The simulator build does not need a provisioning profile")
+			return
+		}
+
 		if (project.xcodebuild.signing.certificateURI == null) {
 			println("not certificateURI specifed so do not create the keychain")
 			return
