@@ -1,3 +1,8 @@
+## 0.8.4 (June 21, 2013)
+
+Bugfixes:
+- fixed hockeykit-image task that the image is created from the app icon as intended.
+
 ## 0.8.3 (June 18, 2013)
 
 Bugfixes:

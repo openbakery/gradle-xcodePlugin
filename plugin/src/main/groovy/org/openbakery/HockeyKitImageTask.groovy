@@ -67,8 +67,9 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 					def infoPlistFile = new File(infoPlist)
 
 					// get path from info.plist
-					String absolutePath = infoPlistFile.getAbsolutePath();
-					String appPath = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
+					//String absolutePath = infoPlistFile.getAbsolutePath();
+					//String appPath = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
+
 
 					if (project.infoplist.iconPath) {
 
@@ -78,9 +79,9 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 					} else {
 
 						// appPath + additional iconPath + name of iconFile
-						iconFile = new File(appPath + File.separator + item)
+						iconFile = new File(item)
 					}
-
+					println "try to read " + iconFile
 					image = ImageIO.read(iconFile)
 
 					iconMap.put(image.width, iconFile)
@@ -96,7 +97,7 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 		def outputImageFile = new File(outputDirectory, "Icon.png")
 		if (selectedImage != null) {
 			println "Copy file " + selectedImage + " to " + outputImageFile
-			FileUtils.copyFile(new File(selectedImage), outputImageFile)
+			FileUtils.copyFile(selectedImage, outputImageFile)
 		} else {
 			if (iconMap.size() > 0) {
 				selectedImage = iconMap.lastEntry().value
