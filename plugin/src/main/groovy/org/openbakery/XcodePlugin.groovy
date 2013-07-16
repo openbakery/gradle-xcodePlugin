@@ -160,6 +160,11 @@ class XcodePlugin implements Plugin<Project> {
 
 			defineDynamicDependencies()
 		}
+
+		CommandRunner commandRunner = new CommandRunner();
+		def result = commandRunner.runCommandWithResult(["xcodebuild", "-version"])
+		project.xcodebuild.isXcode5 =  result.startsWith("Xcode 5")
+
 	}
 
 	def void defineExtensions() {
@@ -174,6 +179,8 @@ class XcodePlugin implements Plugin<Project> {
 	def void defineTasks() {
 		project.task('keychain-create', type: KeychainCreateTask, group: XCODE_GROUP_NAME)
 		project.task('xcodebuild', type: XcodeBuildTask, group: XCODE_GROUP_NAME)
+		project.task('build', type: XcodeBuildTask, group: XCODE_GROUP_NAME)
+		project.task('test', type: XcodeTestTask, group: XCODE_GROUP_NAME)
 		project.task('infoplist-modify', type: InfoPlistModifyTask, group: XCODE_GROUP_NAME)
 		project.task('provisioning-install', type: ProvisioningInstallTask, group: XCODE_GROUP_NAME)
 		project.task('archive', type: XcodeBuildArchiveTask, group: XCODE_GROUP_NAME)

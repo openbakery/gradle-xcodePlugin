@@ -17,6 +17,8 @@ package org.openbakery
 
 class CommandRunner {
 
+	private StringBuilder resultStringBuilder;
+
 	private def commandListToString(List<String> commandList) {
 		def result = ""
 		commandList.each {
@@ -26,6 +28,8 @@ class CommandRunner {
 	}
 
 	def runCommand(String directory, List<String> commandList, Map<String, String> environment) {
+		resultStringBuilder = new StringBuilder();
+
 		println "Run command: " + commandListToString(commandList)
 		if (environment != null) {
 			println "with additional environment variables: " + environment
@@ -40,10 +44,16 @@ class CommandRunner {
 		def process = processBuilder.start()
 		process.inputStream.eachLine {
 			println it
+			if (resultStringBuilder != null) {
+				if (resultStringBuilder.length() > 0) {
+					resultStringBuilder.append("\n");
+				}
+				resultStringBuilder.append(it);
+			}
 		}
 		process.waitFor()
 		if (process.exitValue() > 0) {
-			throw new IllegalStateException("Command failed to run: " + commandListToString(commandList))
+			throw new CommandRunnerException("Command failed to run: " + commandListToString(commandList))
 		}
 	}
 
@@ -56,34 +66,20 @@ class CommandRunner {
 	}
 
 	def runCommandWithResult(List<String> commandList) {
-		runCommandWithResult(".", commandList)
+		return runCommandWithResult(".", commandList)
 	}
 
 	def runCommandWithResult(String directory, List<String> commandList) {
-		runCommandWithResult(directory, commandList, null)
+		return runCommandWithResult(directory, commandList, null)
 	}
 
 	def runCommandWithResult(String directory, List<String> commandList, Map<String, String> environment) {
-		//print commandListToString(commandList)
-		def processBuilder = new ProcessBuilder(commandList)
-		processBuilder.redirectErrorStream(true)
-		processBuilder.directory(new File(directory))
-		if (environment != null) {
-			Map<String, String> env = processBuilder.environment()
-			env.putAll(environment)
-		}
-		def process = processBuilder.start()
-		StringBuilder builder = new StringBuilder()
-		process.inputStream.eachLine {
-			if (builder.length() > 0) {
-				builder.append("\n");
-			}
-			builder.append(it);
-		}
-		process.waitFor()
-		if (process.exitValue() > 0) {
-			throw new IllegalStateException("Command failed to run: " + commandListToString(commandList))
-		}
-		return builder.toString()
+		runCommand(directory, commandList, environment);
+		return resultStringBuilder.toString();
+	}
+
+
+	def getResult() {
+		return resultStringBuilder.toString();
 	}
 }

@@ -67,6 +67,22 @@ xcodebuild Parameters:
 		Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
 
+* _destination_ * - destination configuration
+
+	default value: empty
+	
+	* _platform_ - Platform, e.g. 'iOS' or 'OS X'
+	
+	default value: empty
+	
+	* _name_ - Name of the destination device. Needed for iOS builds
+	
+	default value: empty
+	
+	* _arch_ - Architecture of the destination target
+	
+	default value: empty
+
 
 * _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 
   `additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"`.
