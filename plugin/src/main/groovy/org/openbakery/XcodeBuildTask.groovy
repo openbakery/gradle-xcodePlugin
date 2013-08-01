@@ -145,6 +145,11 @@ class XcodeBuildTask extends DefaultTask {
 							"TEST_AFTER_BUILD=YES",
 							"TEST_HOST="
 			]
+			
+			if (project.xcodebuild.arch != null) {
+				commandList.add("-arch")
+				commandList.add(project.xcodebuild.arch)
+			}
 
 			commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 			commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
