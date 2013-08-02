@@ -161,10 +161,6 @@ class XcodePlugin implements Plugin<Project> {
 			defineDynamicDependencies()
 		}
 
-		CommandRunner commandRunner = new CommandRunner();
-		def result = commandRunner.runCommandWithResult(["xcodebuild", "-version"])
-		project.xcodebuild.isXcode5 =  result.startsWith("Xcode 5")
-
 	}
 
 	def void defineExtensions() {
@@ -217,7 +213,7 @@ class XcodePlugin implements Plugin<Project> {
 		Task archive = project.tasks."archive"
 		archive.dependsOn("clean")
 
-		Task uiautomation = project.tasks.'uiautomation'
+		//Task uiautomation = project.tasks.'uiautomation'
 
 		Task hockeyKitManifest = project.tasks.'hockeykit-manifest'
 		Task hockeyKitArchiveTask = project.tasks.'hockeykit-archive'
@@ -226,28 +222,6 @@ class XcodePlugin implements Plugin<Project> {
 		Task hockey = project.tasks.'hockeykit'
 		hockey.dependsOn(hockeyKitArchiveTask, hockeyKitManifest, hockeyKitImageTask, hockeyKitNotes)
 		hockeyKitArchiveTask.dependsOn(archive)
-
-		Task keychainCleanup = project.tasks.'keychain-clean'
-		Task xcodebuildCleanup = project.tasks.'clean'
-		Task provisioningCleanup = project.tasks.'provisioning-clean'
-		Task hockeyKitCleanTask = project.tasks.'hockeykit-clean'
-		Task testFlightClean = project.tasks.'testflight-clean'
-		Task hockeyAppClean = project.tasks.'hockeyapp-clean'
-
-		xcodebuildCleanup.dependsOn(keychainCleanup)
-		xcodebuildCleanup.dependsOn(provisioningCleanup)
-		xcodebuildCleanup.dependsOn(hockeyKitCleanTask)
-		xcodebuildCleanup.dependsOn(testFlightClean);
-		xcodebuildCleanup.dependsOn(hockeyAppClean);
-		xcodebuildCleanup.dependsOn(hockeyAppClean);
-
-
-		xcodebuild.dependsOn(project.tasks.'keychain-create')
-		xcodebuild.dependsOn(project.tasks.'provisioning-install')
-		xcodebuild.dependsOn(infoplistModify)
-
-		Task codesign = project.tasks.'codesign'
-		archive.dependsOn(codesign)
 
 
 	}

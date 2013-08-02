@@ -1,5 +1,7 @@
 package org.openbakery
 
+import groovy.json.JsonOutput
+import groovy.json.StringEscapeUtils
 import org.gradle.api.tasks.TaskAction
 
 
@@ -48,13 +50,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
 
-	//def TEST_START_PATTERN = ~/^Test Case '(.*)' started.*/
-	//def TEST_PASSED_TOKEN = ~/^Test Case '(.*)' passed.*/
-	//def TEST_FAILED_TOKEN = ~/^Test Case '(.*)' failed.*/
-
-
 	XcodeTestTask() {
 		super()
+		dependsOn('keychain-create', 'provisioning-install')
 		this.description = "Run the unit test fo the Xcode project"
 	}
 
@@ -116,15 +114,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 					}
 					testClass.results << new TestResult(method: method)
 
-/*
-					def testsForClass = resultMap.get(testClass)
-					if (testsForClass == null) {
-						testsForClass = []
-					}
-					testsForClass.add(testCase);
-					resultMap.put(testCase.testClass, testsForClass);
-					println testsForClass
-*/
 				} else {
 					//TestCase testCase = resultMap.get(testClass).find{ testCase -> testCase.method.equals(method) }
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
@@ -155,7 +144,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 								TestResult r -> [
 								        method: r.method,
 												success: r.success,
-												output: r.output
+												output: r.output.split("\n").collect {
+													String s -> StringEscapeUtils.escapeJavaScript(s)
+												}
 								]
 							}]
 		}
@@ -163,74 +154,12 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 
-
-
-
-		println "RESULTS: " + resultList
-/*
-		builder.resultList() {
-			resultList.each { TestClass testClass -> name(
-							name     : testClass.name,
-							tests: testClass.each {
-								TestResult testResult -> result(
-												method : testResult.method,
-												success : testResult.success,
-												output : testResult.output
-								)
-							})}
-		}
-		*/
-		/*
-
-
-		,
-							tests : testClass.results.each {
-								TestResult testResult -> result(
-												method : testResult.method,
-												success : testResult.success,
-												output : testResult.output
-								)
-
-							}
-
-		def root = builder.results {
-			test {
-				name "${p.name}"
-
-				addresses(
-								p.addresses.collect{
-									Address a -> [addr: a.address, state:a.state]
-								}
-				)
-			}
-		}
-*/
-/*
-		def list = resultList.collect{
-			TestCase testCase -> [
-							testClass     : testCase.testClass,
-							method	: testCase.method,
-							success : testCase.success,
-							output   : testCase.output]}
-		builder(results: list)
-*/
-
-		//
-/*
-		builder.results() {
-			resultMap.values().each { TestCase testCase -> result(
-							name     : testCase.name,
-							success : testCase.success,
-							output   : testCase.output)}
-		}
-*/
-
 		File outputDirectory = new File(project.getBuildDir(), "test");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
 
-		new File(outputDirectory, "unittest-result.json").withWriter { out ->
+		new File(outputDirectory, "tresults.json").withWriter { out ->
 			out.write(builder.toPrettyString())
 		}
 	}

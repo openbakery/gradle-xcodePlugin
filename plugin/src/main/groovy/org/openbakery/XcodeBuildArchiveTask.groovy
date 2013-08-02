@@ -23,6 +23,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	XcodeBuildArchiveTask() {
 		super()
+		dependsOn('codesign')
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 

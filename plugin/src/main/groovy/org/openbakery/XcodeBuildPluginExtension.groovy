@@ -47,8 +47,6 @@ class XcodeBuildPluginExtension {
 	 */
 	private final Project project
 
-	private boolean isXcode5 = false;
-
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
 		this.signing = new Signing(project)

@@ -25,6 +25,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 	XcodeBuildTask() {
 		super()
+		dependsOn('keychain-create', 'provisioning-install', 'infoplist-modify')
 		this.description = "Builds the Xcode project"
 	}
 

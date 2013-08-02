@@ -67,58 +67,45 @@ class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.arch)
 		}
 
-		if (!project.xcodebuild.isXcode5) {
-			// my tests indicated that xcode 5 automatically finds the proper provisioning profile for the cert
-			def uuid = provisioningProfileIdReader.readProvisioningProfileIdFromDestinationRoot(project.xcodebuild.signing.mobileProvisionDestinationRoot)
-			if (uuid != null) {
-				commandList.add("PROVISIONING_PROFILE=" + uuid);
-			}
-		}
+
 		commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
 		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 
-		if (project.xcodebuild.isXcode5) {
+		for (Destination destination in project.xcodebuild.destinations) {
 
-			for (Destination destination in project.xcodebuild.destinations) {
-
-				StringBuilder destinationBuilder = new StringBuilder();
-				if (destination.platform != null) {
-					destinationBuilder.append("platform=");
-					destinationBuilder.append(destination.platform)
-				}
-				if (destination.name != null && destination.platform.startsWith("iOS")) {
-					if (destinationBuilder.length() > 0) {
-						destinationBuilder.append(",")
-					}
-					destinationBuilder.append("name=");
-					destinationBuilder.append(destination.name)
-				}
-				if (destination.arch != null && destination.platform.equals("OS X")) {
-					if (destinationBuilder.length() > 0) {
-						destinationBuilder.append(",")
-					}
-					destinationBuilder.append("arch=");
-					destinationBuilder.append(destination.arch)
-				}
-
-				if (destination.os != null && destination.platform.equals("iOS Simulator")) {
-					if (destinationBuilder.length() > 0) {
-						destinationBuilder.append(",")
-					}
-					destinationBuilder.append("os=");
-					destinationBuilder.append(destination.os)
-				}
-
-				commandList.add("-destination")
-				commandList.add(destinationBuilder.toString());
-
-
+			StringBuilder destinationBuilder = new StringBuilder();
+			if (destination.platform != null) {
+				destinationBuilder.append("platform=");
+				destinationBuilder.append(destination.platform)
 			}
-		} else {
-			println "You are using Xcode 4.x but destinations where introduced with Xcode 5, so this settings are ignored."
+			if (destination.name != null && destination.platform.startsWith("iOS")) {
+				if (destinationBuilder.length() > 0) {
+					destinationBuilder.append(",")
+				}
+				destinationBuilder.append("name=");
+				destinationBuilder.append(destination.name)
+			}
+			if (destination.arch != null && destination.platform.equals("OS X")) {
+				if (destinationBuilder.length() > 0) {
+					destinationBuilder.append(",")
+				}
+				destinationBuilder.append("arch=");
+				destinationBuilder.append(destination.arch)
+			}
+
+			if (destination.os != null && destination.platform.equals("iOS Simulator")) {
+				if (destinationBuilder.length() > 0) {
+					destinationBuilder.append(",")
+				}
+				destinationBuilder.append("os=");
+				destinationBuilder.append(destination.os)
+			}
+
+			commandList.add("-destination")
+			commandList.add(destinationBuilder.toString());
 		}
 
 		if (project.xcodebuild.signing.keychainPathInternal.exists()) {
