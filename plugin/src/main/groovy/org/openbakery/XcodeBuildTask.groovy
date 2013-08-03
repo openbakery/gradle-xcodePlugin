@@ -142,9 +142,19 @@ class XcodeBuildTask extends DefaultTask {
 							project.xcodebuild.sdk,
 							"-target",
 							project.xcodebuild.unitTestTarget,
-							"TEST_AFTER_BUILD=YES",
-							"TEST_HOST="
+							"TEST_AFTER_BUILD=YES"
 			]
+			
+						
+			if (project.xcodebuild.additionalParameters instanceof List) {
+				for (String value in project.xcodebuild.additionalParameters) {
+					commandList.add(value)
+				}
+			} else {
+				if (project.xcodebuild.additionalParameters != null) {
+					commandList.add(project.xcodebuild.additionalParameters)
+				}
+			}
 			
 			if (project.xcodebuild.arch != null) {
 				commandList.add("-arch")
