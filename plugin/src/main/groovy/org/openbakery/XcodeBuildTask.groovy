@@ -119,7 +119,7 @@ class XcodeBuildTask extends DefaultTask {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 
-		commandRunner.runCommand(commandList)
+		commandRunner.runCommand("$projectDir", commandList)
 		println "Done"
 		println "--------------------------------------------------------------------------------"
 		println "--------------------------------------------------------------------------------"
