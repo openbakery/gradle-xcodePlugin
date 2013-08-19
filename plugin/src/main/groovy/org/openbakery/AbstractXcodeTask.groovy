@@ -166,7 +166,7 @@ class AbstractXcodeTask extends DefaultTask {
 	}
 
 	def getInfoPlistFromProjectFile() {
-		def projectFileDirectory = new File(".").list(new SuffixFileFilter(".xcodeproj"))[0]
+		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
 		def projectFile = new File(projectFileDirectory, "project.pbxproj")
 
 		def buildRoot = project.buildDir

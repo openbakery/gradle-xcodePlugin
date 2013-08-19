@@ -119,7 +119,7 @@ class XcodeBuildTask extends DefaultTask {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 
-		commandRunner.runCommand(commandList)
+		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
 		println "Done"
 		println "--------------------------------------------------------------------------------"
 		println "--------------------------------------------------------------------------------"
@@ -145,7 +145,7 @@ class XcodeBuildTask extends DefaultTask {
 							"TEST_AFTER_BUILD=YES",
 							"TEST_HOST="
 			]
-			
+
 			if (project.xcodebuild.arch != null) {
 				commandList.add("-arch")
 				commandList.add(project.xcodebuild.arch)
@@ -156,7 +156,7 @@ class XcodeBuildTask extends DefaultTask {
 			commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 			commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
-			commandRunner.runCommand(commandList)
+			commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
 		}
 	}
 
