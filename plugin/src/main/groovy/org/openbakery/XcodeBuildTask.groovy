@@ -22,7 +22,6 @@ import org.gradle.util.ConfigureUtil
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
 
-
 	XcodeBuildTask() {
 		super()
 		dependsOn('keychain-create', 'provisioning-install', 'infoplist-modify')
@@ -48,12 +47,11 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			}
 		}
 
-		commandRunner.runCommand(commandList)
+		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
 		println "Done"
 		println "--------------------------------------------------------------------------------"
 		println "--------------------------------------------------------------------------------"
 
 	}
-
 
 }

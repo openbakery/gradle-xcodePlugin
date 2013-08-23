@@ -3,6 +3,11 @@
 Changes
 - XCode5 support. This version only works with Xcode5
 
+=======
+## 0.8.5 (Aug 2, 2013)
+
+Bugfixes:
+- Merged Pull Request: https://github.com/openbakery/gradle-xcodePlugin/pull/29
 
 ## 0.8.4 (June 21, 2013)
 
