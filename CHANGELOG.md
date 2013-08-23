@@ -2,8 +2,9 @@
 
 Changes
 - XCode5 support. This version only works with Xcode5
+- Updated Keychain creation and cleanup for OS X Mavericks
 
-=======
+
 ## 0.8.5 (Aug 2, 2013)
 
 Bugfixes:

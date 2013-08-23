@@ -24,17 +24,8 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 		this.description = "Cleanup the keychain"
 	}
 
-	@TaskAction
-	def clean() {
-		if (project.xcodebuild.signing.keychain) {
-			println "Nothing to cleanup"
-			return;
-		}
-
-
-		project.xcodebuild.signing.keychainDestinationRoot.deleteDir();
-
-		String result = runCommandWithResult(["security", "list"])
+	def deleteKeychain() {
+		String result = runCommandWithResult(["security", "list-keychains"])
 		String[] keychains = result.split("\n")
 		for (String keychain : keychains) {
 			def matcher = keychain =~ /^\s*"(.*)"$/
@@ -43,7 +34,7 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
 					println "deleting keychain: " + keychainFile
 					try {
-					runCommand(["security", "delete-keychain", keychainFile.absolutePath])
+						runCommand(["security", "delete-keychain", keychainFile.absolutePath])
 					} catch (IllegalStateException ex) {
 						// ignore because delete-keychain results in an error because the file does not exists
 						// but the entry is deleted properly
@@ -61,6 +52,41 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 			}
 
 		}
+	}
+
+	def setKeychainList() {
+		String keychainList = runCommandWithResult(["security", "list-keychains"])
+
+		def commandList = [
+						"security",
+						"list-keychains",
+						"-s"
+		]
+		for (String keychain in keychainList.split("\n")) {
+			String trimmedKeychain = keychain.replaceAll(/^\s*\"|\"$/, "")
+			if (new File(trimmedKeychain).exists()) {
+				commandList.add(trimmedKeychain)
+			}
+
+		}
+		runCommand(commandList)
+	}
+
+	@TaskAction
+	def clean() {
+		if (project.xcodebuild.signing.keychain) {
+			println "Nothing to cleanup"
+			return;
+		}
+
+		project.xcodebuild.signing.keychainDestinationRoot.deleteDir()
+
+		if (getOSVersion().minor >= 9) {
+			setKeychainList()
+		} else {
+			deleteKeychain()
+		}
+
 	}
 
 }
