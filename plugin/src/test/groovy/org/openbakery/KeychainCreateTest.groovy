@@ -4,8 +4,11 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.AfterClass
+import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+
+import static org.gmock.GMock.constructor
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,16 +39,15 @@ class KeychainCreateTest {
 		keychainCreateTask.setProperty("commandRunner", commandRunnerMock)
 
 		certificateFile = File.createTempFile("test", ".cert")
-		certificateFile.deleteOnExit()
 		keychainDestinationFile = new File(project.xcodebuild.signing.keychainDestinationRoot, certificateFile.getName())
-
 	}
 
-	@AfterClass
-	def cleanup() {
+	@AfterTest
+	def cleanAfterTest() {
 		certificateFile.delete();
+		new File(project.xcodebuild.signing.keychainDestinationRoot, certificateFile.getName()).delete()
+		project.xcodebuild.signing.keychainPathInternal.delete()
 	}
-
 
 	@Test
 	void OSVersion() {
@@ -84,14 +86,15 @@ class KeychainCreateTest {
 
 
 	void expectKeychainListSetCommand() {
+
 		List<String> commandList
 		commandList?.clear()
 		String userHome = System.getProperty("user.home")
 		commandList = ["security", "list-keychains", "-s"]
 		commandList.add(userHome + "/Library/Keychains/login.keychain")
-		commandList.add("/Library/Keychains/System.keychain")
 		commandList.add(project.xcodebuild.signing.keychainPathInternal.toString())
 		commandRunnerMock.runCommand(commandList).times(1)
+
 	}
 
 	@Test
@@ -119,12 +122,11 @@ class KeychainCreateTest {
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 
-		expectKeychainCreateCommand()
+		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 
 		String userHome = System.getProperty("user.home")
-		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"\n" +
-								"    \"/Library/Keychains/System.keychain\"";
+		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"";
 		expectKeychainListCommand(result)
 		expectKeychainListSetCommand()
 
@@ -141,14 +143,14 @@ class KeychainCreateTest {
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 
-		expectKeychainCreateCommand()
+		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 		String userHome = System.getProperty("user.home")
 		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"\n" +
-						"    \"/MISSING_PATH/Keychains/MISSING\"\n" +
-						"    \"/Library/Keychains/System.keychain\"";
+						"    \"/MISSING_PATH/Keychains/MISSING\"";
 		expectKeychainListCommand(result)
 		expectKeychainListSetCommand()
+
 
 		mockControl.play {
 			keychainCreateTask.create()

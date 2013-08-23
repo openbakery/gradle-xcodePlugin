@@ -20,7 +20,7 @@ package org.openbakery
  * @author René Pirringer
  *
  */
-class AbstractHockeykitTask extends AbstractXcodeTask {
+abstract class AbstractHockeykitTask extends AbstractXcodeTask {
 
 	/**
 	 * Method to get the destination directory where the output of the generated files for hockeykit should be stored.

@@ -17,7 +17,7 @@ package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
 
-class KeychainCleanupTask extends AbstractXcodeTask {
+class KeychainCleanupTask extends AbstractKeychainTask {
 
 	KeychainCleanupTask() {
 		super()
@@ -25,11 +25,8 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 	}
 
 	def deleteKeychain() {
-		String result = runCommandWithResult(["security", "list-keychains"])
-		String[] keychains = result.split("\n")
-		for (String keychain : keychains) {
-			def matcher = keychain =~ /^\s*"(.*)"$/
-			File keychainFile = new File(matcher[0][1])
+		for (String keychain : getKeychainList()) {
+			File keychainFile = new File(keychain)
 			if (!keychainFile.exists()) {
 				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
 					println "deleting keychain: " + keychainFile
@@ -54,24 +51,6 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 		}
 	}
 
-	def setKeychainList() {
-		String keychainList = runCommandWithResult(["security", "list-keychains"])
-
-		def commandList = [
-						"security",
-						"list-keychains",
-						"-s"
-		]
-		for (String keychain in keychainList.split("\n")) {
-			String trimmedKeychain = keychain.replaceAll(/^\s*\"|\"$/, "")
-			if (new File(trimmedKeychain).exists()) {
-				commandList.add(trimmedKeychain)
-			}
-
-		}
-		runCommand(commandList)
-	}
-
 	@TaskAction
 	def clean() {
 		if (project.xcodebuild.signing.keychain) {
@@ -82,7 +61,7 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 		project.xcodebuild.signing.keychainDestinationRoot.deleteDir()
 
 		if (getOSVersion().minor >= 9) {
-			setKeychainList()
+			setKeychainList(getKeychainList())
 		} else {
 			deleteKeychain()
 		}

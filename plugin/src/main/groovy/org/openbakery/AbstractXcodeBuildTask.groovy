@@ -7,7 +7,7 @@ import org.gradle.api.DefaultTask
  * Date: 15.07.13
  * Time: 11:57
  */
-class AbstractXcodeBuildTask extends DefaultTask {
+abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 	CommandRunner commandRunner
 	ProvisioningProfileIdReader provisioningProfileIdReader

@@ -19,12 +19,12 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.InvalidUserDataException
 
 
-class KeychainCreateTask extends AbstractXcodeTask {
+class KeychainCreateTask extends AbstractKeychainTask {
 
 
 	KeychainCreateTask() {
 		super()
-		this.description = "Create a propery keychain that is used for signing the app"
+		this.description = "Create a keychain that is used for signing the app"
 	}
 
 	@TaskAction
@@ -66,24 +66,13 @@ class KeychainCreateTask extends AbstractXcodeTask {
 
 
 		if (getOSVersion().minor >= 9) {
-			String keychainList = runCommandWithResult(["security", "list-keychains"]);
 
-			def commandList = [
-							"security",
-							"list-keychains",
-							"-s"
-			]
-			for (String keychain in keychainList.split("\n")) {
-				String trimmedKeychain = keychain.replaceAll(/^\s*\"|\"$/, "");
-				if (new File(trimmedKeychain).exists()) {
-					commandList.add(trimmedKeychain);
-				}
-
-			}
-			commandList.add(keychainPath)
-			runCommand(commandList)
+			def keychainList = getKeychainList()
+			keychainList.add(keychainPath)
+			setKeychainList(keychainList)
 		}
 	}
+
 
 
 }

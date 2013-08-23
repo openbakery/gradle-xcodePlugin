@@ -61,7 +61,6 @@ class KeychainCleanupTaskTest {
 		String userHome = System.getProperty("user.home")
 		commandList = ["security", "list-keychains", "-s"]
 		commandList.add(userHome + "/Library/Keychains/login.keychain")
-		commandList.add("/Library/Keychains/System.keychain")
 		commandRunnerMock.runCommand(commandList).times(1)
 	}
 

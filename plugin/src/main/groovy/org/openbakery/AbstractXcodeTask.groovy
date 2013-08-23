@@ -29,7 +29,7 @@ import org.gradle.api.Task
  * @author René Pirringer
  *
  */
-class AbstractXcodeTask extends DefaultTask {
+abstract class AbstractXcodeTask extends DefaultTask {
 
 	CommandRunner commandRunner
 
