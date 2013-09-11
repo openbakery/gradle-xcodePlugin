@@ -159,7 +159,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			outputDirectory.mkdirs()
 		}
 
-		new File(outputDirectory, "tresults.json").withWriter { out ->
+		new File(outputDirectory, "results.json").withWriter { out ->
 			out.write(builder.toPrettyString())
 		}
 	}

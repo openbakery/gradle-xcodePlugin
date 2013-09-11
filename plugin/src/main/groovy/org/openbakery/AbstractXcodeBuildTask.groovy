@@ -81,7 +81,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				destinationBuilder.append("platform=");
 				destinationBuilder.append(destination.platform)
 			}
-			if (destination.name != null && destination.platform.startsWith("iOS")) {
+			if (destination.name != null) {
 				if (destinationBuilder.length() > 0) {
 					destinationBuilder.append(",")
 				}
@@ -100,7 +100,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				if (destinationBuilder.length() > 0) {
 					destinationBuilder.append(",")
 				}
-				destinationBuilder.append("os=");
+				destinationBuilder.append("OS=");
 				destinationBuilder.append(destination.os)
 			}
 
