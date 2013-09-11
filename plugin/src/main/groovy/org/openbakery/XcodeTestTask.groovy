@@ -81,16 +81,19 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def parseResult(String result) {
 
 
-		def resultMap = [:]
-
 		def resultList = []
 
+		int testRun = 0;
 
-		StringBuilder output = null
+		StringBuilder output = new StringBuilder()
 		for (String line in result.split("\n")) {
 
 			def matcher = TEST_CASE_PATTERN.matcher(line)
+
+			def ALL_TESTS_FINISHED = "Test Suite 'All tests' finished at";
+
 			if (matcher.matches()) {
+
 				String message = matcher[0][2].trim()
 
 				def nameMatcher = TEST_CLASS_PATTERN.matcher(matcher[0][1])
@@ -100,7 +103,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 				String testClassName = nameMatcher[0][1]
 				String method = nameMatcher[0][2]
-
 
 				if (message.startsWith("started")) {
 					output = new StringBuilder()
@@ -124,6 +126,12 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 						testResult.success = message.startsWith("passed");
 					}
 				}
+			} else if (line.startsWith(ALL_TESTS_FINISHED)) {
+				if (!resultList.isEmpty()) {
+					store(resultList, testRun)
+				}
+				resultList = []
+				testRun ++;
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {
@@ -134,8 +142,14 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 		}
 
-		def builder = new groovy.json.JsonBuilder()
 
+	}
+
+
+
+	def store(def resultList, int testRun) {
+
+		def builder = new groovy.json.JsonBuilder()
 
 		def list = resultList.collect{
 			TestClass t -> [
@@ -152,17 +166,23 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 		builder(list)
 
-
-
 		File outputDirectory = new File(project.getBuildDir(), "test");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
 
-		new File(outputDirectory, "results.json").withWriter { out ->
+		String filename;
+		if (project.xcodebuild.destinations.size() > testRun) {
+			Destination destination = project.xcodebuild.destinations[testRun];
+			filename = "results-" + destination.name + "-" + destination.os + ".json"
+		} else {
+			filename = "results-" + testRun + ".json"
+		}
+
+
+
+		new File(outputDirectory, filename).withWriter { out ->
 			out.write(builder.toPrettyString())
 		}
 	}
-
-
 }
