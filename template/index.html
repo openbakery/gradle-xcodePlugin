@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test Results</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<body>
+
+  <script id="index" type="text/x-handlebars">
+    <h2>{{title}}</h2>
+  </script>
+	
+  <script id="testResults" type="text/x-handlebars">
+		<table class="table table-bordered">
+		<tr>
+		<th></th>
+		{{#each destinations}}
+			<th>{{name}}<br/>
+			{{platform}}<br/>
+      {{os}}
+		{{/each}} 
+		</tr>
+		{{#each testClasses}}
+		<tr>
+		<td>
+		{{@key}}
+		</td>
+		{{#each this}}
+		<td style="text-align:center">
+		{{#showResult this}}{{/showResult}}
+
+		  <!-- Modal -->
+		  <div class="modal fade" id="{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		    <div class="modal-dialog">
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		          <h4 class="modal-title">{{this.name}}</h4>
+		        </div>
+		        <div class="modal-body">
+						<pre class="pre-scrollable">{{#each this.result.output}}{{this}}<br/>{{/each}}</pre>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+			
+		</td>
+		{{/each}} 
+		</tr>
+		{{/each}} 
+		</table>
+  </script>
+
+  <script id="tests" type="text/x-handlebars">
+    {{#tests}}
+		
+		
+		
+		  <div class="panel-heading">{{name}}</div>
+		  <!-- List group -->
+		  <ul class="list-group">
+			{{#result}}
+				{{#if success}}
+				<li class="list-group-item" data-toggle="collapse" data-target="#{{method}}">
+					<span class="label label-success"><span class="glyphicon glyphicon-ok glyphicon-white"/></span> {{method}}
+					<div id="{{method}}" class="collapse"><p style="padding-top: 1em"><code>{{#each output}}{{this}}<br/>{{/each}}</code></p></div>
+				</li>
+				{{else}}
+				<li class="list-group-item" data-toggle="collapse" data-target="#{{method}}">
+						<span class="label label-danger"><span class="glyphicon glyphicon-remove glyphicon-white"/></span> {{method}}
+						<div id="{{method}}" class="collapse"><p style="padding-top: 1em"><code>{{#each output}}{{this}}<br/>{{/each}}</code></p></div>
+				</li>
+				{{/if}}
+				{{/result}}
+				
+		  </ul>
+		</div>
+		
+    {{/tests}}
+  </script>
+	
+ 
+
+  <script id="summary" type="text/x-handlebars">
+		<div class="row">
+			<div class="col-md-3 col-md-offset-3">
+				<div class="panel panel-default panel-success" style="text-align:center">
+					<div class="panel-heading"><span style="font-size: 500%;">{{success}}</span><br/>Success</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="panel panel-default panel-danger" style="text-align:center">
+					<div class="panel-heading"><span style="font-size: 500%">{{failure}}</span><br/>Failures</div>
+				</div>
+			</div>
+		</div>
+  </script>
+	
+	<div class="container">
+	</div>
+
+  <script src="js/libs/underscore-min.js"></script>
+
+  <script src="js/libs/jquery-1.9.1.js"></script>
+  <script src="js/libs/handlebars-1.0.0-rc.4.js"></script>
+  <script src="js/app.js"></script>
+	
+  <script src="js/bootstrap.min.js"></script>
+
+	
+</body>
+</html>
