@@ -8,7 +8,8 @@ import org.gradle.api.tasks.TaskAction
 class TestResult {
 	String method;
 	boolean success;
-	String output;
+	String output = "";
+	float duration;
 
 
 	@Override
@@ -49,6 +50,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
 
 	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
+						//passed (0.006 seconds)
+
+	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
+
 
 	XcodeTestTask() {
 		super()
@@ -80,6 +85,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def parseResult(String result) {
 
+		def allResults = [:]
 
 		def resultList = []
 
@@ -123,15 +129,20 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 					if (testResult != null) {
 						testResult.output = output.toString()
-						testResult.success = message.startsWith("passed");
+						testResult.success = message.startsWith("passed")
+
+						def durationMatcher = DURATION_PATTERN.matcher(message)
+						if (durationMatcher.matches()) {
+							testResult.duration = Float.parseFloat(durationMatcher[0][1])
+						}
 					}
 				}
 			} else if (line.startsWith(ALL_TESTS_FINISHED)) {
-				if (!resultList.isEmpty()) {
-					store(resultList, testRun)
-				}
-				resultList = []
+				Destination destination = project.xcodebuild.destinations[testRun]
+				allResults.put(destination, resultList)
 				testRun ++;
+
+				resultList = []
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {
@@ -142,46 +153,60 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 		}
 
+		store(allResults)
 
 	}
 
 
 
-	def store(def resultList, int testRun) {
+	def store(def allResults) {
 
 		def builder = new groovy.json.JsonBuilder()
 
-		def list = resultList.collect{
-			TestClass t -> [
-							name: t.name,
-							result: t.results.collect {
-								TestResult r -> [
-								        method: r.method,
-												success: r.success,
-												output: r.output.split("\n").collect {
-													String s -> StringEscapeUtils.escapeJavaScript(s)
-												}
+		def list = [];
+		for (Destination destination in project.xcodebuild.destinations) {
+
+			def resultList = allResults[destination]
+
+			list << [
+						destination:
+							[
+								name : destination.name,
+								platform : destination.platform,
+								arch: destination.arch,
+								id: destination.id,
+								os: destination.os
+							],
+						results:
+							resultList.collect {
+								TestClass t -> [
+									name: t.name,
+									result: t.results.collect {
+										TestResult r ->	[
+											method: r.method,
+											success: r.success,
+											duration: r.duration,
+											output: r.output.split("\n").collect {
+												String s -> StringEscapeUtils.escapeJavaScript(s)
+											}
+										]
+									}
 								]
-							}]
+							}
+					]
+
+
 		}
+
 		builder(list)
+
 
 		File outputDirectory = new File(project.getBuildDir(), "test");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
 
-		String filename;
-		if (project.xcodebuild.destinations.size() > testRun) {
-			Destination destination = project.xcodebuild.destinations[testRun];
-			filename = "results-" + destination.name + "-" + destination.os + ".json"
-		} else {
-			filename = "results-" + testRun + ".json"
-		}
-
-
-
-		new File(outputDirectory, filename).withWriter { out ->
+		new File(outputDirectory, "results.json").withWriter { out ->
 			out.write(builder.toPrettyString())
 		}
 	}
