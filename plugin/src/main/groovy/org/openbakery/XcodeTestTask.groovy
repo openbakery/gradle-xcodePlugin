@@ -187,7 +187,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 											success: r.success,
 											duration: r.duration,
 											output: r.output.split("\n").collect {
-												String s -> StringEscapeUtils.escapeJavaScript(s)
+												String s -> escapeString(s)
 											}
 										]
 									}
@@ -210,4 +210,49 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			out.write(builder.toPrettyString())
 		}
 	}
+
+
+
+	def escapeString(String string) {
+		if (string == null) {
+			return null;
+		}
+		StringBuffer buffer = new StringBuffer();
+
+		for (int i = 0; i < string.length(); i++) {
+			char ch = string.charAt(i);
+			switch (ch) {
+				case '"':
+					buffer.append("\\\"");
+					break;
+				case '\\':
+					buffer.append("\\\\");
+					break;
+				case '\b':
+					buffer.append("\\b");
+					break;
+				case '\f':
+					buffer.append("\\f");
+					break;
+				case '\n':
+					buffer.append("\\n");
+					break;
+				case '\r':
+					buffer.append("\\r");
+					break;
+				case '\t':
+					buffer.append("\\t");
+					break;
+				case '/':
+					buffer.append("\\/");
+					break;
+				default:
+					buffer.append(ch);
+					break;
+			}
+		}
+		return buffer.toString();
+	}
+
+
 }
