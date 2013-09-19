@@ -1,20 +1,20 @@
 buildscript {
-    repositories {
-				maven {
-					url('http://openbakery.org/repository/')
-				}
-				mavenCentral()
-    }
-    dependencies {
-        classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.0-beta1'
-    }
+	repositories {
+		maven {
+			url('http://openbakery.org/repository/')
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.0-beta1'
+		}
 }
 apply plugin: 'xcode'
 
 xcodebuild {
 	scheme = 'My-Scheme'
 	workspace = 'My-Workpace.xcworkspace'
-  target = 'My-Target'
+	target = 'My-Target'
 	configuration = 'Debug'
 
 	signing {
@@ -27,7 +27,6 @@ xcodebuild {
 	hockeykit {
 		displayName='My App Name'
 	}
-
 
 }
 
@@ -50,7 +49,6 @@ task appstore(dependsOn: 'archive') {
 
 
 gradle.taskGraph.whenReady { taskGraph ->
-
 
 	if (taskGraph.hasTask(continuous)) {
 		println "CONFIGURE INTEGRATION"
