@@ -1,0 +1,106 @@
+buildscript {
+    repositories {
+				maven {
+					url('http://openbakery.org/repository/')
+				}
+				mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.0-beta1'
+    }
+}
+apply plugin: 'xcode'
+
+xcodebuild {
+	scheme = 'My-Scheme'
+	workspace = 'My-Workpace.xcworkspace'
+  target = 'My-Target'
+	configuration = 'Debug'
+
+	signing {
+		identity = 'iPhone Developer: ...'
+		certificateURI = 'http://example.com/Provisioning/Development.p12'
+		certificatePassword = 'secret'
+		mobileProvisionURI = 'http://example.com/Provisioning/Development.mobileprovision'
+	}
+	
+	hockeykit {
+		displayName='My App Name'
+	}
+
+
+}
+
+task continuous(dependsOn:'test') {
+	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
+}
+
+task integration(dependsOn: 'hockeykit') {
+	description = 'Performs a build for the device and the resulting ipa is published unsign hockeykit'
+}
+task release(dependsOn: 'hockeykit') {
+	description = 'Performs a build for the device that has the same configuration as the AppStore build, except is is distributed via hockeykit'
+}
+
+task appstore(dependsOn: 'archive') {
+	description = 'Build for the AppStore'
+}
+
+
+
+
+gradle.taskGraph.whenReady { taskGraph ->
+
+
+	if (taskGraph.hasTask(continuous)) {
+		println "CONFIGURE INTEGRATION"
+		xcodebuild {
+			
+			destination {
+				platform = 'iOS Simulator'
+				name = 'iPhone Retina (3.5-inch)'
+				os='7.0'
+			}
+
+			destination {
+				platform = 'iOS Simulator'
+				name = 'iPad Retina'
+				os='7.0'
+			}
+			
+		}
+	}
+
+	if (taskGraph.hasTask(integration)) {
+		println "CONFIGURE INTEGRATION"
+		xcodebuild {
+			sdk = 'iphoneos'
+		}
+		infoplist {
+			bundleIdentifier = 'com.example.MyApp-Test'
+		}
+	}
+
+	if (taskGraph.hasTask(release) || taskGraph.hasTask(appstore)) {
+		println "CONFIGURE RELEASE"
+		xcodebuild {
+			configuration = 'Release'
+			sdk = 'iphoneos'
+		}
+		infoplist {
+			bundleIdentifier = 'com.example.MyApp'
+		}
+	} 
+
+	if (taskGraph.hasTask(appstore)) {
+		println "CONFIGURE APPSTORE"
+		xcodebuild {
+			signing {
+				identity = 'iPhone Distribution: ...'
+				certificateURI = 'http://example.com/Provisioning/AppStore.p12'
+				certificatePassword = 'secret'
+				mobileProvisionURI = 'http://example.com/Provisioning/AppStore.mobileprovision'
+			}
+		}
+	}
+}
