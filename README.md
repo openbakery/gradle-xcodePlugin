@@ -11,7 +11,7 @@ gradle xcodePlugin to build iOS projects
 
 __Introduction:__ http://openbakery.org/gradle.php
 
-__Example:__ [build.gradle](consumer/build.gradle)
+__Example:__ [build.gradle](example/build.gradle)
 
 xcodebuild Parameters:
 ----------------------
