@@ -17,33 +17,21 @@ package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
 
-class KeychainCleanupTask extends AbstractXcodeTask {
+class KeychainCleanupTask extends AbstractKeychainTask {
 
 	KeychainCleanupTask() {
 		super()
 		this.description = "Cleanup the keychain"
 	}
 
-	@TaskAction
-	def clean() {
-		if (project.xcodebuild.signing.keychain) {
-			println "Nothing to cleanup"
-			return;
-		}
-
-
-		project.xcodebuild.signing.keychainDestinationRoot.deleteDir();
-
-		String result = runCommandWithResult(["security", "list"])
-		String[] keychains = result.split("\n")
-		for (String keychain : keychains) {
-			def matcher = keychain =~ /^\s*"(.*)"$/
-			File keychainFile = new File(matcher[0][1])
+	def deleteKeychain() {
+		for (String keychain : getKeychainList()) {
+			File keychainFile = new File(keychain)
 			if (!keychainFile.exists()) {
 				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
 					println "deleting keychain: " + keychainFile
 					try {
-					runCommand(["security", "delete-keychain", keychainFile.absolutePath])
+						runCommand(["security", "delete-keychain", keychainFile.absolutePath])
 					} catch (IllegalStateException ex) {
 						// ignore because delete-keychain results in an error because the file does not exists
 						// but the entry is deleted properly
@@ -61,6 +49,23 @@ class KeychainCleanupTask extends AbstractXcodeTask {
 			}
 
 		}
+	}
+
+	@TaskAction
+	def clean() {
+		if (project.xcodebuild.signing.keychain) {
+			println "Nothing to cleanup"
+			return;
+		}
+
+		project.xcodebuild.signing.keychainDestinationRoot.deleteDir()
+
+		if (getOSVersion().minor >= 9) {
+			setKeychainList(getKeychainList())
+		} else {
+			deleteKeychain()
+		}
+
 	}
 
 }

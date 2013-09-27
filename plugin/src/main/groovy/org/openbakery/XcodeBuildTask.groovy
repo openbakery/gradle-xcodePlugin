@@ -20,17 +20,12 @@ import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.util.ConfigureUtil
 
-class XcodeBuildTask extends DefaultTask {
-
-
-	CommandRunner commandRunner
-	ProvisioningProfileIdReader provisioningProfileIdReader
+class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 	XcodeBuildTask() {
 		super()
+		dependsOn('keychain-create', 'provisioning-install', 'infoplist-modify')
 		this.description = "Builds the Xcode project"
-		commandRunner = new CommandRunner()
-		provisioningProfileIdReader = new ProvisioningProfileIdReader()
 	}
 
 	@TaskAction
@@ -39,59 +34,7 @@ class XcodeBuildTask extends DefaultTask {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 
-
-		def commandList = [
-						"xcodebuild"
-		]
-
-
-		if (project.xcodebuild.scheme) {
-			commandList.add("-scheme");
-			commandList.add(project.xcodebuild.scheme);
-
-			// workspace makes only sense when using scheme
-			if (project.xcodebuild.workspace != null) {
-				commandList.add("-workspace")
-				commandList.add(project.xcodebuild.workspace)
-			}
-
-			if (project.xcodebuild.sdk != null) {
-				commandList.add("-sdk")
-				commandList.add(project.xcodebuild.sdk)
-				if (project.xcodebuild.sdk.equals("iphonesimulator") && project.xcodebuild.arch == null) {
-					commandList.add("ONLY_ACTIVE_ARCH=NO")
-					commandList.add("-arch")
-					commandList.add("i386")
-				}
-			}
-
-			if (project.xcodebuild.configuration != null) {
-				commandList.add("-configuration")
-				commandList.add(project.xcodebuild.configuration)
-			}
-
-
-		} else {
-			commandList.add("-configuration")
-			commandList.add(project.xcodebuild.configuration)
-			commandList.add("-sdk")
-			commandList.add(project.xcodebuild.sdk)
-			commandList.add("-target")
-			commandList.add(project.xcodebuild.target)
-		}
-
-
-
-
-		if (project.xcodebuild.signing != null && project.xcodebuild.signing.identity != null) {
-			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
-		}
-
-		if (project.xcodebuild.arch != null) {
-			commandList.add("-arch")
-			commandList.add(project.xcodebuild.arch)
-		}
-
+		def commandList = createCommandList()
 
 
 		if (project.xcodebuild.additionalParameters instanceof List) {
@@ -104,6 +47,7 @@ class XcodeBuildTask extends DefaultTask {
 			}
 		}
 
+<<<<<<< HEAD
 		def uuid = provisioningProfileIdReader.readProvisioningProfileIdFromDestinationRoot(project.xcodebuild.signing.mobileProvisionDestinationRoot)
 		if (uuid != null) {
 			commandList.add("PROVISIONING_PROFILE=" + uuid);
@@ -119,11 +63,14 @@ class XcodeBuildTask extends DefaultTask {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 
+=======
+>>>>>>> xcode5
 		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
 		println "Done"
 		println "--------------------------------------------------------------------------------"
 		println "--------------------------------------------------------------------------------"
 
+<<<<<<< HEAD
 
 		if (project.xcodebuild.unitTestTarget != null &&
 						project.xcodebuild.scheme == null &&
@@ -158,7 +105,8 @@ class XcodeBuildTask extends DefaultTask {
 
 			commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
 		}
+=======
+>>>>>>> xcode5
 	}
-
 
 }

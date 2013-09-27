@@ -34,13 +34,17 @@ class XcodeBuildPluginExtension {
 	def Object symRoot
 	def Object sharedPrecompsDir
 	def String sourceDirectory = '.'
-	def Signing signing= null
+	def Signing signing = null
 	def additionalParameters = null
 	def String bundleNameSuffix = null
 	def String arch = null
 	def String workspace = null
 
+	def ArrayList<Destination> destinations = null
 
+	/**
+	 * internal parameters
+	 */
 	private final Project project
 
 	public XcodeBuildPluginExtension(Project project) {
@@ -101,6 +105,17 @@ class XcodeBuildPluginExtension {
 	void signing(Closure closure) {
 		ConfigureUtil.configure(closure, this.signing)
 		//println "signing: " + this.signing
+	}
+
+
+	void destination(Closure closure) {
+		Destination destination = new Destination()
+		ConfigureUtil.configure(closure, destination)
+		if (destinations == null) {
+			destinations = new ArrayList<Destination>()
+		}
+		destinations.add(destination)
+		println "adding destination: " + destination
 	}
 
 }

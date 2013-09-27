@@ -29,7 +29,7 @@ import org.gradle.api.Task
  * @author René Pirringer
  *
  */
-class AbstractXcodeTask extends DefaultTask {
+abstract class AbstractXcodeTask extends DefaultTask {
 
 	CommandRunner commandRunner
 
@@ -210,5 +210,22 @@ class AbstractXcodeTask extends DefaultTask {
 				}
 			}
 		}
+	}
+
+	def getOSVersion() {
+		Version result = new Version()
+		String versionString = System.getProperty("os.version")
+		Scanner scanner = new Scanner(versionString).useDelimiter("\\.")
+		if (scanner.hasNext()) {
+			result.major = scanner.nextInt()
+		}
+		if (scanner.hasNext()) {
+			result.minor = scanner.nextInt()
+		}
+		if (scanner.hasNext()) {
+			result.maintenance = scanner.nextInt();
+		}
+		return result;
+
 	}
 }

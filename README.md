@@ -3,14 +3,14 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current stable version is 0.8.6** 
+**Current stable version 0.9.0 adds support for Xcode 5, Xcode 4 is not supported!**
 
-**The lastest version is not compatible with 0.7.x, the signing configuration has changed. See [Changelog.md](https://github.com/openbakery/gradle-xcodePlugin/blob/master/CHANGELOG.md)**
+When using Xcode 4.x use the old 0.8.6 version of the plugin
 
 
 __Introduction:__ http://openbakery.org/gradle.php
 
-__Example:__ [build.gradle](consumer/build.gradle)
+__Example:__ [build.gradle](example/build.gradle)
 
 xcodebuild Parameters:
 ----------------------
@@ -66,6 +66,22 @@ xcodebuild Parameters:
 
 		Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
+
+* _destination_ * - destination configuration
+
+	default value: empty
+	
+	* _platform_ - Platform, e.g. 'iOS' or 'OS X'
+	
+	default value: empty
+	
+	* _name_ - Name of the destination device. Needed for iOS builds
+	
+	default value: empty
+	
+	* _arch_ - Architecture of the destination target
+	
+	default value: empty
 
 
 * _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 

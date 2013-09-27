@@ -19,24 +19,21 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.InvalidUserDataException
 
 
-class KeychainCreateTask extends AbstractXcodeTask {
+class KeychainCreateTask extends AbstractKeychainTask {
 
 
 	KeychainCreateTask() {
 		super()
-		this.description = "Create a propery keychain that is used for signing the app"
+		this.description = "Create a keychain that is used for signing the app"
 	}
 
 	@TaskAction
 	def create() {
 
+
+
 		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
 			println("The simulator build does not need a provisioning profile")
-			return
-		}
-
-		if (project.xcodebuild.signing.certificateURI == null) {
-			println("not certificateURI specifed so do not create the keychain")
 			return
 		}
 
@@ -47,8 +44,11 @@ class KeychainCreateTask extends AbstractXcodeTask {
 		}
 
 		if (project.xcodebuild.signing.certificateURI == null) {
-			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificateURI is missing")
+			println("not certificateURI specifed so do not create the keychain")
+			return
 		}
+
+
 		if (project.xcodebuild.signing.certificatePassword == null) {
 			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificatePassword is missing")
 		}
@@ -62,13 +62,17 @@ class KeychainCreateTask extends AbstractXcodeTask {
 		if (!new File(keychainPath).exists()) {
 			runCommand(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
 		}
-
-		//runCommand(["security", "default-keychain", "-s", getKeychainName()])
 		runCommand(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
 
 
-		//runCommand(["security", "list"])
+		if (getOSVersion().minor >= 9) {
+
+			def keychainList = getKeychainList()
+			keychainList.add(keychainPath)
+			setKeychainList(keychainList)
+		}
 	}
+
 
 
 }

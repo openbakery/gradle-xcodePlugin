@@ -1,3 +1,10 @@
+## 0.9.0  (Sep 27, 2013)
+
+Changes
+- XCode5 support. This version only works with Xcode5
+- Updated Keychain creation and cleanup for OS X Mavericks
+- Updated unit test support
+
 ## 0.8.6 (Aug 19, 2013)
 
 Changes:
