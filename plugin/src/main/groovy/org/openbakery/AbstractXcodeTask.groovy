@@ -71,7 +71,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	def runCommand(String directory, List<String> commandList, Map<String, String> environment) {
-		commandRunner.runCommand(directory, commandList, environment)
+		commandRunner.runCommand(directory, commandList, environment, null)
 	}
 
 	def runCommand(String directory, List<String> commandList) {

@@ -18,7 +18,10 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
+import org.openbakery.output.XcodeBuildOutputAppender
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
 
@@ -47,7 +50,10 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			}
 		}
 
-		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class);
+
+
+		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList, new XcodeBuildOutputAppender(output))
 		logger.quiet("Done")
 	}
 

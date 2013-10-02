@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.openbakery.output.OutputAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -32,7 +33,7 @@ class CommandRunner {
 		return "'" + result.trim() + "'"
 	}
 
-	def runCommand(String directory, List<String> commandList, Map<String, String> environment) {
+	def runCommand(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
 		resultStringBuilder = new StringBuilder();
 
 		logger.debug("Run command: {}", commandListToString(commandList))
@@ -48,7 +49,10 @@ class CommandRunner {
 		}
 		def process = processBuilder.start()
 		process.inputStream.eachLine {
-			logger.debug("line: {}", it)
+			if (outputAppender) {
+				outputAppender.append(it)
+			}
+			logger.debug("{}", it)
 			if (resultStringBuilder != null) {
 				if (resultStringBuilder.length() > 0) {
 					resultStringBuilder.append("\n");
@@ -62,8 +66,12 @@ class CommandRunner {
 		}
 	}
 
+	def runCommand(String directory, List<String> commandList, OutputAppender outputAppender) {
+		runCommand(directory, commandList, null, outputAppender)
+	}
+
 	def runCommand(String directory, List<String> commandList) {
-		runCommand(directory, commandList, null)
+		runCommand(directory, commandList, null, null)
 	}
 
 	def runCommand(List<String> commandList) {

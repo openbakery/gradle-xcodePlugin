@@ -86,7 +86,7 @@ class CodesignTask extends AbstractXcodeTask {
 
 		def codesignAllocateCommand = runCommandWithResult(["xcrun", "-find", "codesign_allocate"]).trim();
 		def environment = [CODESIGN_ALLOCATE:codesignAllocateCommand]
-		runCommand(".", commandList, environment)
+		commandRunner.runCommand(".", commandList, environment, null)
 	}
 
 }
