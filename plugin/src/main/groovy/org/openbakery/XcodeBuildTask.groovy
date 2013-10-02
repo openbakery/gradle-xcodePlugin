@@ -47,66 +47,11 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			}
 		}
 
-<<<<<<< HEAD
-		def uuid = provisioningProfileIdReader.readProvisioningProfileIdFromDestinationRoot(project.xcodebuild.signing.mobileProvisionDestinationRoot)
-		if (uuid != null) {
-			commandList.add("PROVISIONING_PROFILE=" + uuid);
-		}
-		commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
-		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
-		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
-		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
-
-
-
-		if (project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
-		}
-
-=======
->>>>>>> xcode5
 		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
 		println "Done"
 		println "--------------------------------------------------------------------------------"
 		println "--------------------------------------------------------------------------------"
 
-<<<<<<< HEAD
-
-		if (project.xcodebuild.unitTestTarget != null &&
-						project.xcodebuild.scheme == null &&
-						project.xcodebuild.configuration != null &&
-						project.xcodebuild.sdk.startsWith("iphonesimulator")
-		) {
-
-			println "Run unit test target: " + project.xcodebuild.unitTestTarget
-			println "--------------------------------------------------------------------------------"
-			println "--------------------------------------------------------------------------------"
-			commandList = [
-							"xcodebuild",
-							"-configuration",
-							project.xcodebuild.configuration,
-							"-sdk",
-							project.xcodebuild.sdk,
-							"-target",
-							project.xcodebuild.unitTestTarget,
-							"TEST_AFTER_BUILD=YES",
-							"TEST_HOST="
-			]
-
-			if (project.xcodebuild.arch != null) {
-				commandList.add("-arch")
-				commandList.add(project.xcodebuild.arch)
-			}
-
-			commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
-			commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
-			commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
-			commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
-
-			commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
-		}
-=======
->>>>>>> xcode5
 	}
 
 }

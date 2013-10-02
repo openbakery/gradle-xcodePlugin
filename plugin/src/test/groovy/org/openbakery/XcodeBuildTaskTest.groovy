@@ -31,11 +31,7 @@ class XcodeBuildTaskTest {
 	List<String> expectedCommandList
 
 	String currentDir = new File('').getAbsolutePath()
-<<<<<<< HEAD
 	String projectDir
-=======
-    String projectDir
->>>>>>> xcode5
 
 	@BeforeMethod
 	def setup() {
@@ -43,11 +39,7 @@ class XcodeBuildTaskTest {
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
-<<<<<<< HEAD
 		projectDir = project.projectDir.absolutePath
-=======
-        projectDir = project.projectDir.absolutePath
->>>>>>> xcode5
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeBuildTask = project.getTasks().getByPath('xcodebuild')
