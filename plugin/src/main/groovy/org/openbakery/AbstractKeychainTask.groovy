@@ -11,7 +11,7 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 
 
 	def getKeychainList() {
-		String keychainList = runCommandWithResult(["security", "list-keychains"])
+		String keychainList = commandRunner.runWithResult(["security", "list-keychains"])
 
 		def result = []
 
@@ -35,7 +35,7 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 				commandList.add(keychain);
 			}
 		}
-		runCommand(commandList)
+		commandRunner.run(commandList)
 	}
 
 }

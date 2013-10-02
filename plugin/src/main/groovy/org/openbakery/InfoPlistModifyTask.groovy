@@ -35,7 +35,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 		if (project.infoplist.bundleIdentifier != null) {
 
-			runCommand([
+			commandRunner.run([
 							"/usr/libexec/PlistBuddy",
 							infoPlist,
 							"-c",
@@ -47,7 +47,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
 
-			runCommand([
+			commandRunner.run([
 							"/usr/libexec/PlistBuddy",
 							infoPlist,
 							"-c",
@@ -58,7 +58,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
         // Modify bundle bundleDisplayName
         if (project.infoplist.bundleDisplayName != null) {
 
-            runCommand([
+					commandRunner.run([
                     "/usr/libexec/PlistBuddy",
                     infoPlist,
                     "-c",
@@ -70,7 +70,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
         if (project.infoplist.bundleDisplayNameSuffix != null) {
             def bundleDisplayName = getValueFromPlist(infoPlist, "CFBundleDisplayName")
 
-            runCommand([
+					commandRunner.run([
                     "/usr/libexec/PlistBuddy",
                     infoPlist,
                     "-c",
@@ -83,7 +83,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
 		} else {
-			version = runCommandWithResult([
+			version = commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
 							infoPlist,
 							"-c",
@@ -99,7 +99,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("Modify CFBundleVersion to {}", version)
-		runCommand([
+		commandRunner.run([
 						"/usr/libexec/PlistBuddy",
 						infoPlist,
 						"-c",
@@ -108,7 +108,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 		def shortVersionString
 		try {
-			shortVersionString = runCommandWithResult([
+			shortVersionString = commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
 							infoPlist,
 							"-c",
@@ -130,7 +130,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
-		runCommand([
+		commandRunner.run([
 						"/usr/libexec/PlistBuddy",
 						infoPlist,
 						"-c",

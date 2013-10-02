@@ -15,8 +15,6 @@
  */
 package org.openbakery
 
-import org.gradle.api.Action
-import org.gradle.api.Task
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -84,9 +82,9 @@ class CodesignTask extends AbstractXcodeTask {
         fi
         */
 
-		def codesignAllocateCommand = runCommandWithResult(["xcrun", "-find", "codesign_allocate"]).trim();
+		def codesignAllocateCommand = commandRunner.runWithResult(["xcrun", "-find", "codesign_allocate"]).trim();
 		def environment = [CODESIGN_ALLOCATE:codesignAllocateCommand]
-		commandRunner.runCommand(".", commandList, environment, null)
+		commandRunner.run(".", commandList, environment, null)
 	}
 
 }

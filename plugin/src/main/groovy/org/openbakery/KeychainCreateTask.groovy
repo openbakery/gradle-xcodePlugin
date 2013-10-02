@@ -60,9 +60,9 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		logger.debug("Create Keychain: {}", keychainPath)
 
 		if (!new File(keychainPath).exists()) {
-			runCommand(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
+			commandRunner.run(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
 		}
-		runCommand(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
+		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
 
 
 		if (getOSVersion().minor >= 9) {

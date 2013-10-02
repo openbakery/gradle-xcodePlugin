@@ -3,12 +3,9 @@ package org.openbakery
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.testng.annotations.AfterClass
 import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-
-import static org.gmock.GMock.constructor
 
 /**
  * Created with IntelliJ IDEA.
@@ -66,14 +63,14 @@ class KeychainCreateTest {
 		List<String> commandList
 		commandList?.clear()
 		commandList = ["security", "create-keychain", "-p", "This_is_the_default_keychain_password", project.xcodebuild.signing.keychainPathInternal.toString()]
-		commandRunnerMock.runCommand(commandList).times(1)
+		commandRunnerMock.run(commandList).times(1)
 	}
 
 	void expectKeychainImportCommand() {
 		List<String> commandList
 		commandList?.clear()
 		commandList = ["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"];
-		commandRunnerMock.runCommand(commandList).times(1)
+		commandRunnerMock.run(commandList).times(1)
 
 	}
 
@@ -81,7 +78,7 @@ class KeychainCreateTest {
 		List<String> commandList
 		commandList?.clear()
 		commandList = ["security", "list-keychains"];
-		commandRunnerMock.runCommandWithResult(commandList).returns(result).times(1)
+		commandRunnerMock.runWithResult(commandList).returns(result).times(1)
 	}
 
 
@@ -93,7 +90,7 @@ class KeychainCreateTest {
 		commandList = ["security", "list-keychains", "-s"]
 		commandList.add(userHome + "/Library/Keychains/login.keychain")
 		commandList.add(project.xcodebuild.signing.keychainPathInternal.toString())
-		commandRunnerMock.runCommand(commandList).times(1)
+		commandRunnerMock.run(commandList).times(1)
 
 	}
 

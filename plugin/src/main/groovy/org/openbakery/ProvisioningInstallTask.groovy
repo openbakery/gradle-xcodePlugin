@@ -16,7 +16,6 @@
 package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.InvalidUserDataException
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
 
@@ -43,6 +42,6 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 
 
-		runCommand(["/bin/ln", "-s", mobileProvisionFile, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
+		commandRunner.run(["/bin/ln", "-s", mobileProvisionFile, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
 	}
 }

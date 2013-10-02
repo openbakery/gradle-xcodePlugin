@@ -45,14 +45,14 @@ class KeychainCleanupTaskTest {
 		List<String> commandList
 		commandList?.clear()
 		commandList = ["security", "list-keychains"];
-		commandRunnerMock.runCommandWithResult(commandList).returns(result).times(1)
+		commandRunnerMock.runWithResult(commandList).returns(result).times(1)
 	}
 
 	void expectKeychainDeleteCommand() {
 		List<String> commandList
 		commandList?.clear()
 		commandList = ["security", "delete-keychain", "/Library/Keychains/" + XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE + "delete-me.keychain"];
-		commandRunnerMock.runCommand(commandList).times(1)
+		commandRunnerMock.run(commandList).times(1)
 	}
 
 	void expectKeychainListSetCommand() {
@@ -61,7 +61,7 @@ class KeychainCleanupTaskTest {
 		String userHome = System.getProperty("user.home")
 		commandList = ["security", "list-keychains", "-s"]
 		commandList.add(userHome + "/Library/Keychains/login.keychain")
-		commandRunnerMock.runCommand(commandList).times(1)
+		commandRunnerMock.run(commandList).times(1)
 	}
 
 	@Test

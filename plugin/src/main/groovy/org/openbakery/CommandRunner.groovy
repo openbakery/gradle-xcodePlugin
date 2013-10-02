@@ -33,7 +33,7 @@ class CommandRunner {
 		return "'" + result.trim() + "'"
 	}
 
-	def runCommand(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+	def run(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
 		resultStringBuilder = new StringBuilder();
 
 		logger.debug("Run command: {}", commandListToString(commandList))
@@ -66,28 +66,28 @@ class CommandRunner {
 		}
 	}
 
-	def runCommand(String directory, List<String> commandList, OutputAppender outputAppender) {
-		runCommand(directory, commandList, null, outputAppender)
+	def run(String directory, List<String> commandList, OutputAppender outputAppender) {
+		run(directory, commandList, null, outputAppender)
 	}
 
-	def runCommand(String directory, List<String> commandList) {
-		runCommand(directory, commandList, null, null)
+	def run(String directory, List<String> commandList) {
+		run(directory, commandList, null, null)
 	}
 
-	def runCommand(List<String> commandList) {
-		runCommand(".", commandList)
+	def run(List<String> commandList) {
+		run(".", commandList)
 	}
 
-	def runCommandWithResult(List<String> commandList) {
-		return runCommandWithResult(".", commandList)
+	def runWithResult(List<String> commandList) {
+		return runWithResult(".", commandList)
 	}
 
-	def runCommandWithResult(String directory, List<String> commandList) {
-		return runCommandWithResult(directory, commandList, null)
+	def runWithResult(String directory, List<String> commandList) {
+		return runWithResult(directory, commandList, null, null)
 	}
 
-	def runCommandWithResult(String directory, List<String> commandList, Map<String, String> environment) {
-		runCommand(directory, commandList, environment);
+	def runWithResult(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+		run(directory, commandList, environment, outputAppender);
 		return resultStringBuilder.toString();
 	}
 

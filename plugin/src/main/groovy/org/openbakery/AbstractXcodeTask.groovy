@@ -20,9 +20,7 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.Task
 
 /**
  *
@@ -69,31 +67,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return destinationFile.absolutePath
 	}
 
-
-	def runCommand(String directory, List<String> commandList, Map<String, String> environment) {
-		commandRunner.runCommand(directory, commandList, environment, null)
-	}
-
-	def runCommand(String directory, List<String> commandList) {
-		commandRunner.runCommand(directory, commandList)
-	}
-
-	def runCommand(List<String> commandList) {
-		commandRunner.runCommand(commandList)
-	}
-
-	def runCommandWithResult(List<String> commandList) {
-		commandRunner.runCommandWithResult(commandList)
-	}
-
-	def runCommandWithResult(String directory, List<String> commandList) {
-		commandRunner.runCommandWithResult(directory, commandList)
-	}
-
-	def runCommandWithResult(String directory, List<String> commandList, Map<String, String> environment) {
-		commandRunner.runCommandWithResult(directory, commandList, environment)
-	}
-
 	/**
 	 *
 	 * @return the absolute path to the generated app bundle
@@ -119,7 +92,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 */
 	def getValueFromPlist(plist, key) {
 		try {
-			return runCommandWithResult([
+			return commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
 							plist,
 							"-c",
@@ -159,7 +132,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 							convertedPlist.absolutePath
 			]
 
-			runCommand(convertCommand)
+			commandRunner.run(convertCommand)
 
 			return convertedPlist.absolutePath
 		}
@@ -178,7 +151,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		def projectPlist = new File(buildRoot, "project.plist").absolutePath
 
 		// convert ascii plist to xml so that commons configuration can parse it!
-		runCommand(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
+		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
 
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
 		def rootObjectKey = config.getString("rootObject")

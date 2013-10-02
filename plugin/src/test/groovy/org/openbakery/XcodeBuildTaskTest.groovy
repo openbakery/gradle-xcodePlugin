@@ -69,7 +69,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -111,7 +111,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -133,7 +133,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -158,7 +158,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -184,7 +184,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -209,7 +209,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -233,7 +233,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -264,7 +264,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -294,7 +294,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.runCommand(projectDir, expectedCommandList).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()

@@ -1,8 +1,9 @@
 package org.openbakery
 
-import groovy.json.JsonOutput
-import groovy.json.StringEscapeUtils
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
+import org.openbakery.output.XcodeBuildOutputAppender
 
 
 class TestResult {
@@ -72,7 +73,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		commandList.add('test');
 
 		try {
-			commandRunner.runCommandWithResult(commandList)
+			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
+			commandRunner.runWithResult(".", commandList, null, new XcodeBuildOutputAppender(output))
 		} finally {
 			parseResult(commandRunner.getResult());
 		}

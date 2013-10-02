@@ -31,7 +31,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
 					logger.quiet("Deleting keychain: {}", keychainFile)
 					try {
-						runCommand(["security", "delete-keychain", keychainFile.absolutePath])
+						commandRunner.run(["security", "delete-keychain", keychainFile.absolutePath])
 					} catch (IllegalStateException ex) {
 						// ignore because delete-keychain results in an error because the file does not exists
 						// but the entry is deleted properly
@@ -43,7 +43,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 			} else if (keychainFile.name.equals("gradle.keychain")) {
 				// gradle.keychain is the xcodelugin version 0.7 keychain that also needs to be cleaned
 				logger.debug("deleting old 0.7 xcodeplugin keychain file")
-				runCommand(["security", "delete-keychain", keychainFile.absolutePath])
+				commandRunner.run(["security", "delete-keychain", keychainFile.absolutePath])
 			} else {
 				logger.debug("keychain exists so leave it: {}", keychainFile)
 			}

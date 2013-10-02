@@ -17,10 +17,14 @@ package org.openbakery
 
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
+
+	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
 
 	def String infoPlist = null
