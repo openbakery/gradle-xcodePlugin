@@ -48,10 +48,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		}
 
 		commandRunner.runCommand("${project.projectDir.absolutePath}", commandList)
-		println "Done"
-		println "--------------------------------------------------------------------------------"
-		println "--------------------------------------------------------------------------------"
-
+		logger.quiet("Done")
 	}
 
 }

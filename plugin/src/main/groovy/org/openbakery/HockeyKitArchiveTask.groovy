@@ -51,6 +51,6 @@ class HockeyKitArchiveTask extends AbstractXcodeTask{
 		File destinationIpa = new File(outputDirectory, FilenameUtils.getBaseName(appName) + ".ipa")
 		FileUtils.copyFile(sourceIpa, destinationIpa)
 
-		println "Created hockeykit archive in " + outputDirectory
+		logger.quiet("Created hockeykit archive in {}" + outputDirectory)
 	}
 }

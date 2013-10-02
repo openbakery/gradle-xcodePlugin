@@ -27,15 +27,15 @@ class UIAutomationTestTask extends AbstractXcodeTask {
 		String[] instrumentsCommand =  ["instruments", "-t", "/Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate" ]
 		String applicationsFolder = System.getProperty("user.home") + "/Library/Application Support/iPhone Simulator/6.1/Applications/" + getAppBundleName();
 
-		println "instrumentsCommand: " + instrumentsCommand;
-		println "applicationsFolder: " + applicationsFolder;
+		logger.debug("instrumentsCommand: {}" + instrumentsCommand)
+		logger.debug("applicationsFolder: {}" + applicationsFolder)
 
-
+/*
 		scriptsDirectory.list().each {
 			println it
 
 
 		}
-
+*/
 	}
 }

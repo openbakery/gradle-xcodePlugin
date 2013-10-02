@@ -44,7 +44,7 @@ class HockeyAppPrepareTask extends AbstractXcodeTask {
 
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
-			println "Rename App"
+			logger.debug("Rename App")
 
 			File ipaFile = new File(ipaName)
 			if (ipaFile.exists()) {
@@ -61,12 +61,12 @@ class HockeyAppPrepareTask extends AbstractXcodeTask {
 		}
 
 
-		println "project.hockeyapp.outputDirectory " + project.hockeyapp.outputDirectory
+		logger.debug("project.hockeyapp.outputDirectory {}", project.hockeyapp.outputDirectory)
 		int index = zipFileName.lastIndexOf('/')
 		def baseZipName = zipFileName.substring(index+1, zipFileName.length());
 
-		println "baseZipName " + baseZipName
-		println "buildOutputDirectory " + buildOutputDirectory;
+		logger.debug("baseZipName {}",  baseZipName)
+		logger.debug("buildOutputDirectory {}", buildOutputDirectory)
 
 
 		def ant = new AntBuilder()

@@ -27,29 +27,29 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def clean() {
-        if (!project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
-            println "Provisioning cleanup skipped because the destination directory does not exit"
-            return
-        }
+		if (!project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
+			logger.quiet("Provisioning cleanup skipped because the destination directory does not exit")
+			return
+		}
 
-		println "deleting " + project.xcodebuild.signing.mobileProvisionDestinationRoot
+		logger.debug("deleting {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
 		project.xcodebuild.signing.mobileProvisionDestinationRoot.deleteDir()
 
 		if (project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
-			println "error deleting provisioning  destinationRoot"
+			logger.error("error deleting provisioning: {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
 		}
 
 		File mobileprovisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/")
 
 		if (!mobileprovisionPath.exists()) {
-			println "nothing to cleanup"
+			logger.debug("nothing to cleanup")
 		}
 
 		// find all the broken profile links that where created by this plugin
 		String profileLinksToDelete = runCommandWithResult(["find", "-L", mobileprovisionPath.absolutePath, "-name", Signing.PROVISIONING_NAME_BASE+"*", "-type", "l"]);
 		String[] profiles = profileLinksToDelete.split("\n")
 		for (String profile : profiles) {
-			println "profile to delete " + profile
+			logger.debug("profile to delete {}", profile)
 			new File(profile).delete();
 		}
 

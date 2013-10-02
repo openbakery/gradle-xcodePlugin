@@ -27,11 +27,11 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 
 		if (StringUtils.isEmpty(infoPlist)) {
-			println "Info Plist not found, so skipping this task"
+			logger.quiet("Info Plist not found, so skipping this task")
 			return
 		}
 
-		println "Updating " + infoPlist
+		logger.quiet("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
 
@@ -77,9 +77,8 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
                     "Set :CFBundleDisplayName " + bundleDisplayName + project.infoplist.bundleDisplayNameSuffix
             ])
         }
-        println "\nINFO: You will need to freshly install the app to see the change of bundleDisplayName!\n"
 
-		println "project.infoplist.version: " + project.infoplist.version
+		logger.debug("project.infoplist.version: {}", project.infoplist.version)
 		def version;
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
@@ -99,7 +98,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 			version = project.infoplist.versionPrefix + version
 		}
 
-		println "Modify CFBundleVersion to " + version
+		logger.debug("Modify CFBundleVersion to {}", version)
 		runCommand([
 						"/usr/libexec/PlistBuddy",
 						infoPlist,
@@ -130,7 +129,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 			shortVersionString = project.infoplist.shortVersionStringPrefix + shortVersionString
 		}
 
-		println "Modify CFBundleShortVersionString to " + shortVersionString
+		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
 		runCommand([
 						"/usr/libexec/PlistBuddy",
 						infoPlist,

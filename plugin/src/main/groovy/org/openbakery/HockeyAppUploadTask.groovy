@@ -26,10 +26,13 @@ import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.util.regex.Pattern
 
 class HockeyAppUploadTask extends DefaultTask {
+
 
 	HockeyAppUploadTask() {
 		super()
@@ -58,16 +61,15 @@ class HockeyAppUploadTask extends DefaultTask {
 		def ipaFile = getFile("ipa");
 		def dSYMFile = getFile("dSYM.zip");
 
-		println ipaFile.absolutePath
-		println dSYMFile.absolutePath
-
-		println "api_token " + project.hockeyapp.apiToken
-		println "notes " + project.hockeyapp.notes
-		println "file " + ipaFile
-		println "dsym " + dSYMFile
-		println "status " + project.hockeyapp.status
-		println "notify " + project.hockeyapp.notify
-		println "notes_type " + project.hockeyapp.notesType
+		logger.debug("ipaFile: {}", ipaFile.absolutePath)
+		logger.debug("dSYMFile: {}",  dSYMFile.absolutePath)
+		logger.debug("api_token: {}" + project.hockeyapp.apiToken)
+		logger.debug("notes: {} " + project.hockeyapp.notes)
+		logger.debug("file: {} " + ipaFile)
+		logger.debug("dsym: {} " + dSYMFile)
+		logger.debug("status: {} " + project.hockeyapp.status)
+		logger.debug("notify: {} " + project.hockeyapp.notify)
+		logger.debug("notes_type: {} " + project.hockeyapp.notesType)
 
 
 		uploadIPAandDSYM(ipaFile, dSYMFile)
@@ -98,7 +100,7 @@ class HockeyAppUploadTask extends DefaultTask {
 
 		httpPost.setEntity(entity);
 
-		println "request " + httpPost.getRequestLine().toString()
+		logger.debug("request {}", httpPost.getRequestLine().toString())
 
 		HttpResponse response = httpClient.execute(httpPost)
 
@@ -124,7 +126,7 @@ class HockeyAppUploadTask extends DefaultTask {
 
 		httpPost.setEntity(entity);
 
-		println "request " + httpPost.getRequestLine().toString()
+		logger.debug("request {}", httpPost.getRequestLine().toString())
 
 		HttpResponse response = httpClient.execute(httpPost)
 

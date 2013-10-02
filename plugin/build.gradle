@@ -21,11 +21,12 @@ dependencies {
 	compile 'org.apache.httpcomponents:httpclient:4.2+'
 	compile 'org.apache.httpcomponents:httpmime:4.2+'
 	compile 'org.pegdown:pegdown:1.2.+'
+	compile 'ch.qos.logback:logback-core:1.0.+'
 
 }
 
 group = 'org.openbakery'
-version = '0.9.0'
+version = '0.9.1-snapshot'
 
 uploadArchives {
 	repositories {

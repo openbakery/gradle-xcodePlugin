@@ -29,7 +29,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 			File keychainFile = new File(keychain)
 			if (!keychainFile.exists()) {
 				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
-					println "deleting keychain: " + keychainFile
+					logger.quiet("Deleting keychain: {}", keychainFile)
 					try {
 						runCommand(["security", "delete-keychain", keychainFile.absolutePath])
 					} catch (IllegalStateException ex) {
@@ -37,15 +37,15 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 						// but the entry is deleted properly
 					}
 				} else {
-					println "keychain was not created by this plugin so leave it: " + keychainFile
+					logger.debug("keychain was not created by this plugin so leave it: {}", keychainFile)
 				}
 
 			} else if (keychainFile.name.equals("gradle.keychain")) {
 				// gradle.keychain is the xcodelugin version 0.7 keychain that also needs to be cleaned
-				println "deleting old 0.7 xcodeplugin keychain file"
+				logger.debug("deleting old 0.7 xcodeplugin keychain file")
 				runCommand(["security", "delete-keychain", keychainFile.absolutePath])
 			} else {
-				println "keychain exists so leave it: " + keychainFile
+				logger.debug("keychain exists so leave it: {}", keychainFile)
 			}
 
 		}
@@ -54,7 +54,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 	@TaskAction
 	def clean() {
 		if (project.xcodebuild.signing.keychain) {
-			println "Nothing to cleanup"
+			logger.debug("Nothing to cleanup")
 			return;
 		}
 

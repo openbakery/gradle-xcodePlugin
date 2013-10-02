@@ -15,7 +15,12 @@
  */
 package org.openbakery
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 class CommandRunner {
+
+	private static Logger logger = LoggerFactory.getLogger(CommandRunner.class)
 
 	private StringBuilder resultStringBuilder;
 
@@ -30,9 +35,9 @@ class CommandRunner {
 	def runCommand(String directory, List<String> commandList, Map<String, String> environment) {
 		resultStringBuilder = new StringBuilder();
 
-		println "Run command: " + commandListToString(commandList)
+		logger.debug("Run command: {}", commandListToString(commandList))
 		if (environment != null) {
-			println "with additional environment variables: " + environment
+			logger.debug("with additional environment variables: {}", environment)
 		}
 		def processBuilder = new ProcessBuilder(commandList)
 		processBuilder.redirectErrorStream(true)
@@ -43,7 +48,7 @@ class CommandRunner {
 		}
 		def process = processBuilder.start()
 		process.inputStream.eachLine {
-			println it
+			logger.debug("line: {}", it)
 			if (resultStringBuilder != null) {
 				if (resultStringBuilder.length() > 0) {
 					resultStringBuilder.append("\n");

@@ -104,7 +104,6 @@ class XcodeBuildPluginExtension {
 
 	void signing(Closure closure) {
 		ConfigureUtil.configure(closure, this.signing)
-		//println "signing: " + this.signing
 	}
 
 
@@ -115,7 +114,7 @@ class XcodeBuildPluginExtension {
 			destinations = new ArrayList<Destination>()
 		}
 		destinations.add(destination)
-		println "adding destination: " + destination
+		logger.debug("adding destination: {}", destination)
 	}
 
 }

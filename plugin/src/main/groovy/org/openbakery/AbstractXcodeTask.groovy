@@ -31,6 +31,7 @@ import org.gradle.api.Task
  */
 abstract class AbstractXcodeTask extends DefaultTask {
 
+
 	CommandRunner commandRunner
 
 	AbstractXcodeTask() {
@@ -45,7 +46,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 * @param destination
 	 */
 	def copy(File source, File destination) {
-		println "Copy '" + source + "' -> '" + destination + "'"
+		logger.quiet("Copy '{}' -> '{}'", source, destination);
 		FileUtils.copyFile(source, destination)
 	}
 
@@ -138,7 +139,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (infoPlist == null) {
 			infoPlist = getInfoPlistFromProjectFile()
 		}
-		println "Using Info.plist: " + infoPlist
+		logger.debug("Using Info.plist: {}", infoPlist);
 		return infoPlist
 	}
 
@@ -181,16 +182,16 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
 		def rootObjectKey = config.getString("rootObject")
-		println rootObjectKey
+		logger.debug("rootObjectKey {}", rootObjectKey);
 
 		List<String> list = config.getList("objects." + rootObjectKey + ".targets")
 
 		for (target in list) {
 
 			def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
-			println "buildConfigurationList=" + buildConfigurationList
+			logger.debug("buildConfigurationList={}", buildConfigurationList)
 			def targetName = config.getString("objects." + target + ".name")
-			println "targetName: " + targetName
+			logger.debug("targetName: {}", targetName)
 
 
 			if (targetName.equals(project.xcodebuild.target)) {
@@ -198,13 +199,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 				for (buildConfigurationsItem in buildConfigurations) {
 					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
 
-					println "  buildName: " + buildName + " equals " + project.xcodebuild.configuration
+					logger.debug("buildName: {} equals {}", buildName, project.xcodebuild.configuration)
 
 					if (buildName.equals(project.xcodebuild.configuration)) {
 						def productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
 						def plistFile = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
-						println "  productName: " + productName
-						println "  plistFile: " + plistFile
+						logger.debug("productName: {}", productName)
+						logger.debug("plistFile: {}", plistFile)
 						return plistFile
 					}
 				}

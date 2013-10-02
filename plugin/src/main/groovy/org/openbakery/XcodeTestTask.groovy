@@ -76,10 +76,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} finally {
 			parseResult(commandRunner.getResult());
 		}
-		println "Done"
-		println "--------------------------------------------------------------------------------"
-		println "--------------------------------------------------------------------------------"
-
+		logger.quiet("Done")
 	}
 
 

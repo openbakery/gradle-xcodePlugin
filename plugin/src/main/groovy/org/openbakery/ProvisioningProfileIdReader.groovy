@@ -16,10 +16,11 @@
 package org.openbakery
 
 
+
 class ProvisioningProfileIdReader {
 
 	def readProvisioningProfileIdFromDestinationRoot(def destinationRoot) {
-		println destinationRoot
+		logger.debug("destinationRoot: {}", destinationRoot);
 		if (!destinationRoot.exists()) {
 			return
 		}

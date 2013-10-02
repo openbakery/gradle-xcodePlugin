@@ -49,7 +49,7 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 	@TaskAction
 	def imageCreate() {
 		def infoplist = getAppBundleInfoPlist()
-		println infoplist
+		logger.debug("infoplist: {}", infoplist)
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist))
 		def list = config.getList("CFBundleIconFiles")
 		if (list.isEmpty()) {
@@ -81,27 +81,27 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 						// appPath + additional iconPath + name of iconFile
 						iconFile = new File(item)
 					}
-					println "try to read " + iconFile
+					logger.debug("try to read iconFile: {}", iconFile)
 					image = ImageIO.read(iconFile)
 
 					iconMap.put(image.width, iconFile)
 				} catch (Exception ex) {
-					println "Cannot read image " + item + " so ignore it";
+					logger.error("Cannot read image {}. (Will be ignored), ", item)
 				}
 		}
-		println "Images to choose from: " + iconMap
+		logger.debug("Images to choose from: {}", iconMap)
 		def outputDirectory = new File(getOutputDirectory()).getParent()
 
 		def selectedImage = iconMap.get(114)
 
 		def outputImageFile = new File(outputDirectory, "Icon.png")
 		if (selectedImage != null) {
-			println "Copy file " + selectedImage + " to " + outputImageFile
+			logger.debug("Copy file {} to {}", selectedImage, outputImageFile)
 			FileUtils.copyFile(selectedImage, outputImageFile)
 		} else {
 			if (iconMap.size() > 0) {
 				selectedImage = iconMap.lastEntry().value
-				println "Resize file " + selectedImage + " to " + outputImageFile
+				logger.debug("Resize file {} to {}", selectedImage, outputImageFile)
 				resizeImage(selectedImage, outputImageFile.absolutePath)
 			}
 		}

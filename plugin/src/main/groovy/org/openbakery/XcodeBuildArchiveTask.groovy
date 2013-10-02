@@ -35,14 +35,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		def baseName =  appName.substring(0, appName.size()-4)
 		def ipaName =  baseName + ".ipa"
 		def dsynName = baseName + ".app.dSYM"
-		println(baseName)
-		println(ipaName)
-		println(dsynName)
+		logger.debug("basename: {}", baseName)
+		logger.debug("ipaName: {}", ipaName)
+		logger.debug("dsymName: {}", dsynName)
 
 		def zipFileName = baseName
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
-			println "Rename App"
+			logger.debug("Rename App")
 
 			File appFile = new File(appName)
 			if (appFile.exists()) {

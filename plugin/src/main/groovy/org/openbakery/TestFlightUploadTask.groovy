@@ -85,18 +85,18 @@ class TestFlightUploadTask extends DefaultTask {
 		def ipaFile = getFile("ipa");
 		def dSYMFile = getFile("dSYM.zip");
 
-		println ipaFile.absolutePath
-		println dSYMFile.absolutePath
+		logger.debug("ipaFile: {}", ipaFile.absolutePath)
+		logger.debug("dSYMFile: {}", dSYMFile.absolutePath)
 
 		MultipartEntity entity = new MultipartEntity();
 
 
-		println "api_token " + project.testflight.apiToken
-		println "team_token " + project.testflight.teamToken
-		println "distribution_lists" + project.testflight.distributionLists
-		println "notes " + project.testflight.notes
-		println "file " + ipaFile
-		println "dsym " + dSYMFile
+		logger.debug("api_token {}" + project.testflight.apiToken)
+		logger.debug("team_token {}" + project.testflight.teamToken)
+		logger.debug("distribution_lists {}" + project.testflight.distributionLists)
+		logger.debug("notes {}" + project.testflight.notes)
+		logger.debug("file {}" + ipaFile)
+		logger.debug("dsym {}" + dSYMFile)
 
 
 		entity.addPart("api_token", new StringBody(project.testflight.apiToken))
@@ -114,7 +114,7 @@ class TestFlightUploadTask extends DefaultTask {
 		HttpResponse response = httpClient.execute(httpPost)
 		HttpEntity responseEntity = response.getEntity()
 		def entityString = EntityUtils.toString(responseEntity)
-		println "response " + entityString
+		logger.debug("response {}", entityString)
 		if (response.getStatusLine().getStatusCode() != 200) {
 			throw new IllegalStateException("upload failed: " + response.getStatusLine().getReasonPhrase());
 		}

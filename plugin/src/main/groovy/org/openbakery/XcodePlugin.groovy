@@ -19,8 +19,12 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class XcodePlugin implements Plugin<Project> {
+
+	private static Logger logger = LoggerFactory.getLogger(XcodePlugin.class)
 
 	static final String XCODE_GROUP_NAME = "Xcode"
 	static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
@@ -234,9 +238,9 @@ class XcodePlugin implements Plugin<Project> {
 		Task provisioningCleanup = project.tasks.'provisioning-clean'
 
 		if (project.xcodebuild.signing.mobileProvisionURI != null) {
-			println "added cleanup for provisioning profile"
+			logger.debug("added cleanup for provisioning profile")
 			codesign.doLast {
-				println "run provisioning cleanup"
+				logger.debug("run provisioning cleanup")
 				provisioningCleanup.clean()
 			}
 		}
@@ -244,9 +248,9 @@ class XcodePlugin implements Plugin<Project> {
 		Task keychainCleanup = project.tasks.'keychain-clean'
 
 		if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
-			println "added cleanup for certificate"
+			logger.debug("added cleanup for certificate")
 			codesign.doLast {
-				println "run certificate cleanup"
+				logger.debug("run certificate cleanup")
 				keychainCleanup.clean()
 			}
 		}

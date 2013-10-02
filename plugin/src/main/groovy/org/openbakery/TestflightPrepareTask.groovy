@@ -46,7 +46,7 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
-			println "Rename App"
+			logger.debug("Rename App")
 
 			File ipaFile = new File(ipaName)
 			if (ipaFile.exists()) {
@@ -63,12 +63,12 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 		}
 
 
-		println "project.testflight.outputDirectory " + project.testflight.outputDirectory
+		logger.debug("project.testflight.outputDirectory {}", project.testflight.outputDirectory)
 		int index = zipFileName.lastIndexOf('/')
 		def baseZipName = zipFileName.substring(index+1, zipFileName.length());
 
-		println "baseZipName " + baseZipName
-		println "buildOutputDirectory " + buildOutputDirectory;
+		logger.debug("baseZipName {}", baseZipName)
+		logger.debug("buildOutputDirectory {}", buildOutputDirectory)
 
 
 		def ant = new AntBuilder()

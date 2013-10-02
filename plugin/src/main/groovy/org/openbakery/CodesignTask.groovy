@@ -37,14 +37,14 @@ class CodesignTask extends AbstractXcodeTask {
 	@TaskAction
 	def codesign() {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			println("not a device build, so no codesign needed")
+			logger.quiet("not a device build, so no codesign needed")
 			return
 		}
 		if (project.xcodebuild.signing == null) {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration")
 		}
 
-		println project.xcodebuild.symRoot
+		logger.debug("SymRoot: {}", project.xcodebuild.symRoot)
 		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 		def fileList = buildOutputDirectory.list(
 						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
@@ -54,7 +54,7 @@ class CodesignTask extends AbstractXcodeTask {
 		}
 		def appName = buildOutputDirectory.absolutePath + "/" + fileList[0]
 		def ipaName = appName.substring(0, appName.size()-4) + ".ipa"
-		println "Signing " + appName + " to create " + ipaName
+		logger.quiet("Signing {} to create {}", appName, ipaName)
 
 
 

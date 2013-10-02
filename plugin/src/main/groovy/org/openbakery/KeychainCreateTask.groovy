@@ -33,18 +33,18 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 
 		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
-			println("The simulator build does not need a provisioning profile")
+			logger.quiet("The simulator build does not need a provisioning profile");
 			return
 		}
 
 		if (project.xcodebuild.signing.keychain) {
-			println "Using keychain " + project.xcodebuild.signing.keychain
-			println "Internal keychain " + project.xcodebuild.signing.keychainPathInternal
+			logger.debug("Using keychain {}", project.xcodebuild.signing.keychain)
+			logger.debug("Internal keychain {}", project.xcodebuild.signing.keychainPathInternal)
 			return
 		}
 
 		if (project.xcodebuild.signing.certificateURI == null) {
-			println("not certificateURI specifed so do not create the keychain")
+			logger.debug("not certificateURI specifed so do not create the keychain");
 			return
 		}
 
@@ -57,7 +57,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 		def keychainPath = project.xcodebuild.signing.keychainPathInternal.absolutePath
 
-		println "Create Keychain '" + keychainPath + "'"
+		logger.debug("Create Keychain: {}", keychainPath)
 
 		if (!new File(keychainPath).exists()) {
 			runCommand(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
