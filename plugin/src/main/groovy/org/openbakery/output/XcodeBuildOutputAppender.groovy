@@ -1,7 +1,8 @@
 package org.openbakery.output
 
 import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+
+import java.util.regex.Matcher
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,9 +13,13 @@ import org.gradle.logging.StyledTextOutputFactory
  */
 class XcodeBuildOutputAppender implements OutputAppender {
 
+	def RESULT_MESSAGE_PATTERN = ~/^\d+\s(\w+)\sgenerated.$/ // \sgenerated
+
 	boolean command = false
 	String currentSourceFile
-	StringBuilder errorText = new StringBuilder()
+	StringBuilder outputText = new StringBuilder()
+	boolean hasOutput = false
+	boolean warning = false
 	boolean error = false
 
 	StyledTextOutput output
@@ -26,24 +31,25 @@ class XcodeBuildOutputAppender implements OutputAppender {
 
 	void reset() {
 		currentSourceFile = null
-		errorText = new StringBuilder()
-		error = false;
+		outputText = new StringBuilder()
+		hasOutput = false;
 	}
 
 	@Override
 	void append(String line) {
 
-		if (error) {
-			errorText.append("\n")
-			errorText.append(line)
+		if (hasOutput) {
+			outputText.append("\n")
+			outputText.append(line)
 		}
+
+		Matcher matcher = RESULT_MESSAGE_PATTERN.matcher(line);
 
 		if (line.startsWith("CompileC")) {
 			int sourceFileStartIndex = line.indexOf(".o")+3;
 			int sourceFileEndIndex = line.indexOf(".m")+2;
 			if (sourceFileEndIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, sourceFileEndIndex)
-				output.text("Compile: " + currentSourceFile);
 				command = true
 			}
 		} else if (line.startsWith("CompileStoryboard") || line.startsWith("CompileXIB")) {
@@ -53,21 +59,31 @@ class XcodeBuildOutputAppender implements OutputAppender {
 				output.text("Compile: " + currentSourceFile);
 				command = true
 			}
-		}	else if (currentSourceFile != null && !line.startsWith(" ") && line.contains(currentSourceFile)) {
-			error = true
 		} else if (currentSourceFile != null && line.equals("")) {
 			// end of command
-			output.text(" - ")
 			if (error) {
-				output.withStyle(StyledTextOutput.Style.Failure).text("ERROR")
+				output.withStyle(StyledTextOutput.Style.Failure).text("   ERROR")
+			} else if (warning) {
+				output.withStyle(StyledTextOutput.Style.Identifier).text("WARNINGS")
 			} else {
-				output.withStyle(StyledTextOutput.Style.Identifier).text("OK")
+				output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
 			}
+			output.text(" - Compile: " + currentSourceFile);
 			output.println();
-			if (error) {
-				output.println(errorText.toString())
+			if (hasOutput) {
+				output.println(outputText.toString())
 			}
+
 			reset()
+		} else if (matcher.matches()) {
+			if (matcher[0][1].startsWith("error")) {
+				error = true;
+			} else if (matcher[0][1].startsWith("warning")) {
+				warning = true;
+			}
+		} else if (!hasOutput && !line.startsWith(" ")) {
+			hasOutput = true
 		}
+
 	}
 }
