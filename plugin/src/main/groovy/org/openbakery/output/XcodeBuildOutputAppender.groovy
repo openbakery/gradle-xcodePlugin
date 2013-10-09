@@ -13,7 +13,6 @@ import java.util.regex.Matcher
  */
 class XcodeBuildOutputAppender implements OutputAppender {
 
-	def RESULT_MESSAGE_PATTERN = ~/^\d+\s(\w+)\sgenerated.$/ // \sgenerated
 
 	boolean command = false
 	String currentSourceFile
@@ -25,14 +24,16 @@ class XcodeBuildOutputAppender implements OutputAppender {
 	StyledTextOutput output
 
 	XcodeBuildOutputAppender(StyledTextOutput output) {
-		this.output = output;
+		this.output = output
 		reset()
 	}
 
 	void reset() {
 		currentSourceFile = null
 		outputText = new StringBuilder()
-		hasOutput = false;
+		hasOutput = false
+		error = false
+		warning = false
 	}
 
 	@Override
@@ -42,8 +43,6 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			outputText.append("\n")
 			outputText.append(line)
 		}
-
-		Matcher matcher = RESULT_MESSAGE_PATTERN.matcher(line);
 
 		if (line.startsWith("CompileC")) {
 			int sourceFileStartIndex = line.indexOf(".o")+3;
@@ -56,7 +55,6 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			int sourceFileStartIndex = line.indexOf(" ")+1;
 			if (sourceFileStartIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, line.length())
-				output.text("Compile: " + currentSourceFile);
 				command = true
 			}
 		} else if (currentSourceFile != null && line.equals("")) {
@@ -75,13 +73,11 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			}
 
 			reset()
-		} else if (matcher.matches()) {
-			if (matcher[0][1].startsWith("error")) {
-				error = true;
-			} else if (matcher[0][1].startsWith("warning")) {
-				warning = true;
-			}
-		} else if (!hasOutput && !line.startsWith(" ")) {
+		} else if (line.endsWith("errors generated.") || line.endsWith("error generated.")) {
+			error = true
+		} else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
+			warning = true
+		} else if (!hasOutput && currentSourceFile != null && line.contains(currentSourceFile) && !line.startsWith(" ")) {
 			hasOutput = true
 		}
 
