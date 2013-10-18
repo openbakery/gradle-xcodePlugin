@@ -74,7 +74,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
-			commandRunner.run(".", commandList, null, new TestBuildOutputAppender(output))
+			commandRunner.run(".", commandList, null, new TestBuildOutputAppender(output, project))
 		} finally {
 			parseResult(commandRunner.getResult());
 			logger.quiet("Done")

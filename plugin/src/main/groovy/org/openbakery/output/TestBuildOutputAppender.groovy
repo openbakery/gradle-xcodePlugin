@@ -1,6 +1,8 @@
 package org.openbakery.output
 
+import org.gradle.api.Project
 import org.gradle.logging.StyledTextOutput
+import org.openbakery.Destination
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -16,13 +18,16 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	private static Logger logger = LoggerFactory.getLogger(TestBuildOutputAppender.class)
 
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'\s(\w+)\s\((\d+\.\d+)\sseconds\)\./
+	def ALL_TESTS_FINISHED = "Test Suite 'All tests' finished at";
 
 
 	boolean testsRunning = false
+	int testRun = 0
+	Project project
 
-
-	TestBuildOutputAppender(StyledTextOutput output) {
+	TestBuildOutputAppender(StyledTextOutput output, Project project) {
 		super(output)
+		this.project = project
 	}
 
 
@@ -53,6 +58,17 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			output.append(" - (")
 			output.append(duration)
 			output.append(" seconds)")
+			output.println();
+		} else if (line.startsWith(ALL_TESTS_FINISHED)) {
+			Destination destination = project.xcodebuild.destinations[testRun]
+			output.append("\n")
+			output.append("Tests finished: ")
+			output.append(destination.name)
+			output.append(" ")
+			output.append(destination.platform)
+			output.append("/")
+			output.append(destination.os)
+			output.println();
 			output.println();
 		} else if (!testsRunning) {
 			super.append(line)
