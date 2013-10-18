@@ -3,6 +3,7 @@ package org.openbakery
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
+import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.output.XcodeBuildOutputAppender
 
 
@@ -51,7 +52,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
 
 	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
-						//passed (0.006 seconds)
 
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
@@ -74,16 +74,15 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
-			commandRunner.runWithResult(".", commandList, null, new XcodeBuildOutputAppender(output))
+			commandRunner.run(".", commandList, null, new TestBuildOutputAppender(output))
 		} finally {
 			parseResult(commandRunner.getResult());
+			logger.quiet("Done")
 		}
-		logger.quiet("Done")
 	}
 
 
 	def parseResult(String result) {
-
 		def allResults = [:]
 
 		def resultList = []
@@ -124,16 +123,20 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				} else {
 					//TestCase testCase = resultMap.get(testClass).find{ testCase -> testCase.method.equals(method) }
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
-					TestResult testResult = testClass.results.find { testResult -> testResult.method.equals(method)}
+					if (testClass != null) {
+						TestResult testResult = testClass.results.find { testResult -> testResult.method.equals(method) }
 
-					if (testResult != null) {
-						testResult.output = output.toString()
-						testResult.success = message.startsWith("passed")
+						if (testResult != null) {
+							testResult.output = output.toString()
+							testResult.success = message.startsWith("passed")
 
-						def durationMatcher = DURATION_PATTERN.matcher(message)
-						if (durationMatcher.matches()) {
-							testResult.duration = Float.parseFloat(durationMatcher[0][1])
+							def durationMatcher = DURATION_PATTERN.matcher(message)
+							if (durationMatcher.matches()) {
+								testResult.duration = Float.parseFloat(durationMatcher[0][1])
+							}
 						}
+					} else {
+						logger.quiet("No TestClass found for name: " + testClassName + " => " + line)
 					}
 				}
 			} else if (line.startsWith(ALL_TESTS_FINISHED)) {
@@ -159,7 +162,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	def store(def allResults) {
-
+		logger.quiet("Saving test results")
 		def builder = new groovy.json.JsonBuilder()
 
 		def list = [];
