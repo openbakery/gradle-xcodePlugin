@@ -42,15 +42,18 @@ class CommandRunner {
 			env.putAll(environment)
 		}
 		def process = processBuilder.start()
-		process.inputStream.eachLine {
-			println it
-			if (resultStringBuilder != null) {
-				if (resultStringBuilder.length() > 0) {
-					resultStringBuilder.append("\n");
-				}
-				resultStringBuilder.append(it);
-			}
-		}
+                process.inputStream.eachLine {
+                        println it
+                        if (resultStringBuilder != null) {
+                                if (resultStringBuilder.length() > 0) {
+                                        resultStringBuilder.append("\n");
+                                }
+                                try{
+                                                resultStringBuilder.append(it);
+                                        
+                                        }catch (Error E){}
+                        }
+                }
 		process.waitFor()
 		if (process.exitValue() > 0) {
 			throw new CommandRunnerException("Command failed to run: " + commandListToString(commandList))
