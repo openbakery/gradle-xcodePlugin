@@ -75,7 +75,20 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
 			commandRunner.run(".", commandList, null, new TestBuildOutputAppender(output, project))
-		} finally {
+		} catch (CommandRunnerException exception) {
+			File outputDirectory = new File(project.getBuildDir(), "test");
+			if (!outputDirectory.exists()) {
+				outputDirectory.mkdirs()
+			}
+
+			new File(outputDirectory, "xcodebuild-output.txt").withWriter { out ->
+				out.write(commandRunner.getResult())
+			}
+
+
+		}
+		finally
+		{
 			parseResult(commandRunner.getResult());
 			logger.quiet("Done")
 		}
