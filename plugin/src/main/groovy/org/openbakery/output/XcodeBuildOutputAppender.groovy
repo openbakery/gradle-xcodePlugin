@@ -45,9 +45,10 @@ class XcodeBuildOutputAppender implements OutputAppender {
 		}
 
 		if (line.startsWith("CompileC")) {
+
 			int sourceFileStartIndex = line.indexOf(".o")+3;
 			int sourceFileEndIndex = line.indexOf(".m")+2;
-			if (sourceFileEndIndex < line.length()) {
+			if (sourceFileStartIndex < sourceFileEndIndex && sourceFileEndIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, sourceFileEndIndex)
 				command = true
 			}
