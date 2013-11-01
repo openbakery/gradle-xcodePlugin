@@ -27,7 +27,7 @@ class TestFlightCleanTask extends DefaultTask{
 	}
 
 	@TaskAction
-	def clean() {
+	def xclean() {
 		project.testflight.outputDirectory.deleteDir()
 	}
 }

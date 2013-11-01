@@ -26,7 +26,7 @@ class HockeyKitCleanTask extends DefaultTask {
 	}
 
 	@TaskAction
-	def clean() {
+	def xclean() {
 		project.hockeykit.outputDirectory.deleteDir()
 	}
 }

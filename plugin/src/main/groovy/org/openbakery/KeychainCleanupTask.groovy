@@ -52,7 +52,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 	}
 
 	@TaskAction
-	def clean() {
+	def xclean() {
 		if (project.xcodebuild.signing.keychain) {
 			println "Nothing to cleanup"
 			return;

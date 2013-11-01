@@ -29,7 +29,7 @@ class XcodeBuildCleanTask extends DefaultTask {
 	}
 
 	@TaskAction
-	def clean() {
+	def xclean() {
 		project.xcodebuild.dstRoot.deleteDir()
 		project.xcodebuild.objRoot.deleteDir()
 		project.xcodebuild.symRoot.deleteDir()

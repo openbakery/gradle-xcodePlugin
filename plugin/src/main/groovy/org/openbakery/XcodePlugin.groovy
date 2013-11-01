@@ -181,7 +181,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('provisioning-install', type: ProvisioningInstallTask, group: XCODE_GROUP_NAME)
 		project.task('archive', type: XcodeBuildArchiveTask, group: XCODE_GROUP_NAME)
 		project.task('keychain-clean', type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
-		project.task('clean', type: XcodeBuildCleanTask, group: XCODE_GROUP_NAME)
+		project.task('xclean', type: XcodeBuildCleanTask, group: XCODE_GROUP_NAME)
 		project.task('provisioning-clean', type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 		project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
 
@@ -211,7 +211,7 @@ class XcodePlugin implements Plugin<Project> {
 		Task xcodebuild = project.tasks.'xcodebuild'
 		Task infoplistModify = project.tasks.'infoplist-modify'
 		Task archive = project.tasks."archive"
-		archive.dependsOn("clean")
+		archive.dependsOn("xclean")
 
 		//Task uiautomation = project.tasks.'uiautomation'
 
@@ -237,7 +237,7 @@ class XcodePlugin implements Plugin<Project> {
 			println "added cleanup for provisioning profile"
 			codesign.doLast {
 				println "run provisioning cleanup"
-				provisioningCleanup.clean()
+				provisioningCleanup.xclean()
 			}
 		}
 
@@ -247,7 +247,7 @@ class XcodePlugin implements Plugin<Project> {
 			println "added cleanup for certificate"
 			codesign.doLast {
 				println "run certificate cleanup"
-				keychainCleanup.clean()
+				keychainCleanup.xclean()
 			}
 		}
 	}
