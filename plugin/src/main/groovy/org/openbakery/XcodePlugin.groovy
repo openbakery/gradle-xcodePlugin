@@ -184,6 +184,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.task('xclean', type: XcodeBuildCleanTask, group: XCODE_GROUP_NAME)
 		project.task('provisioning-clean', type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 		project.task('codesign', type: CodesignTask, group: XCODE_GROUP_NAME)
+        project.task('universal-library', type: XcodeUniversalLibraryTask, group: XCODE_GROUP_NAME)
 
 		project.task('hockeykit-manifest', type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task('hockeykit-archive', type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
