@@ -75,27 +75,27 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
 			commandRunner.run(".", commandList, null, new TestBuildOutputAppender(output, project))
-		} catch (CommandRunnerException exception) {
+		} finally {
+			String commandOutput = commandRunner.getResult();
 			File outputDirectory = new File(project.getBuildDir(), "test");
 			if (!outputDirectory.exists()) {
 				outputDirectory.mkdirs()
 			}
-
 			new File(outputDirectory, "xcodebuild-output.txt").withWriter { out ->
-				out.write(commandRunner.getResult())
+				out.write(commandOutput)
 			}
-
-
-		}
-		finally
-		{
-			parseResult(commandRunner.getResult());
+			if (!parseResult(commandOutput)) {
+				logger.quiet("Tests Failed!");
+				throw new Exception("Not all unit tests are successful!");
+			};
 			logger.quiet("Done")
 		}
 	}
 
 
-	def parseResult(String result) {
+	boolean parseResult(String result) {
+
+		boolean overallTestResult = false;
 		def allResults = [:]
 
 		def resultList = []
@@ -107,7 +107,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 			def matcher = TEST_CASE_PATTERN.matcher(line)
 
-			def ALL_TESTS_FINISHED = "Test Suite 'All tests' finished at";
+			def ALL_TESTS_SUCCEEDED = "** TEST SUCCEEDED **";
+			def ALL_TESTS_FAILED = "** TEST FAILED **";
 
 			if (matcher.matches()) {
 
@@ -141,7 +142,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 						if (testResult != null) {
 							testResult.output = output.toString()
-							testResult.success = message.startsWith("passed")
+
+							testResult.success = !message.toLowerCase().startsWith("failed")
+							if (!testResult.success) {
+								overallTestResult = true;
+							}
 
 							def durationMatcher = DURATION_PATTERN.matcher(message)
 							if (durationMatcher.matches()) {
@@ -152,7 +157,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 						logger.quiet("No TestClass found for name: " + testClassName + " => " + line)
 					}
 				}
-			} else if (line.startsWith(ALL_TESTS_FINISHED)) {
+			} else if (line.startsWith(ALL_TESTS_SUCCEEDED) || line.startsWith(ALL_TESTS_FAILED)) {
 				Destination destination = project.xcodebuild.destinations[testRun]
 				allResults.put(destination, resultList)
 				testRun ++;
@@ -169,7 +174,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 		store(allResults)
-
+		return overallTestResult;
 	}
 
 

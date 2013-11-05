@@ -1,5 +1,8 @@
 package org.openbakery.output
 
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 /**
@@ -29,11 +32,18 @@ class TestBuildOutputAppenderTest {
 					"Test Case '-[DTActionPanelTest_iPhone testCollapsed]' passed (0.005 seconds)."
 
 
+	Project project
+
+	@BeforeClass
+	def setup() {
+		project = ProjectBuilder.builder().build()
+	}
+
 	@Test
 	void testNoOutput() {
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
 
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
@@ -46,14 +56,13 @@ class TestBuildOutputAppenderTest {
 
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output)
-
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform Unit Tests\n\n  PASSED -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
+		String expected = "\nPerform Unit Tests\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 
@@ -62,8 +71,7 @@ class TestBuildOutputAppenderTest {
 
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output)
-
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
 		for (String line in errorTestOutput.split("\n")) {
