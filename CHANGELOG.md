@@ -1,3 +1,8 @@
+## 0.9.1 (Nov 12, 2013)
+
+Changes
+- Implemented much nice build output when compiling and also for the unit tests
+
 ## 0.9.0  (Sep 27, 2013)
 
 Changes

@@ -26,7 +26,7 @@ dependencies {
 }
 
 group = 'org.openbakery'
-version = '0.9.1-snapshot'
+version = '0.9.1'
 
 uploadArchives {
 	repositories {
