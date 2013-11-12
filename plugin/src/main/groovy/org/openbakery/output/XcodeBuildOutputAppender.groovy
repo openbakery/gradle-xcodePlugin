@@ -14,7 +14,7 @@ import java.util.regex.Matcher
 class XcodeBuildOutputAppender implements OutputAppender {
 
 
-	boolean command = false
+	String command = null
 	String currentSourceFile
 	StringBuilder outputText = new StringBuilder()
 	boolean hasOutput = false
@@ -34,6 +34,7 @@ class XcodeBuildOutputAppender implements OutputAppender {
 		hasOutput = false
 		error = false
 		warning = false
+		command = null
 	}
 
 	@Override
@@ -46,17 +47,29 @@ class XcodeBuildOutputAppender implements OutputAppender {
 
 		if (line.startsWith("CompileC")) {
 
-			int sourceFileStartIndex = line.indexOf(".o")+3;
-			int sourceFileEndIndex = line.indexOf(".m")+2;
+			int sourceFileStartIndex = line.indexOf(".o")+3
+			int sourceFileEndIndex = Integer.MAX_VALUE
+			if (line.indexOf(".m") >= 0 ) {
+				sourceFileEndIndex = line.indexOf(".m")+2
+			} else if (line.indexOf(".c") >= 0) {
+				sourceFileEndIndex = line.indexOf(".c")+2
+			}
+
 			if (sourceFileStartIndex < sourceFileEndIndex && sourceFileEndIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, sourceFileEndIndex)
-				command = true
+				command = "Compile"
 			}
 		} else if (line.startsWith("CompileStoryboard") || line.startsWith("CompileXIB")) {
-			int sourceFileStartIndex = line.indexOf(" ")+1;
+			int sourceFileStartIndex = line.indexOf(" ")+1
 			if (sourceFileStartIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, line.length())
-				command = true
+				command = "Compile"
+			}
+		} else if (line.startsWith("Ld")) {
+			command = "Linking"
+			String[] tokens = line.split(" ");
+			if (tokens.length > 1) {
+				currentSourceFile = tokens[1];
 			}
 		} else if (currentSourceFile != null && line.equals("")) {
 			// end of command
@@ -67,16 +80,19 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			} else {
 				output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
 			}
-			output.text(" - Compile: " + currentSourceFile);
+			output.text(" - ");
+			output.text(command)
+			output.text(": ")
+			output.text(currentSourceFile);
 			output.println();
 			if (hasOutput) {
 				output.println(outputText.toString())
 			}
 
 			reset()
-		} else if (line.endsWith("errors generated.") || line.endsWith("error generated.")) {
+		} else if (line.endsWith("errors generated.") || line.endsWith("error generated.") || line.startsWith("clang: error:")) {
 			error = true
-		} else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
+		}	else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
 			warning = true
 		} else if (!hasOutput && currentSourceFile != null && line.contains(currentSourceFile) && !line.startsWith(" ")) {
 			hasOutput = true

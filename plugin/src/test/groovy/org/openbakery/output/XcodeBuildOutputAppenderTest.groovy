@@ -89,6 +89,28 @@ class XcodeBuildOutputAppenderTest {
 					"\n" +
 					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
 
+	def linkData = "\n" +
+					"Ld build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
+					"    cd /Users/dummy/workspace/Dummy/Dummy-ios\n" +
+					"    setenv IPHONEOS_DEPLOYMENT_TARGET 5.0\n" +
+					"    setenv PATH \"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/local/git/bin:/Users/rene/Java/gradle/bin:/Applications/Xcode.app/Contents/Developer/usr/bin/:/Users/rene/.rvm/bin\"\n" +
+					"    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch armv7 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk -L/Users/dummy/workspace/Dummy/Dummy-ios/build/Release-iphoneos -F/Users/dummy/workspace/Dummy/Dummy-ios/build/Release-iphoneos -filelist /Users/dummy/workspace/Dummy/Dummy-ios/build/Dummy.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp.LinkFileList -dead_strip -ObjC -framework CoreData -framework MobileCoreServices -framework QuartzCore -fobjc-arc -fobjc-link-runtime -fprofile-arcs -ftest-coverage -miphoneos-version-min=5.0 -lz -lxml2 -framework CoreData -framework UIKit -framework Foundation -framework CoreGraphics -framework QuartzCore -framework MessageUI -framework Security -framework SystemConfiguration -framework QuickLook -framework ImageIO -framework MobileCoreServices -lPods -framework AssetsLibrary -framework Accelerate -Xlinker -dependency_info -Xlinker /Users/dummy/workspace/Dummy/Dummy-ios/build/Dummy.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp_dependency_info.dat -o /Users/dummy/workspace/Dummy/Dummy-ios/build/Dummy.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n" +
+					"\n" +
+					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
+
+	def linkErrorData = "\n" +
+					"Ld build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
+					"    cd /Users/dummy/workspace/Dummy/Dummy-ios\n" +
+					"    setenv IPHONEOS_DEPLOYMENT_TARGET 5.0\n" +
+					"    setenv PATH \"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/local/git/bin:/Users/rene/Java/gradle/bin:/Applications/Xcode.app/Contents/Developer/usr/bin/:/Users/rene/.rvm/bin\"\n" +
+					"    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch armv7 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk -L/Users/dummy/workspace/Dummy/Dummy-ios/build/Release-iphoneos -F/Users/dummy/workspace/Dummy/Dummy-ios/build/Release-iphoneos -filelist /Users/dummy/workspace/Dummy/Dummy-ios/build/Dummy.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp.LinkFileList -dead_strip -ObjC -framework CoreData -framework MobileCoreServices -framework QuartzCore -fobjc-arc -fobjc-link-runtime -fprofile-arcs -ftest-coverage -miphoneos-version-min=5.0 -lz -lxml2 -framework CoreData -framework UIKit -framework Foundation -framework CoreGraphics -framework QuartzCore -framework MessageUI -framework Security -framework SystemConfiguration -framework QuickLook -framework ImageIO -framework MobileCoreServices -lPods -framework AssetsLibrary -framework Accelerate -Xlinker -dependency_info -Xlinker /Users/dummy/workspace/Dummy/Dummy-ios/build/Dummy.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp_dependency_info.dat -o /Users/dummy/workspace/Dummy/Dummy-ios/build/Dummy.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n" +
+					"ld: library not found for -lPods\n" +
+					"clang: error: linker command failed with exit code 1 (use -v to see invocation)\n" +
+					"\n" +
+					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
+
+
+
 	@Test
 	void testError() {
 		StyledTextOutputStub output = new StyledTextOutputStub()
@@ -118,4 +140,34 @@ class XcodeBuildOutputAppenderTest {
 		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
 	}
 
+
+	@Test
+	void testLinking() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender = new XcodeBuildOutputAppender(output)
+
+		for (String line in linkData.split("\n")) {
+			appender.append(line)
+		}
+
+		String expected = "      OK - Linking: build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
+		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
+
+	}
+
+	@Test
+	void testLinkingError() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender = new XcodeBuildOutputAppender(output)
+
+		for (String line in linkErrorData.split("\n")) {
+			appender.append(line)
+		}
+
+		String expected = "   ERROR - Linking: build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
+		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
+
+	}
 }
