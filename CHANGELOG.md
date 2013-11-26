@@ -1,7 +1,7 @@
-## 0.9.2 (???)
+## 0.9.2 (Nov 26, 2013)
 
 Changes
-- Change the the xcodebuild als also performed with the 'build' target
+- Change that the project is also compiled using 'build' instead of 'xcodebuild'
 - Added support for an architecture list: Issue #33
 
 Bugfixes
