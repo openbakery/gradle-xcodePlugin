@@ -95,7 +95,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	boolean parseResult(String result) {
 
-		boolean overallTestResult = false;
+		boolean overallTestSuccess = true;
 		def allResults = [:]
 
 		def resultList = []
@@ -145,7 +145,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 							testResult.success = !message.toLowerCase().startsWith("failed")
 							if (!testResult.success) {
-								overallTestResult = true;
+								logger.quiet("test + " + testResult + "failed!")
+								overallTestSuccess = false;
 							}
 
 							def durationMatcher = DURATION_PATTERN.matcher(message)
@@ -174,7 +175,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 		store(allResults)
-		return overallTestResult;
+		logger.quiet("overallTestResult " + overallTestSuccess)
+
+		return overallTestSuccess;
 	}
 
 
