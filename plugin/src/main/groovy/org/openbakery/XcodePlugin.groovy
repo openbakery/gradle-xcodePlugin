@@ -56,7 +56,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyapp-clean'
 	public static final String HOCKEYAPP_PREPARE_TASK_NAME = 'hockeyapp-prepare'
 	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
-	public static final String UNIVERSAL_LIBRARY_TASK_NAME = 'universal-library'
+	//public static final String UNIVERSAL_LIBRARY_TASK_NAME = 'universal-library'
 
 
 	void apply(Project project) {
@@ -76,7 +76,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureTestflight(project)
 		configureHockeyApp(project)
 		configureCodesign(project)
-		configureUniversalLibrary(project)
+		//configureUniversalLibrary(project)
 
 		configureProperties(project)
 	}
@@ -308,9 +308,11 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(HOCKEYAPP_TASK_NAME, type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
 	}
 
+	/*
 	private void configureUniversalLibrary(Project project) {
 		project.task(UNIVERSAL_LIBRARY_TASK_NAME, type: XcodeUniversalLibraryTask, group: XCODE_GROUP_NAME)
 	}
+	*/
 
 }
 

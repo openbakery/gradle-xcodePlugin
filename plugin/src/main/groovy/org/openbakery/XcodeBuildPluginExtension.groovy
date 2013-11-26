@@ -41,7 +41,7 @@ class XcodeBuildPluginExtension {
 	def Signing signing = null
 	def additionalParameters = null
 	def String bundleNameSuffix = null
-	def String arch = null
+	def List<String> arch = null
 	def String workspace = null
 
 	def ArrayList<Destination> destinations = null
@@ -119,6 +119,19 @@ class XcodeBuildPluginExtension {
 		}
 		destinations.add(destination)
 		logger.debug("adding destination: {}", destination)
+	}
+
+
+
+	void setArch(Object arch) {
+		if (arch instanceof List) {
+			logger.debug("Arch is List: " + arch + " - " + arch.getClass().getName())
+			this.arch = arch;
+		} else {
+			logger.debug("Arch is string: " + arch + " - " + arch.getClass().getName())
+			this.arch = new ArrayList<String>();
+			this.arch.add(arch.toString());
+		}
 	}
 
 }

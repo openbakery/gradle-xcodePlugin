@@ -1,3 +1,13 @@
+## 0.9.2 (???)
+
+Changes
+- Change the the xcodebuild als also performed with the 'build' target
+- Added support for an architecture list: Issue #33
+
+Bugfixes
+- Fixed that the clean task is defined by the plugin, instead the clean asks are appended: Issue #38
+- Build output for unit test did not show any failures if an exception occured
+
 ## 0.9.1 (Nov 12, 2013)
 
 Changes

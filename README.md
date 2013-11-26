@@ -3,7 +3,7 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current stable version 0.9.1 adds support for Xcode 5, Xcode 4 is not supported!**
+**Current stable version 0.9.2 adds support for Xcode 5, Xcode 4 is not supported!**
 
 When using Xcode 4.x use the old 0.8.6 version of the plugin
 
@@ -80,6 +80,8 @@ xcodebuild Parameters:
 	default value: empty
 	
 	* _arch_ - Architecture of the destination target
+	
+	The arch can a single value e.g. 'i386' or a list of values e.g. [ 'armv7', 'armv7s' ]
 	
 	default value: empty
 

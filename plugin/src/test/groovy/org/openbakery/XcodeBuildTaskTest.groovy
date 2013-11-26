@@ -177,10 +177,38 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-		project.xcodebuild.arch = 'myarch'
+		project.xcodebuild.arch = ['myarch']
 
 		expectedCommandList.add("-arch")
-		expectedCommandList.add(project.xcodebuild.arch)
+		expectedCommandList.add('myarch')
+
+
+		addExpectedDefaultDirs()
+
+		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+
+		mockControl.play {
+			xcodeBuildTask.xcodebuild()
+		}
+	}
+
+
+	@Test
+	public void run_command_with_muiltple_arch() {
+		addExpectedScheme()
+
+		project.xcodebuild.sdk = 'iphoneos';
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add(project.xcodebuild.sdk)
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+		project.xcodebuild.arch = ['armv', 'armv7s']
+
+		expectedCommandList.add("-arch")
+		expectedCommandList.add('armv')
+		expectedCommandList.add('armv7s')
 
 
 		addExpectedDefaultDirs()
@@ -287,10 +315,10 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-		project.xcodebuild.arch = 'i386'
+		project.xcodebuild.arch = ['i386'];
 
 		expectedCommandList.add("-arch");
-		expectedCommandList.add(project.xcodebuild.arch)
+		expectedCommandList.add('i386')
 
 
 		addExpectedDefaultDirs()
