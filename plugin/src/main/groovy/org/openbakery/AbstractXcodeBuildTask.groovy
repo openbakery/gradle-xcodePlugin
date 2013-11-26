@@ -63,7 +63,6 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		if (project.xcodebuild.arch != null) {
-			//commandList.add("-arch")
 			StringBuilder archs = new StringBuilder("ARCHS=");
 			for (String singleArch in project.xcodebuild.arch) {
 				if (archs.length() > 7) {

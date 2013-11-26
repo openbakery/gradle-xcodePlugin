@@ -46,9 +46,6 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 	}
 
 /*
-	<<<<<<< HEAD
-
-=======
 
 
     @TaskAction
@@ -84,6 +81,5 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
             }
         }
     }
->>>>>>> 16d375d... add universal headers
 */
 }
