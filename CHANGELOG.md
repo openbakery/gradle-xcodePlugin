@@ -1,3 +1,9 @@
+## 0.9.3 (Jan 20, 2014)
+
+Bugfixes
+- Fixed issue #36
+
+
 ## 0.9.2 (Nov 26, 2013)
 
 Changes
