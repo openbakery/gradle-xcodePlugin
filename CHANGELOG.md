@@ -1,3 +1,8 @@
+## 0.9.4
+
+Bugfixes
+- Fixed warning that TaskContainer.add() is deprecated
+
 ## 0.9.3 (Jan 20, 2014)
 
 Bugfixes

@@ -215,12 +215,12 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureBuild(Project project) {
-		XcodeBuildTask buildTask = project.getTasks().add(BUILD_TASK_NAME, XcodeBuildTask.class);
+		XcodeBuildTask buildTask = project.getTasks().create(BUILD_TASK_NAME, XcodeBuildTask.class);
 		buildTask.setGroup(BasePlugin.BUILD_GROUP);
 		buildTask.dependsOn(BasePlugin.ASSEMBLE_TASK_NAME);
 
 
-		DefaultTask xcodebuildTask = project.getTasks().add(XCODE_BUILD_TASK_NAME, DefaultTask.class);
+		DefaultTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, DefaultTask.class);
 		xcodebuildTask.setDescription(buildTask.description);
 		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
 		xcodebuildTask.dependsOn(buildTask);
@@ -228,14 +228,14 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureClean(Project project) {
-		XcodeBuildCleanTask xcodeBuildCleanTask = project.getTasks().add(XCODE_CLEAN_TASK_NAME, XcodeBuildCleanTask.class);
+		XcodeBuildCleanTask xcodeBuildCleanTask = project.getTasks().create(XCODE_CLEAN_TASK_NAME, XcodeBuildCleanTask.class);
 		xcodeBuildCleanTask.setGroup(XCODE_GROUP_NAME);
 
 		project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(xcodeBuildCleanTask);
 	}
 
 	private void configureArchive(Project project) {
-		XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().add(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
+		XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
 		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
 
 		xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
