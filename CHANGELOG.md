@@ -1,7 +1,12 @@
 ## 0.9.4
 
+Changes
+- Reverted issue #36
+- Added the the whole xcodebuild output is stored in an file: issue #46
+
 Bugfixes
 - Fixed warning that TaskContainer.add() is deprecated
+
 
 ## 0.9.3 (Jan 20, 2014)
 
