@@ -1,4 +1,10 @@
-## 0.9.4
+## 0.9.5 (Feb 11, 2014)
+
+Bugfixes
+- Fixed HockeyApp upload: Issue #48
+
+
+## 0.9.4 (Feb 10, 2014)
 
 Changes
 - Reverted issue #36

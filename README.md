@@ -3,7 +3,7 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current stable version 0.9.3 adds support for Xcode 5, Xcode 4 is not supported!**
+**Current stable version 0.9.5 adds support for Xcode 5, Xcode 4 is not supported!**
 
 When using Xcode 4.x use the old 0.8.6 version of the plugin
 
@@ -224,7 +224,11 @@ TestFlight Parameters:
 HockeyApp Parameters:
 ----------------------
 
-* _apiToken_ - The HockeyApp API Token (http://support.hockeyapp.net/kb/api)
+* _apiToken_ - The HockeyApp API Token (see https://rink.hockeyapp.net/manage/auth_tokens )
+
+  default value: empty
+
+* _appID_ - The HockeyApp App ID (see https://rink.hockeyapp.net/manage/dashboard and select the app)
 
   default value: empty
 

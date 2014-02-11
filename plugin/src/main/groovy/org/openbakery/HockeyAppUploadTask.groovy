@@ -63,13 +63,13 @@ class HockeyAppUploadTask extends DefaultTask {
 
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 		logger.debug("dSYMFile: {}",  dSYMFile.absolutePath)
-		logger.debug("api_token: {}" + project.hockeyapp.apiToken)
-		logger.debug("notes: {} " + project.hockeyapp.notes)
-		logger.debug("file: {} " + ipaFile)
-		logger.debug("dsym: {} " + dSYMFile)
-		logger.debug("status: {} " + project.hockeyapp.status)
-		logger.debug("notify: {} " + project.hockeyapp.notify)
-		logger.debug("notes_type: {} " + project.hockeyapp.notesType)
+		logger.debug("api_token: {}", project.hockeyapp.apiToken)
+		logger.debug("notes: {} ", project.hockeyapp.notes)
+		logger.debug("file: {} ", ipaFile)
+		logger.debug("dsym: {} ", dSYMFile)
+		logger.debug("status: {} ", project.hockeyapp.status)
+		logger.debug("notify: {} ", project.hockeyapp.notify)
+		logger.debug("notes_type: {} ", project.hockeyapp.notesType)
 
 
 		uploadIPAandDSYM(ipaFile, dSYMFile)
@@ -84,7 +84,7 @@ class HockeyAppUploadTask extends DefaultTask {
 		//HttpHost proxy = new HttpHost("localhost", 8888);
 		//httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 
-		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps")
+		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps/" + project.hockeyapp.appID + "/app_versions/upload");
 
 		MultipartEntity entity = new MultipartEntity();
 
@@ -116,7 +116,7 @@ class HockeyAppUploadTask extends DefaultTask {
 		//HttpHost proxy = new HttpHost("localhost", 8888);
 		//httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 
-		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps/" + project.hockeyapp.apiToken + "/provisioning_profiles")
+		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps/" + project.hockeyapp.appID + "/provisioning_profiles")
 
 		MultipartEntity entity = new MultipartEntity();
 

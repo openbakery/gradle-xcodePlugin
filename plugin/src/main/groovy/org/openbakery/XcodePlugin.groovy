@@ -201,7 +201,28 @@ class XcodePlugin implements Plugin<Project> {
 				project.hockeykit.notes = project['hockeykit.notes']
 			}
 
+
+			if (project.hasProperty('hockeyapp.apiToken')) {
+				project.hockeyapp.apiToken = project['hockeyapp.apiToken']
+			}
+			if (project.hasProperty('hockeyapp.appID')) {
+				project.hockeyapp.appID = project['hockeyapp.appID']
+			}
+			if (project.hasProperty('hockeyapp.notes')) {
+				project.hockeyapp.notes = project['hockeyapp.notes']
+			}
+			if (project.hasProperty('hockeyapp.status')) {
+				project.hockeyapp.status = project['hockeyapp.status']
+			}
+			if (project.hasProperty('hockeyapp.notify')) {
+				project.hockeyapp.notify = project['hockeyapp.notify']
+			}
+			if (project.hasProperty('hockeyapp.notesType')) {
+				project.hockeyapp.notesType = project['hockeyapp.notesType']
+			}
+
 		}
+
 
 	}
 
