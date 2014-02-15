@@ -79,7 +79,6 @@ class TestFlightUploadTask extends DefaultTask {
 		distribution_lists - Optional, comma separated distribution list names which will receive access to the build
 		notify - Optional, notify permitted teammates to install the build (defaults to False)
 		replace - Optional, replace binary for an existing build if one is found with the same name/bundle version (defaults to False)
-
 */
 
 		def ipaFile = getFile("ipa");
@@ -97,6 +96,8 @@ class TestFlightUploadTask extends DefaultTask {
 		logger.debug("notes {}" + project.testflight.notes)
 		logger.debug("file {}" + ipaFile)
 		logger.debug("dsym {}" + dSYMFile)
+		logger.debug("replace_build {}" + project.testflight.replaceBuild)
+		logger.debug("notify_distribution_list {}" + project.testflight.notifyDistributionList)
 
 
 		entity.addPart("api_token", new StringBody(project.testflight.apiToken))
@@ -108,6 +109,8 @@ class TestFlightUploadTask extends DefaultTask {
 		}
 		entity.addPart("file", new FileBody(ipaFile))
 		entity.addPart("dsym", new FileBody(dSYMFile))
+		entity.addPart("notify", new StringBody(getBooleanString(project.testflight.notifyDistributionList)))
+		entity.addPart("replace", new StringBody(getBooleanString(project.testflight.replaceBuild)))
 
 		httpPost.setEntity(entity);
 
@@ -121,4 +124,7 @@ class TestFlightUploadTask extends DefaultTask {
 
 	}
 
+	static def getBooleanString(boolean value) {
+		return value.toString().capitalize();
+	}
 }

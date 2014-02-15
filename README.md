@@ -221,6 +221,14 @@ TestFlight Parameters:
 
   default value: "build/testflight"
 
+* _notifyDistributionList_ - notify permitted teammates to install the build
+
+  default value: false
+
+* _replaceBuild_ - replace binary for an existing build if one is found with the same name/bundle version
+
+  default value: false
+
 HockeyApp Parameters:
 ----------------------
 

@@ -25,6 +25,8 @@ class TestFlightPluginExtension {
 	def String teamToken = null
 	def String notes = "This build was uploaded using the gradle xcodePlugin"
 	def String distributionLists = null
+	def boolean notifyDistributionList = false
+	def boolean replaceBuild = false
 
 	private final Project project
 
