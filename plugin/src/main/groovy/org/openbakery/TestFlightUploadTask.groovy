@@ -90,14 +90,14 @@ class TestFlightUploadTask extends DefaultTask {
 		MultipartEntity entity = new MultipartEntity();
 
 
-		logger.debug("api_token {}" + project.testflight.apiToken)
-		logger.debug("team_token {}" + project.testflight.teamToken)
-		logger.debug("distribution_lists {}" + project.testflight.distributionLists)
-		logger.debug("notes {}" + project.testflight.notes)
-		logger.debug("file {}" + ipaFile)
-		logger.debug("dsym {}" + dSYMFile)
-		logger.debug("replace_build {}" + project.testflight.replaceBuild)
-		logger.debug("notify_distribution_list {}" + project.testflight.notifyDistributionList)
+		logger.debug("api_token {}", project.testflight.apiToken)
+		logger.debug("team_token {}", project.testflight.teamToken)
+		logger.debug("distribution_lists {}", project.testflight.distributionLists)
+		logger.debug("notes {}", project.testflight.notes)
+		logger.debug("file {}", ipaFile)
+		logger.debug("dsym {}", dSYMFile)
+		logger.debug("replace_build {}", project.testflight.replaceBuild)
+		logger.debug("notify_distribution_list {}", project.testflight.notifyDistributionList)
 
 
 		entity.addPart("api_token", new StringBody(project.testflight.apiToken))
@@ -105,12 +105,16 @@ class TestFlightUploadTask extends DefaultTask {
 		entity.addPart("notes", new StringBody(project.testflight.notes))
 		if (project.testflight.distributionLists != null){
 			entity.addPart("distribution_lists", new StringBody(project.testflight.distributionLists))
+		}
+		if (project.testflight.notifyDistributionList) {
 			entity.addPart("notify", new StringBody("True"))
 		}
 		entity.addPart("file", new FileBody(ipaFile))
 		entity.addPart("dsym", new FileBody(dSYMFile))
-		entity.addPart("notify", new StringBody(getBooleanString(project.testflight.notifyDistributionList)))
-		entity.addPart("replace", new StringBody(getBooleanString(project.testflight.replaceBuild)))
+
+		if (project.testflight.replaceBuild) {
+			entity.addPart("replace", new StringBody("True"));
+		}
 
 		httpPost.setEntity(entity);
 
@@ -124,7 +128,4 @@ class TestFlightUploadTask extends DefaultTask {
 
 	}
 
-	static def getBooleanString(boolean value) {
-		return value.toString().capitalize();
-	}
 }

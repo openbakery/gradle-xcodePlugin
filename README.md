@@ -220,6 +220,10 @@ TestFlight Parameters:
 * _outputDirectory_ - Output directory where the ipa an dSYM.zip is created
 
   default value: "build/testflight"
+	
+* _distributionLists_ - Comma separated distribution list names which will receive access to the build
+
+	default value: empty
 
 * _notifyDistributionList_ - notify permitted teammates to install the build
 
@@ -228,6 +232,10 @@ TestFlight Parameters:
 * _replaceBuild_ - replace binary for an existing build if one is found with the same name/bundle version
 
   default value: false
+	
+
+Note: see also https://testflightapp.com/api/doc/	
+	
 
 HockeyApp Parameters:
 ----------------------
