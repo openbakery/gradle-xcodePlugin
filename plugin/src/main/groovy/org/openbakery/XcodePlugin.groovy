@@ -221,6 +221,30 @@ class XcodePlugin implements Plugin<Project> {
 				project.hockeyapp.notesType = project['hockeyapp.notesType']
 			}
 
+
+			if (project.hasProperty('testflight.outputDirectory')) {
+				project.testflight.outputDirectory = project['testflight.outputDirectory']
+			}
+
+			if (project.hasProperty('testflight.apiToken')) {
+				project.testflight.apiToken = project['testflight.apiToken']
+			}
+			if (project.hasProperty('testflight.teamToken')) {
+				project.testflight.teamToken = project['testflight.teamToken']
+			}
+			if (project.hasProperty('testflight.notes')) {
+				project.testflight.notes = project['testflight.notes']
+			}
+			if (project.hasProperty('testflight.distributionLists')) {
+				project.testflight.distributionLists = project['testflight.distributionLists']
+			}
+			if (project.hasProperty('testflight.notifyDistributionList')) {
+				project.testflight.notifyDistributionList = project['testflight.notifyDistributionList']
+			}
+			if (project.hasProperty('testflight.replaceBuild')) {
+				project.testflight.replaceBuild = project['testflight.replaceBuild']
+			}
+
 		}
 
 
