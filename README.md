@@ -35,10 +35,6 @@ xcodebuild Parameters:
 
   default value: empty
 
-* _unitTestTarget_ - Unit Test target that should be executed when running xcodebuild. Here first the _target_ is build and afterwards the _unitTestTarget_ is build and executed. This target only works when the iphonesimulator _sdk_ is used.
-
-  default value: empty
-
   
 * _signing_ - signing configuration that should be used when building for the device
 

@@ -1,3 +1,8 @@
+## 0.9.6 
+
+Changes
+- Remove _unitTestTarget_ parameter that is not needed with xcode 5
+
 ## 0.9.5 (Feb 11, 2014)
 
 Bugfixes

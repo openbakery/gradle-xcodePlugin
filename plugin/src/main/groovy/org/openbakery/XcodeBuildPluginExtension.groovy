@@ -32,7 +32,6 @@ class XcodeBuildPluginExtension {
 	def String configuration = 'Debug'
 	def String sdk = 'iphonesimulator'
 	def target = null
-	def String unitTestTarget = null
 	def Object dstRoot
 	def Object objRoot
 	def Object symRoot
