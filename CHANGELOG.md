@@ -1,7 +1,10 @@
-## 0.9.6 
+## 0.9.6 (Mar 20, 2014)
 
 Changes
 - Remove _unitTestTarget_ parameter that is not needed with xcode 5
+
+Bugfixes
+- Fixed bundleDisplayName mapping: Issue #52
 
 ## 0.9.5 (Feb 11, 2014)
 
