@@ -38,6 +38,8 @@ class XcodeBuildTaskTest {
 	def setup() {
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
+		commandRunnerMock.getResult().returns("");
+
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 		projectDir = project.projectDir.absolutePath
@@ -179,8 +181,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.arch = ['myarch']
 
-		expectedCommandList.add("-arch")
-		expectedCommandList.add('myarch')
+		expectedCommandList.add("ARCHS=myarch")
 
 
 		addExpectedDefaultDirs()
@@ -206,9 +207,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.arch = ['armv', 'armv7s']
 
-		expectedCommandList.add("-arch")
-		expectedCommandList.add('armv')
-		expectedCommandList.add('armv7s')
+		expectedCommandList.add("ARCHS=armv armv7s")
 
 
 		addExpectedDefaultDirs()
@@ -317,8 +316,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.arch = ['i386'];
 
-		expectedCommandList.add("-arch");
-		expectedCommandList.add('i386')
+		expectedCommandList.add("ARCHS=i386");
 
 
 		addExpectedDefaultDirs()
