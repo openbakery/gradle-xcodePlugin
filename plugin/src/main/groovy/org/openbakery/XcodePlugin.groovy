@@ -93,10 +93,10 @@ class XcodePlugin implements Plugin<Project> {
 				project.infoplist.bundleIdentifierSuffix = project['infoplist.bundleIdentifierSuffix']
 			}
 			if (project.hasProperty('infoplist.bundleDisplayName')) {
-				project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayName']
+				project.infoplist.bundleDisplayName = project['infoplist.bundleDisplayName']
 			}
 			if (project.hasProperty('infoplist.bundleDisplayNameSuffix')) {
-				project.infoplist.bundleIdentifier = project['infoplist.bundleDisplayNameSuffix']
+				project.infoplist.bundleDisplayNameSuffix = project['infoplist.bundleDisplayNameSuffix']
 			}
 
 			if (project.hasProperty('infoplist.version')) {
