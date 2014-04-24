@@ -59,7 +59,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	XcodeTestTask() {
 		super()
 		dependsOn('keychain-create', 'provisioning-install')
-		this.description = "Run the unit test fo the Xcode project"
+		this.description = "Runs the unit tests for the Xcode project"
 	}
 
 	@TaskAction
@@ -74,7 +74,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
-			commandRunner.run(".", commandList, null, new TestBuildOutputAppender(output, project))
+			commandRunner.run("${project.projectDir.absolutePath}", commandList, null, new TestBuildOutputAppender(output, project))
 		} finally {
 			String commandOutput = commandRunner.getResult();
 			File outputDirectory = new File(project.getBuildDir(), "test");
