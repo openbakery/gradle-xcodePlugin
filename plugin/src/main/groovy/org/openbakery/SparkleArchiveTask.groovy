@@ -37,15 +37,10 @@ class SparkleArchiveTask extends DefaultTask {
 		if(!project.sparkle.appDirectory.exists()) {
 		 	throw new IllegalArgumentException("Invalid app name specified for Sparkle: " + project.sparkle.appName)
 	 	}
-	
-		//if (project.sparkle.outputDirectory) {
-					
-			//File sparkleOutputFolder = new File(project.sparkle.outputDirectory);
-			if (!project.sparkle.outputDirectory.exists()) {
-				project.sparkle.outputDirectory.mkdirs();
-			}
-		//}
 
+		if (!project.sparkle.outputDirectory.exists()) {
+			project.sparkle.outputDirectory.mkdirs();
+		}
 
 		def ant = new groovy.util.AntBuilder()
 		ant.zip(destfile: project.sparkle.outputDirectory.path + "/" + project.sparkle.appName +  ".zip") {
