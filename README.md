@@ -263,3 +263,15 @@ HockeyApp Parameters:
 * _notesType_ - Optional, type of release notes
 
   default value: 1
+  
+ 
+sparkle Parameters:
+--------------------
+
+* _appName_ - You should specify this parameter when your appname does not match your target name. Default appname in XCode is $(TARGET_NAME). Do not specify .app here because it will be added automatically. If a different file ending than .app will be needed in future we will add a new parameter.
+
+  default value: empty
+  
+* _outputDirectory_ - The directory to output a ZIP file and release notes of the app.
+
+  default value: empty
