@@ -24,7 +24,7 @@ class XcodeBuildCleanTask extends DefaultTask {
 
 	XcodeBuildCleanTask() {
 		super()
-		dependsOn('keychain-clean', 'provisioning-clean', 'hockeykit-clean', 'testflight-clean', 'hockeyapp-clean')
+		dependsOn('keychain-clean', 'provisioning-clean', 'hockeykit-clean', 'testflight-clean', 'hockeyapp-clean', 'deploygate-clean')
 		this.description = "Cleans up the generated files from the previous build"
 	}
 

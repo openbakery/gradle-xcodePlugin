@@ -31,6 +31,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
 	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
 	public static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
+	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	//public static final String UIAUTOMATION_GROUP_NAME = "UIAutomation"
 
 	public static final String BUILD_TASK_NAME = "build";
@@ -56,6 +57,10 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyapp-clean'
 	public static final String HOCKEYAPP_PREPARE_TASK_NAME = 'hockeyapp-prepare'
 	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
+	public static final String DEPLOYGATE_PREPARE_TASK_NAME = 'deploygate-prepare'
+	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
+	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygate-clean'
+
 	//public static final String UNIVERSAL_LIBRARY_TASK_NAME = 'universal-library'
 
 
@@ -75,6 +80,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureProvisioning(project)
 		configureTestflight(project)
 		configureHockeyApp(project)
+		configureDeployGate(project)
 		configureCodesign(project)
 		//configureUniversalLibrary(project)
 
@@ -242,6 +248,20 @@ class XcodePlugin implements Plugin<Project> {
 				project.testflight.replaceBuild = project['testflight.replaceBuild']
 			}
 
+			if (project.hasProperty('deploygate.outputDirectory')) {
+				project.deploygate.outputDirectory = project['deploygate.outputDirectory']
+			}
+
+			if (project.hasProperty('deploygate.apiToken')) {
+				project.deploygate.apiToken = project['deploygate.apiToken']
+			}
+			if (project.hasProperty('deploygate.userName')) {
+				project.deploygate.userName = project['deploygate.userName']
+			}
+			if (project.hasProperty('deploygate.message')) {
+				project.deploygate.message = project['deploygate.message']
+			}
+
 		}
 
 
@@ -253,6 +273,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("testflight", TestFlightPluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
+		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("uiautomation", UIAutomationTestExtension)
 	}
 
@@ -348,6 +369,12 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(HOCKEYAPP_CLEAN_TASK_NAME, type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task(HOCKEYAPP_PREPARE_TASK_NAME, type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task(HOCKEYAPP_TASK_NAME, type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
+	}
+
+	private void configureDeployGate(Project project) {
+		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
+		project.task(DEPLOYGATE_PREPARE_TASK_NAME, type: DeployGatePrepareTask, group: DEPLOYGATE_GROUP_NAME)
+		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
 	}
 
 	/*
