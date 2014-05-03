@@ -18,21 +18,21 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+/**
+ *
+ * @author Stefan Gugarel
+ *
+ */
+class SparkleCleanTask extends DefaultTask {
 
-class XcodeBuildCleanTask extends DefaultTask {
-
-	XcodeBuildCleanTask() {
+	SparkleCleanTask() {
 		super()
-		dependsOn('keychain-clean', 'provisioning-clean', 'hockeykit-clean', 'testflight-clean', 'hockeyapp-clean', 'sparkle-clean', 'deploygate-clean')
-		this.description = "Cleans up the generated files from the previous build"
+		this.description = "Cleans up the generated files from Sparkle"
 	}
 
 	@TaskAction
 	def clean() {
-		project.xcodebuild.dstRoot.deleteDir()
-		project.xcodebuild.objRoot.deleteDir()
-		project.xcodebuild.symRoot.deleteDir()
-		project.xcodebuild.sharedPrecompsDir.deleteDir()
+        project.file(project.sparkle.outputDirectory).deleteDir()
 	}
-
+	
 }

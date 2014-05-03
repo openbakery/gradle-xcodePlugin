@@ -32,6 +32,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
 	public static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
+	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	//public static final String UIAUTOMATION_GROUP_NAME = "UIAutomation"
 
 	public static final String BUILD_TASK_NAME = "build";
@@ -60,7 +61,10 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String DEPLOYGATE_PREPARE_TASK_NAME = 'deploygate-prepare'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygate-clean'
-
+	public static final String SPARKLE_TASK_NAME = 'sparkle'
+	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkle-archive'
+	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkle-notes'
+	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkle-clean'	
 	//public static final String UNIVERSAL_LIBRARY_TASK_NAME = 'universal-library'
 
 
@@ -82,6 +86,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureHockeyApp(project)
 		configureDeployGate(project)
 		configureCodesign(project)
+		configureSparkle(project)
 		//configureUniversalLibrary(project)
 
 		configureProperties(project)
@@ -247,6 +252,13 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('testflight.replaceBuild')) {
 				project.testflight.replaceBuild = project['testflight.replaceBuild']
 			}
+			
+			if (project.hasProperty('sparkle.outputDirectory')) {
+				project.sparkle.output = project['sparkle.outputDirectory']
+			}
+			if (project.hasProperty('sparkle.appName')) {
+				project.sparkle.appname = project['sparkle.appName']
+			}
 
 			if (project.hasProperty('deploygate.outputDirectory')) {
 				project.deploygate.outputDirectory = project['deploygate.outputDirectory']
@@ -275,6 +287,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("uiautomation", UIAutomationTestExtension)
+		project.extensions.create("sparkle", SparklePluginExtension, project)
 	}
 
 	private void configureBuild(Project project) {
@@ -369,6 +382,15 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(HOCKEYAPP_CLEAN_TASK_NAME, type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task(HOCKEYAPP_PREPARE_TASK_NAME, type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task(HOCKEYAPP_TASK_NAME, type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
+	}
+	
+	private void configureSparkle(Project project) {
+		project.task(SPARKLE_ARCHIVE_TASK_NAME, type: SparkleArchiveTask, group: SPARKLE_GROUP_NAME)
+		project.task(SPARKLE_NOTES_TASK_NAME, type: SparkleReleaseNotesTask, group: SPARKLE_GROUP_NAME)
+		project.task(SPARKLE_CLEAN_TASK_NAME, type: SparkleCleanTask, group: SPARKLE_GROUP_NAME)
+			
+		DefaultTask sparkleTask = project.task(SPARKLE_TASK_NAME, type: DefaultTask, description: "Creates a build that is compressed to ZIP including Sparkle framework", group: SPARKLE_GROUP_NAME);
+		sparkleTask.dependsOn(SPARKLE_ARCHIVE_TASK_NAME)
 	}
 
 	private void configureDeployGate(Project project) {
