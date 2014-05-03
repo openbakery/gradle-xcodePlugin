@@ -263,3 +263,28 @@ HockeyApp Parameters:
 * _notesType_ - Optional, type of release notes
 
   default value: 1
+
+DeployGate Parameters:
+----------------------
+
+* _apiToken_ - The DeployGate API Token (https://deploygate.com/settings)
+
+  default value: empty
+
+* _userName_ - The DeployGate User Name (https://deploygate.com/settings)
+
+  default value: empty
+  
+* _message_ - Release notes for the build
+
+  default value: "This build was uploaded using the gradle xcodePlugin"
+
+* _outputDirectory_ - Output directory where the ipa
+
+  default value: "build/deploygate"
+	
+	
+
+Note: see also https://deploygate.com/docs/api	
+	
+
