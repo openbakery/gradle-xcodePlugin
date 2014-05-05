@@ -31,6 +31,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
 	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
 	public static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
+	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	//public static final String UIAUTOMATION_GROUP_NAME = "UIAutomation"
 
@@ -57,6 +58,9 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyapp-clean'
 	public static final String HOCKEYAPP_PREPARE_TASK_NAME = 'hockeyapp-prepare'
 	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
+	public static final String DEPLOYGATE_PREPARE_TASK_NAME = 'deploygate-prepare'
+	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
+	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygate-clean'
 	public static final String SPARKLE_TASK_NAME = 'sparkle'
 	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkle-archive'
 	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkle-notes'
@@ -80,6 +84,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureProvisioning(project)
 		configureTestflight(project)
 		configureHockeyApp(project)
+		configureDeployGate(project)
 		configureCodesign(project)
 		configureSparkle(project)
 		//configureUniversalLibrary(project)
@@ -255,6 +260,20 @@ class XcodePlugin implements Plugin<Project> {
 				project.sparkle.appname = project['sparkle.appName']
 			}
 
+			if (project.hasProperty('deploygate.outputDirectory')) {
+				project.deploygate.outputDirectory = project['deploygate.outputDirectory']
+			}
+
+			if (project.hasProperty('deploygate.apiToken')) {
+				project.deploygate.apiToken = project['deploygate.apiToken']
+			}
+			if (project.hasProperty('deploygate.userName')) {
+				project.deploygate.userName = project['deploygate.userName']
+			}
+			if (project.hasProperty('deploygate.message')) {
+				project.deploygate.message = project['deploygate.message']
+			}
+
 		}
 
 
@@ -266,6 +285,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("testflight", TestFlightPluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
+		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("uiautomation", UIAutomationTestExtension)
 		project.extensions.create("sparkle", SparklePluginExtension, project)
 	}
@@ -371,6 +391,13 @@ class XcodePlugin implements Plugin<Project> {
 			
 		DefaultTask sparkleTask = project.task(SPARKLE_TASK_NAME, type: DefaultTask, description: "Creates a build that is compressed to ZIP including Sparkle framework", group: SPARKLE_GROUP_NAME);
 		sparkleTask.dependsOn(SPARKLE_ARCHIVE_TASK_NAME)
+	}
+
+
+	private void configureDeployGate(Project project) {
+		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
+		project.task(DEPLOYGATE_PREPARE_TASK_NAME, type: DeployGatePrepareTask, group: DEPLOYGATE_GROUP_NAME)
+		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
 	}
 
 	/*
