@@ -62,7 +62,7 @@ class CommandRunner {
 		}
 		process.waitFor()
 		if (process.exitValue() > 0) {
-			throw new CommandRunnerException("Command failed to run: " + commandListToString(commandList))
+			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList))
 		}
 	}
 

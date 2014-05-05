@@ -1,3 +1,11 @@
+## 0.9.7 (TBA)
+
+Changes
+- Add Sparkle support (http://sparkle.andymatuschak.org)
+
+Bugfixes
+- When using asset catalogs for app icons then the hockey-image task did not find the app icons
+
 ## 0.9.6 (Mar 20, 2014)
 
 Changes

@@ -294,7 +294,7 @@ class XcodePlugin implements Plugin<Project> {
 		XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
 		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
 
-		xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
+		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
 	}
 
 	private void configureHockeyKit(Project project) {

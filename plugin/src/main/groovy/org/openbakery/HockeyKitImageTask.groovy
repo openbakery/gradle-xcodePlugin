@@ -17,6 +17,9 @@ package org.openbakery
 
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang.StringUtils
+
 import javax.imageio.ImageIO
 import org.apache.commons.io.FileUtils
 import java.awt.image.BufferedImage
@@ -46,47 +49,74 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 		}
 	}
 
+	File uncrush(File iconFile) {
+
+		logger.debug("uncrush icon {}", iconFile);
+		//xcrun -sdk iphoneos pngcrush -revert-iphone-optimizations infile.png outfile.png
+
+		def uncrushCommandList = [
+			"xcrun",
+			"-sdk",
+			"iphoneos",
+			"pngcrush",
+			"-revert-iphone-optimizations"
+		]
+
+		uncrushCommandList.add(iconFile.path);
+
+		File outputFile = new File(project.hockeykit.outputDirectory, iconFile.getName());
+		uncrushCommandList.add(outputFile.path);
+
+		CommandRunner runner = new CommandRunner();
+		runner.run(uncrushCommandList);
+		return outputFile;
+	}
+
 	@TaskAction
 	def imageCreate() {
 		def infoplist = getAppBundleInfoPlist()
 		logger.debug("infoplist: {}", infoplist)
+
+		String appPath = new File(getAppBundleName()).getAbsolutePath();
+		logger.quiet("appPath: {}", infoplist)
+
+
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist))
-		def list = config.getList("CFBundleIconFiles")
-		if (list.isEmpty()) {
-			list = config.getList("CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles")
-		}
+		ArrayList<String> iconList = new ArrayList<String>();
+		iconList.addAll(config.getList("CFBundleIconFiles"))
+		iconList.addAll(config.getList("CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"))
+		iconList.addAll(config.getList("CFBundleIcons~ipad.CFBundlePrimaryIcon.CFBundleIconFiles"))
+
+
+		File iconFile;
 		TreeMap<Integer, String> iconMap = new TreeMap<Integer, String>()
-		list.each {
+		iconList.each {
 			item ->
 				try {
 					def image
-					File iconFile;
 
-					// get fileName of info.plist in project / target
-					def infoPlist = getInfoPlist()
-					def infoPlistFile = new File(infoPlist)
-
-					// get path from info.plist
-					//String absolutePath = infoPlistFile.getAbsolutePath();
-					//String appPath = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
-
-
-					if (project.infoplist.iconPath) {
-
-						// appPath + additional iconPath + name of iconFile
-						iconFile = new File(appPath + File.separator + project.infoplist.iconPath + File.separator + item)
-
+					String extension = FilenameUtils.getExtension(item);
+					if (StringUtils.isEmpty(extension)) {
+						iconFile = new File(appPath + File.separator + item + "@2x.png");
+						if (!iconFile.exists()) {
+							iconFile = new File(appPath + File.separator + item + ".png");
+						}
 					} else {
-
-						// appPath + additional iconPath + name of iconFile
-						iconFile = new File(item)
+						iconFile = new File(appPath + File.separator + item)
 					}
-					logger.debug("try to read iconFile: {}", iconFile)
-					image = ImageIO.read(iconFile)
 
-					iconMap.put(image.width, iconFile)
+
+					if (iconFile.exists()) {
+						logger.debug("try to read iconFile: {}", iconFile)
+
+						uncrushedIconFile = uncrush(iconFile);
+
+						image = ImageIO.read(uncrushedIconFile)
+
+						iconMap.put(image.width, uncrushedIconFile)
+					}
 				} catch (Exception ex) {
-					logger.error("Cannot read image {}. (Will be ignored), ", item)
+					logger.error("Cannot read image {}, ", iconFile)
 				}
 		}
 		logger.debug("Images to choose from: {}", iconMap)
@@ -104,6 +134,12 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 				logger.debug("Resize file {} to {}", selectedImage, outputImageFile)
 				resizeImage(selectedImage, outputImageFile.absolutePath)
 			}
+		}
+
+
+		// delete tmp png
+		iconMap.values().each {
+			item ->	item.delete();
 		}
 
 	}
