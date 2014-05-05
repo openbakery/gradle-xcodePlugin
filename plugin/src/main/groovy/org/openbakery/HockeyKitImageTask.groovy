@@ -109,7 +109,7 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 					if (iconFile.exists()) {
 						logger.debug("try to read iconFile: {}", iconFile)
 
-						uncrushedIconFile = uncrush(iconFile);
+						File uncrushedIconFile = uncrush(iconFile);
 
 						image = ImageIO.read(uncrushedIconFile)
 
