@@ -15,24 +15,19 @@
  */
 package org.openbakery
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.DefaultTask
 
 
-class XcodeBuildCleanTask extends DefaultTask {
+class DeployGateCleanTask extends DefaultTask{
 
-	XcodeBuildCleanTask() {
+	DeployGateCleanTask() {
 		super()
-		dependsOn('keychain-clean', 'provisioning-clean', 'hockeykit-clean', 'testflight-clean', 'hockeyapp-clean', 'sparkle-clean', 'deploygate-clean')
-		this.description = "Cleans up the generated files from the previous build"
+		this.description = "Cleans up the generated files from the deploygate target"
 	}
 
 	@TaskAction
 	def clean() {
-		project.xcodebuild.dstRoot.deleteDir()
-		project.xcodebuild.objRoot.deleteDir()
-		project.xcodebuild.symRoot.deleteDir()
-		project.xcodebuild.sharedPrecompsDir.deleteDir()
+		project.deploygate.outputDirectory.deleteDir()
 	}
-
 }
