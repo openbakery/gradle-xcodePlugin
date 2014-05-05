@@ -1,7 +1,8 @@
-## 0.9.7 (TBA)
+## 0.9.7 (May 5, 2014)
 
 Changes
-- Add Sparkle support (http://sparkle.andymatuschak.org)
+- Add Sparkle support (http://sparkle.andymatuschak.org). Thanks to gugmaster.
+- Add DeployGate support (https://deploygate.com). Thanks to henteko.
 
 Bugfixes
 - When using asset catalogs for app icons then the hockey-image task did not find the app icons
