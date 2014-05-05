@@ -6,8 +6,8 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.2'
-		}
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.6'
+	}
 }
 apply plugin: 'xcode'
 
@@ -53,13 +53,13 @@ gradle.taskGraph.whenReady { taskGraph ->
 			destination {
 				platform = 'iOS Simulator'
 				name = 'iPhone Retina (3.5-inch)'
-				os='7.0'
+				os='7.1'
 			}
 
 			destination {
 				platform = 'iOS Simulator'
 				name = 'iPad Retina'
-				os='7.0'
+				os='7.1'
 			}
 			
 		}
