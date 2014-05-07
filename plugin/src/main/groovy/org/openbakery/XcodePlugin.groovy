@@ -364,7 +364,7 @@ class XcodePlugin implements Plugin<Project> {
 		if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
 			logger.debug("added cleanup for certificate")
 			codesignTask.doLast {
-				logger.debug("run certificate cleanup")
+				logger.quiet("run certificate cleanup")
 				KeychainCleanupTask keychainCleanup = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
 				keychainCleanup.clean()
 			}
