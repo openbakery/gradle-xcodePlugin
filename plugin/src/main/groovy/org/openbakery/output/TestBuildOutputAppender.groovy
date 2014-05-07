@@ -80,7 +80,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			output.println();
 			testRun++;
 			if (line.startsWith(ALL_TESTS_FAILED)) {
-				output.append("---> " +  line);
 				output.append("TESTS FAILED");
 				output.println();
 				output.println();

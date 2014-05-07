@@ -1,3 +1,8 @@
+## 0.9.8 (May 7, 2014)
+
+Bugfixes
+- Possible fix for Issue 55: Only add keychain options to the xcodebuild command when doing a device build
+
 ## 0.9.7 (May 5, 2014)
 
 Changes
