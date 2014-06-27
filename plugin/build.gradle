@@ -1,12 +1,28 @@
+import org.gradle.api.publish.maven.MavenPublication
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+  dependencies {
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.+'
+	}
+}
+
+
+
 apply plugin: 'groovy'
 apply plugin: 'idea'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
+
 
 dependencies {
 	compile gradleApi()
 	compile localGroovy()
 }
 
-apply plugin: 'maven'
 
 repositories {
 	mavenCentral()
@@ -25,8 +41,10 @@ dependencies {
 
 }
 
+def versionNumber = '0.9.9'
+
 group = 'org.openbakery'
-version = '0.9.9'
+version = versionNumber
 
 uploadArchives {
 	repositories {
@@ -38,4 +56,71 @@ uploadArchives {
 
 test {
 	useTestNG()
+}
+
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+
+
+def pomConfig = {
+	licenses {
+		license {
+    	name "The Apache Software License, Version 2.0"
+      url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+      distribution "repo"
+		}
+	}
+	developers {
+  	developer {
+			id "renep"
+      name "René Pirringer"
+      email "rene@openbakery.org"
+		}
+	}
+}
+
+publishing {
+	publications {
+  	mavenJava(MavenPublication) {
+    	from components.java
+      artifact sourcesJar
+
+      pom.withXml {
+      	def root = asNode()
+        	root.appendNode('description', 'A gradle plugin for building Xcode projects')
+          root.children().last() + pomConfig
+			}
+		}
+	}
+}
+
+
+bintray {
+	user = bintrayUser
+	key = bintrayApiKey
+	
+	publications = ['mavenJava']
+	
+	publish = true
+	pkg {
+		repo = 'openbakery'
+		name = 'gradle-xcodePlugin'
+		desc = 'gradle plugin to build Xcode projects'
+		websiteUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
+		issueTrackerUrl = 'https://github.com/openbakery/gradle-xcodePlugin/issues'
+		vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin.git'
+		licenses = ['Apache-2.0']
+		labels = ['xcode', 'ios', 'mac']
+		publicDownloadNumbers = true
+
+		// optional version attributes
+		version {
+			name = versionNumber
+			vcsTag = versionNumber
+		}
+	}
 }
