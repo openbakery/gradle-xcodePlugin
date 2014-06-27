@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -30,7 +31,60 @@ class CodesignTask extends AbstractXcodeTask {
 		this.description = "Signs the app bundle that was created by xcodebuild"
 	}
 
+	/**
+	 * Patches the original PackageApplication script and returns the absolute file name of the patched script.
+	 * The patched PackageApplication contains a new keychain parameter where the keychain can be specified that should be used
+	 *
+	 * @return
+	 */
+	String preparePackageApplication() {
 
+		def commandListFindPackageApplication = [
+						"xcrun",
+						"-sdk",
+						project.xcodebuild.sdk,
+						"--find",
+						"PackageApplication"
+		];
+		def packageApplicationFile = commandRunner.runWithResult(commandListFindPackageApplication).trim();
+
+		File destinationFile = new File(project.xcodebuild.signing.signingDestinationRoot.absolutePath, "PackageApplication")
+
+		FileUtils.copyFile(new File(packageApplicationFile), destinationFile);
+
+
+		String fileContents = FileUtils.readFileToString(destinationFile)
+
+		StringBuilder modifiedContent = new StringBuilder()
+
+		for (String line in fileContents.split("\n")) {
+
+			if (modifiedContent.length() > 0) {
+				modifiedContent.append("\n")
+			}
+			modifiedContent.append(line)
+
+			if (line.equals("             \"output|o=s\",")) {
+				modifiedContent.append("\n")
+				modifiedContent.append("             \"keychain|k=s\",")
+			}
+
+			if (line.equals("    push(@codesign_args, \$destApp);")) {
+				modifiedContent.append("\n")
+				modifiedContent.append("    if ( \$opt{keychain} ) {\n")
+				modifiedContent.append("      push(@codesign_args, '--keychain');\n")
+				modifiedContent.append("      push(@codesign_args, \$opt{keychain});\n")
+				modifiedContent.append("    }")
+			}
+
+		}
+
+		FileUtils.writeStringToFile(destinationFile, modifiedContent.toString());
+
+		destinationFile.setExecutable(true)
+		return destinationFile.absolutePath
+
+	}
 
 	@TaskAction
 	def codesign() {
@@ -54,19 +108,19 @@ class CodesignTask extends AbstractXcodeTask {
 		def ipaName = appName.substring(0, appName.size()-4) + ".ipa"
 		logger.quiet("Signing {} to create {}", appName, ipaName)
 
-
-
+		String packageApplicationScript = preparePackageApplication()
 
 		def commandList = [
-						"xcrun",
-						"-sdk",
-						project.xcodebuild.sdk,
-						"PackageApplication",
+						packageApplicationScript,
 						"-v",
 						appName,
 						"-o",
-						ipaName
+						ipaName,
+						"--keychain",
+						project.xcodebuild.signing.keychainPathInternal.absolutePath
 		]
+
+		//--keychain /Users/rene/workspace/coconatics/ELO/elo-ios/build/keychain/gradle-1403850484215.keychain
 
 		if (project.xcodebuild.signing.identity != null && project.xcodebuild.signing.mobileProvisionFile != null) {
 			commandList.add("--sign");
@@ -75,12 +129,8 @@ class CodesignTask extends AbstractXcodeTask {
 			commandList.add(project.xcodebuild.signing.mobileProvisionFile.absolutePath)
 		}
 
-/*
-        if [ ! $CODESIGN_ALLOCATE ]
-        then
-        export CODESIGN_ALLOCATE=$(xcrun -find codesign_allocate)
-        fi
-        */
+
+
 
 		def codesignAllocateCommand = commandRunner.runWithResult(["xcrun", "-find", "codesign_allocate"]).trim();
 		def environment = [CODESIGN_ALLOCATE:codesignAllocateCommand]

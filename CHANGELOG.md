@@ -1,3 +1,8 @@
+## 0.9.9 (June 27, 2014)
+
+Changes
+- Codesign does not fail anymore when multiple keychain exists with the same key. (The PackageApplication script is copied and patched, and the proper keychain is passed as parameter to the codesign command ) 
+
 ## 0.9.8 (May 7, 2014)
 
 Bugfixes

@@ -1,0 +1,12 @@
+#
+# Dummy PackageApplication file to simulate the modifications
+
+
+GetOptions ( \%opt,
+             "output|o=s",
+             );
+
+
+
+    push(@codesign_args, $destApp);
+

@@ -36,13 +36,13 @@ class KeychainCreateTest {
 		keychainCreateTask.setProperty("commandRunner", commandRunnerMock)
 
 		certificateFile = File.createTempFile("test", ".cert")
-		keychainDestinationFile = new File(project.xcodebuild.signing.keychainDestinationRoot, certificateFile.getName())
+		keychainDestinationFile = new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName())
 	}
 
 	@AfterTest
 	def cleanAfterTest() {
 		certificateFile.delete();
-		new File(project.xcodebuild.signing.keychainDestinationRoot, certificateFile.getName()).delete()
+		new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName()).delete()
 		project.xcodebuild.signing.keychainPathInternal.delete()
 	}
 

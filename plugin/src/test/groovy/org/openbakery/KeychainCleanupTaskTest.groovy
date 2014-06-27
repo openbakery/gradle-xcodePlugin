@@ -37,7 +37,7 @@ class KeychainCleanupTaskTest {
 
 		certificateFile = File.createTempFile("test", ".cert")
 		certificateFile.deleteOnExit()
-		keychainDestinationFile = new File(project.xcodebuild.signing.keychainDestinationRoot, certificateFile.getName())
+		keychainDestinationFile = new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName())
 
 	}
 

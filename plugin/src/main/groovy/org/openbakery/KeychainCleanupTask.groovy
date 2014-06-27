@@ -58,7 +58,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 			return;
 		}
 
-		project.xcodebuild.signing.keychainDestinationRoot.deleteDir()
+		project.xcodebuild.signing.signingDestinationRoot.deleteDir()
 
 		if (getOSVersion().minor >= 9) {
 			setKeychainList(getKeychainList())

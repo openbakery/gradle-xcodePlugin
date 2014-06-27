@@ -53,7 +53,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificatePassword is missing")
 		}
 
-		def certificateFile = download(project.xcodebuild.signing.keychainDestinationRoot, project.xcodebuild.signing.certificateURI)
+		def certificateFile = download(project.xcodebuild.signing.signingDestinationRoot, project.xcodebuild.signing.certificateURI)
 
 		def keychainPath = project.xcodebuild.signing.keychainPathInternal.absolutePath
 

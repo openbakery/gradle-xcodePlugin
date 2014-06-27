@@ -24,7 +24,7 @@ class Signing {
 	/**
 	 * internal parameters
 	 */
-	Object keychainDestinationRoot
+	Object signingDestinationRoot
 	Object keychainPathInternal
 	final Project project
 	final String keychainName =  KEYCHAIN_NAME_BASE + System.currentTimeMillis() +  ".keychain"
@@ -41,15 +41,15 @@ class Signing {
 	public Signing(Project project) {
 		this.project = project;
 
-		this.keychainDestinationRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("keychain")
+		this.signingDestinationRoot = {
+			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("codesign")
 		}
 
 		this.keychainPathInternal = {
 			if (this.keychain != null) {
 				return this.keychain
 			}
-			return new File(this.keychainDestinationRoot, keychainName)
+			return new File(this.signingDestinationRoot, keychainName)
 		}
 
 		this.mobileProvisionDestinationRoot = {
@@ -66,11 +66,11 @@ class Signing {
 	}
 
 
-	File getKeychainDestinationRoot() {
-		return project.file(keychainDestinationRoot)
+	File getSigningDestinationRoot() {
+		return project.file(signingDestinationRoot)
 	}
 
-	void setKeychainDestinationRoot(Object keychainDestinationRoot) {
+	void setSigningDestinationRoot(Object keychainDestinationRoot) {
 		this.destinationRoot = keychainDestinationRoot
 	}
 
