@@ -36,10 +36,10 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			if (project.xcodebuild.sdk != null) {
 				commandList.add("-sdk")
 				commandList.add(project.xcodebuild.sdk)
-				if (project.xcodebuild.sdk.equals("iphonesimulator") && project.xcodebuild.arch == null) {
+				if (project.xcodebuild.sdk.equals("iphonesimulator") && project.xcodebuild.arch != null) {
 					commandList.add("ONLY_ACTIVE_ARCH=NO")
 					commandList.add("-arch")
-					commandList.add("i386")
+					commandList.add(project.xcodebuild.arch)
 				}
 			}
 

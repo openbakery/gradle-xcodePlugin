@@ -1,3 +1,9 @@
+## 0.9.10 (TBA)
+
+Changes
+- Compatibility for Xcode 6
+  - The arch is not added to a simulator build, it is only added when specified using the xcodebuild.arch parameter 
+
 ## 0.9.9 (June 27, 2014)
 
 Changes

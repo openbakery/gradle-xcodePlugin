@@ -1,5 +1,8 @@
 package org.openbakery
 
+import groovy.xml.MarkupBuilder
+import groovy.xml.StreamingMarkupBuilder
+import groovy.xml.XmlUtil
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
@@ -181,10 +184,82 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
+def store(def allResults) {
 
-	def store(def allResults) {
+/*
+<testsuite name="nosetests" tests="1" errors="1" failures="0" skip="0">
+    <testcase classname="path_to_test_suite.TestSomething"
+              name="test_it" time="0">
+        <error type="exceptions.TypeError" message="oops, wrong type">
+        Traceback (most recent call last):
+        ...
+        TypeError: oops, wrong type
+        </error>
+    </testcase>
+</testsuite>
+ */
+
+		def list = [];
+		for (Destination destination in project.xcodebuild.destinations) {
+
+			def resultList = allResults[destination]
+
+			list << [
+							testsuite:
+							[
+								name : destination.name,
+								package : destination.platform + "/" + destination.arch + "/" + destination.id + "/" + destination.os,
+								id: destination.id
+							],
+						results:
+							resultList.collect {
+								TestClass t -> [
+									name: t.name,
+									result: t.results.collect {
+										TestResult r ->	[
+											method: r.method,
+											success: r.success,
+											duration: r.duration,
+											output: r.output.split("\n").collect {
+												String s -> escapeString(s)
+											}
+										]
+									}
+								]
+							}
+					]
+
+		}
+
+
+
+
+
+		File outputDirectory = new File(project.getBuildDir(), "test");
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs()
+		}
+
+
+		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
+
+		//def xmlBuilder = new MarkupBuilder(writer)
+		//xmlBuilder.testsuites() << list
+
+	 	def builder = new StreamingMarkupBuilder().bind {
+			unescaped << "<?xml version='1.0' encoding='UTF-8'?>"
+      unescaped << '<testsuites>'
+			unescaped << list
+         unescaped << '</testsuites>'
+     }
+     writer << builder
+
+
+	}
+
+
+	def storeJson(def allResults) {
 		logger.quiet("Saving test results")
-		def builder = new groovy.json.JsonBuilder()
 
 		def list = [];
 		for (Destination destination in project.xcodebuild.destinations) {
@@ -218,9 +293,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 							}
 					]
 
-
 		}
 
+		def builder = new groovy.json.JsonBuilder()
 		builder(list)
 
 
@@ -233,7 +308,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			out.write(builder.toPrettyString())
 		}
 	}
-
 
 
 	def escapeString(String string) {
