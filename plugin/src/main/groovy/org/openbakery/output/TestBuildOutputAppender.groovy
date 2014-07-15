@@ -40,7 +40,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 
-//GenerateDSYMFile
 
 	void append(String line) {
 
@@ -54,9 +53,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 		checkAllTestsEnded(line);
 
-		if (!testsRunning) {
-			super.append(line)
-		}
+		super.append(line)
 
 	}
 
