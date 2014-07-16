@@ -51,7 +51,7 @@ task appstore(dependsOn: 'archive') {
 gradle.taskGraph.whenReady { taskGraph ->
 
 	if (taskGraph.hasTask(continuous)) {
-		println "CONFIGURE INTEGRATION"
+		println "CONFIGURE CONTINUOUS"
 		xcodebuild {
 			
 			destination {
