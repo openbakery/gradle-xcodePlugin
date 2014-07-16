@@ -1,7 +1,7 @@
 gradle-xcodePlugin
 ==================
 
-gradle xcodePlugin to build iOS projects
+gradle xcodePlugin to build Mac and iOS projects
 
 **Current stable version is 0.9.10**
 

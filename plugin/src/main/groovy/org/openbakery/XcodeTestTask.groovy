@@ -202,7 +202,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} else {
 			logger.quiet(numberSuccess(allResults) + " tests where successful, and " + numberErrors(allResults) + " failues");
 		}
-		logger.quiet("overallTestResult " + overallTestSuccess)
+		//logger.quiet("overallTestResult " + overallTestSuccess)
 
 		return overallTestSuccess;
 	}
