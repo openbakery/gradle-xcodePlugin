@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.lang.StringUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -79,6 +80,12 @@ class XcodeTestTaskTest {
 
 
 		xcodeTestTask.store(allResults)
+
+		String testXML = new File('build/test/test-results.xml').text
+
+		assert StringUtils.countMatches(testXML, "<testcase") == 8
+
+		assert StringUtils.countMatches(testXML, "<error type='failure'") == 3
 
 
 	}
