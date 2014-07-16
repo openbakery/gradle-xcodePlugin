@@ -1,8 +1,12 @@
 ## 0.9.10 (TBA)
 
 Changes
+- Added JUnit XML output for test results: Issue #56
 - Compatibility for Xcode 6
   - The arch is not added to a simulator build, it is only added when specified using the xcodebuild.arch parameter 
+
+Bugfixes
+- When unit test cases are compiled after a test was already executed, then no output was shown
 
 ## 0.9.9 (June 27, 2014)
 

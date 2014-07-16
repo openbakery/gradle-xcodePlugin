@@ -38,6 +38,13 @@ class XcodeTestTaskTest {
 
 	}
 
+	TestResult testResult(String name, boolean success) {
+		TestResult testResult = new TestResult()
+		testResult.success = success
+		testResult.duration = 0.1
+		testResult.method = name
+		return testResult;
+	}
 
 	@Test
 	void testXMLOuput() {
@@ -54,15 +61,15 @@ class XcodeTestTaskTest {
 		project.xcodebuild.destinations << destination;
 
 
-		TestResult testResult = new TestResult()
-		testResult.success = true
-		testResult.duration = 0.1
-		testResult.method = "testSomething"
-
 
 		TestClass testClass = new TestClass();
 		testClass.name = "HelloWorldTest"
-		testClass.results << testResult
+		for (int i=0; i<5; i++) {
+			testClass.results << testResult("testSuccess_" + i, true)
+		}
+		for (int i=0; i<3; i++) {
+			testClass.results << testResult("testError_" + i, false)
+		}
 
 		def allResults = [:]
 		def resultList = []

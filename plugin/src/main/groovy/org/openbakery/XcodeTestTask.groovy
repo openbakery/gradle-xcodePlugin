@@ -31,6 +31,25 @@ class TestClass {
 	String name
 	List results = []
 
+	int numberSuccess() {
+		int success = 0;
+		for (TestResult result in results) {
+			if (result.success) {
+				success++
+			}
+		}
+		return success;
+	}
+
+	int numberErrors() {
+		int errors = 0;
+		for (TestResult result in results) {
+			if (!result.success) {
+				errors++
+			}
+		}
+		return errors;
+	}
 
 	@Override
 	public java.lang.String toString() {
@@ -178,85 +197,70 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 		store(allResults)
+		if (overallTestSuccess) {
+			logger.quiet("All " + numberSuccess(resultList) + " tests where successful");
+		} else {
+			logger.quiet(numberSuccess(resultList) + " tests where successful, and " + numberErrors(resultList) + " failues");
+		}
 		logger.quiet("overallTestResult " + overallTestSuccess)
 
 		return overallTestSuccess;
 	}
 
 
-def store(def allResults) {
-
-/*
-<testsuite name="nosetests" tests="1" errors="1" failures="0" skip="0">
-    <testcase classname="path_to_test_suite.TestSomething"
-              name="test_it" time="0">
-        <error type="exceptions.TypeError" message="oops, wrong type">
-        Traceback (most recent call last):
-        ...
-        TypeError: oops, wrong type
-        </error>
-    </testcase>
-</testsuite>
- */
-
-		def list = [];
-		for (Destination destination in project.xcodebuild.destinations) {
-
-			def resultList = allResults[destination]
-
-			list << [
-							testsuite:
-							[
-								name : destination.name,
-								package : destination.platform + "/" + destination.arch + "/" + destination.id + "/" + destination.os,
-								id: destination.id
-							],
-						results:
-							resultList.collect {
-								TestClass t -> [
-									name: t.name,
-									result: t.results.collect {
-										TestResult r ->	[
-											method: r.method,
-											success: r.success,
-											duration: r.duration,
-											output: r.output.split("\n").collect {
-												String s -> escapeString(s)
-											}
-										]
-									}
-								]
-							}
-					]
-
-		}
-
-
-
-
+	def store(def allResults) {
 
 		File outputDirectory = new File(project.getBuildDir(), "test");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
 
-
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
-		//def xmlBuilder = new MarkupBuilder(writer)
-		//xmlBuilder.testsuites() << list
+		def xmlBuilder = new MarkupBuilder(writer)
 
-	 	def builder = new StreamingMarkupBuilder().bind {
-			unescaped << "<?xml version='1.0' encoding='UTF-8'?>"
-      unescaped << '<testsuites>'
-			unescaped << list
-         unescaped << '</testsuites>'
-     }
-     writer << builder
+		xmlBuilder.testsuites() {
+			for (Destination destination in project.xcodebuild.destinations) {
+				String name = destination.platform + " / " + destination.name + " / " + destination.os
+
+				def resultList = allResults[destination]
+				testsuite(name: name, tests: numberSuccess(resultList), errors: numberErrors(resultList), failures: "0", skip: "0") {
+
+					for (TestClass testClass in resultList) {
+
+						for (TestResult testResult in testClass.results) {
+							testcase(classname: testClass.name, name: testResult.method, time: testResult.duration) {
+								if (!testResult.success) {
+									error(type: "failure", message: "", testResult.output)
+								}
+								'system-out'(testResult.output)
+							}
+						}
+
+					}
+
+				}
+			}
+		}
 
 
 	}
 
+	int numberSuccess(def results) {
+		int success = 0;
+		for (TestClass testClass in results) {
+			success += testClass.numberSuccess()
+		}
+		return success
+	}
+
+	int numberErrors(def results) {
+		int errors = 0;
+		for (TestClass testClass in results) {
+			errors += testClass.numberErrors()
+		}
+		return errors
+	}
 
 	def storeJson(def allResults) {
 		logger.quiet("Saving test results")
