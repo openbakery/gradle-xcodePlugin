@@ -3,9 +3,9 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build iOS projects
 
-**Current stable version 0.9.9 adds support for Xcode 5, Xcode 4 is not supported!**
+**Current stable version is 0.9.10**
 
-When using Xcode 4.x use the old 0.8.6 version of the plugin
+0.9.10 supports both Xcode 5 and Xcode 6 (beta)
 
 
 __Introduction:__ http://openbakery.org/gradle.php

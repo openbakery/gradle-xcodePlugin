@@ -198,9 +198,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		store(allResults)
 		if (overallTestSuccess) {
-			logger.quiet("All " + numberSuccess(resultList) + " tests where successful");
+			logger.quiet("All " + numberSuccess(allResults) + " tests where successful");
 		} else {
-			logger.quiet(numberSuccess(resultList) + " tests where successful, and " + numberErrors(resultList) + " failues");
+			logger.quiet(numberSuccess(allResults) + " tests where successful, and " + numberErrors(allResults) + " failues");
 		}
 		logger.quiet("overallTestResult " + overallTestSuccess)
 
@@ -246,7 +246,24 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	}
 
-	int numberSuccess(def results) {
+
+	int numberSuccess(java.util.Map results) {
+		int success = 0;
+		for (java.util.List list in results.values()) {
+			success += numberSuccess(list);
+		}
+		return success;
+	}
+
+	int numberErrors(java.util.Map results) {
+		int success = 0;
+		for (java.util.List list in results.values()) {
+			success += numberErrors(list);
+		}
+		return success;
+	}
+
+	int numberSuccess(java.util.List results) {
 		int success = 0;
 		for (TestClass testClass in results) {
 			success += testClass.numberSuccess()
@@ -254,7 +271,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		return success
 	}
 
-	int numberErrors(def results) {
+	int numberErrors(java.util.List results) {
 		int errors = 0;
 		for (TestClass testClass in results) {
 			errors += testClass.numberErrors()

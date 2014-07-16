@@ -1,4 +1,4 @@
-## 0.9.10 (TBA)
+## 0.9.10 (July 16, 2014)
 
 Changes
 - Added JUnit XML output for test results: Issue #56
