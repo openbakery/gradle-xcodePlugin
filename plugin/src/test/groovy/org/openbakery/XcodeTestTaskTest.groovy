@@ -48,7 +48,7 @@ class XcodeTestTaskTest {
 	}
 
 	@Test
-	void testXMLOuput() {
+	void createXMLOuput() {
 
 
 		Destination destination = new Destination()
@@ -87,6 +87,12 @@ class XcodeTestTaskTest {
 
 		assert StringUtils.countMatches(testXML, "<error type='failure'") == 3
 
+
+	}
+
+	@Test
+	void parseWithNoResult() {
+		xcodeTestTask.store(null)
 
 	}
 
