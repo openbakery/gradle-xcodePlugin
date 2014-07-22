@@ -224,7 +224,15 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				String name = destination.platform + " / " + destination.name + " / " + destination.os
 
 				def resultList = allResults[destination]
-				testsuite(name: name, tests: numberSuccess(resultList), errors: numberErrors(resultList), failures: "0", skip: "0") {
+
+				int numberSuccess = 0;
+				int numberErrors = 0;
+				if (resultList != null) {
+					numberSuccess = numberSuccess(resultList);
+					numberErrors = numberErrors(resultList);
+				}
+
+				testsuite(name: name, tests: numberSuccess, errors: numberErrors, failures: "0", skip: "0") {
 
 					for (TestClass testClass in resultList) {
 
