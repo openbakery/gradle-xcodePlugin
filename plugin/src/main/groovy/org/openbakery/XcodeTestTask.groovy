@@ -226,13 +226,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				def resultList = allResults[destination]
 
 				int success = 0;
-				int error = 0;
+				int errors = 0;
 				if (resultList != null) {
 					success = numberSuccess(resultList);
-					error = numberErrors(resultList);
+					errors = numberErrors(resultList);
 				}
 
-				testsuite(name: name, tests: success, errors: error, failures: "0", skip: "0") {
+				testsuite(name: name, tests: success, errors: errors, failures: "0", skip: "0") {
 
 					for (TestClass testClass in resultList) {
 
@@ -264,11 +264,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 	int numberErrors(java.util.Map results) {
-		int success = 0;
+		int errors = 0;
 		for (java.util.List list in results.values()) {
-			success += numberErrors(list);
+			errors += numberErrors(list);
 		}
-		return success;
+		return errors;
 	}
 
 	int numberSuccess(java.util.List results) {
