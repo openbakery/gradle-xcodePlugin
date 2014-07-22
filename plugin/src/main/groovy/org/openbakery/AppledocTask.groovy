@@ -36,7 +36,12 @@ class AppledocTask extends AbstractXcodeTask {
 		ant.unzip(src: zip,  dest:documentationDirectory)
 		ant.chmod(file: appledocCommand, perm:"+x")
 
-		commandRunner.run([appledocCommand.absolutePath, "--print-settings", "--output", documentationDirectory.absolutePath, '--ignore', project.getBuildDir().absolutePath, "."])
+		try {
+			commandRunner.run([appledocCommand.absolutePath, "--print-settings", "--output", documentationDirectory.absolutePath, '--ignore', project.getBuildDir().absolutePath, "."])
+		} catch (CommandRunnerException ex) {
+			logger.quiet(commandRunner.getResult())
+			throw ex
+		}
 
 	}
 
