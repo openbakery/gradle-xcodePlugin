@@ -34,7 +34,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
-	//public static final String UIAUTOMATION_GROUP_NAME = "UIAutomation"
+	public static final String COVERAGE_GROUP_NAME = "Coverage"
 
 	public static final String BUILD_TASK_NAME = "build";
 	public static final String TEST_TASK_NAME = "test"
@@ -70,7 +70,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledoc-clean'
 
-	//public static final String UNIVERSAL_LIBRARY_TASK_NAME = 'universal-library'
+	public static final COVERAGE_TASK_NAME = 'coverage'
+	public static final COVERAGE_CLEAN_TASK_NAME = 'coverage-clean'
 
 
 	void apply(Project project) {
@@ -93,7 +94,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureCodesign(project)
 		configureSparkle(project)
 		configureAppledoc(project)
-		//configureUniversalLibrary(project)
+		configureCoverage(project)
 
 		configureProperties(project)
 	}
@@ -294,6 +295,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("uiautomation", UIAutomationTestExtension)
 		project.extensions.create("sparkle", SparklePluginExtension, project)
+		project.extensions.create("coverage", CoveragePluginExtension, project)
 	}
 
 	private void configureBuild(Project project) {
@@ -405,6 +407,12 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
+	private void configureCoverage(Project project) {
+		project.task(COVERAGE_TASK_NAME, type: CoverageTask, group: COVERAGE_GROUP_NAME)
+		project.task(COVERAGE_CLEAN_TASK_NAME, type: CoverageCleanTask, group: COVERAGE_GROUP_NAME)
+
+	}
+
 
 	private void configureDeployGate(Project project) {
 		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
@@ -412,11 +420,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
 	}
 
-	/*
-	private void configureUniversalLibrary(Project project) {
-		project.task(UNIVERSAL_LIBRARY_TASK_NAME, type: XcodeUniversalLibraryTask, group: XCODE_GROUP_NAME)
-	}
-	*/
 
 }
 

@@ -2,6 +2,7 @@
 
 Changes
 - Added appledoc target to generate documentation using the appledoc tool form gentlebytes: https://github.com/tomaz/appledoc
+- Added code coverage target using gcovr: http://gcovr.com
 
 ## 0.9.10 (July 16, 2014)
 
