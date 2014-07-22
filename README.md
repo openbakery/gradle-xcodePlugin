@@ -300,3 +300,24 @@ sparkle Parameters:
 * _outputDirectory_ - The directory to output a ZIP file and release notes of the app.
 
   default value: empty
+
+coverage Parameters:
+--------------------
+
+Note: For coverage the the "Generate Test Coverage Files" in the project for the executed target must be set to Yes
+
+* _exclude_ - Exclude data files that match this regular expression. e.g. '.*h$|.*UnitTests.*m$' excludes all headers and all *.m files from the UnitTests directory
+
+	default value: empty
+
+
+* _outputFormat_ -  Format of the generated output. Possible values are, xml or html. If not specified text file is generated
+
+	default value: empty
+
+
+* _outputDirectory_ - Output directory for the results
+
+  default value: "build/coverage"
+
+

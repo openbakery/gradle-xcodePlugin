@@ -33,7 +33,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
-	//public static final String UIAUTOMATION_GROUP_NAME = "UIAutomation"
+	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
+	public static final String COVERAGE_GROUP_NAME = "Coverage"
 
 	public static final String BUILD_TASK_NAME = "build";
 	public static final String TEST_TASK_NAME = "test"
@@ -64,8 +65,13 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SPARKLE_TASK_NAME = 'sparkle'
 	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkle-archive'
 	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkle-notes'
-	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkle-clean'	
-	//public static final String UNIVERSAL_LIBRARY_TASK_NAME = 'universal-library'
+	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkle-clean'
+
+	public static final String APPLEDOC_TASK_NAME = 'appledoc'
+	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledoc-clean'
+
+	public static final COVERAGE_TASK_NAME = 'coverage'
+	public static final COVERAGE_CLEAN_TASK_NAME = 'coverage-clean'
 
 
 	void apply(Project project) {
@@ -87,7 +93,8 @@ class XcodePlugin implements Plugin<Project> {
 		configureDeployGate(project)
 		configureCodesign(project)
 		configureSparkle(project)
-		//configureUniversalLibrary(project)
+		configureAppledoc(project)
+		configureCoverage(project)
 
 		configureProperties(project)
 	}
@@ -274,6 +281,14 @@ class XcodePlugin implements Plugin<Project> {
 				project.deploygate.message = project['deploygate.message']
 			}
 
+			if (project.hasProperty('coverage.outputFormat')) {
+				project.coverage.outputFormat = project['coverage.outputFormat']
+			}
+			if (project.hasProperty('coverage.exclude')) {
+				project.coverage.exclude = project['coverage.exclude']
+			}
+
+
 		}
 
 
@@ -288,6 +303,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("uiautomation", UIAutomationTestExtension)
 		project.extensions.create("sparkle", SparklePluginExtension, project)
+		project.extensions.create("coverage", CoveragePluginExtension, project)
 	}
 
 	private void configureBuild(Project project) {
@@ -393,6 +409,18 @@ class XcodePlugin implements Plugin<Project> {
 		sparkleTask.dependsOn(SPARKLE_ARCHIVE_TASK_NAME)
 	}
 
+	private void configureAppledoc(Project project) {
+		project.task(APPLEDOC_TASK_NAME, type: AppledocTask, group: APPLE_DOC_GROUP_NAME)
+		project.task(APPLEDOC_CLEAN_TASK_NAME, type: AppledocCleanTask, group: APPLE_DOC_GROUP_NAME)
+
+	}
+
+	private void configureCoverage(Project project) {
+		project.task(COVERAGE_TASK_NAME, type: CoverageTask, group: COVERAGE_GROUP_NAME)
+		project.task(COVERAGE_CLEAN_TASK_NAME, type: CoverageCleanTask, group: COVERAGE_GROUP_NAME)
+
+	}
+
 
 	private void configureDeployGate(Project project) {
 		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
@@ -400,11 +428,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
 	}
 
-	/*
-	private void configureUniversalLibrary(Project project) {
-		project.task(UNIVERSAL_LIBRARY_TASK_NAME, type: XcodeUniversalLibraryTask, group: XCODE_GROUP_NAME)
-	}
-	*/
 
 }
 

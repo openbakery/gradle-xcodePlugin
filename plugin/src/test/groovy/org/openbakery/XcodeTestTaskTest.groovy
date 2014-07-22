@@ -19,6 +19,7 @@ class XcodeTestTaskTest {
 
 	GMockController mockControl
 	CommandRunner commandRunnerMock
+	Destination destination
 
 	@BeforeMethod
 	def setup() {
@@ -37,6 +38,16 @@ class XcodeTestTaskTest {
 		xcodeTestTask = project.tasks.findByName('test')
 		//xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
 
+		destination = new Destination()
+		destination.platform = "iPhoneSimulator"
+		destination.name = "iPad"
+		destination.arch = "i386"
+		destination.id = "iPad Retina"
+		destination.os = "iOS"
+
+		project.xcodebuild.destinations = []
+		project.xcodebuild.destinations << destination;
+
 	}
 
 	TestResult testResult(String name, boolean success) {
@@ -49,18 +60,6 @@ class XcodeTestTaskTest {
 
 	@Test
 	void createXMLOuput() {
-
-
-		Destination destination = new Destination()
-		destination.platform = "iPhoneSimulator"
-		destination.name = "iPad"
-		destination.arch = "i386"
-		destination.id = "iPad Retina"
-		destination.os = "iOS"
-
-		project.xcodebuild.destinations = []
-		project.xcodebuild.destinations << destination;
-
 
 
 		TestClass testClass = new TestClass();
@@ -92,7 +91,9 @@ class XcodeTestTaskTest {
 
 	@Test
 	void parseWithNoResult() {
-		xcodeTestTask.store(null)
+		def allResults = [:]
+		allResults.put(destination, null)
+		xcodeTestTask.store(allResults)
 
 	}
 

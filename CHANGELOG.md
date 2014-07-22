@@ -1,3 +1,12 @@
+## 0.9.11 (July 22, 2014)
+
+Changes
+- Added appledoc target to generate documentation using the appledoc tool form gentlebytes: https://github.com/tomaz/appledoc
+- Added code coverage target using gcovr: http://gcovr.com
+
+Bugfixes
+- Fixed error when no test is available: issue #72
+
 ## 0.9.10 (July 16, 2014)
 
 Changes

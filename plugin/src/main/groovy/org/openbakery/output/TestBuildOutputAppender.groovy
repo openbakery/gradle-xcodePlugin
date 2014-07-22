@@ -1,5 +1,6 @@
 package org.openbakery.output
 
+import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.logging.StyledTextOutput
 import org.openbakery.Destination
@@ -71,8 +72,10 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			output.append(destination.name)
 			output.append(" ")
 			output.append(destination.platform)
-			output.append("/")
-			output.append(destination.os)
+			if (!StringUtils.isEmpty(destination.os)) {
+				output.append("/")
+				output.append(destination.os)
+			}
 			output.println();
 			output.println();
 			testRun++;
