@@ -281,6 +281,14 @@ class XcodePlugin implements Plugin<Project> {
 				project.deploygate.message = project['deploygate.message']
 			}
 
+			if (project.hasProperty('coverage.outputFormat')) {
+				project.coverage.outputFormat = project['coverage.outputFormat']
+			}
+			if (project.hasProperty('coverage.exclude')) {
+				project.coverage.exclude = project['coverage.exclude']
+			}
+
+
 		}
 
 
