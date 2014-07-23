@@ -41,7 +41,7 @@ dependencies {
 
 }
 
-def versionNumber = '0.9.11'
+def versionNumber = '0.9.12'
 
 group = 'org.openbakery'
 version = versionNumber

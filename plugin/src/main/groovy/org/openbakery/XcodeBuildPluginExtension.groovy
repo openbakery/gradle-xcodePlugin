@@ -15,10 +15,22 @@
  */
 package org.openbakery
 
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.filefilter.SuffixFileFilter
+import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import javax.swing.text.DefaultEditorKit
+
+enum Devices {
+	UNIVERSAL,
+	PHONE,
+	PAD
+}
 
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
@@ -42,8 +54,11 @@ class XcodeBuildPluginExtension {
 	def String bundleNameSuffix = null
 	def List<String> arch = null
 	def String workspace = null
+	boolean isOSX = false;
+	Devices devices = Devices.UNIVERSAL;
+	List<String> availableSimulators = null
 
-	def ArrayList<Destination> destinations = null
+	def List<Destination> destinations = null
 
 	/**
 	 * internal parameters
@@ -120,7 +135,39 @@ class XcodeBuildPluginExtension {
 		logger.debug("adding destination: {}", destination)
 	}
 
+	List<Destination> getDestinations() {
 
+		if (!this.destinations) {
+			this.destinations = new ArrayList<Destination>()
+			for (String simulator in availableSimulators) {
+				Destination destination = new Destination();
+				destination.platform = 'iOS Simulator'
+				switch (this.devices) {
+					case Devices.PHONE:
+						if (name.contains("iPhone")) {
+							destination.name = simulator;
+							this.destinations.add(destination)
+						}
+						break;
+					case Devices.PAD:
+						if (name.contains("iPad")) {
+							destination.name = simulator;
+							this.destinations.add(destination)
+						}
+						break;
+					default:
+						destination.name = simulator;
+						this.destinations.add(destination)
+						break;
+				}
+			}
+		}
+
+		logger.debug("this.destination: " + this.destinations);
+
+
+		return this.destinations;
+	}
 
 	void setArch(Object arch) {
 		if (arch instanceof List) {
@@ -132,5 +179,113 @@ class XcodeBuildPluginExtension {
 			this.arch.add(arch.toString());
 		}
 	}
+
+
+	void finishConfiguration(Project project) {
+
+		CommandRunner commandRunner = new CommandRunner()
+		parseInfoFromProjectFile(project, commandRunner)
+
+		if (isOSX) {
+			return;
+		}
+
+		String version = commandRunner.runWithResult(["xcodebuild", "-version"])
+		boolean isXcode5 = version.startsWith("Xcode 5");
+		logger.debug("isXcode5 {}", isXcode5);
+
+
+		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
+		logger.debug("xcodePath {}", isXcode5);
+
+		File simulatorDirectory;
+		if (isXcode5) {
+			simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
+		} else {
+			simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/CoreSimulator/Profiles/DeviceTypes")
+		}
+
+
+		String[] simulators = simulatorDirectory.list()
+		availableSimulators = []
+		for (String simulator in simulators) {
+			availableSimulators << FilenameUtils.getBaseName(simulator);
+		}
+
+		logger.debug("availableSimulators: {}", availableSimulators)
+
+	}
+
+
+
+	void parseInfoFromProjectFile(Project project, CommandRunner commandRunner) {
+
+		logger.debug("using target: {}", this.target)
+		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
+                def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
+                def projectFile = new File(xcodeProjectDir, "project.pbxproj")
+
+		def buildRoot = project.buildDir
+		if (!buildRoot.exists()) {
+			buildRoot.mkdirs()
+		}
+
+		def projectPlist = new File(buildRoot, "project.plist").absolutePath
+
+		// convert ascii plist to xml so that commons configuration can parse it!
+		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
+
+		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
+		def rootObjectKey = config.getString("rootObject")
+		logger.debug("rootObjectKey {}", rootObjectKey);
+
+		List<String> list = config.getList("objects." + rootObjectKey + ".targets")
+
+		for (target in list) {
+
+			def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
+			logger.debug("buildConfigurationList={}", buildConfigurationList)
+			def targetName = config.getString("objects." + target + ".name")
+			logger.debug("targetName: {}", targetName)
+
+
+			if (targetName.equals(this.target)) {
+				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
+				for (buildConfigurationsItem in buildConfigurations) {
+					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
+
+					logger.debug("buildName: {} equals {}", buildName, this.configuration)
+
+					if (buildName.equals(this.configuration)) {
+						//String productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
+						String sdkRoot = config.getString("objects." + buildConfigurationsItem + ".buildSettings.SDKROOT")
+						if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
+							// is os x build
+							this.isOSX = true
+						} else {
+							String devicesString = config.getString("objects." + buildConfigurationsItem + ".buildSettings.TARGETED_DEVICE_FAMILY")
+
+							if (devicesString.equals("1")) {
+								this.devices = Devices.PHONE;
+							} else if (devicesString.equals("2")) {
+								this.devices = Devices.PAD;
+							}
+
+						}
+
+						if (this.infoPlist == null) {
+							infoPlist = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
+							logger.info("infoPlist: {}", infoPlist)
+						}
+
+						logger.info("devices: {}", this.devices)
+						logger.info("isOSX: {}", this.isOSX)
+						return;
+					}
+				}
+			}
+		}
+	}
+
 
 }

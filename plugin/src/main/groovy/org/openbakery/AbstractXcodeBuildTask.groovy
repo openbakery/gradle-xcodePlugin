@@ -81,39 +81,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 
-		for (Destination destination in project.xcodebuild.destinations) {
 
-			StringBuilder destinationBuilder = new StringBuilder();
-			if (destination.platform != null) {
-				destinationBuilder.append("platform=");
-				destinationBuilder.append(destination.platform)
-			}
-			if (destination.name != null) {
-				if (destinationBuilder.length() > 0) {
-					destinationBuilder.append(",")
-				}
-				destinationBuilder.append("name=");
-				destinationBuilder.append(destination.name)
-			}
-			if (destination.arch != null && destination.platform.equals("OS X")) {
-				if (destinationBuilder.length() > 0) {
-					destinationBuilder.append(",")
-				}
-				destinationBuilder.append("arch=");
-				destinationBuilder.append(destination.arch)
-			}
-
-			if (destination.os != null && destination.platform.equals("iOS Simulator")) {
-				if (destinationBuilder.length() > 0) {
-					destinationBuilder.append(",")
-				}
-				destinationBuilder.append("OS=");
-				destinationBuilder.append(destination.os)
-			}
-
-			commandList.add("-destination")
-			commandList.add(destinationBuilder.toString());
-		}
 
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing.keychainPathInternal.exists()) {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);

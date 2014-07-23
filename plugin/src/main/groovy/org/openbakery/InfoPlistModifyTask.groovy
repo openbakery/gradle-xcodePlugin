@@ -23,7 +23,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def prepare() {
-		def infoPlist = getInfoPlist()
+		def infoPlist = project.xcodebuild.infoPlist
 
 
 		if (StringUtils.isEmpty(infoPlist)) {

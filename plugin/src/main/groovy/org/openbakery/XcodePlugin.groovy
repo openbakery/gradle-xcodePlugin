@@ -289,6 +289,8 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
+			project.xcodebuild.finishConfiguration(project);
+
 		}
 
 

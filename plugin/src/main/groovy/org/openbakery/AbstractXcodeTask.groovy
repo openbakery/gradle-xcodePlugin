@@ -102,19 +102,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		}
 	}
 
-	/**
-	 *
-	 * @return the path the the Info.plist for this project
-	 */
-	def getInfoPlist() {
-		def infoPlist = project.xcodebuild.infoPlist
 
-		if (infoPlist == null) {
-			infoPlist = getInfoPlistFromProjectFile()
-		}
-		logger.debug("Using Info.plist: {}", infoPlist);
-		return infoPlist
-	}
 
 	def getAppBundleInfoPlist() {
 		File infoPlistFile = new File(getAppBundleName() + "/Info.plist")
@@ -139,53 +127,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return null
 	}
 
-	def getInfoPlistFromProjectFile() {
-		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
-                def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
-                def projectFile = new File(xcodeProjectDir, "project.pbxproj")
 
-		def buildRoot = project.buildDir
-		if (!buildRoot.exists()) {
-			buildRoot.mkdirs()
-		}
-
-		def projectPlist = new File(buildRoot, "project.plist").absolutePath
-
-		// convert ascii plist to xml so that commons configuration can parse it!
-		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
-
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
-		def rootObjectKey = config.getString("rootObject")
-		logger.debug("rootObjectKey {}", rootObjectKey);
-
-		List<String> list = config.getList("objects." + rootObjectKey + ".targets")
-
-		for (target in list) {
-
-			def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
-			logger.debug("buildConfigurationList={}", buildConfigurationList)
-			def targetName = config.getString("objects." + target + ".name")
-			logger.debug("targetName: {}", targetName)
-
-
-			if (targetName.equals(project.xcodebuild.target)) {
-				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
-				for (buildConfigurationsItem in buildConfigurations) {
-					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
-
-					logger.debug("buildName: {} equals {}", buildName, project.xcodebuild.configuration)
-
-					if (buildName.equals(project.xcodebuild.configuration)) {
-						def productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
-						def plistFile = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
-						logger.debug("productName: {}", productName)
-						logger.debug("plistFile: {}", plistFile)
-						return plistFile
-					}
-				}
-			}
-		}
-	}
 
 	def getOSVersion() {
 		Version result = new Version()
