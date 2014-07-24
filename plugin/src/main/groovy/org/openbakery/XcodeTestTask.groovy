@@ -95,6 +95,32 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		for (Destination destination in project.xcodebuild.destinations) {
 
+			def destinationParameters = []
+
+			if (destination.platform != null) {
+				destinationParameters << "platform=" + destination.platform
+			}
+			if (destination.id != null) {
+				destinationParameters << "id=" + destination.id
+			} else {
+				if (destination.name != null) {
+					destinationParameters << "name=" + destination.name
+				}
+				if (destination.arch != null && destination.platform.equals("OS X")) {
+					destinationParameters << "arch=" + destination.arch
+				}
+
+				if (destination.os != null && destination.platform.equals("iOS Simulator")) {
+					destinationParameters << "OS=" + destination.os
+				}
+			}
+
+			commandList.add("-destination")
+			commandList.add(destinationParameters.join(","));
+
+
+			/*
+
 			StringBuilder destinationBuilder = new StringBuilder();
 			if (destination.platform != null) {
 				destinationBuilder.append("platform=");
@@ -123,8 +149,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				destinationBuilder.append(destination.os)
 			}
 
+
+
 			commandList.add("-destination")
 			commandList.add(destinationBuilder.toString());
+			*/
 		}
 
 

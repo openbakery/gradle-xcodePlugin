@@ -200,7 +200,7 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	void createiOS5DeviceList(CommandRunner commandRunner) {
+	void createXcode5DeviceList(CommandRunner commandRunner) {
 		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
 		File simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
 		String[] simulators = simulatorDirectory.list()
@@ -221,6 +221,37 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
+
+	void createDeviceList(commandRunner) {
+		String simctlCommand = commandRunner.runWithResult(["xcrun", "-sdk", "iphoneos", "-find", "simctl"]);
+		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
+
+		String iOSVersion = null
+		for (String line in simctlList.split("\n")) {
+
+
+			if (line.startsWith("--")) {
+				String[] tokens = line.split(" ");
+				if (tokens.length > 2) {
+					iOSVersion = tokens[2];
+				}
+			} else 	if (iOSVersion != null) {
+				// now we are in the devices section
+				Destination destination = new Destination();
+				destination.platform = 'iOS Simulator'
+				destination.os = iOSVersion
+
+				def pattern = ~/^\s+([^\(]+)\(([^\)]+)/
+				def matcher = ( line =~ pattern )
+				if (matcher.getCount() && matcher[0].size() == 3) {
+					destination.name = matcher[0][1].trim()
+					destination.id = matcher[0][2].trim()
+					availableDevices << destination;
+				}
+			}
+		}
+	}
+
 	void finishConfiguration(Project project) {
 
 		CommandRunner commandRunner = new CommandRunner()
@@ -236,21 +267,10 @@ class XcodeBuildPluginExtension {
 
 
 		if (isXcode5) {
-			createiOS5DeviceList(commandRunner)
+			createXcode5DeviceList(commandRunner)
 		} else {
-			//simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/CoreSimulator/Profiles/DeviceTypes")
+			createDeviceList(commandRunner)
 		}
-
-/*
-		String[] simulators = simulatorDirectory.list()
-		availableDevices = []
-		for (String simulator in simulators) {
-			Destination destination = new Destination();
-			destination.platform = 'iOS Simulator'
-			destination.name = FilenameUtils.getBaseName(simulator);
-			availableDevices << destination;
-		}
-		*/
 
 		logger.debug("availableSimulators: {}", availableDevices)
 
