@@ -56,7 +56,7 @@ class XcodeBuildPluginExtension {
 	def String workspace = null
 	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
-	List<String> availableSimulators = null
+	List<String> availableDevices = []
 
 	def List<Destination> destinations = null
 
@@ -138,7 +138,26 @@ class XcodeBuildPluginExtension {
 	List<Destination> getDestinations() {
 
 		if (!this.destinations) {
-			this.destinations = new ArrayList<Destination>()
+			this.destinations = []
+			switch (this.devices) {
+				case Devices.PHONE:
+					this.destinations = availableDevices.findAll {
+						d -> d.name.contains("iPhone");
+					};
+					break;
+				case Devices.PAD:
+					this.destinations = availableDevices.findAll {
+						d -> d.name.contains("iPad");
+					};
+					break;
+				default:
+					this.destinations.addAll(availableDevices);
+					break;
+			}
+		}
+
+			/*
+
 			for (String simulator in availableSimulators) {
 				Destination destination = new Destination();
 				destination.platform = 'iOS Simulator'
@@ -162,7 +181,7 @@ class XcodeBuildPluginExtension {
 				}
 			}
 		}
-
+*/
 		logger.debug("this.destination: " + this.destinations);
 
 
@@ -181,6 +200,27 @@ class XcodeBuildPluginExtension {
 	}
 
 
+	void createiOS5DeviceList(CommandRunner commandRunner) {
+		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
+		File simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
+		String[] simulators = simulatorDirectory.list()
+		for (String simulator in simulators) {
+			Destination destination = new Destination();
+			destination.platform = 'iOS Simulator'
+
+			File infoPlistFile = new File(simulatorDirectory, simulator + "/Info.plist")
+			String name = commandRunner.runWithResult([
+										"/usr/libexec/PlistBuddy",
+										infoPlistFile.absolutePath,
+										"-c",
+										"Print :displayName"
+						])
+
+			destination.name = name //FilenameUtils.getBaseName(simulator);
+			availableDevices << destination;
+		}
+	}
+
 	void finishConfiguration(Project project) {
 
 		CommandRunner commandRunner = new CommandRunner()
@@ -195,24 +235,24 @@ class XcodeBuildPluginExtension {
 		logger.debug("isXcode5 {}", isXcode5);
 
 
-		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
-		logger.debug("xcodePath {}", isXcode5);
-
-		File simulatorDirectory;
 		if (isXcode5) {
-			simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
+			createiOS5DeviceList(commandRunner)
 		} else {
-			simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/CoreSimulator/Profiles/DeviceTypes")
+			//simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/CoreSimulator/Profiles/DeviceTypes")
 		}
 
-
+/*
 		String[] simulators = simulatorDirectory.list()
-		availableSimulators = []
+		availableDevices = []
 		for (String simulator in simulators) {
-			availableSimulators << FilenameUtils.getBaseName(simulator);
+			Destination destination = new Destination();
+			destination.platform = 'iOS Simulator'
+			destination.name = FilenameUtils.getBaseName(simulator);
+			availableDevices << destination;
 		}
+		*/
 
-		logger.debug("availableSimulators: {}", availableSimulators)
+		logger.debug("availableSimulators: {}", availableDevices)
 
 	}
 

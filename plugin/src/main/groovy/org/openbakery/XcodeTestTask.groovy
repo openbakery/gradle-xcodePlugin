@@ -263,17 +263,18 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				def resultList = allResults[destination]
 
 				int success = 0;
-				int error = 0;
+				int errors = 0;
 				if (resultList != null) {
 					success = numberSuccess(resultList);
-					error = numberErrors(resultList);
+					errors = numberErrors(resultList);
 				}
 
-				testsuite(name: name, tests: success, errors: error, failures: "0", skip: "0") {
+				testsuite(name: name, tests: success, errors: errors, failures: "0", skip: "0") {
 
 					for (TestClass testClass in resultList) {
 
 						for (TestResult testResult in testClass.results) {
+							logger.debug("testResult: {}", testResult)
 							testcase(classname: testClass.name, name: testResult.method, time: testResult.duration) {
 								if (!testResult.success) {
 									error(type: "failure", message: "", testResult.output)

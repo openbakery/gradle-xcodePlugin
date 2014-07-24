@@ -66,6 +66,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				printTestResult(currentTestCase, true, "(unknown)");
 			}
 
+
 			Destination destination = project.xcodebuild.destinations[testRun]
 			output.append("\n")
 			output.append("Tests finished: ")
