@@ -3,9 +3,9 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build Mac and iOS projects
 
-**Current stable version is 0.9.10**
+**Current stable version is 0.9.11**
 
-0.9.10 supports both Xcode 5 and Xcode 6 (beta)
+0.9.11 supports both Xcode 5 and Xcode 6 (beta)
 
 
 __Introduction:__ http://openbakery.org/gradle.php

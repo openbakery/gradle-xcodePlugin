@@ -263,6 +263,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 		store(allResults)
+		logger.quiet("");
 		if (overallTestSuccess) {
 			logger.quiet("All " + numberSuccess(allResults) + " tests where successful");
 		} else {
@@ -331,11 +332,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 	int numberErrors(java.util.Map results) {
-		int success = 0;
+		int errors = 0;
 		for (java.util.List list in results.values()) {
-			success += numberErrors(list);
+			errors += numberErrors(list);
 		}
-		return success;
+		return errors;
 	}
 
 	int numberSuccess(java.util.List results) {
