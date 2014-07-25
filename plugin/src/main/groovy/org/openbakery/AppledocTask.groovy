@@ -1,5 +1,7 @@
 package org.openbakery
 
+import ch.qos.logback.core.util.FileUtil
+import org.apache.commons.io.FileUtils
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.TaskAction
 
@@ -36,10 +38,13 @@ class AppledocTask extends AbstractXcodeTask {
 		ant.unzip(src: zip,  dest:documentationDirectory)
 		ant.chmod(file: appledocCommand, perm:"+x")
 
+		def appledocOutput = new File(documentationDirectory, 'appledoc-output.txt')
+
+		commandRunner.setOutputFile(appledocOutput)
 		try {
 			commandRunner.run([appledocCommand.absolutePath, "--print-settings", "--output", documentationDirectory.absolutePath, '--ignore', project.getBuildDir().absolutePath, "."])
 		} catch (CommandRunnerException ex) {
-			logger.quiet(commandRunner.getResult())
+			logger.quiet(FileUtils.readFileToString(appledocOutput))
 			throw ex
 		}
 

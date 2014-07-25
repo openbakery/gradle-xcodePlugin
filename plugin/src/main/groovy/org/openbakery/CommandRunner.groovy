@@ -15,6 +15,9 @@
  */
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.output.NullWriter
 import org.openbakery.output.OutputAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +26,33 @@ class CommandRunner {
 
 	private static Logger logger = LoggerFactory.getLogger(CommandRunner.class)
 
-	private StringBuilder resultStringBuilder;
+	private StringBuilder resultStringBuilder
+
+	private File outputFile = null
+
+	Thread readerThread
+
+	public CommandRunner() {
+
+	}
+
+
+	void setOutputFile(File outputFile) {
+		if (outputFile.exists()) {
+
+			String outputFileAsString = outputFile.getAbsolutePath()
+			String basename = FilenameUtils.getBaseName(outputFileAsString)
+			String extension = "." + FilenameUtils.getExtension(outputFileAsString)
+			String path = FilenameUtils.getFullPath(outputFileAsString)
+
+			File movedOutputFile = File.createTempFile(basename, extension, new File(path))
+			FileUtils.copyFile(outputFile, movedOutputFile)
+			outputFile.delete()
+			logger.debug("moved existing file '{}' to '{}", outputFile, movedOutputFile)
+		}
+		this.outputFile = outputFile
+	}
+
 
 	private def commandListToString(List<String> commandList) {
 		def result = ""
@@ -34,7 +63,6 @@ class CommandRunner {
 	}
 
 	def run(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
-		resultStringBuilder = new StringBuilder();
 
 		logger.debug("Run command: {}", commandListToString(commandList))
 		if (environment != null) {
@@ -48,22 +76,61 @@ class CommandRunner {
 			env.putAll(environment)
 		}
 		def process = processBuilder.start()
-		process.inputStream.eachLine {
-			if (outputAppender) {
-				outputAppender.append(it)
-			}
-			logger.debug("{}", it)
-			if (resultStringBuilder != null) {
-				if (resultStringBuilder.length() > 0) {
-					resultStringBuilder.append("\n");
-				}
-				resultStringBuilder.append(it);
-			}
-		}
+
+
+		processInputStream(process.inputStream, outputAppender)
+
+
 		process.waitFor()
+		readerThread.join()
 		if (process.exitValue() > 0) {
 			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList))
 		}
+
+	}
+
+	void processInputStream(InputStream inputStream, OutputAppender outputAppender) {
+
+		Runnable runnable = new Runnable() {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+			Writer writer = null
+
+
+			public void run() {
+				if (outputFile != null) {
+					writer = new FileWriter(outputFile)
+				} else {
+					writer = new NullWriter()
+				}
+
+				boolean running = true;
+				while (running) {
+					String line = reader.readLine();
+					if (line == null) {
+						running = false;
+					} else {
+
+						if (outputAppender) {
+							outputAppender.append(line)
+						}
+
+						if (resultStringBuilder != null) {
+							if (resultStringBuilder.length() > 0) {
+								resultStringBuilder.append("\n")
+							}
+							resultStringBuilder.append(line)
+						}
+						writer.write(line)
+						writer.write("\n")
+					}
+				}
+				reader.close()
+				writer.close()
+			}
+		};
+
+		readerThread = new Thread(runnable);
+		readerThread.start();
 	}
 
 	def run(String directory, List<String> commandList, OutputAppender outputAppender) {
@@ -87,12 +154,10 @@ class CommandRunner {
 	}
 
 	def runWithResult(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+		resultStringBuilder = new StringBuilder();
 		run(directory, commandList, environment, outputAppender);
 		return resultStringBuilder.toString();
 	}
 
 
-	def getResult() {
-		return resultStringBuilder.toString();
-	}
 }

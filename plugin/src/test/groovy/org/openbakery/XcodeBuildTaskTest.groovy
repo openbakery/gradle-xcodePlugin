@@ -38,7 +38,7 @@ class XcodeBuildTaskTest {
 	def setup() {
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
-		commandRunnerMock.getResult().returns("");
+		commandRunnerMock.setOutputFile(new File('build/xcodebuild-output.txt').absoluteFile)
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
@@ -200,7 +200,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneos')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -282,11 +282,6 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")
 
-
-		expectedCommandList.add("ONLY_ACTIVE_ARCH=NO")
-		expectedCommandList.add("-arch");
-		expectedCommandList.add("i386")
-
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
@@ -311,12 +306,16 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")
 
+		project.xcodebuild.arch = ['i368'];
+
+		expectedCommandList.add("ONLY_ACTIVE_ARCH=NO");
+
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-		project.xcodebuild.arch = ['i386'];
+		expectedCommandList.add("ARCHS=i368");
 
-		expectedCommandList.add("ARCHS=i386");
+
 
 
 		addExpectedDefaultDirs()

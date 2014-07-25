@@ -49,15 +49,8 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class);
 
-		try {
-			commandRunner.run("${project.projectDir.absolutePath}", commandList, new XcodeBuildOutputAppender(output))
-		} finally {
-			String commandOutput = commandRunner.getResult();
-			File outputDirectory = project.getBuildDir();
-			new File(outputDirectory, "xcodebuild-output.txt").withWriter { out ->
-				out.write(commandOutput)
-			}
-		}
+		commandRunner.setOutputFile(new File(project.getBuildDir(), "xcodebuild-output.txt"));
+		commandRunner.run("${project.projectDir.absolutePath}", commandList, new XcodeBuildOutputAppender(output))
 		logger.quiet("Done")
 	}
 

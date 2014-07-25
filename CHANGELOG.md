@@ -1,3 +1,9 @@
+## 0.9.12 (TBA)
+
+Changes
+- For unit testing destination are not optionals. I no destination is specified then the unit tests are executed on every available simulator.
+  This works both for Xcode5 and Xcode6 (here the new simctl is used)
+
 ## 0.9.11 (July 22, 2014)
 
 Changes

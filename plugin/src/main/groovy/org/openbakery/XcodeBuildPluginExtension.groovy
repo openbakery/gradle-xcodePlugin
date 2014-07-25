@@ -129,15 +129,21 @@ class XcodeBuildPluginExtension {
 		Destination destination = new Destination()
 		ConfigureUtil.configure(closure, destination)
 		if (destinations == null) {
-			destinations = new ArrayList<Destination>()
+			destinations = []
 		}
-		destinations.add(destination)
-		logger.debug("adding destination: {}", destination)
+
+		if (availableDevices.contains(destination)) {
+			destinations << destination
+			logger.debug("adding destination: {}", destination)
+		} else {
+			logger.debug("destination is not available: {}", destination)
+		}
 	}
 
 	List<Destination> getDestinations() {
 
 		if (!this.destinations) {
+			logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 			this.destinations = []
 			switch (this.devices) {
 				case Devices.PHONE:
@@ -156,34 +162,7 @@ class XcodeBuildPluginExtension {
 			}
 		}
 
-			/*
-
-			for (String simulator in availableSimulators) {
-				Destination destination = new Destination();
-				destination.platform = 'iOS Simulator'
-				switch (this.devices) {
-					case Devices.PHONE:
-						if (name.contains("iPhone")) {
-							destination.name = simulator;
-							this.destinations.add(destination)
-						}
-						break;
-					case Devices.PAD:
-						if (name.contains("iPad")) {
-							destination.name = simulator;
-							this.destinations.add(destination)
-						}
-						break;
-					default:
-						destination.name = simulator;
-						this.destinations.add(destination)
-						break;
-				}
-			}
-		}
-*/
 		logger.debug("this.destination: " + this.destinations);
-
 
 		return this.destinations;
 	}

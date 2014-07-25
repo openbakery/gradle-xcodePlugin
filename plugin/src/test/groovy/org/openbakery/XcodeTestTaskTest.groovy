@@ -36,6 +36,9 @@ class XcodeTestTaskTest {
 
 
 		xcodeTestTask = project.tasks.findByName('test')
+
+		xcodeTestTask.setOutputDirectory(new File("build/test"));
+
 		//xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
 
 		destination = new Destination()

@@ -2,6 +2,7 @@ package org.openbakery.output
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.Destination
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
@@ -37,6 +38,19 @@ class TestBuildOutputAppenderTest {
 	@BeforeClass
 	def setup() {
 		project = ProjectBuilder.builder().build()
+		project.buildDir = new File('build').absoluteFile
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		Destination destination = new Destination()
+		destination.platform = "iPhoneSimulator"
+		destination.name = "iPad"
+		destination.arch = "i386"
+		destination.id = "iPad Retina"
+		destination.os = "iOS"
+
+		project.xcodebuild.destinations = []
+		project.xcodebuild.destinations << destination;
+
 	}
 
 	@Test
@@ -62,7 +76,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform Unit Tests\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
+		String expected = "\nPerform unit tests for: iPad iPhoneSimulator/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 
@@ -77,7 +91,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in errorTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform Unit Tests\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
+		String expected = "\nPerform unit tests for: iPad iPhoneSimulator/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 }
