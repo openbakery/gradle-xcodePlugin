@@ -21,12 +21,26 @@ import org.gradle.api.Plugin
 class InfoPlistExtension {
 	def String bundleIdentifier = null
 	def String bundleIdentifierSuffix = null
-    def String bundleDisplayName = null
-    def String bundleDisplayNameSuffix = null
+	def String bundleDisplayName = null
+	def String bundleDisplayNameSuffix = null
 	def String version = null
 	def String versionSuffix = null
 	def String versionPrefix = null
 	def String shortVersionString = null
 	def String shortVersionStringSuffix = null
 	def String shortVersionStringPrefix = null
+
+	def List<String> commands = null
+
+
+
+	void setCommands(Object commands) {
+		if (commands instanceof List) {
+			this.commands = commands;
+		} else {
+			this.commands = new ArrayList<String>();
+			this.commands.add(commands.toString());
+		}
+	}
+
 }

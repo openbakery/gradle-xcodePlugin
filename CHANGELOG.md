@@ -3,6 +3,7 @@
 Changes
 - For unit testing destination are not optionals. I no destination is specified then the unit tests are executed on every available simulator.
   This works both for Xcode5 and Xcode6 (here the new simctl is used)
+- The plugin should be more memory efficent now, because the output of the xcodebuild command that can be several megabytes is not hold in the mememory anymore, it is stored in an output file.	
 
 ## 0.9.11 (July 22, 2014)
 

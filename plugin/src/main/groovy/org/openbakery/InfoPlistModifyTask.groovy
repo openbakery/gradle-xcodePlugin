@@ -79,6 +79,27 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
         }
 
 		logger.debug("project.infoplist.version: {}", project.infoplist.version)
+
+		modifyVersion(infoPlist)
+		modifyShortVersion(infoPlist)
+
+
+		for(String command in project.infoplist.commands) {
+			commandRunner.run([
+							"/usr/libexec/PlistBuddy",
+							infoPlist,
+							"-c",
+							command])
+		}
+
+	}
+
+	private void modifyVersion(String infoPlist) {
+		if (project.infoplist.versionSuffix == null && project.infoplist.versionPrefix == null) {
+			return
+		}
+
+
 		def version;
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
@@ -104,7 +125,13 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 						infoPlist,
 						"-c",
 						"Set :CFBundleVersion " + version])
+	}
 
+
+	private void modifyShortVersion(String infoPlist) {
+		if (project.infoplist.shortVersionString == null && project.infoplist.shortVersionStringSuffix == null && project.infoplist.shortVersionStringPrefix == null) {
+			return
+		}
 
 		def shortVersionString
 		try {
@@ -115,7 +142,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 							"Print :CFBundleShortVersionString"])
 		} catch (IllegalStateException ex) {
 			// no CFBundleShortVersionString exists so noting can be modified!
-			return;
+			return
 		}
 
 		if (project.infoplist.shortVersionString != null) {

@@ -63,9 +63,12 @@ xcodebuild Parameters:
 		Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
 
-* _destination_ * - destination configuration
+* _destination_ * - destination configuration, that is used for the unit test execution
 
-	default value: empty (When empty alls available simulators are used for the unit tests)
+	default value: empty
+	
+	Note: The destinations are verified if they already exists. If not then the destination is ignored for the unit test. If no valid destination is specified, then all available simulator destinations are used for the unit tests.
+	Therefor you can specify destinations to limit on which simulator destinations the unit tests are performed
 	
 	* _platform_ - Platform, e.g. 'iOS' or 'OS X'
 	
@@ -173,6 +176,19 @@ infoplist Parameters:
 
 	default value: empty
 
+* _commands_ - adds commands to modify the info plist there are excuted with the plistbuddy tool (see also 'man PlistBuddy' )
+
+	default value: empty
+	
+	Example: This commands modify the URL scheme.
+	
+```
+	commands = [
+		'Delete CFBundleURLTypes:0:CFBundleURLSchemes',
+		'Add CFBundleURLTypes:0:CFBundleURLSchemes array',
+		'Add CFBundleURLTypes:0:CFBundleURLSchemes:0 string newscheme'
+	]
+```
 
 hockeykit Parameters:
 ----------------------
