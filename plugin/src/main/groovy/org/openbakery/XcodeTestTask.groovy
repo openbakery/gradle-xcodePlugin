@@ -77,6 +77,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
+	File outputDirectory = null
 
 	XcodeTestTask() {
 		super()
@@ -89,6 +90,12 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
+
+		outputDirectory = new File(project.getBuildDir(), "test");
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs()
+		}
+
 
 		def commandList = createCommandList()
 
@@ -119,60 +126,20 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			commandList.add(destinationParameters.join(","));
 
 
-			/*
-
-			StringBuilder destinationBuilder = new StringBuilder();
-			if (destination.platform != null) {
-				destinationBuilder.append("platform=");
-				destinationBuilder.append(destination.platform)
-			}
-			if (destination.name != null) {
-				if (destinationBuilder.length() > 0) {
-					destinationBuilder.append(",")
-				}
-				destinationBuilder.append("name=");
-				destinationBuilder.append(destination.name)
-			}
-			if (destination.arch != null && destination.platform.equals("OS X")) {
-				if (destinationBuilder.length() > 0) {
-					destinationBuilder.append(",")
-				}
-				destinationBuilder.append("arch=");
-				destinationBuilder.append(destination.arch)
-			}
-
-			if (destination.os != null && destination.platform.equals("iOS Simulator")) {
-				if (destinationBuilder.length() > 0) {
-					destinationBuilder.append(",")
-				}
-				destinationBuilder.append("OS=");
-				destinationBuilder.append(destination.os)
-			}
-
-
-
-			commandList.add("-destination")
-			commandList.add(destinationBuilder.toString());
-			*/
 		}
 
 
-
 		commandList.add('test');
+
+		File outputFile = new File(outputDirectory, "xcodebuild-output.txt");
+		commandRunner.setOutputFile(outputFile);
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
 			commandRunner.run("${project.projectDir.absolutePath}", commandList, null, new TestBuildOutputAppender(output, project))
 		} finally {
-			String commandOutput = commandRunner.getResult();
-			File outputDirectory = new File(project.getBuildDir(), "test");
-			if (!outputDirectory.exists()) {
-				outputDirectory.mkdirs()
-			}
-			new File(outputDirectory, "xcodebuild-output.txt").withWriter { out ->
-				out.write(commandOutput)
-			}
-			if (!parseResult(commandOutput)) {
+
+			if (!parseResult(outputFile)) {
 				logger.quiet("Tests Failed!");
 				throw new Exception("Not all unit tests are successful!");
 			};
@@ -181,7 +148,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	boolean parseResult(String result) {
+	boolean parseResult(File outputFile) {
 
 		boolean overallTestSuccess = true;
 		def allResults = [:]
@@ -191,7 +158,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		int testRun = 0;
 
 		StringBuilder output = new StringBuilder()
-		for (String line in result.split("\n")) {
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+		outputFile.eachLine{
+		  String line =  it
 
 			def matcher = TEST_CASE_PATTERN.matcher(line)
 
@@ -204,7 +175,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 				def nameMatcher = TEST_CLASS_PATTERN.matcher(matcher[0][1])
 				if (!nameMatcher.matches()) {
-					continue;
+					return
 				}
 
 				String testClassName = nameMatcher[0][1]
@@ -261,7 +232,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 		}
-
+		reader.close()
 		store(allResults)
 		logger.quiet("");
 		if (overallTestSuccess) {
@@ -277,10 +248,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def store(def allResults) {
 
-		File outputDirectory = new File(project.getBuildDir(), "test");
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
-		}
+
 
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 

@@ -54,7 +54,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 		checkAllTestsEnded(line);
 
-		super.append(line)
+		if (!testsRunning) {
+			super.append(line)
+		}
 
 	}
 
@@ -66,17 +68,13 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				printTestResult(currentTestCase, true, "(unknown)");
 			}
 
+			currentTestCase = null
+			testsRunning = false
 
 			Destination destination = project.xcodebuild.destinations[testRun]
 			output.append("\n")
 			output.append("Tests finished: ")
-			output.append(destination.name)
-			output.append(" ")
-			output.append(destination.platform)
-			if (!StringUtils.isEmpty(destination.os)) {
-				output.append("/")
-				output.append(destination.os)
-			}
+			output.append(destination.toPrettyString());
 			output.println();
 			output.println();
 			testRun++;
@@ -89,7 +87,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	void checkTestFinished(String line) {
-
 		def finishMatcher = TEST_CASE_FINISH_PATTERN.matcher(line)
 		if (finishMatcher.matches()) {
 			String result = finishMatcher[0][2].trim()
@@ -100,7 +97,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			printTestResult(currentTestCase, failed, duration);
 
 			currentTestCase = null;
-			return;
 		}
 		return;
 	}
@@ -111,7 +107,12 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		Matcher startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
 			if (!testsRunning) {
-				output.println("\nPerform Unit Tests\n")
+				output.append("\nPerform unit tests for: ")
+				Destination destination = project.xcodebuild.destinations[testRun]
+				output.append(destination.toPrettyString());
+				output.println();
+				output.println();
+
 				testsRunning = true;
 			}
 			return startMatcher[0][1].trim()

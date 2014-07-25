@@ -1,5 +1,7 @@
 package org.openbakery
 
+import org.apache.commons.lang.StringUtils
+
 /*
  * User: rene
  */
@@ -23,19 +25,23 @@ class Destination {
 						'}';
 	}
 
-	boolean equals(o) {
-		if (this.is(o)) return true
-		if (getClass() != o.class) return false
+	boolean equals(other) {
+		if (this.is(other)) return true
+		if (getClass() != other.class) return false
 
-		Destination that = (Destination) o
+		Destination otherDestination = (Destination) other
 
-		if (arch != that.arch) return false
-		if (id != that.id) return false
-		if (name != that.name) return false
-		if (os != that.os) return false
-		if (platform != that.platform) return false
+		if (StringUtils.equals(id, otherDestination.id)) {
+			return true;
+		}
 
-		return true
+		if (StringUtils.equalsIgnoreCase(arch, otherDestination.arch) &&
+						StringUtils.equalsIgnoreCase(name, otherDestination.name) &&
+						StringUtils.equalsIgnoreCase(os, otherDestination.os) &&
+						StringUtils.equalsIgnoreCase(platform, otherDestination.platform)) {
+			return true
+		}
+		return false
 	}
 
 	int hashCode() {
@@ -46,5 +52,18 @@ class Destination {
 		result = 31 * result + (id != null ? id.hashCode() : 0)
 		result = 31 * result + (os != null ? os.hashCode() : 0)
 		return result
+	}
+
+
+	public java.lang.String toPrettyString() {
+		StringBuilder builder = new StringBuilder()
+		builder.append(name)
+		builder.append(" ")
+		builder.append(platform)
+		if (!StringUtils.isEmpty(os)) {
+			builder.append("/")
+			builder.append(os)
+		}
+		return builder.toString()
 	}
 }
