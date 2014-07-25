@@ -65,7 +65,7 @@ xcodebuild Parameters:
 
 * _destination_ * - destination configuration, that is used for the unit test execution
 
-	default value: empty
+	default value: empty (When empty alls available simulators are used for the unit tests)
 	
 	Note: The destinations are verified if they already exists. If not then the destination is ignored for the unit test. If no valid destination is specified, then all available simulator destinations are used for the unit tests.
 	Therefor you can specify destinations to limit on which simulator destinations the unit tests are performed
