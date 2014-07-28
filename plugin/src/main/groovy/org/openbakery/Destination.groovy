@@ -58,8 +58,10 @@ class Destination {
 	public java.lang.String toPrettyString() {
 		StringBuilder builder = new StringBuilder()
 		builder.append(name)
-		builder.append(" ")
-		builder.append(platform)
+		if (!StringUtils.isEmpty(platform)) {
+			builder.append("/")
+			builder.append(platform)
+		}
 		if (!StringUtils.isEmpty(os)) {
 			builder.append("/")
 			builder.append(os)

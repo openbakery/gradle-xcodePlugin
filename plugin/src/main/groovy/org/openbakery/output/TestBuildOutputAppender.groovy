@@ -107,11 +107,13 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		Matcher startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
 			if (!testsRunning) {
-				output.append("\nPerform unit tests for: ")
 				Destination destination = project.xcodebuild.destinations[testRun]
-				output.append(destination.toPrettyString());
-				output.println();
-				output.println();
+				if (destination) {
+					output.append("\nPerform unit tests for: ")
+					output.append(destination.toPrettyString());
+					output.println();
+					output.println();
+				}
 
 				testsRunning = true;
 			}

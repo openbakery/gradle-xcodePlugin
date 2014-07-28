@@ -159,7 +159,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		StringBuilder output = new StringBuilder()
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(outputFile)));
 
 		outputFile.eachLine{
 		  String line =  it
@@ -256,7 +256,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		xmlBuilder.testsuites() {
 			for (Destination destination in project.xcodebuild.destinations) {
-				String name = destination.platform + " / " + destination.name + " / " + destination.os
+				String name = destination.toPrettyString()
 
 				def resultList = allResults[destination]
 
