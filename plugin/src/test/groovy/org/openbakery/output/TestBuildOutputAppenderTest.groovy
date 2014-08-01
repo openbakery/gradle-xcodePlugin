@@ -48,7 +48,8 @@ class TestBuildOutputAppenderTest {
 		destination.id = "iPad Retina"
 		destination.os = "iOS"
 
-		project.xcodebuild.destinations = []
+		project.xcodebuild.availableDevices = []
+		project.xcodebuild.availableDevices << destination
 		project.xcodebuild.destinations << destination;
 
 	}
@@ -76,7 +77,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad iPhoneSimulator/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
+		String expected = "\nPerform unit tests for: iPad/iPhoneSimulator/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 
@@ -91,7 +92,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in errorTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad iPhoneSimulator/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
+		String expected = "\nPerform unit tests for: iPad/iPhoneSimulator/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 }

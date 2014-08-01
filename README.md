@@ -67,14 +67,15 @@ xcodebuild Parameters:
 
 	default value: empty (When empty alls available simulators are used for the unit tests)
 	
-	Note: The destinations are verified if they already exists. If not then the destination is ignored for the unit test. If no valid destination is specified, then all available simulator destinations are used for the unit tests.
-	Therefor you can specify destinations to limit on which simulator destinations the unit tests are performed
+	Note when building using the iPhoneSimulator: The destinations are verified if they already exists. If not then the destination is ignored for the unit test. If no valid destination is specified, then all available simulator destinations are used for the unit tests.
+	Therefor you can specify destinations to limit on which simulator destinations the unit tests are performed.
+	You also can specify a regular expression for the value and all available simulator devices are included that match these value: e.g. name = 'iPhone.*'
 	
 	* _platform_ - Platform, e.g. 'iOS' or 'OS X'
 	
 	default value: empty
 	
-	* _name_ - Name of the destination device. Needed for iOS builds
+	* _name_ - Name of the destination device. 
 	
 	default value: empty
 	

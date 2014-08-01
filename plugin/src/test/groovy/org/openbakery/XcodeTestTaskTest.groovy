@@ -48,8 +48,10 @@ class XcodeTestTaskTest {
 		destination.id = "iPad Retina"
 		destination.os = "iOS"
 
-		project.xcodebuild.destinations = []
-		project.xcodebuild.destinations << destination;
+
+		project.xcodebuild.availableDevices = []
+		project.xcodebuild.availableDevices << destination
+		project.xcodebuild.destinations << destination
 
 	}
 

@@ -39,26 +39,26 @@ class XcodeBuildPluginExtension {
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
 
-	def String infoPlist = null
-	def String scheme = null
-	def String configuration = 'Debug'
-	def String sdk = 'iphonesimulator'
-	def target = null
-	def Object dstRoot
-	def Object objRoot
-	def Object symRoot
-	def Object sharedPrecompsDir
-	def String sourceDirectory = '.'
-	def Signing signing = null
+	String infoPlist = null
+	String scheme = null
+	String configuration = 'Debug'
+	String sdk = 'iphonesimulator'
+	String target = null
+	Object dstRoot
+	Object objRoot
+	Object symRoot
+	Object sharedPrecompsDir
+	String sourceDirectory = '.'
+	Signing signing = null
 	def additionalParameters = null
-	def String bundleNameSuffix = null
-	def List<String> arch = null
-	def String workspace = null
+	String bundleNameSuffix = null
+	List<String> arch = null
+	String workspace = null
 	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
 	List<String> availableDevices = []
 
-	def List<Destination> destinations = null
+	Set<Destination> destinations = null
 
 	/**
 	 * internal parameters
@@ -129,15 +129,54 @@ class XcodeBuildPluginExtension {
 		Destination destination = new Destination()
 		ConfigureUtil.configure(closure, destination)
 		if (destinations == null) {
-			destinations = []
+			destinations = [] as Set
 		}
 
-		if (availableDevices.contains(destination)) {
-			destinations << destination
-			logger.debug("adding destination: {}", destination)
+
+		if (this.sdk.startsWith("iphonesimulator")) {
+			// filter only on simulator builds
+			destinations.addAll(findMatchingDestinations(destination))
 		} else {
-			logger.debug("destination is not available: {}", destination)
+			destinations << destination
 		}
+	}
+
+	List<Destination> findMatchingDestinations(Destination destination) {
+		def result = [];
+
+		for (Destination device in availableDevices) {
+			if (destination.platform != null) {
+				if (!device.platform.matches(destination.platform)) {
+					continue
+				}
+			}
+			if (destination.name != null) {
+				if (!device.name.matches(destination.name)) {
+					continue
+				}
+			}
+			if (destination.arch != null) {
+				if (!device.arch.matches(destination.arch)) {
+					continue
+				}
+			}
+			if (destination.id != null) {
+				if (!device.id.matches(destination.id)) {
+					continue
+				}
+			}
+			if (destination.os != null) {
+				if (!device.os.matches(destination.os)) {
+					continue
+				}
+			}
+
+			result << device
+
+		}
+
+
+		return result.asList();
 	}
 
 	List<Destination> getDestinations() {
@@ -164,7 +203,7 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("this.destination: " + this.destinations);
 
-		return this.destinations;
+		return this.destinations.asList();
 	}
 
 	void setArch(Object arch) {
