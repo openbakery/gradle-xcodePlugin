@@ -19,6 +19,16 @@ import org.gradle.api.tasks.TaskAction
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
 
+
+	ProvisioningInstallTask() {
+		super()
+		this.description = "Installs the given provisioning profile"
+
+		this.setOnlyIf {
+			return !project.xcodebuild.sdk.startsWith("iphonesimulator")
+		}
+	}
+
 	@TaskAction
 	def install() {
 
