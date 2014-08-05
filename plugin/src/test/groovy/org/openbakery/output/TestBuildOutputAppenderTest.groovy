@@ -95,4 +95,21 @@ class TestBuildOutputAppenderTest {
 		String expected = "\nPerform unit tests for: iPad/iPhoneSimulator/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
+
+
+	@Test
+	void testFailed_withLog() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
+		for (int i=0; i<50; i++) {
+			appender.append("test")
+		}
+		appender.append("** TEST FAILED **");
+
+		int length = output.toString().split("\n").length
+		assert length == 36 : "expected length of 36 but was " + length
+
+
+
+	}
 }

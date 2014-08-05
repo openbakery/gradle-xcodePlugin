@@ -136,7 +136,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
-			commandRunner.run("${project.projectDir.absolutePath}", commandList, null, new TestBuildOutputAppender(output, project))
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project);
+			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
 		} finally {
 
 			if (!parseResult(outputFile)) {
@@ -149,7 +152,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	boolean parseResult(File outputFile) {
-
+		if (!outputFile.exists()) {
+			logger.quiet("No xcodebuild output file found!");
+			return false;
+		}
 		boolean overallTestSuccess = true;
 		def allResults = [:]
 

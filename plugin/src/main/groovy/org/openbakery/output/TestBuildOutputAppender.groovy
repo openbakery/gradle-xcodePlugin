@@ -1,6 +1,7 @@
 package org.openbakery.output
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.collections.Buffer
+import org.apache.commons.collections.buffer.CircularFifoBuffer
 import org.gradle.api.Project
 import org.gradle.logging.StyledTextOutput
 import org.openbakery.Destination
@@ -33,6 +34,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	Project project
 
 	String currentTestCase = null;
+	Buffer fifoBuffer = new CircularFifoBuffer(100);
 
 
 	TestBuildOutputAppender(StyledTextOutput output, Project project) {
@@ -61,6 +63,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	void checkAllTestsEnded(String line) {
+		fifoBuffer.add(line);
+
 		if (line.startsWith(ALL_TESTS_SUCCEEDED) || line.startsWith(ALL_TESTS_FAILED)) {
 
 			if (currentTestCase) {
@@ -79,6 +83,11 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			output.println();
 			testRun++;
 			if (line.startsWith(ALL_TESTS_FAILED)) {
+				for (String cachedLine in fifoBuffer) {
+					output.println(cachedLine);
+				}
+				output.println();
+				output.println();
 				output.append("TESTS FAILED");
 				output.println();
 				output.println();
