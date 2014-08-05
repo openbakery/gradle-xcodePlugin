@@ -30,7 +30,7 @@ import org.gradle.api.DefaultTask
 abstract class AbstractXcodeTask extends DefaultTask {
 
 
-	CommandRunner commandRunner
+	protected CommandRunner commandRunner
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()

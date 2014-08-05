@@ -21,6 +21,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.BasePlugin
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
+import org.openbakery.cocoapods.CocoapodsTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
@@ -66,6 +67,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
+	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 
 	public static final String BUILD_TASK_NAME = "build";
 	public static final String TEST_TASK_NAME = "test"
@@ -97,6 +99,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkle-archive'
 	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkle-notes'
 	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkle-clean'
+	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledoc-clean'
@@ -126,6 +129,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureSparkle(project)
 		configureAppledoc(project)
 		configureCoverage(project)
+		configureCocoapods(project)
 
 		configureProperties(project)
 	}
@@ -460,6 +464,11 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
 	}
 
+	private void configureCocoapods(Project project) {
+
+		//project.task(COCOAPODS_CLEAN_TASK_NAME, type: CocoapodsCleanTask, group: COCOAPODS_GROUP_NAME)
+		project.task(COCOAPODS_TASK_NAME, type: CocoapodsTask, group: COCOAPODS_GROUP_NAME)
+	}
 
 }
 

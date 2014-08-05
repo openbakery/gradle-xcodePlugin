@@ -18,6 +18,7 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.output.NullWriter
+import org.gradle.util.CollectionUtils
 import org.openbakery.output.OutputAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -145,15 +146,23 @@ class CommandRunner {
 		run(".", commandList)
 	}
 
-	def runWithResult(List<String> commandList) {
+	def run(String... commandList) {
+		run(Arrays.asList(commandList));
+	}
+
+	String runWithResult(String... commandList) {
+		return runWithResult(Arrays.asList(commandList));
+	}
+
+	String runWithResult(List<String> commandList) {
 		return runWithResult(".", commandList)
 	}
 
-	def runWithResult(String directory, List<String> commandList) {
+	String runWithResult(String directory, List<String> commandList) {
 		return runWithResult(directory, commandList, null, null)
 	}
 
-	def runWithResult(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+	String runWithResult(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
 		resultStringBuilder = new StringBuilder();
 		run(directory, commandList, environment, outputAppender);
 		return resultStringBuilder.toString();
