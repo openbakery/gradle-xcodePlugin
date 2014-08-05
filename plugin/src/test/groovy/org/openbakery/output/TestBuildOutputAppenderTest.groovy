@@ -107,7 +107,7 @@ class TestBuildOutputAppenderTest {
 		appender.append("** TEST FAILED **");
 
 		int length = output.toString().split("\n").length
-		assert length == 36 : "expected length of 36 but was " + length
+		assert length == 57 : "expected length of 57 but was " + length
 
 
 

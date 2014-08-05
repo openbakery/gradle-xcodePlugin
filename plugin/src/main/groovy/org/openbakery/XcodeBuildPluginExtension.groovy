@@ -16,15 +16,13 @@
 package org.openbakery
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
+import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import javax.swing.text.DefaultEditorKit
 
 enum Devices {
 	UNIVERSAL,

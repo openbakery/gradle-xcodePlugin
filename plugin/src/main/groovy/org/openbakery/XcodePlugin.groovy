@@ -18,8 +18,39 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
+import org.openbakery.appledoc.AppledocCleanTask
+import org.openbakery.appledoc.AppledocTask
+import org.openbakery.coverage.CoverageCleanTask
+import org.openbakery.coverage.CoveragePluginExtension
+import org.openbakery.coverage.CoverageTask
+import org.openbakery.deploygate.DeployGateCleanTask
+import org.openbakery.deploygate.DeployGatePluginExtension
+import org.openbakery.deploygate.DeployGatePrepareTask
+import org.openbakery.deploygate.DeployGateUploadTask
+import org.openbakery.hockeykit.HockeyAppCleanTask
+import org.openbakery.hockeykit.HockeyAppPluginExtension
+import org.openbakery.hockeykit.HockeyAppPrepareTask
+import org.openbakery.hockeykit.HockeyAppUploadTask
+import org.openbakery.hockeykit.HockeyKitArchiveTask
+import org.openbakery.hockeykit.HockeyKitCleanTask
+import org.openbakery.hockeykit.HockeyKitImageTask
+import org.openbakery.hockeykit.HockeyKitManifestTask
+import org.openbakery.hockeykit.HockeyKitPluginExtension
+import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
+import org.openbakery.signing.CodesignTask
+import org.openbakery.signing.KeychainCleanupTask
+import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningCleanupTask
+import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.sparkle.SparkleArchiveTask
+import org.openbakery.sparkle.SparkleCleanTask
+import org.openbakery.sparkle.SparklePluginExtension
+import org.openbakery.sparkle.SparkleReleaseNotesTask
+import org.openbakery.testflight.TestFlightCleanTask
+import org.openbakery.testflight.TestFlightPluginExtension
+import org.openbakery.testflight.TestFlightPrepareTask
+import org.openbakery.testflight.TestFlightUploadTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -303,7 +334,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("testflight", TestFlightPluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
-		project.extensions.create("uiautomation", UIAutomationTestExtension)
 		project.extensions.create("sparkle", SparklePluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 	}

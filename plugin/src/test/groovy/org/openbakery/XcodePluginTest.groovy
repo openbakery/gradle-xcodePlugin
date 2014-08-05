@@ -18,6 +18,16 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.hockeykit.HockeyKitArchiveTask
+import org.openbakery.hockeykit.HockeyKitImageTask
+import org.openbakery.hockeykit.HockeyKitManifestTask
+import org.openbakery.hockeykit.HockeyKitPluginExtension
+import org.openbakery.signing.CodesignTask
+import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.testflight.TestFlightPluginExtension
+import org.openbakery.testflight.TestFlightPrepareTask
+import org.openbakery.testflight.TestFlightUploadTask
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
