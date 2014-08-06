@@ -18,6 +18,7 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
@@ -114,12 +115,12 @@ class XcodePlugin implements Plugin<Project> {
 		System.setProperty("java.awt.headless", "true");
 
 		configureExtensions(project)
-		configureBuild(project)
 		configureClean(project)
+		configureBuild(project)
+		configureTest(project)
 		configureArchive(project)
 		configureHockeyKit(project)
 		configureKeychain(project)
-		configureTest(project)
 		configureInfoPlist(project)
 		configureProvisioning(project)
 		configureTestflight(project)
@@ -347,7 +348,6 @@ class XcodePlugin implements Plugin<Project> {
 		buildTask.setGroup(BasePlugin.BUILD_GROUP);
 		buildTask.dependsOn(BasePlugin.ASSEMBLE_TASK_NAME);
 
-
 		DefaultTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, DefaultTask.class);
 		xcodebuildTask.setDescription(buildTask.description);
 		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
@@ -384,7 +384,6 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureKeychain(Project project) {
 		project.task(KEYCHAIN_CREATE_TASK_NAME, type: KeychainCreateTask, group: XCODE_GROUP_NAME)
 		project.task(KEYCHAIN_CLEAN_TASK_NAME, type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
-
 	}
 
 	private void configureTest(Project project) {
@@ -467,9 +466,19 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCocoapods(Project project) {
 
 		//project.task(COCOAPODS_CLEAN_TASK_NAME, type: CocoapodsCleanTask, group: COCOAPODS_GROUP_NAME)
-		project.task(COCOAPODS_TASK_NAME, type: CocoapodsTask, group: COCOAPODS_GROUP_NAME)
+		CocoapodsTask task = project.task(COCOAPODS_TASK_NAME, type: CocoapodsTask, group: COCOAPODS_GROUP_NAME)
+		if (task.hasPodfile()) {
+			addDependencyToBuild(project, task);
+		}
 	}
 
+	private void addDependencyToBuild(Project project, Task task) {
+		XcodeBuildTask buildTask = project.getTasks().getByName(BUILD_TASK_NAME)
+		buildTask.dependsOn(task)
+
+		XcodeTestTask testTask = project.getTasks().getByName(TEST_TASK_NAME)
+		testTask.dependsOn(task)
+	}
 }
 
 

@@ -123,6 +123,15 @@ class XcodeBuildPluginExtension {
 	}
 
 
+	boolean isDeviceBuild() {
+		return this.sdk.startsWith("iphoneos")
+	}
+
+	boolean isSimulatorBuild() {
+		return this.sdk.startsWith("iphonesimulator")
+	}
+
+
 	void destination(Closure closure) {
 		Destination destination = new Destination()
 		ConfigureUtil.configure(closure, destination)
@@ -131,7 +140,7 @@ class XcodeBuildPluginExtension {
 		}
 
 
-		if (this.sdk.startsWith("iphonesimulator")) {
+		if (isSimulatorBuild()) {
 			// filter only on simulator builds
 			destinations.addAll(findMatchingDestinations(destination))
 		} else {

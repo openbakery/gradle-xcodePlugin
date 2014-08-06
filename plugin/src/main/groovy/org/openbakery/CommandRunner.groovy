@@ -142,13 +142,20 @@ class CommandRunner {
 		run(directory, commandList, null, null)
 	}
 
+	def run(List<String> commandList, OutputAppender outputAppender) {
+		run(".", commandList, null, outputAppender)
+	}
+
+
 	def run(List<String> commandList) {
-		run(".", commandList)
+		run(".", commandList, null, null)
 	}
 
 	def run(String... commandList) {
 		run(Arrays.asList(commandList));
 	}
+
+
 
 	String runWithResult(String... commandList) {
 		return runWithResult(Arrays.asList(commandList));
