@@ -4,18 +4,24 @@ buildscript {
 	repositories {
 		jcenter()
 	}
-  dependencies {
-		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.+'
-	}
 }
 
 
+def versionNumber = '0.9.11.b'
 
+group = 'org.openbakery'
+version = versionNumber
+
+
+apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
+
+
+sourceCompatibility = "1.6"
+targetCompatibility = "1.6" 
 
 
 dependencies {
@@ -42,10 +48,9 @@ dependencies {
 
 }
 
-def versionNumber = '0.9.11.b'
+sourceSets.main.java.srcDirs = []
+sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
-group = 'org.openbakery'
-version = versionNumber
 
 uploadArchives {
 	repositories {
@@ -95,33 +100,6 @@ publishing {
         	root.appendNode('description', 'A gradle plugin for building Xcode projects')
           root.children().last() + pomConfig
 			}
-		}
-	}
-}
-
-
-bintray {
-	user = bintrayUser
-	key = bintrayApiKey
-	
-	publications = ['mavenJava']
-	
-	publish = true
-	pkg {
-		repo = 'openbakery'
-		name = 'gradle-xcodePlugin'
-		desc = 'gradle plugin to build Xcode projects'
-		websiteUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
-		issueTrackerUrl = 'https://github.com/openbakery/gradle-xcodePlugin/issues'
-		vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin.git'
-		licenses = ['Apache-2.0']
-		labels = ['xcode', 'ios', 'mac']
-		publicDownloadNumbers = true
-
-		// optional version attributes
-		version {
-			name = versionNumber
-			vcsTag = versionNumber
 		}
 	}
 }

@@ -59,11 +59,12 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (!toDirectory.exists()) {
 			toDirectory.mkdirs()
 		}
-		File destinationFile = new File(toDirectory, address.tokenize("/")[-1])
-		def file = new FileOutputStream(destinationFile)
-		def out = new BufferedOutputStream(file)
-		out << new URL(address).openStream()
-		out.close()
+
+		ant.get(src: address, dest: toDirectory.getPath(), verbose:true)
+
+		File destinationFile = new File(toDirectory, FilenameUtils.getName(address))
+		return destinationFile.absolutePath
+
 		return destinationFile.absolutePath
 	}
 

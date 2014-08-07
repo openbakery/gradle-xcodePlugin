@@ -1,6 +1,5 @@
 package org.openbakery.appledoc
 
-import ch.qos.logback.core.util.FileUtil
 import org.apache.commons.io.FileUtils
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.TaskAction

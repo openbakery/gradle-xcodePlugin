@@ -1,6 +1,6 @@
 package org.openbakery.output
 
-import org.openbakery.Version
+
 import org.testng.annotations.Test
 
 /**

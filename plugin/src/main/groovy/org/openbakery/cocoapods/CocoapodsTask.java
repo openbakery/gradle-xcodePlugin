@@ -1,20 +1,14 @@
 package org.openbakery.cocoapods;
 
-import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.logging.StyledTextOutput;
 import org.gradle.logging.StyledTextOutputFactory;
 import org.openbakery.AbstractXcodeTask;
-import org.openbakery.XcodeBuildTask;
 import org.openbakery.output.ConsoleOutputAppender;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by rene on 05.08.14.
@@ -35,7 +29,7 @@ public class CocoapodsTask extends AbstractXcodeTask {
 
 
 	@TaskAction
-	void install() {
+	void install() throws IOException {
 		// first install or update cocoapods
 
 		File podsDirectory = new File(getProject().getProjectDir(), "Pods");
@@ -52,7 +46,7 @@ public class CocoapodsTask extends AbstractXcodeTask {
 
 		getLogger().quiet("Run pod install");
 
-		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class);
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(CocoapodsTask.class);
 
 	 	ArrayList<String>commandList = new ArrayList<String>();
 		commandList.add(result + "/bin/pod");
