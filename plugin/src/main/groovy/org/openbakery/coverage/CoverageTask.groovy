@@ -59,10 +59,8 @@ class CoverageTask extends AbstractXcodeTask {
 
 		println(commandList)
 
-		String result = commandRunner.runWithResult(commandList)
-		FileWriter writer = new FileWriter(new File(project.coverage.outputDirectory, outputFilename))
-		writer.write(result)
-
+		commandRunner.setOutputFile(new File(project.coverage.outputDirectory, outputFilename));
+		commandRunner.run(commandList)
 
 
 	}
