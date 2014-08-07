@@ -16,6 +16,7 @@
 package org.openbakery
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
@@ -227,25 +228,62 @@ class XcodeBuildPluginExtension {
 
 	void createXcode5DeviceList(CommandRunner commandRunner) {
 		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
+
+
+		File sdksDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/SDKs")
+		def versions = [];
+		for (String sdk in sdksDirectory.list()) {
+			String basename = FilenameUtils.getBaseName(sdk)
+			versions << StringUtils.removeStart(basename, "iPhoneSimulator")
+		}
+
+
+
+
+
 		File simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
 		String[] simulators = simulatorDirectory.list()
 		for (String simulator in simulators) {
-			Destination destination = new Destination();
-			destination.platform = 'iOS Simulator'
 
 			File infoPlistFile = new File(simulatorDirectory, simulator + "/Info.plist")
 			String name = commandRunner.runWithResult([
-										"/usr/libexec/PlistBuddy",
-										infoPlistFile.absolutePath,
-										"-c",
-										"Print :displayName"
-						])
+							"/usr/libexec/PlistBuddy",
+							infoPlistFile.absolutePath,
+							"-c",
+							"Print :displayName"
+			])
 
-			destination.name = name //FilenameUtils.getBaseName(simulator);
-			availableDevices << destination;
+
+			if (hasNewerEquivalentDevice(commandRunner, infoPlistFile)) {
+				continue;
+			}
+
+
+			for (String version in versions) {
+				Destination destination = new Destination();
+				destination.platform = 'iOS Simulator'
+				destination.name = name
+				destination.os = version
+
+				availableDevices << destination;
+			}
 		}
 	}
 
+	boolean hasNewerEquivalentDevice(CommandRunner commandRunner, File infoPlistFile) {
+		try {
+			commandRunner.runWithResult([
+							"/usr/libexec/PlistBuddy",
+							infoPlistFile.absolutePath,
+							"-c",
+							"Print :newerEquivalentDevice"
+			])
+			return true
+			// if the "Print :newerEquivalentDevice" is found, then to not add the simulator
+		} catch (CommandRunnerException ex) {
+			return false
+		}
+	}
 
 	void createDeviceList(commandRunner) {
 		String simctlCommand = commandRunner.runWithResult(["xcrun", "-sdk", "iphoneos", "-find", "simctl"]);

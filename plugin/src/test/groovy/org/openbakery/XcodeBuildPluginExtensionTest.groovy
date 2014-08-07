@@ -1,9 +1,11 @@
 package org.openbakery
 
+import ch.qos.logback.core.util.FileUtil
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -27,6 +29,10 @@ class XcodeBuildPluginExtensionTest {
 		extension = new XcodeBuildPluginExtension(project)
 	}
 
+	@AfterMethod
+	def cleanup() {
+		FileUtils.deleteDirectory(new File("build/Platforms"))
+	}
 
 	void mockFindSimctl() {
 		def commandList = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
@@ -179,4 +185,115 @@ class XcodeBuildPluginExtensionTest {
 	}
 
 
+	void mockDisplayName() {
+		def commandList = [
+											"/usr/libexec/PlistBuddy",
+											new File("build/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices/iPad/Info.plist").getAbsolutePath(),
+											"-c",
+											"Print :displayName"
+							]
+		commandRunnerMock.runWithResult(commandList).returns("iPad").times(1)
+
+
+	}
+
+	void mockNewerEquivalentDevice(String result) {
+		def commandList = [
+						"/usr/libexec/PlistBuddy",
+						new File("build/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices/iPad/Info.plist").getAbsolutePath(),
+						"-c",
+						"Print :newerEquivalentDevice"
+		]
+
+		if (result == null) {
+			commandRunnerMock.runWithResult(commandList).raises(new CommandRunnerException(""));
+		} else {
+			commandRunnerMock.runWithResult(commandList).returns(result)
+		}
+
+
+	}
+
+
+	void mockXcodePath() {
+		def commandList = ["xcode-select", "-p"]
+		commandRunnerMock.runWithResult(commandList).returns("build").times(1)
+
+		File simulatorDirectory = new File("build/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices/iPad");
+		simulatorDirectory.mkdirs()
+	}
+
+
+
+	@Test
+	void testDeviceListXcode5() {
+
+		mockXcodePath();
+		mockDisplayName();
+		mockNewerEquivalentDevice(null);
+
+		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.0.sdk").mkdirs()
+
+
+		mockControl.play {
+			extension.createXcode5DeviceList(commandRunnerMock)
+		}
+
+		assert extension.destinations.size() == 1 : "expected 1 elements in the availableDevices list but was: " + extension.destinations.size()
+
+		Destination destination =  extension.destinations[0];
+
+		assert destination.name.equals("iPad");
+		assert destination.platform.equals("iOS Simulator")
+		assert destination.os.equals("7.0")
+
+	}
+
+
+	@Test
+	void testDeviceListXcode5_mutibleSimualtors() {
+
+		mockXcodePath();
+		mockDisplayName();
+		mockNewerEquivalentDevice(null);
+
+		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.0.sdk").mkdirs()
+		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk").mkdirs()
+		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
+
+		mockControl.play {
+			extension.createXcode5DeviceList(commandRunnerMock)
+		}
+
+		assert extension.destinations.size() == 3 : "expected 1 elements in the availableDevices list but was: " + extension.destinations.size()
+
+		Destination destination =  extension.destinations[0];
+
+		assert destination.name.equals("iPad");
+		assert destination.platform.equals("iOS Simulator")
+		assert destination.os.equals("7.0")
+
+		assert extension.destinations[1].os.equals("7.1");
+		assert extension.destinations[2].os.equals("6.0");
+
+	}
+
+
+	@Test
+	void testDeviceListXcode5_skipDevice() {
+
+		mockNewerEquivalentDevice("iPhone Retina (3.5-inch)");
+		mockXcodePath();
+		mockDisplayName();
+
+		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
+
+		mockControl.play {
+			extension.createXcode5DeviceList(commandRunnerMock)
+		}
+
+		assert extension.destinations.size() == 0
+
+
+	}
 }
