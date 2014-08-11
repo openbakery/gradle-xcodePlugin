@@ -59,7 +59,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing != null && project.xcodebuild.signing.identity != null) {
-			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
+			commandList.add('CODE_SIGN_IDENTITY="' + project.xcodebuild.signing.identity + '"')
 		}
 
 		if (project.xcodebuild.arch != null) {
@@ -116,7 +116,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
+			commandList.add('OTHER_CODE_SIGN_FLAGS="--keychain ' + project.xcodebuild.signing.keychainPathInternal.path + '"');
 		}
 
 		return commandList;
