@@ -158,7 +158,7 @@ class XcodeBuildPluginExtension {
 					continue
 				}
 			}
-			if (destination.name != null) {
+			if (destination.name != null && destination.name != "") {
 				if (!device.name.matches(destination.name)) {
 					continue
 				}
@@ -173,7 +173,7 @@ class XcodeBuildPluginExtension {
 					continue
 				}
 			}
-			if (destination.os != null) {
+			if (destination.os != null && destination.os != "") {
 				if (!device.os.matches(destination.os)) {
 					continue
 				}
