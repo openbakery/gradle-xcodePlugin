@@ -1,6 +1,5 @@
 package org.openbakery
 
-import ch.qos.logback.core.util.FileUtil
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
@@ -59,7 +58,7 @@ class XcodeBuildPluginExtensionTest {
 			extension.createDeviceList(commandRunnerMock)
 		}
 
-		assert extension.availableDevices.size() == 14 : "expected 14 elements in the availableDevices list but was: " + extension.availableDevices.size()
+		assert extension.availableSimulators.size() == 14 : "expected 14 elements in the availableSimulators list but was: " + extension.availableSimulators.size()
 
 	}
 
@@ -82,7 +81,7 @@ class XcodeBuildPluginExtensionTest {
 			name = 'iPhone 4s'
 		}
 
-		assert extension.destinations.size() == 2 : "expected 2 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
 	}
@@ -105,7 +104,7 @@ class XcodeBuildPluginExtensionTest {
 			os = '7.0'
 		}
 
-		assert extension.destinations.size() == 1 : "expected 1 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
 	}
@@ -127,7 +126,7 @@ class XcodeBuildPluginExtensionTest {
 			os = '7.0'
 		}
 
-		assert extension.destinations.size() == 6 : "expected 6 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 6 : "expected 6 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
 	}
@@ -151,7 +150,7 @@ class XcodeBuildPluginExtensionTest {
 			name = '.*iPhone.*'
 		}
 
-		assert extension.destinations.size() == 7 : "expected 7 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 7 : "expected 7 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
 	}
@@ -177,7 +176,7 @@ class XcodeBuildPluginExtensionTest {
 			extension.createDeviceList(commandRunnerMock)
 		}
 
-		assert extension.destinations.size() == 1 : "expected 1 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 
 		assert extension.destinations.asList()[0].id.equals("60B5BBDA-6485-44B4-AB87-9C0421EF5D8F")
@@ -239,7 +238,7 @@ class XcodeBuildPluginExtensionTest {
 			extension.createXcode5DeviceList(commandRunnerMock)
 		}
 
-		assert extension.destinations.size() == 1 : "expected 1 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		Destination destination =  extension.destinations[0];
 
@@ -265,7 +264,7 @@ class XcodeBuildPluginExtensionTest {
 			extension.createXcode5DeviceList(commandRunnerMock)
 		}
 
-		assert extension.destinations.size() == 3 : "expected 1 elements in the availableDevices list but was: " + extension.destinations.size()
+		assert extension.destinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		Destination destination =  extension.destinations[0];
 

@@ -50,7 +50,7 @@ class XcodeTestTaskTest {
 
 
 		project.xcodebuild.availableDevices = []
-		project.xcodebuild.availableDevices << destination
+		project.xcodebuild.availableSimulators << destination
 		project.xcodebuild.destinations << destination
 
 	}

@@ -73,6 +73,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String BUILD_TASK_NAME = "build";
 	public static final String TEST_TASK_NAME = "test"
 	public static final String ARCHIVE_TASK_NAME = "archive"
+	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuild-clean"
 	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykit-manifest"
@@ -131,6 +132,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureAppledoc(project)
 		configureCoverage(project)
 		configureCocoapods(project)
+		configureInfo(project)
 
 		configureProperties(project)
 	}
@@ -355,6 +357,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
+
 	private void configureClean(Project project) {
 		XcodeBuildCleanTask xcodeBuildCleanTask = project.getTasks().create(XCODE_CLEAN_TASK_NAME, XcodeBuildCleanTask.class);
 		xcodeBuildCleanTask.setGroup(XCODE_GROUP_NAME);
@@ -367,6 +370,11 @@ class XcodePlugin implements Plugin<Project> {
 		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
 
 		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
+	}
+
+	private void configureInfo(Project project) {
+		ListSimulators  listSimulators = project.getTasks().create(LIST_SIMULATORS_TASK_NAME, ListSimulators.class);
+		listSimulators.setGroup(XCODE_GROUP_NAME);
 	}
 
 	private void configureHockeyKit(Project project) {

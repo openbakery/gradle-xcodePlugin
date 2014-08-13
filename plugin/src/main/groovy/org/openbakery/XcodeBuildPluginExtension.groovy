@@ -55,7 +55,7 @@ class XcodeBuildPluginExtension {
 	String workspace = null
 	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
-	List<String> availableDevices = []
+	List<Destination> availableSimulators = []
 
 	Set<Destination> destinations = null
 
@@ -152,7 +152,7 @@ class XcodeBuildPluginExtension {
 	List<Destination> findMatchingDestinations(Destination destination) {
 		def result = [];
 
-		for (Destination device in availableDevices) {
+		for (Destination device in availableSimulators) {
 			if (destination.platform != null) {
 				if (!device.platform.matches(destination.platform)) {
 					continue
@@ -194,17 +194,17 @@ class XcodeBuildPluginExtension {
 			this.destinations = []
 			switch (this.devices) {
 				case Devices.PHONE:
-					this.destinations = availableDevices.findAll {
+					this.destinations = availableSimulators.findAll {
 						d -> d.name.contains("iPhone");
 					};
 					break;
 				case Devices.PAD:
-					this.destinations = availableDevices.findAll {
+					this.destinations = availableSimulators.findAll {
 						d -> d.name.contains("iPad");
 					};
 					break;
 				default:
-					this.destinations.addAll(availableDevices);
+					this.destinations.addAll(availableSimulators);
 					break;
 			}
 		}
@@ -265,7 +265,7 @@ class XcodeBuildPluginExtension {
 				destination.name = name
 				destination.os = version
 
-				availableDevices << destination;
+				availableSimulators << destination;
 			}
 		}
 	}
@@ -309,7 +309,7 @@ class XcodeBuildPluginExtension {
 				if (matcher.getCount() && matcher[0].size() == 3) {
 					destination.name = matcher[0][1].trim()
 					destination.id = matcher[0][2].trim()
-					availableDevices << destination;
+					availableSimulators << destination;
 				}
 			}
 		}
@@ -335,7 +335,7 @@ class XcodeBuildPluginExtension {
 			createDeviceList(commandRunner)
 		}
 
-		logger.debug("availableSimulators: {}", availableDevices)
+		logger.debug("availableSimulators: {}", availableSimulators)
 
 	}
 
