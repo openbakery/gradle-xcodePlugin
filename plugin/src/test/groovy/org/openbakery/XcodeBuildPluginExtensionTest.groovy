@@ -295,4 +295,34 @@ class XcodeBuildPluginExtensionTest {
 
 
 	}
+
+
+	@Test
+	void testDestinationFilter_PhoneAndPad() {
+		mockFindSimctl()
+		mockSimctlList()
+
+		mockControl.play {
+			extension.createDeviceList(commandRunnerMock)
+		}
+
+
+		extension.destination {
+			platform = 'iOS Simulator'
+			name = 'iPad 2'
+			os = '7.0'
+		}
+
+		extension.destination {
+			platform = 'iOS Simulator'
+			name = 'iPhone 4s'
+			os = '7.0'
+		}
+
+
+		assert extension.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
+
+		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
+	}
+
 }

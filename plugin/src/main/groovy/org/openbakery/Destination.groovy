@@ -8,10 +8,10 @@ import org.apache.commons.lang.StringUtils
 class Destination {
 
 	String platform = null
-	String name = ""
+	String name = null
 	String arch = null
 	String id = null
-	String os = ""
+	String os = null
 
 
 	@Override

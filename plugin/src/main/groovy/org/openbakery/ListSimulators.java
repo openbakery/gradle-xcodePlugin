@@ -13,7 +13,21 @@ import java.util.List;
 public class ListSimulators extends DefaultTask {
 
 
+	int compareTo(String first, String second) {
+		if (first == null && second == null) {
+			return 0;
+		}
 
+		if (first == null && second != null) {
+			return 1;
+		}
+
+		if (first != null && second == null) {
+			return -1;
+		}
+		return first.compareTo(second);
+
+	}
 
 	public ListSimulators() {
 		setDescription("List all available iOS Simulators");
@@ -29,11 +43,12 @@ public class ListSimulators extends DefaultTask {
 		Collections.sort(availableSimulators, new Comparator<Destination>() {
 			@Override
 			public int compare(Destination first, Destination second) {
-				int result = first.getOs().compareTo(second.getOs());
+
+				int result = compareTo(first.getOs(), second.getOs());
 				if (result != 0) {
 					return result;
 				}
-				return first.getName().compareTo(second.getName());
+				return compareTo(first.getName(), second.getName());
 			}
 		});
 

@@ -149,35 +149,55 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
+	boolean matches(String first, String second) {
+		if (first != null && second == null) {
+			return true;
+		}
+
+		if (first == null && second != null) {
+			return true;
+		}
+
+		if (first.equals(second)) {
+			return true;
+		}
+
+		if (second.matches(first)) {
+			return true;
+		}
+
+		return false;
+
+	}
+
 	List<Destination> findMatchingDestinations(Destination destination) {
 		def result = [];
 
+		logger.debug("finding matching destination for: {}", destination)
+
 		for (Destination device in availableSimulators) {
-			if (destination.platform != null) {
-				if (!device.platform.matches(destination.platform)) {
-					continue
-				}
+			if (!matches(destination.platform, device.platform)) {
+				//logger.debug("{} does not match {}", device.platform, destination.platform);
+				continue
 			}
-			if (destination.name != null && destination.name != "") {
-				if (!device.name.matches(destination.name)) {
-					continue
-				}
+			if (!matches(destination.name, device.name)) {
+				//logger.debug("{} does not match {}", device.name, destination.name);
+				continue
 			}
-			if (destination.arch != null) {
-				if (!device.arch.matches(destination.arch)) {
-					continue
-				}
+			if (!matches(destination.arch, device.arch)) {
+				//logger.debug("{} does not match {}", device.arch, destination.arch);
+				continue
 			}
-			if (destination.id != null) {
-				if (!device.id.matches(destination.id)) {
-					continue
-				}
+			if (!matches(destination.id, device.id)) {
+				//logger.debug("{} does not match {}", device.id, destination.id);
+				continue
 			}
-			if (destination.os != null && destination.os != "") {
-				if (!device.os.matches(destination.os)) {
-					continue
-				}
+			if (!matches(destination.os, device.os)) {
+				//logger.debug("{} does not match {}", device.os, destination.os);
+				continue
 			}
+
+			logger.debug("FOUND matching destination: {}", device)
 
 			result << device
 
