@@ -15,24 +15,34 @@
  */
 package org.openbakery.hockeykit
 
+import org.apache.http.Consts
 import org.apache.http.HttpEntity
+import org.apache.http.HttpHost
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
+import org.apache.http.client.config.RequestConfig
+import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntity
+import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.entity.mime.content.StringBody
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.DefaultHttpClient
+import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.util.regex.Pattern
 
 class HockeyAppUploadTask extends DefaultTask {
 
+
+	public static final String HOCKEY_APP_API_URL = "https://rink.hockeyapp.net/api/2/apps/"
+
+	private static final ContentType contentType = ContentType.create("application/x-www-form-urlencoded", Consts.UTF_8)
 
 	HockeyAppUploadTask() {
 		super()
@@ -78,61 +88,79 @@ class HockeyAppUploadTask extends DefaultTask {
 	}
 
 	def void uploadIPAandDSYM(File ipaFile, File dSYMFile) {
-		HttpClient httpClient = new DefaultHttpClient()
 
-		// for testing only
-		//HttpHost proxy = new HttpHost("localhost", 8888);
-		//httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps/" + project.hockeyapp.appID + "/app_versions/upload");
+		try {
+			HttpPost httpPost = new HttpPost(HOCKEY_APP_API_URL + project.hockeyapp.appID + "/app_versions/upload");
 
-		MultipartEntity entity = new MultipartEntity();
+			HttpEntity requestEntity = MultipartEntityBuilder.create()
+							.addPart("status", new StringBody(project.hockeyapp.status, contentType))
+							.addPart("notify",  new StringBody(project.hockeyapp.notify, contentType))
+							.addPart("notes",  new StringBody(project.hockeyapp.notes, contentType))
+							.addPart("notes_type",  new StringBody(project.hockeyapp.notesType, contentType))
+							.addBinaryBody("ipa", ipaFile)
+							.addBinaryBody("dsym", dSYMFile)
+							.build()
 
-		entity.addPart("status", new StringBody(project.hockeyapp.status))
-		entity.addPart("notify", new StringBody(project.hockeyapp.notify))
-		entity.addPart("notes_type", new StringBody(project.hockeyapp.notesType))
+			httpPost.setEntity(requestEntity);
 
-		entity.addPart("notes", new StringBody(project.hockeyapp.notes))
-		entity.addPart("ipa", new FileBody(ipaFile))
-		entity.addPart("dsym", new FileBody(dSYMFile))
+			executePost(httpClient, httpPost)
+
+		} finally {
+			httpClient.close();
+		}
+
+	}
+
+	private void executePost(CloseableHttpClient httpClient, HttpPost httpPost) {
+		/*
+					HttpHost proxy = new HttpHost("localhost", 8888);
+					RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+					httpPost.setConfig(config);
+		*/
 
 		httpPost.addHeader("X-HockeyAppToken", project.hockeyapp.apiToken)
 
-		httpPost.setEntity(entity);
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+		try {
+			logger.debug("{}", response.getStatusLine());
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				logger.debug("Response content length: {}", entity.getContentLength());
+			}
+			String responseString = EntityUtils.toString(entity, "UTF-8");
+			logger.debug("{}", responseString);
+			EntityUtils.consume(entity);
 
-		logger.debug("request {}", httpPost.getRequestLine().toString())
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode >= 400) {
+				throw new IllegalStateException("file upload failed: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase() + ": " + responseString);
+			}
 
-		HttpResponse response = httpClient.execute(httpPost)
-
-		if (response.getStatusLine().getStatusCode() != 201) {
-			throw new IllegalStateException("file upload failed: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+		} finally {
+			response.close();
 		}
 	}
 
 	def void uploadProvisioningProfile() {
-		HttpClient httpClient = new DefaultHttpClient()
 
-		// for testing only
-		//HttpHost proxy = new HttpHost("localhost", 8888);
-		//httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 
-		HttpPost httpPost = new HttpPost("https://rink.hockeyapp.net/api/2/apps/" + project.hockeyapp.appID + "/provisioning_profiles")
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		try {
+			HttpPost httpPost = new HttpPost(HOCKEY_APP_API_URL + project.hockeyapp.appID + "/provisioning_profiles");
 
-		MultipartEntity entity = new MultipartEntity();
+			HttpEntity requestEntity = MultipartEntityBuilder.create()
+							.addBinaryBody("mobileprovision", project.xcodebuild.signing.mobileProvisionFile)
+							.build()
 
-		entity.addPart("mobileprovision", new FileBody(project.xcodebuild.signing.mobileProvisionFile))
+			httpPost.setEntity(requestEntity);
+			executePost(httpClient, httpPost)
 
-		httpPost.addHeader("X-HockeyAppToken", project.hockeyapp.apiToken)
-
-		httpPost.setEntity(entity);
-
-		logger.debug("request {}", httpPost.getRequestLine().toString())
-
-		HttpResponse response = httpClient.execute(httpPost)
-
-		if (response.getStatusLine().getStatusCode() != 201) {
-			throw new IllegalStateException("file upload failed: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+		} finally {
+			httpClient.close();
 		}
+
 	}
 
 }

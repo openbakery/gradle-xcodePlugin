@@ -25,7 +25,7 @@ class HockeyAppPluginExtension {
 	def String notes = "This build was uploaded using the gradle xcodePlugin"
 	def String status = 2
 	def String notify = 1
-	def String notesType = 1
+	def String notesType = 0
 
 	private final Project project
 
