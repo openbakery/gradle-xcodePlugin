@@ -1,6 +1,8 @@
-## 0.9.12 (TBA)
+## 0.9.12 (August 27, 2014)
 
 Changes
+- Build in Cocoapods support. If a Podfile is found a pod install is perform automatically. If cocoapods is not install, it is installed for the current user. Issue #75
+- Add support for modifing the info plist using plistbuddy commands. See Issue #74 
 - For unit testing destination are not optionals. I no destination is specified then the unit tests are executed on every available simulator.
   This works both for Xcode5 and Xcode6 (here the new simctl is used)
 - The plugin should be more memory efficent now, because the output of the xcodebuild command that can be several megabytes is not hold in the mememory anymore, it is stored in an output file.	

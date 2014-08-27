@@ -177,7 +177,7 @@ infoplist Parameters:
 
 	default value: empty
 
-* _commands_ - adds commands to modify the info plist there are excuted with the plistbuddy tool (see also 'man PlistBuddy' )
+* _commands_ - adds commands to modify the info plist that are excuted with the plistbuddy tool (see also 'man PlistBuddy' )
 
 	default value: empty
 	
