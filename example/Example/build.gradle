@@ -1,3 +1,22 @@
+/*
+
+Create a gradle.settings for settings the grade.<...> properties used below:
+
+gradle.ext {
+	hockeyappApiToken = ""
+	hockeyappAppId = ""
+
+
+	identity = 'iPhone Developer: '
+	certificateURI = 'http://.../Development.p12'
+	certificatePassword = 'password'
+	mobileProvisionURI = 'http://../Development.mobileprovision'
+
+}
+
+*/
+
+
 buildscript {
 	repositories {
 		maven {
@@ -6,7 +25,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.11.b'
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.+'
 	}
 }
 apply plugin: 'xcode'
@@ -15,6 +34,8 @@ xcodebuild {
 	scheme = 'Example'
 	target = 'Example'
 	configuration = 'Debug'
+
+
 
 	signing {
 		identity = gradle.identity                       // e.g. 'iPhone Developer: ...'
@@ -32,6 +53,10 @@ xcodebuild {
 
 }
 
+/*
+	Create custom tasks that 4 different kind of builds
+*/
+
 task continuous(dependsOn:'test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
@@ -46,8 +71,6 @@ task release(dependsOn: 'hockeykit') {
 task appstore(dependsOn: 'archive') {
 	description = 'Build for the AppStore'
 }
-
-
 
 
 
