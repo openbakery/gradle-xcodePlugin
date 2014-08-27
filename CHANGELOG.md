@@ -1,3 +1,9 @@
+## 0.9.13 (TBA)
+
+Changes
+- Added the the xcode version can be selected: Issue #6
+
+
 ## 0.9.12 (August 27, 2014)
 
 Changes

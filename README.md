@@ -129,6 +129,11 @@ xcodebuild Parameters:
 * _infoPlist_ - override the Info.plist file that is configured in the xcode project file
 
   default value: empty
+	
+* _version_ - set the xcode version that should be used if multiple versions of Xcode are installed. Here the build number must be specifed e.g. '5B1008' for Xcode 5.1.1.
+	If this value is empty then the default version is used that is selected using 'xcode-select'
+
+  defaul value: empty
     
 
 

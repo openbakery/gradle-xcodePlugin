@@ -53,11 +53,16 @@ class XcodeBuildPluginExtension {
 	String bundleNameSuffix = null
 	List<String> arch = null
 	String workspace = null
+	String version = null
+
 	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
 
 	Set<Destination> destinations = null
+
+	private String xcodebuildCommand = "xcodebuild"
+	CommandRunner commandRunner
 
 	/**
 	 * internal parameters
@@ -67,6 +72,8 @@ class XcodeBuildPluginExtension {
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
 		this.signing = new Signing(project)
+		commandRunner = new CommandRunner()
+
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -246,7 +253,7 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	void createXcode5DeviceList(CommandRunner commandRunner) {
+	void createXcode5DeviceList() {
 		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
 
 
@@ -274,7 +281,7 @@ class XcodeBuildPluginExtension {
 			])
 
 
-			if (hasNewerEquivalentDevice(commandRunner, infoPlistFile)) {
+			if (hasNewerEquivalentDevice(infoPlistFile)) {
 				continue;
 			}
 
@@ -290,7 +297,7 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
-	boolean hasNewerEquivalentDevice(CommandRunner commandRunner, File infoPlistFile) {
+	boolean hasNewerEquivalentDevice(File infoPlistFile) {
 		try {
 			commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
@@ -305,7 +312,7 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
-	void createDeviceList(commandRunner) {
+	void createDeviceList() {
 		String simctlCommand = commandRunner.runWithResult(["xcrun", "-sdk", "iphoneos", "-find", "simctl"]);
 		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
 
@@ -337,22 +344,21 @@ class XcodeBuildPluginExtension {
 
 	void finishConfiguration(Project project) {
 
-		CommandRunner commandRunner = new CommandRunner()
-		parseInfoFromProjectFile(project, commandRunner)
+		parseInfoFromProjectFile(project)
 
 		if (isOSX) {
 			return;
 		}
 
-		String version = commandRunner.runWithResult(["xcodebuild", "-version"])
+		String version = commandRunner.runWithResult([xcodebuildCommand		, "-version"])
 		boolean isXcode5 = version.startsWith("Xcode 5");
 		logger.debug("isXcode5 {}", isXcode5);
 
 
 		if (isXcode5) {
-			createXcode5DeviceList(commandRunner)
+			createXcode5DeviceList()
 		} else {
-			createDeviceList(commandRunner)
+			createDeviceList()
 		}
 
 		logger.debug("availableSimulators: {}", availableSimulators)
@@ -361,7 +367,7 @@ class XcodeBuildPluginExtension {
 
 
 
-	void parseInfoFromProjectFile(Project project, CommandRunner commandRunner) {
+	void parseInfoFromProjectFile(Project project) {
 
 		logger.debug("using target: {}", this.target)
 		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
@@ -430,5 +436,36 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
+
+	void setVersion(String version) {
+		this.version = version
+		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
+
+		xcodebuildCommand = null
+
+		for (String xcode : installedXcodes.split("\n")) {
+
+
+			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
+			if (xcodeBuildFile.exists()) {
+
+				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
+
+				if (xcodeVersion.endsWith(version)) {
+					xcodebuildCommand = xcodeBuildFile.absolutePath
+					return
+				}
+			}
+		}
+
+		throw new IllegalStateException("No Xcode found with build number " + version);
+	}
+
+
+
+
+	String getXcodebuildCommand() {
+		return xcodebuildCommand
+	}
 
 }

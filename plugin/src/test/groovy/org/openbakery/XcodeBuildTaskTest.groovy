@@ -328,4 +328,41 @@ class XcodeBuildTaskTest {
 	}
 
 
+
+
+	@Test
+	void run_command_xcodeversion() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode.app")
+		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008")
+		project.xcodebuild.commandRunner = commandRunnerMock
+
+
+
+		expectedCommandList?.clear()
+		expectedCommandList = ["/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild"]
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add("iphonesimulator")
+
+		def target = 'mytarget'
+		project.xcodebuild.target = target
+		expectedCommandList.add("-target")
+		expectedCommandList.add(target)
+
+		addExpectedDefaultDirs()
+
+		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+
+
+
+		mockControl.play {
+			project.xcodebuild.version = '5B1008';
+
+			xcodeBuildTask.xcodebuild()
+		}
+	}
+
 }

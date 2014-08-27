@@ -26,6 +26,7 @@ class XcodeBuildPluginExtensionTest {
 
 		project = ProjectBuilder.builder().build()
 		extension = new XcodeBuildPluginExtension(project)
+		extension.commandRunner = commandRunnerMock
 	}
 
 	@AfterMethod
@@ -55,7 +56,7 @@ class XcodeBuildPluginExtensionTest {
 		mockSimctlList()
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 		assert extension.availableSimulators.size() == 14 : "expected 14 elements in the availableSimulators list but was: " + extension.availableSimulators.size()
@@ -72,7 +73,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 
@@ -94,7 +95,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 
@@ -117,7 +118,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 
@@ -141,7 +142,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 
@@ -173,7 +174,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
@@ -235,7 +236,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 		mockControl.play {
-			extension.createXcode5DeviceList(commandRunnerMock)
+			extension.createXcode5DeviceList()
 		}
 
 		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
@@ -261,7 +262,7 @@ class XcodeBuildPluginExtensionTest {
 		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
 
 		mockControl.play {
-			extension.createXcode5DeviceList(commandRunnerMock)
+			extension.createXcode5DeviceList()
 		}
 
 		assert extension.destinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
@@ -288,7 +289,7 @@ class XcodeBuildPluginExtensionTest {
 		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
 
 		mockControl.play {
-			extension.createXcode5DeviceList(commandRunnerMock)
+			extension.createXcode5DeviceList()
 		}
 
 		assert extension.destinations.size() == 0
@@ -303,7 +304,7 @@ class XcodeBuildPluginExtensionTest {
 		mockSimctlList()
 
 		mockControl.play {
-			extension.createDeviceList(commandRunnerMock)
+			extension.createDeviceList()
 		}
 
 
@@ -323,6 +324,58 @@ class XcodeBuildPluginExtensionTest {
 		assert extension.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
 
 		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
+	}
+
+
+
+	@Test
+	void xcodeVersion() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode.app\n/Applications/Xcode6-Beta6.app\n/Applications/Xcode6-Beta4.app").times(1)
+
+		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+		mockControl.play {
+			extension.version = '5B1008';
+		}
+
+		assert extension.getXcodebuildCommand().equals("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+
+	@Test
+	void xcodeVersion_select_last() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode6-Beta6.app\n/Applications/Xcode6-Beta4.app\n/Applications/Xcode.app").times(1)
+
+		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta6.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta4.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+
+
+		mockControl.play {
+			extension.version = '5B1008';
+		}
+
+		assert extension.getXcodebuildCommand().equals("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+
+	@Test(expectedExceptions = IllegalStateException.class)
+	void xcodeVersion_select_not_found() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode6-Beta6.app\n/Applications/Xcode6-Beta4.app\n/Applications/Xcode.app").times(1)
+
+		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta6.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta4.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+
+
+		mockControl.play {
+			extension.version = '5B1009';
+		}
 	}
 
 }
