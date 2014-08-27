@@ -56,7 +56,7 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 		//xcrun -sdk iphoneos pngcrush -revert-iphone-optimizations infile.png outfile.png
 
 		def uncrushCommandList = [
-			"xcrun",
+			project.xcodebuild.xcrunCommand,
 			"-sdk",
 			"iphoneos",
 			"pngcrush",

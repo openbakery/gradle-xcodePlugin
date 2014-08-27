@@ -41,7 +41,7 @@ class CodesignTask extends AbstractXcodeTask {
 	String preparePackageApplication() {
 
 		def commandListFindPackageApplication = [
-						"xcrun",
+						project.xcodebuild.xcrunCommand,
 						"-sdk",
 						project.xcodebuild.sdk,
 						"--find",
@@ -133,7 +133,7 @@ class CodesignTask extends AbstractXcodeTask {
 
 
 
-		def codesignAllocateCommand = commandRunner.runWithResult(["xcrun", "-find", "codesign_allocate"]).trim();
+		def codesignAllocateCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-find", "codesign_allocate"]).trim();
 		def environment = [CODESIGN_ALLOCATE:codesignAllocateCommand]
 		commandRunner.run(".", commandList, environment, null)
 	}

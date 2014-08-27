@@ -61,7 +61,7 @@ class XcodeBuildPluginExtension {
 
 	Set<Destination> destinations = null
 
-	private String xcodebuildCommand = "xcodebuild"
+	private String xcodePath = null
 	CommandRunner commandRunner
 
 	/**
@@ -313,7 +313,7 @@ class XcodeBuildPluginExtension {
 	}
 
 	void createDeviceList() {
-		String simctlCommand = commandRunner.runWithResult(["xcrun", "-sdk", "iphoneos", "-find", "simctl"]);
+		String simctlCommand = commandRunner.runWithResult([getXcrunCommand(), "-sdk", "iphoneos", "-find", "simctl"]);
 		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
 
 		String iOSVersion = null
@@ -441,7 +441,6 @@ class XcodeBuildPluginExtension {
 		this.version = version
 		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
 
-		xcodebuildCommand = null
 
 		for (String xcode : installedXcodes.split("\n")) {
 
@@ -452,7 +451,7 @@ class XcodeBuildPluginExtension {
 				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
 
 				if (xcodeVersion.endsWith(version)) {
-					xcodebuildCommand = xcodeBuildFile.absolutePath
+					xcodePath = xcode
 					return
 				}
 			}
@@ -465,7 +464,17 @@ class XcodeBuildPluginExtension {
 
 
 	String getXcodebuildCommand() {
-		return xcodebuildCommand
+		if (xcodePath != null) {
+			return xcodePath + "/Contents/Developer/usr/bin/xcodebuild"
+		}
+		return "xcodebuild"
+	}
+
+	String getXcrunCommand() {
+		if (xcodePath != null) {
+			return xcodePath + "/Contents/Developer/usr/bin/xcrun"
+		}
+		return "xcrun"
 	}
 
 }
