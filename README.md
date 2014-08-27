@@ -10,7 +10,7 @@ gradle xcodePlugin to build Mac and iOS projects
 
 __Introduction:__ http://openbakery.org/gradle.php
 
-__Example:__ [build.gradle](example/build.gradle)
+__Example:__ [build.gradle](example/Example/build.gradle)
 
 xcodebuild Parameters:
 ----------------------
