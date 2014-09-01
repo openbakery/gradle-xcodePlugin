@@ -239,7 +239,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.arch')) {
 				project.xcodebuild.arch = project['xcodebuild.arch']
 			}
-
+			if (project.hasProperty('xcodebuild.version')) {
+				project.xcodebuild.version = project['xcodebuild.version']
+			}
 
 			if (project.hasProperty('hockeykit.displayName')) {
 				project.hockeykit.displayName = project['hockeykit.displayName']
