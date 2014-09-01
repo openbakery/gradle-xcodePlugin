@@ -95,7 +95,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 	}
 
 	private void modifyVersion(String infoPlist) {
-		if (project.infoplist.versionSuffix == null && project.infoplist.versionPrefix == null) {
+		if (project.infoplist.version == null && project.infoplist.versionSuffix == null && project.infoplist.versionPrefix == null) {
 			return
 		}
 

@@ -86,4 +86,21 @@ class InfoPlistModifyTaskTest {
 		}
 
 	}
+
+
+	@Test
+	void testModifyVersion() {
+		project.infoplist.version = '1.0.0'
+
+		List<String> commandList
+		commandList?.clear()
+		commandList = ["/usr/libexec/PlistBuddy", "Info.plist", "-c", "Set :CFBundleVersion 1.0.0"]
+		commandRunnerMock.run(commandList).times(1)
+
+
+		mockControl.play {
+			task.prepare()
+		}
+
+	}
 }
