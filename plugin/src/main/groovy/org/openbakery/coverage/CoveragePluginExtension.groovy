@@ -30,11 +30,13 @@ class CoveragePluginExtension {
 
 
 	String getOutputParameter() {
-		if (outputFormat.toLowerCase().equals("xml")) {
-			return "--xml"
-		}
-		if (outputFormat.toLowerCase().equals("html")) {
-			return "--html"
+		if (outputFormat != null) {
+			if (outputFormat.toLowerCase().equals("xml")) {
+				return "--xml"
+			}
+			if (outputFormat.toLowerCase().equals("html")) {
+				return "--html"
+			}
 		}
 		return "";
 	}
