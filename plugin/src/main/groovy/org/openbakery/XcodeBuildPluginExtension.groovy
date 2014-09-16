@@ -254,10 +254,18 @@ class XcodeBuildPluginExtension {
 
 
 	void createXcode5DeviceList() {
-		String xcodePath = commandRunner.runWithResult(["xcode-select", "-p"])
+
+		logger.debug("xcodePath is {}", xcodePath);
+		String xcodeDeveloperPath;
+		if (xcodePath != null) {
+			xcodeDeveloperPath = xcodePath + "/Contents/Developer";
+		} else {
+			xcodeDeveloperPath = commandRunner.runWithResult(["xcode-select", "-p"])
+		}
 
 
-		File sdksDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/SDKs")
+		File sdksDirectory = new File(xcodeDeveloperPath, "Platforms/iPhoneSimulator.platform/Developer/SDKs")
+		logger.debug("investigating sdk directory {}", sdksDirectory);
 		def versions = [];
 		for (String sdk in sdksDirectory.list()) {
 			String basename = FilenameUtils.getBaseName(sdk)
@@ -265,10 +273,7 @@ class XcodeBuildPluginExtension {
 		}
 
 
-
-
-
-		File simulatorDirectory = new File(xcodePath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
+		File simulatorDirectory = new File(xcodeDeveloperPath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
 		String[] simulators = simulatorDirectory.list()
 		for (String simulator in simulators) {
 
