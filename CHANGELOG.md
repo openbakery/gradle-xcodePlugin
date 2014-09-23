@@ -1,8 +1,9 @@
-## 0.9.13 (TBA)
+## 0.9.13 (Sepember 23, 2014)
 
 Changes
 - Added the the xcode version can be selected: Issue #6
-
+Bugfixes
+- infoplist.version value is ignored
 
 ## 0.9.12 (August 27, 2014)
 
