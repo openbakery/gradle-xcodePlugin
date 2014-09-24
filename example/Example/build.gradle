@@ -1,6 +1,6 @@
 /*
 
-Create a gradle.settings for settings the grade.<...> properties used below:
+Create a gradle.settings for and add the snippet blow and fill your values:
 
 gradle.ext {
 	hockeyappApiToken = ""
@@ -8,7 +8,7 @@ gradle.ext {
 
 
 	identity = 'iPhone Developer: '
-	certificateURI = 'http://.../Development.p12'
+	certificateURI = 'http://.../Development.p12'  // file:// urls also works here
 	certificatePassword = 'password'
 	mobileProvisionURI = 'http://../Development.mobileprovision'
 
