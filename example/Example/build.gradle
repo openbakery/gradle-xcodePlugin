@@ -1,9 +1,9 @@
 /*
 
-Create a gradle.settings for and add the snippet blow and fill your values:
+Create a gradle.settings and add the snippet blow and fill in your values:
 
 gradle.ext {
-	hockeyappApiToken = ""
+	hockeyappApiToken = "" // only needed when you want to upload to hockeykit
 	hockeyappAppId = ""
 
 
