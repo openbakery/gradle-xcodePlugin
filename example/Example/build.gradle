@@ -7,9 +7,9 @@ gradle.ext {
 	hockeyappAppId = ""
 
 
-	identity = 'iPhone Developer: '
+	identity = 'iPhone Developer: ... '
 	certificateURI = 'http://.../Development.p12'  // file:// urls also works here
-	certificatePassword = 'password'
+	certificatePassword = 'password' // password to unlock to p12
 	mobileProvisionURI = 'http://../Development.mobileprovision'
 
 }
