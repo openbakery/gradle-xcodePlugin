@@ -54,6 +54,7 @@ class XcodeBuildPluginExtension {
 	List<String> arch = null
 	String workspace = null
 	String version = null
+	Map<String, String> env = null
 
 	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
@@ -252,6 +253,25 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
+	void setEnv(Object env) {
+		if (env instanceof Map) {
+			logger.debug("Env is Map: " + env + " - " + env.getClass().getName())
+			this.env = env;
+		} else {
+			logger.debug("Env is string: " + env + " - " + env.getClass().getName())
+			this.env = new HashMap<String, String>();
+			if (env == null) {
+				return
+			}
+			String envString = env.toString()
+			int idx = envString.indexOf("=")
+			if (idx == -1) {
+				env.put(envString, null)
+			} else {
+				env.put(envString.substring(0, idx), envString.substring(idx + 1))
+			}
+		}
+	}
 
 	void createXcode5DeviceList() {
 
