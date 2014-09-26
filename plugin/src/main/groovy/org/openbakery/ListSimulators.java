@@ -56,7 +56,7 @@ public class ListSimulators extends DefaultTask {
 		for (Destination destination : availableSimulators) {
 
 			if (!currentOS.equals(destination.getOs())) {
-				getLogger().quiet("-- iOS {} -- ", destination.getOs());
+				getLogger().lifecycle("-- iOS {} -- ", destination.getOs());
 				currentOS = destination.getOs();
 			}
 
@@ -65,7 +65,7 @@ public class ListSimulators extends DefaultTask {
 				id = "(" + destination.getId() + ")";
 			}
 
-			getLogger().quiet("\t {} {}", destination.getName(), id);
+			getLogger().lifecycle("\t {} {}", destination.getName(), id);
 		}
 
 

@@ -79,7 +79,7 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 		logger.debug("infoplist: {}", infoplist)
 
 		String appPath = new File(getAppBundleName()).getAbsolutePath();
-		logger.quiet("appPath: {}", infoplist)
+		logger.lifecycle("appPath: {}", infoplist)
 
 
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist))

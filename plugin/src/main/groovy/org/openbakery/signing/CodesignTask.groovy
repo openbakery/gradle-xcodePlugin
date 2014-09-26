@@ -90,7 +90,7 @@ class CodesignTask extends AbstractXcodeTask {
 	@TaskAction
 	def codesign() {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			logger.quiet("not a device build, so no codesign needed")
+			logger.lifecycle("not a device build, so no codesign needed")
 			return
 		}
 		if (project.xcodebuild.signing == null) {
@@ -107,7 +107,7 @@ class CodesignTask extends AbstractXcodeTask {
 		}
 		def appName = buildOutputDirectory.absolutePath + "/" + fileList[0]
 		def ipaName = appName.substring(0, appName.size()-4) + ".ipa"
-		logger.quiet("Signing {} to create {}", appName, ipaName)
+		logger.lifecycle("Signing {} to create {}", appName, ipaName)
 
 		String packageApplicationScript = preparePackageApplication()
 

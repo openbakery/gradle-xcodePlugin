@@ -44,7 +44,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 * @param destination
 	 */
 	def copy(File source, File destination) {
-		logger.quiet("Copy '{}' -> '{}'", source, destination);
+		logger.lifecycle("Copy '{}' -> '{}'", source, destination);
 		FileUtils.copyFile(source, destination)
 	}
 

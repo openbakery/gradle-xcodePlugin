@@ -34,17 +34,17 @@ public class CocoapodsTask extends AbstractXcodeTask {
 
 		File podsDirectory = new File(getProject().getProjectDir(), "Pods");
 		if (podsDirectory.exists() && podsDirectory.isDirectory()) {
-			getLogger().quiet("Skipping installing pods, because the Pods directory already exists");
+			getLogger().lifecycle("Skipping installing pods, because the Pods directory already exists");
 			return;
 		}
 
 
-		getLogger().quiet("Install/Update cocoapods");
+		getLogger().lifecycle("Install/Update cocoapods");
 		commandRunner.run("gem", "install", "--user-install", "cocoapods");
 
 		String result = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir");
 
-		getLogger().quiet("Run pod install");
+		getLogger().lifecycle("Run pod install");
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(CocoapodsTask.class);
 

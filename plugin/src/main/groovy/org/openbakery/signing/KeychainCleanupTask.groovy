@@ -30,7 +30,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 			File keychainFile = new File(keychain)
 			if (!keychainFile.exists()) {
 				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
-					logger.quiet("Deleting keychain: {}", keychainFile)
+					logger.lifecycle("Deleting keychain: {}", keychainFile)
 					try {
 						commandRunner.run(["security", "delete-keychain", keychainFile.absolutePath])
 					} catch (IllegalStateException ex) {

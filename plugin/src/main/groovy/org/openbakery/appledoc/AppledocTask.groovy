@@ -45,7 +45,7 @@ class AppledocTask extends AbstractXcodeTask {
 		try {
 			commandRunner.run([appledocCommand.absolutePath, "--print-settings", "--output", documentationDirectory.absolutePath, '--ignore', project.getBuildDir().absolutePath, "."])
 		} catch (CommandRunnerException ex) {
-			logger.quiet(FileUtils.readFileToString(appledocOutput))
+			logger.error(FileUtils.readFileToString(appledocOutput))
 			throw ex
 		}
 

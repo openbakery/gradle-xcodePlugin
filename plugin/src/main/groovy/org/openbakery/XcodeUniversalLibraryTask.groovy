@@ -25,15 +25,15 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 		def simulatorLibrary = new File(libraryPathForTarget("iphonesimulator"))
 
 		if (!deviceLibrary.exists()) {
-			logger.quiet "Library for device does not exist in:" + deviceLibrary.path
+			logger.lifecycle "Library for device does not exist in:" + deviceLibrary.path
 		}
 
 		if (!simulatorLibrary.exists()) {
-			logger.quiet "Library for simulator does not exist in:" + simulatorLibrary.path
+			logger.lifecycle "Library for simulator does not exist in:" + simulatorLibrary.path
 		}
 
 		if (!deviceLibrary.exists() || !simulatorLibrary.exists()) {
-			logger.quiet("Unable to create universal library")
+			logger.lifecycle("Unable to create universal library")
 			return;
 		}
 
@@ -41,7 +41,7 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 			commandRunner.run(["lipo", "-create", deviceLibrary.path, simulatorLibrary.path, "-output", project.xcodebuild.buildRoot.path + "/lib" + project.xcodebuild.target + ".a"])
 
 		} catch (Exception e) {
-			logger.quiet("command failed: {}", e.getMessage(), e);
+			logger.lifecycle("command failed: {}", e.getMessage(), e);
 		}
 	}
 

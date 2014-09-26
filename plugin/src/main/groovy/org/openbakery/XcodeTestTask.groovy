@@ -3,6 +3,7 @@ package org.openbakery
 import groovy.xml.MarkupBuilder
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
@@ -135,25 +136,25 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		commandRunner.setOutputFile(outputFile);
 
 		try {
-			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class)
+			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
 			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project);
 			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
 		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
+			logger.error(ex.getMessage(), ex);LogLevel.INFO
 		} finally {
 
 			if (!parseResult(outputFile)) {
-				logger.quiet("Tests Failed!");
+				logger.lifecycle("Tests Failed!");
 				throw new Exception("Not all unit tests are successful!");
 			};
-			logger.quiet("Done")
+			logger.lifecycle("Done")
 		}
 	}
 
 
 	boolean parseResult(File outputFile) {
 		if (!outputFile.exists()) {
-			logger.quiet("No xcodebuild output file found!");
+			logger.lifecycle("No xcodebuild output file found!");
 			return false;
 		}
 		boolean overallTestSuccess = true;
@@ -210,7 +211,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 							testResult.success = !message.toLowerCase().startsWith("failed")
 							if (!testResult.success) {
-								logger.quiet("test + " + testResult + "failed!")
+								logger.lifecycle("test + " + testResult + "failed!")
 								overallTestSuccess = false;
 							}
 
@@ -220,7 +221,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 							}
 						}
 					} else {
-						logger.quiet("No TestClass found for name: " + testClassName + " => " + line)
+						logger.lifecycle("No TestClass found for name: " + testClassName + " => " + line)
 					}
 				}
 			} else if (line.startsWith(ALL_TESTS_SUCCEEDED) || line.startsWith(ALL_TESTS_FAILED)) {
@@ -240,11 +241,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 		reader.close()
 		store(allResults)
-		logger.quiet("");
+		logger.lifecycle("");
 		if (overallTestSuccess) {
-			logger.quiet("All " + numberSuccess(allResults) + " tests where successful");
+			logger.lifecycle("All " + numberSuccess(allResults) + " tests where successful");
 		} else {
-			logger.quiet(numberSuccess(allResults) + " tests where successful, and " + numberErrors(allResults) + " failues");
+			logger.lifecycle(numberSuccess(allResults) + " tests where successful, and " + numberErrors(allResults) + " failues");
 		}
 		//logger.quiet("overallTestResult " + overallTestSuccess)
 
@@ -330,7 +331,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 	def storeJson(def allResults) {
-		logger.quiet("Saving test results")
+		logger.lifecycle("Saving test results")
 
 		def list = [];
 		for (Destination destination in project.xcodebuild.destinations) {

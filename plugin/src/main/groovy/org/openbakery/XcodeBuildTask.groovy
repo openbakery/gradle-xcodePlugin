@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
@@ -47,14 +48,14 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			}
 		}
 
-		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class);
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 
 		if (!project.getBuildDir().exists()) {
 			project.getBuildDir().mkdirs()
 		}
 		commandRunner.setOutputFile(new File(project.getBuildDir(), "xcodebuild-output.txt"));
 		commandRunner.run("${project.projectDir.absolutePath}", commandList, new XcodeBuildOutputAppender(output))
-		logger.quiet("Done")
+		logger.lifecycle("Done")
 	}
 
 }

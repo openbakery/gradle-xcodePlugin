@@ -34,12 +34,12 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 	def install() {
 
 		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
-			logger.quiet("The simulator build does not need a provisioning profile")
+			logger.lifecycle("The simulator build does not need a provisioning profile")
 			return
 		}
 
 		if (project.xcodebuild.signing.mobileProvisionURI == null) {
-			logger.quiet("No provisioning profile specifed so do nothing here")
+			logger.lifecycle("No provisioning profile specifed so do nothing here")
 			return
 		}
 

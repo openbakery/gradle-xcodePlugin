@@ -27,11 +27,11 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 
 		if (StringUtils.isEmpty(infoPlist)) {
-			logger.quiet("Info Plist not found, so skipping this task")
+			logger.lifecycle("Info Plist not found, so skipping this task")
 			return
 		}
 
-		logger.quiet("Updating {}", infoPlist)
+		logger.lifecycle("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
 

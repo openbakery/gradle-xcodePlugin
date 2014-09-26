@@ -35,7 +35,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 
 		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
-			logger.quiet("The simulator build does not need a provisioning profile");
+			logger.lifecycle("The simulator build does not need a provisioning profile");
 			return
 		}
 
