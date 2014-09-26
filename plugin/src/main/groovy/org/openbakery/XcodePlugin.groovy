@@ -239,6 +239,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.arch')) {
 				project.xcodebuild.arch = project['xcodebuild.arch']
 			}
+			if (project.hasProperty('xcodebuild.env')) {
+				project.xcodebuild.env = project['xcodebuild.env']
+			}
 			if (project.hasProperty('xcodebuild.version')) {
 				project.xcodebuild.version = project['xcodebuild.version']
 			}
