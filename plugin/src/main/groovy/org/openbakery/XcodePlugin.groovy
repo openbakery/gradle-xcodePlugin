@@ -70,9 +70,22 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 
-	public static final String BUILD_TASK_NAME = "build";
-	public static final String TEST_TASK_NAME = "test"
-	public static final String ARCHIVE_TASK_NAME = "archive"
+	private static String INTERNAL_BUILD_TASK_NAME = "build"
+	private static String INTERNAL_TEST_TASK_NAME = "test"
+	private static String INTERNAL_ARCHIVE_TASK_NAME = "archive"
+
+	public static getBuildTaskName() {
+		return INTERNAL_BUILD_TASK_NAME
+	}
+
+	public static getTestTaskName() {
+		return INTERNAL_TEST_TASK_NAME
+	}
+
+	public static getArchiveTaskName() {
+		return INTERNAL_ARCHIVE_TASK_NAME
+	}
+
 	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuild-clean"
@@ -115,6 +128,8 @@ class XcodePlugin implements Plugin<Project> {
 
 		System.setProperty("java.awt.headless", "true");
 
+		configureTaskNames(project)
+
 		configureExtensions(project)
 		configureClean(project)
 		configureBuild(project)
@@ -137,6 +152,21 @@ class XcodePlugin implements Plugin<Project> {
 		configureProperties(project)
 	}
 
+	void configureTaskNames(Project project) {
+		if (!project.hasProperty('xcodePluginPrefix')) {
+			return
+		}
+
+		INTERNAL_BUILD_TASK_NAME = ensurePrefix(getBuildTaskName(), project.xcodePluginPrefix)
+		INTERNAL_TEST_TASK_NAME = ensurePrefix(getTestTaskName(), project.xcodePluginPrefix)
+		INTERNAL_ARCHIVE_TASK_NAME = ensurePrefix(getArchiveTaskName(), project.xcodePluginPrefix)
+	}
+
+	private static String ensurePrefix(String value, String prefix) {
+		if (!value.startsWith(prefix)) {
+			return prefix + value.capitalize()
+		}
+	}
 
 	void configureProperties(Project project) {
 
@@ -348,7 +378,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureBuild(Project project) {
-		XcodeBuildTask buildTask = project.getTasks().create(BUILD_TASK_NAME, XcodeBuildTask.class);
+		XcodeBuildTask buildTask = project.getTasks().create(getBuildTaskName(), XcodeBuildTask.class);
 		buildTask.setGroup(BasePlugin.BUILD_GROUP);
 		buildTask.dependsOn(BasePlugin.ASSEMBLE_TASK_NAME);
 
@@ -368,7 +398,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureArchive(Project project) {
-		XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
+		XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(getArchiveTaskName(), XcodeBuildArchiveTask.class);
 		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
 
 		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
@@ -382,7 +412,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureHockeyKit(Project project) {
 		project.task(HOCKEYKIT_MANIFEST_TASK_NAME, type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
 		HockeyKitArchiveTask hockeyKitArchiveTask = project.task(HOCKEYKIT_ARCHIVE_TASK_NAME, type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
-		hockeyKitArchiveTask.dependsOn(ARCHIVE_TASK_NAME)
+		hockeyKitArchiveTask.dependsOn(getArchiveTaskName())
 		project.task(HOCKEYKIT_NOTES_TASK_NAME, type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task(HOCKEYKIT_IMAGE_TASK_NAME, type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
 		project.task(HOCKEYKIT_CLEAN_TASK_NAME, type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
@@ -397,7 +427,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureTest(Project project) {
-		project.task(TEST_TASK_NAME, type: XcodeTestTask, group: XCODE_GROUP_NAME)
+		project.task(getTestTaskName(), type: XcodeTestTask, group: XCODE_GROUP_NAME)
 
 	}
 
@@ -483,10 +513,10 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void addDependencyToBuild(Project project, Task task) {
-		XcodeBuildTask buildTask = project.getTasks().getByName(BUILD_TASK_NAME)
+		XcodeBuildTask buildTask = project.getTasks().getByName(getBuildTaskName())
 		buildTask.dependsOn(task)
 
-		XcodeTestTask testTask = project.getTasks().getByName(TEST_TASK_NAME)
+		XcodeTestTask testTask = project.getTasks().getByName(getTestTaskName())
 		testTask.dependsOn(task)
 	}
 }
