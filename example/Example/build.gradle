@@ -20,12 +20,13 @@ gradle.ext {
 buildscript {
 	repositories {
 		maven {
-			url('http://openbakery.org/repository/')
+			//url('http://openbakery.org/repository/')
+			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.+'
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.13.a'
 	}
 }
 apply plugin: 'xcode'
