@@ -70,9 +70,9 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 
-	public static final String BUILD_TASK_NAME = "build";
-	public static final String TEST_TASK_NAME = "test"
-	public static final String ARCHIVE_TASK_NAME = "archive"
+	public static final String BUILD_TASK_NAME = "build-xcode"
+	public static final String TEST_TASK_NAME = "test-xcode"
+	public static final String ARCHIVE_TASK_NAME = "archive-xcode"
 	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuild-clean"
