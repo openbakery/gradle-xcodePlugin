@@ -17,18 +17,12 @@ class XcodeTestTaskTest {
 	Project project
 	XcodeTestTask xcodeTestTask
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
-	Destination destination
+	Destination destinationPad
+	Destination destinationPhone
 
 	@BeforeMethod
 	def setup() {
-		/*
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
 
-
-*/
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
@@ -39,19 +33,31 @@ class XcodeTestTaskTest {
 
 		xcodeTestTask.setOutputDirectory(new File("build/test"));
 
-		//xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
+		destinationPad = new Destination()
+		destinationPad.platform = "iPhoneSimulator"
+		destinationPad.name = "iPad"
+		destinationPad.arch = "i386"
+		destinationPad.id = "iPad Air"
+		destinationPad.os = "iOS"
 
-		destination = new Destination()
-		destination.platform = "iPhoneSimulator"
-		destination.name = "iPad"
-		destination.arch = "i386"
-		destination.id = "iPad Retina"
-		destination.os = "iOS"
+		destinationPhone = new Destination()
+		destinationPhone.platform = "iPhoneSimulator"
+		destinationPhone.name = "iPhone"
+		destinationPhone.arch = "i386"
+		destinationPhone.id = "iPhone 4s"
+		destinationPhone.os = "iOS"
 
 
 		project.xcodebuild.availableDevices = []
-		project.xcodebuild.availableSimulators << destination
-		project.xcodebuild.destinations << destination
+		project.xcodebuild.availableSimulators << destinationPad
+		project.xcodebuild.availableSimulators << destinationPhone
+
+		project.xcodebuild.destination {
+			name = "iPad"
+		}
+		project.xcodebuild.destination {
+			name = "iPhone"
+		}
 
 	}
 
@@ -80,16 +86,17 @@ class XcodeTestTaskTest {
 		def resultList = []
 		resultList << testClass
 
-		allResults.put(destination, resultList)
+		allResults.put(destinationPad, resultList)
+		allResults.put(destinationPhone, resultList)
 
 
 		xcodeTestTask.store(allResults)
 
 		String testXML = new File('build/test/test-results.xml').text
 
-		assert StringUtils.countMatches(testXML, "<testcase") == 8
+		assert StringUtils.countMatches(testXML, "<testcase") == 16
 
-		assert StringUtils.countMatches(testXML, "<error type='failure'") == 3
+		assert StringUtils.countMatches(testXML, "<error type='failure'") == 6
 
 
 	}
@@ -97,9 +104,27 @@ class XcodeTestTaskTest {
 	@Test
 	void parseWithNoResult() {
 		def allResults = [:]
-		allResults.put(destination, null)
+		allResults.put(destinationPad, null)
 		xcodeTestTask.store(allResults)
 
+	}
+
+	@Test
+	void parseSuccessResult() {
+		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
+
+		assert xcodeTestTask.numberSuccess(xcodeTestTask.allResults) == 2
+		assert xcodeTestTask.numberErrors(xcodeTestTask.allResults) == 0
+
+
+	}
+
+	@Test
+	void parseFailureResult() {
+		assert !xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+
+		assert xcodeTestTask.numberSuccess(xcodeTestTask.allResults) == 0
+		assert xcodeTestTask.numberErrors(xcodeTestTask.allResults) == 2
 	}
 
 

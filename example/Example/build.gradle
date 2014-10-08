@@ -36,6 +36,7 @@ xcodebuild {
 	target = 'Example'
 	configuration = 'Debug'
 
+	version = "6A317"
 
 
 	signing {
@@ -77,20 +78,20 @@ task appstore(dependsOn: 'archive') {
 
 gradle.taskGraph.whenReady { taskGraph ->
 
-	if (taskGraph.hasTask(continuous)) {
+	if (taskGraph.hasTask(continuous) || taskGraph.hasTask(test)) {
 		println "CONFIGURE INTEGRATION"
 		xcodebuild {
 			
 			destination {
 				platform = 'iOS Simulator'
-				name = 'iPhone Retina (3.5-inch)'
-				os='7.1'
+				name = 'iPad Air'
+				os = '8.0'
 			}
 
 			destination {
 				platform = 'iOS Simulator'
-				name = 'iPad Retina'
-				os='7.1'
+				name = 'iPhone 4s'
+				os = '8.0'
 			}
 			
 		}

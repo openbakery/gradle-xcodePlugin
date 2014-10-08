@@ -25,9 +25,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	def TEST_CASE_START_PATTERN = ~/^Test Case '(.*)' started./
 
-
-	def ALL_TESTS_SUCCEEDED = "** TEST SUCCEEDED **";
-	def ALL_TESTS_FAILED = "** TEST FAILED **";
+	def TEST_SUITE_START_PATTERN = ~/^Test Suite '(.*)' started.*/
+	def TEST_SUITE_SUCCESS_END_PATTERN = ~/^Test Suite '(.*)' passed.*/
+	def TEST_SUITE_FAILED_END_PATTERN = ~/^Test Suite '(.*)' failed.*/
 
 	boolean testsRunning = false
 	int testRun = 0
@@ -35,6 +35,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	String currentTestCase = null;
 	Buffer fifoBuffer = new CircularFifoBuffer(100);
+
+	List<String> testSuites
 
 
 	TestBuildOutputAppender(StyledTextOutput output, Project project) {
@@ -46,6 +48,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	void append(String line) {
 
+		checkTestSuite(line);
+
 		if (currentTestCase == null) {
 			currentTestCase = checkTestStart(line);
 		}
@@ -54,7 +58,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			checkTestFinished(line);
 		}
 
-		checkAllTestsEnded(line);
+		checkAllTestsFinished(line);
 
 		if (!testsRunning) {
 			super.append(line)
@@ -62,10 +66,44 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	}
 
-	void checkAllTestsEnded(String line) {
+	void checkTestSuite(String line) {
+
+		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
+		if (startMatcher.matches()) {
+			if (testSuites == null) {
+				testSuites = new ArrayList<String>()
+			}
+			testSuites.add(startMatcher[0][1].trim())
+			return;
+		}
+
+		def endMatcher = TEST_SUITE_SUCCESS_END_PATTERN.matcher(line)
+		if (endMatcher.matches()) {
+			testSuites.remove(endMatcher[0][1].trim())
+			return;
+		}
+
+
+		endMatcher = TEST_SUITE_FAILED_END_PATTERN.matcher(line)
+		if (endMatcher.matches()) {
+			testSuites.remove(endMatcher[0][1].trim())
+			for (String cachedLine in fifoBuffer) {
+				output.println(cachedLine);
+			}
+			output.println();
+			output.println();
+			output.append("TESTS FAILED");
+			output.println();
+			output.println();
+		}
+
+
+	}
+
+	void checkAllTestsFinished(String line) {
 		fifoBuffer.add(line);
 
-		if (line.startsWith(ALL_TESTS_SUCCEEDED) || line.startsWith(ALL_TESTS_FAILED)) {
+		if (this.testSuites != null && this.testSuites.isEmpty()) {
 
 			if (currentTestCase) {
 				// current test case was not properly finished, so some other error occurred, so fail it
@@ -82,16 +120,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			output.println();
 			output.println();
 			testRun++;
-			if (line.startsWith(ALL_TESTS_FAILED)) {
-				for (String cachedLine in fifoBuffer) {
-					output.println(cachedLine);
-				}
-				output.println();
-				output.println();
-				output.append("TESTS FAILED");
-				output.println();
-				output.println();
-			}
+
+			this.testSuites = null;
 		}
 	}
 

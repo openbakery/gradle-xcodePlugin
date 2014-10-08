@@ -1,5 +1,6 @@
 package org.openbakery.output
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Destination
@@ -41,16 +42,31 @@ class TestBuildOutputAppenderTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		Destination destination = new Destination()
-		destination.platform = "iPhoneSimulator"
-		destination.name = "iPad"
-		destination.arch = "i386"
-		destination.id = "iPad Retina"
-		destination.os = "iOS"
+		Destination destinationPad = new Destination()
+		destinationPad.platform = "iPhoneSimulator"
+		destinationPad.name = "iPad"
+		destinationPad.arch = "i386"
+		destinationPad.id = "iPad Air"
+		destinationPad.os = "iOS"
+
+		Destination destinationPhone = new Destination()
+		destinationPhone.platform = "iPhoneSimulator"
+		destinationPhone.name = "iPad"
+		destinationPhone.arch = "i386"
+		destinationPhone.id = "iPhone 4s"
+		destinationPhone.os = "iOS"
+
 
 		project.xcodebuild.availableDevices = []
-		project.xcodebuild.availableSimulators << destination
-		project.xcodebuild.destinations << destination;
+		project.xcodebuild.availableSimulators << destinationPad
+		project.xcodebuild.availableSimulators << destinationPhone
+
+		project.xcodebuild.destination {
+			name = "iPad"
+		}
+		project.xcodebuild.destination {
+			name = "iPhone"
+		}
 
 	}
 
@@ -97,19 +113,38 @@ class TestBuildOutputAppenderTest {
 	}
 
 
+
+
 	@Test
-	void testFailed_withLog() {
+	void testFinished() {
+		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output.txt"))
+
 		StyledTextOutputStub output = new StyledTextOutputStub()
+
 		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
-		for (int i=0; i<50; i++) {
-			appender.append("test")
+
+		for (String line : simctlOutput.split("\n")) {
+			appender.append(line);
 		}
-		appender.append("** TEST FAILED **");
 
-		int length = output.toString().split("\n").length
-		assert length == 57 : "expected length of 57 but was " + length
-
-
+		assert output.toString().contains("Tests finished:")
 
 	}
+
+	@Test
+	void testFinishedFailed() {
+		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
+
+		for (String line : simctlOutput.split("\n")) {
+			appender.append(line);
+		}
+
+		assert output.toString().contains("TESTS FAILED")
+
+	}
+
 }

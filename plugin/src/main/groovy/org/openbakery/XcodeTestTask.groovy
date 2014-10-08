@@ -16,6 +16,7 @@ class TestResult {
 	boolean success;
 	String output = "";
 	float duration;
+	def allResults = [:]
 
 
 	@Override
@@ -75,6 +76,12 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
 
 	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
+
+
+	def TEST_SUITE_START_PATTERN = ~/^Test Suite '(.*)' started.*/
+	def TEST_SUITE_SUCCESS_END_PATTERN = ~/^Test Suite '(.*)' passed.*/
+	def TEST_SUITE_FAILED_END_PATTERN = ~/^Test Suite '(.*)' failed.*/
+
 
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
@@ -158,9 +165,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			return false;
 		}
 		boolean overallTestSuccess = true;
-		def allResults = [:]
+		allResults = [:]
 
 		def resultList = []
+
+		List<String> testSuites = null;
 
 		int testRun = 0;
 
@@ -171,11 +180,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		outputFile.eachLine{
 		  String line =  it
 
+
 			def matcher = TEST_CASE_PATTERN.matcher(line)
-
-			def ALL_TESTS_SUCCEEDED = "** TEST SUCCEEDED **";
-			def ALL_TESTS_FAILED = "** TEST FAILED **";
-
 			if (matcher.matches()) {
 
 				String message = matcher[0][2].trim()
@@ -224,12 +230,33 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 						logger.lifecycle("No TestClass found for name: " + testClassName + " => " + line)
 					}
 				}
-			} else if (line.startsWith(ALL_TESTS_SUCCEEDED) || line.startsWith(ALL_TESTS_FAILED)) {
+			}
+
+			def suiteStartMatcher = TEST_SUITE_START_PATTERN.matcher(line)
+			if (suiteStartMatcher.matches()) {
+				if (testSuites == null) {
+					testSuites = new ArrayList<String>();
+				}
+				testSuites.add(suiteStartMatcher[0][1].trim());
+			}
+
+			def suiteEndSuccessMatcher = TEST_SUITE_SUCCESS_END_PATTERN.matcher(line)
+			if (suiteEndSuccessMatcher.matches()) {
+				testSuites.remove(suiteEndSuccessMatcher[0][1].trim());
+			}
+
+			def suiteEndFailureMatcher = TEST_SUITE_FAILED_END_PATTERN.matcher(line)
+			if (suiteEndFailureMatcher.matches()) {
+				testSuites.remove(suiteEndFailureMatcher[0][1].trim());
+			}
+
+			if (testSuites != null && testSuites.isEmpty()) {
 				Destination destination = project.xcodebuild.destinations[testRun]
 				allResults.put(destination, resultList)
 				testRun ++;
 
 				resultList = []
+				testSuites = null
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {

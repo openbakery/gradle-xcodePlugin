@@ -28,7 +28,8 @@
 
 - (void)testExample
 {
-	XCTAssert(YES, @"this test should not fail");
+	XCTFail(@"fail");
+	//XCTAssert(YES, @"this test should not fail");
 }
 
 @end
