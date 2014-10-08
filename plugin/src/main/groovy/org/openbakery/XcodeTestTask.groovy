@@ -16,7 +16,6 @@ class TestResult {
 	boolean success;
 	String output = "";
 	float duration;
-	def allResults = [:]
 
 
 	@Override
@@ -71,6 +70,8 @@ class TestClass {
  * Time: 09:19
  */
 class XcodeTestTask extends AbstractXcodeBuildTask {
+
+	HashMap<Destination, List<TestClass>> allResults
 
 
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
@@ -165,7 +166,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			return false;
 		}
 		boolean overallTestSuccess = true;
-		allResults = [:]
+		this.allResults = new HashMap<Destination, ArrayList<TestClass>>()
 
 		def resultList = []
 
@@ -252,7 +253,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 			if (testSuites != null && testSuites.isEmpty()) {
 				Destination destination = project.xcodebuild.destinations[testRun]
-				allResults.put(destination, resultList)
+				this.allResults.put(destination, resultList)
 				testRun ++;
 
 				resultList = []
@@ -267,12 +268,12 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 		}
 		reader.close()
-		store(allResults)
+		store()
 		logger.lifecycle("");
 		if (overallTestSuccess) {
-			logger.lifecycle("All " + numberSuccess(allResults) + " tests where successful");
+			logger.lifecycle("All " + numberSuccess() + " tests where successful");
 		} else {
-			logger.lifecycle(numberSuccess(allResults) + " tests where successful, and " + numberErrors(allResults) + " failues");
+			logger.lifecycle(numberSuccess() + " tests where successful, and " + numberErrors() + " failues");
 		}
 		//logger.quiet("overallTestResult " + overallTestSuccess)
 
@@ -280,7 +281,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	def store(def allResults) {
+	def store() {
 
 
 
@@ -292,7 +293,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			for (Destination destination in project.xcodebuild.destinations) {
 				String name = destination.toPrettyString()
 
-				def resultList = allResults[destination]
+				def resultList = this.allResults[destination]
 
 				int success = 0;
 				int errors = 0;
@@ -325,17 +326,17 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	int numberSuccess(java.util.Map results) {
+	int numberSuccess() {
 		int success = 0;
-		for (java.util.List list in results.values()) {
+		for (java.util.List list in this.allResults.values()) {
 			success += numberSuccess(list);
 		}
 		return success;
 	}
 
-	int numberErrors(java.util.Map results) {
+	int numberErrors() {
 		int errors = 0;
-		for (java.util.List list in results.values()) {
+		for (java.util.List list in this.allResults.values()) {
 			errors += numberErrors(list);
 		}
 		return errors;
@@ -357,13 +358,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		return errors
 	}
 
-	def storeJson(def allResults) {
+	def storeJson() {
 		logger.lifecycle("Saving test results")
 
 		def list = [];
 		for (Destination destination in project.xcodebuild.destinations) {
 
-			def resultList = allResults[destination]
+			def resultList = this.allResults[destination]
 
 			list << [
 						destination:

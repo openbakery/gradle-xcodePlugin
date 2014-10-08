@@ -89,8 +89,8 @@ class XcodeTestTaskTest {
 		allResults.put(destinationPad, resultList)
 		allResults.put(destinationPhone, resultList)
 
-
-		xcodeTestTask.store(allResults)
+		xcodeTestTask.allResults = allResults
+		xcodeTestTask.store()
 
 		String testXML = new File('build/test/test-results.xml').text
 
@@ -105,7 +105,8 @@ class XcodeTestTaskTest {
 	void parseWithNoResult() {
 		def allResults = [:]
 		allResults.put(destinationPad, null)
-		xcodeTestTask.store(allResults)
+		xcodeTestTask.allResults = allResults
+		xcodeTestTask.store()
 
 	}
 
@@ -113,8 +114,8 @@ class XcodeTestTaskTest {
 	void parseSuccessResult() {
 		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
 
-		assert xcodeTestTask.numberSuccess(xcodeTestTask.allResults) == 2
-		assert xcodeTestTask.numberErrors(xcodeTestTask.allResults) == 0
+		assert xcodeTestTask.numberSuccess() == 2
+		assert xcodeTestTask.numberErrors() == 0
 
 
 	}
@@ -123,8 +124,8 @@ class XcodeTestTaskTest {
 	void parseFailureResult() {
 		assert !xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
 
-		assert xcodeTestTask.numberSuccess(xcodeTestTask.allResults) == 0
-		assert xcodeTestTask.numberErrors(xcodeTestTask.allResults) == 2
+		assert xcodeTestTask.numberSuccess() == 0
+		assert xcodeTestTask.numberErrors() == 2
 	}
 
 

@@ -74,17 +74,14 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 		}
 
-/*
 		commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
 		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
-*/
-
 
 
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + escapePath(project.xcodebuild.signing.keychainPathInternal.path));
+			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 
 		return commandList;
