@@ -158,6 +158,7 @@ class XcodeBuildTaskTest {
 		def signIdentity = 'mysign'
 		project.xcodebuild.signing.identity = signIdentity
 		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
+		expectedCommandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
 
 		addExpectedDefaultDirs()
 

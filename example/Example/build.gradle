@@ -32,11 +32,12 @@ buildscript {
 apply plugin: 'xcode'
 
 xcodebuild {
+	version = "6A1052d"
+
 	scheme = 'Example'
+	workspace = 'Example.xcworkspace'
 	target = 'Example'
 	configuration = 'Debug'
-
-	// version = "6A1052d"
 
 
 	signing {
@@ -84,14 +85,13 @@ gradle.taskGraph.whenReady { taskGraph ->
 			
 			destination {
 				platform = 'iOS Simulator'
-				name = 'iPad Air'
-				os = '8.0'
+				name = 'iPad 2'
+				os='7.1'
 			}
-
 			destination {
 				platform = 'iOS Simulator'
 				name = 'iPhone 4s'
-				os = '8.0'
+				os='7.1'
 			}
 			
 		}

@@ -19,6 +19,11 @@ class XcodeBuildPluginExtensionTest {
 	GMockController mockControl
 	CommandRunner commandRunnerMock
 
+	File xcodebuild6_1
+	File xcodebuild6_0
+	File xcodebuild5_1
+
+
 	@BeforeMethod
 	def setup() {
 		mockControl = new GMockController()
@@ -27,11 +32,29 @@ class XcodeBuildPluginExtensionTest {
 		project = ProjectBuilder.builder().build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunnerMock
+
+
+		xcodebuild6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
+		xcodebuild6_0 = new File(System.getProperty("java.io.tmpdir"), "Xcode6.app")
+		xcodebuild5_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode5.app")
+
+		new File(xcodebuild6_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcodebuild6_0, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcodebuild5_1, "Contents/Developer/usr/bin").mkdirs()
+
+		FileUtils.write(new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild"), "foobar")
+		FileUtils.write(new File(xcodebuild6_0, "Contents/Developer/usr/bin/xcodebuild"), "foobar")
+		FileUtils.write(new File(xcodebuild5_1, "Contents/Developer/usr/bin/xcodebuild"), "foobar")
+
+
 	}
 
 	@AfterMethod
 	def cleanup() {
 		FileUtils.deleteDirectory(new File("build/Platforms"))
+		FileUtils.deleteDirectory(xcodebuild6_1)
+		FileUtils.deleteDirectory(xcodebuild6_0)
+		FileUtils.deleteDirectory(xcodebuild5_1)
 	}
 
 	void mockFindSimctl() {
@@ -331,26 +354,30 @@ class XcodeBuildPluginExtensionTest {
 	@Test
 	void xcodeVersion() {
 
-		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode.app\n/Applications/Xcode6-Beta6.app\n/Applications/Xcode6-Beta4.app").times(1)
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns( xcodebuild5_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath).times(1)
 
-		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+		commandRunnerMock.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+
 
 		mockControl.play {
 			extension.version = '5B1008';
 		}
 
-		assert extension.getXcodebuildCommand().equals("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild")
+		assert extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 	}
 
 
 	@Test
 	void xcodeVersion_select_last() {
 
-		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode6-Beta6.app\n/Applications/Xcode6-Beta4.app\n/Applications/Xcode.app").times(1)
 
-		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta6.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
-		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta4.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
-		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns( xcodebuild6_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath).times(1)
+
+
+		commandRunnerMock.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult(xcodebuild6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
 
 
 
@@ -358,19 +385,19 @@ class XcodeBuildPluginExtensionTest {
 			extension.version = '5B1008';
 		}
 
-		assert extension.getXcodebuildCommand().equals("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild")
+		assert extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 	}
 
 
 	@Test(expectedExceptions = IllegalStateException.class)
 	void xcodeVersion_select_not_found() {
 
-		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode6-Beta6.app\n/Applications/Xcode6-Beta4.app\n/Applications/Xcode.app").times(1)
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns( xcodebuild6_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath).times(1)
 
-		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta6.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
-		commandRunnerMock.runWithResult("/Applications/Xcode6-Beta4.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
-		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
 
+		commandRunnerMock.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult(xcodebuild6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
 
 
 		mockControl.play {

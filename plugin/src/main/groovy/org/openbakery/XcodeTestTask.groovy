@@ -78,10 +78,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
 
-
-	def TEST_SUITE_START_PATTERN = ~/^Test Suite '(.*)' started.*/
-	def TEST_SUITE_SUCCESS_END_PATTERN = ~/^Test Suite '(.*)' passed.*/
-	def TEST_SUITE_FAILED_END_PATTERN = ~/^Test Suite '(.*)' failed.*/
+	def TEST_SUITE_PATTERN = ~/^Test Suite '(.*)'(.*)/
 
 
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
@@ -233,23 +230,25 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 
-			def suiteStartMatcher = TEST_SUITE_START_PATTERN.matcher(line)
-			if (suiteStartMatcher.matches()) {
-				if (testSuites == null) {
-					testSuites = new ArrayList<String>();
+			def testSuiteMatcher = TEST_SUITE_PATTERN.matcher(line)
+			if (testSuiteMatcher.matches()) {
+
+				String testSuiteName = testSuiteMatcher[0][1].trim();
+				def testSuiteAction = testSuiteMatcher[0][2].trim();
+
+
+				if (testSuiteAction.startsWith('started')) {
+					if (testSuites == null) {
+						testSuites = new ArrayList<String>();
+					}
+					testSuites.add(testSuiteName);
+				} else if (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed')) {
+					testSuites.remove(testSuiteName);
 				}
-				testSuites.add(suiteStartMatcher[0][1].trim());
+
+
 			}
 
-			def suiteEndSuccessMatcher = TEST_SUITE_SUCCESS_END_PATTERN.matcher(line)
-			if (suiteEndSuccessMatcher.matches()) {
-				testSuites.remove(suiteEndSuccessMatcher[0][1].trim());
-			}
-
-			def suiteEndFailureMatcher = TEST_SUITE_FAILED_END_PATTERN.matcher(line)
-			if (suiteEndFailureMatcher.matches()) {
-				testSuites.remove(suiteEndFailureMatcher[0][1].trim());
-			}
 
 			if (testSuites != null && testSuites.isEmpty()) {
 				Destination destination = project.xcodebuild.destinations[testRun]
