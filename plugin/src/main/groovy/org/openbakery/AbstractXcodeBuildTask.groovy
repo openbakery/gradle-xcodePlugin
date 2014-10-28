@@ -60,6 +60,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing != null && project.xcodebuild.signing.identity != null) {
 			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
+			commandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
 		}
 
 		if (project.xcodebuild.arch != null) {

@@ -20,8 +20,8 @@ gradle.ext {
 buildscript {
 	repositories {
 		maven {
-			//url('http://openbakery.org/repository/')
-			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			url('http://openbakery.org/repository/')
+			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
 	}
@@ -36,7 +36,7 @@ xcodebuild {
 	target = 'Example'
 	configuration = 'Debug'
 
-	version = "6A317"
+	// version = "6A1052d"
 
 
 	signing {
