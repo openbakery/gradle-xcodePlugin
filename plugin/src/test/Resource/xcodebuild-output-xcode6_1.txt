@@ -1,0 +1,43 @@
+Test Suite 'All tests' started at 2014-10-28 08:53:02 +0000
+Test Suite '/Users/.../Coverage-iphonesimulator/UnitTests.octest(Tests)' started at 2014-10-28 08:53:02 +0000
+Test Suite 'TestStringLength' started at 2014-10-28 08:54:07 +0000
+Test Case '-[TestStringLength testButtonLabel1]' started.
+2014-10-28 09:54:07.820 Example[9099:60b] run test for key: BUTTON_LABEL_1
+Test Case '-[TestStringLength testButtonLabel1]' passed (0.008 seconds).
+Test Case '-[TestStringLength testButtonLabel2]' started.
+2014-10-28 09:54:07.926 Example[9099:60b] run test for key: BUTTON_LABEL_2
+Test Case '-[TestStringLength testButtonLabel2]' passed (0.009 seconds).
+Test Suite 'TestStringLength' finished at 2014-10-28 08:54:07 +0000.
+Executed 11 tests, with 0 failures (0 unexpected) in 0.092 (0.132) seconds
+Test Suite 'UIServiceTableViewCellTest' started at 2014-10-28 08:54:07 +0000
+Test Case '-[UIServiceTableViewCellTest testMenuItemCell_iPad]' started.
+Test Case '-[UIServiceTableViewCellTest testMenuItemCell_iPad]' passed (0.000 seconds).
+Test Case '-[UIServiceTableViewCellTest testMenuItemCell_iPhone]' started.
+Test Case '-[UIServiceTableViewCellTest testMenuItemCell_iPhone]' passed (0.000 seconds).
+Test Suite 'UIServiceTableViewCellTest' finished at 2014-10-28 08:54:07 +0000.
+Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'UIServiceTest' started at 2014-10-28 08:54:07 +0000
+Test Case '-[UIServiceTest testApplyButtonStyle]' started.
+Test Case '-[UIServiceTest testApplyButtonStyle]' passed (0.001 seconds).
+Test Case '-[UIServiceTest testBottomBorder]' started.
+Test Case '-[UIServiceTest testBottomBorder]' passed (0.000 seconds).
+Test Suite 'UIServiceTest' finished at 2014-10-28 08:54:07 +0000.
+Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'VerifyObjectTest' started at 2014-10-28 08:54:07 +0000
+Test Case '-[VerifyObjectTest testVerifyWithErrorArg]' started.
+Test Case '-[VerifyObjectTest testVerifyWithErrorArg]' passed (0.000 seconds).
+Test Suite 'VerifyObjectTest' finished at 2014-10-28 08:54:07 +0000.
+Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'ViewControllerFactoryTest_iPad' started at 2014-10-28 08:54:07 +0000
+Test Suite 'ViewControllerFactoryTest_iPad' finished at 2014-10-28 08:54:07 +0000.
+Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'ViewControllerFactoryTest_iPhone' started at 2014-10-28 08:54:07 +0000
+Test Case '-[ViewControllerFactoryTest_iPhone testArchiveViewController_iPhone]' started.
+Test Case '-[ViewControllerFactoryTest_iPhone testArchiveViewController_iPhone]' passed (0.003 seconds).
+Test Suite 'ViewControllerFactoryTest_iPhone' finished at 2014-10-28 08:54:07 +0000.
+Executed 1 test, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite '/Users/.../Coverage-iphonesimulator/UnitTests.octest(Tests)' finished at 2014-10-28 08:54:07 +0000.
+Executed 464 tests, with 0 failures (0 unexpected) in 14.381 (14.833) seconds
+Test Suite 'All tests' finished at 2014-10-28 08:54:07 +0000.
+Executed 464 tests, with 0 failures (0 unexpected) in 14.381 (14.836) seconds
+** TEST SUCCEEDED **
