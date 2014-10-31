@@ -42,9 +42,9 @@ class XcodeBuildPluginExtensionTest {
 		new File(xcodebuild6_0, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcodebuild5_1, "Contents/Developer/usr/bin").mkdirs()
 
-		FileUtils.write(new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild"), "foobar")
-		FileUtils.write(new File(xcodebuild6_0, "Contents/Developer/usr/bin/xcodebuild"), "foobar")
-		FileUtils.write(new File(xcodebuild5_1, "Contents/Developer/usr/bin/xcodebuild"), "foobar")
+		new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		new File(xcodebuild6_0, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		new File(xcodebuild5_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 
 
 	}
