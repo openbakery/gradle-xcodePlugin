@@ -3,9 +3,9 @@ gradle-xcodePlugin
 
 gradle xcodePlugin to build Mac and iOS projects
 
-**Current stable version is 0.9.13**
+**Current stable version is 0.9.14**
 
-0.9.13 supports both Xcode 5 and Xcode 6
+0.9.14 supports Xcode 5, Xcode 6 and Xcode 6.1
 
 
 __Introduction:__ http://openbakery.org/gradle.php
@@ -99,12 +99,11 @@ xcodebuild Parameters:
   default value: empty
   
 * _arch_ - Use the architecture specified by architecture when building each target.
-  e.g. 'i386', 'armv6', 'armv7'
+  e.g. 'i386', 'armv6', 'armv7' 
+	
+	Also an array of parameters is possible e.g. ['armv7', 'arm64']
   
   default value: empty
-
-	_NOTE: when scheme and workspace is set and also the sdk value is 'iphonesimulator' that the arch is set per default to the value 'i386', otherwise a simulator build fails_
-
 
 * _buildRoot_ - build root directory for the build output
 

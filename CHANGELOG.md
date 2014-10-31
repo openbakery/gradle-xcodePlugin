@@ -1,3 +1,10 @@
+## 0.9.14 (October 31, 2014)
+
+Bugfixes
+- Fixed codesign with Xcode 6.1: Issue #94
+- Fixed unit test output, so that the number of test are shown with Xcode 6 #92
+- Fixed that the additionalParameters are also used in test builds
+
 ## 0.9.13 (Sepember 23, 2014)
 
 Changes
