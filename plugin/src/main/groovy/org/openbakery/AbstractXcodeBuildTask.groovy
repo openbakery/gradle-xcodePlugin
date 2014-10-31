@@ -85,6 +85,17 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain ' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 
+
+		if (project.xcodebuild.additionalParameters instanceof List) {
+			for (String value in project.xcodebuild.additionalParameters) {
+				commandList.add(value)
+			}
+		} else {
+			if (project.xcodebuild.additionalParameters != null) {
+				commandList.add(project.xcodebuild.additionalParameters)
+			}
+		}
+
 		return commandList;
 	}
 

@@ -38,15 +38,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		def commandList = createCommandList()
 
 
-		if (project.xcodebuild.additionalParameters instanceof List) {
-			for (String value in project.xcodebuild.additionalParameters) {
-				commandList.add(value)
-			}
-		} else {
-			if (project.xcodebuild.additionalParameters != null) {
-				commandList.add(project.xcodebuild.additionalParameters)
-			}
-		}
+
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 
