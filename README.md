@@ -38,7 +38,9 @@ xcodebuild Parameters:
   
 * _signing_ - signing configuration that should be used when building for the device
 
-  default value: empty
+  * identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)'
+	
+		default value: empty
 
 	* _mobileProvisionURI_ - URI where the mobile provision profile is located that should be used when signing the app
 
