@@ -59,7 +59,14 @@ class XcodeTestTaskTest {
 			name = "iPhone"
 		}
 
+		File outputDirectory = new File("build/test");
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs();
+		}
+
 	}
+
+	
 
 	TestResult testResult(String name, boolean success) {
 		TestResult testResult = new TestResult()

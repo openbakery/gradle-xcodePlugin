@@ -135,7 +135,8 @@ xcodebuild Parameters:
 	If this value is empty then the default version is used that is selected using 'xcode-select'
 
   defaul value: empty
-    
+
+* _enviroment_ - pass enviroment variable to xcodebuild    
 
 
 infoplist Parameters:
