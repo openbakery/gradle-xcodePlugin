@@ -37,16 +37,8 @@ xcodebuild {
 	scheme = 'Example'
 	workspace = 'Example.xcworkspace'
 	target = 'Example'
-	configuration = 'Debug'
-
-
-	signing {
-		identity = gradle.identity                       // e.g. 'iPhone Developer: ...'
-		certificateURI = gradle.certificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
-		certificatePassword = gradle.certificatePassword // e.g. 'secret'
-		mobileProvisionURI = gradle.mobileProvisionURI   // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-	}
-	
+	configuration = 'Release'
+	sdk = 'iphoneos'
 	hockeyapp {
 	
 		apiToken = gradle.hockeyappApiToken
@@ -75,6 +67,9 @@ task appstore(dependsOn: 'archive') {
 	description = 'Build for the AppStore'
 }
 
+task widget(dependsOn: 'archive') {
+	description = 'Build widget'
+}
 
 
 gradle.taskGraph.whenReady { taskGraph ->
@@ -118,14 +113,28 @@ gradle.taskGraph.whenReady { taskGraph ->
 		}
 	} 
 
+	if (taskGraph.hasTask(widget)) {
+		println "CONFIGURE WIDGET
+	
+		xcodebuild {
+			target = 'ExampleTodayWidget'
+  			signing {
+				identity = gradle.identitywidget                        // e.g. 'iPhone Developer: ...'
+				certificateURI = gradle.certificateURIwidget            // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = gradle.certificatePasswordwidget  // e.g. 'secret'
+				mobileProvisionURI = gradle.mobileProvisionURIwidget    // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+	}
+
 	if (taskGraph.hasTask(appstore)) {
 		println "CONFIGURE APPSTORE"
 		xcodebuild {
 			signing {
-				identity = 'iPhone Distribution: ...'
-				certificateURI = 'http://example.com/Provisioning/AppStore.p12'
-				certificatePassword = 'secret'
-				mobileProvisionURI = 'http://example.com/Provisioning/AppStore.mobileprovision'
+				identity = gradle.identity                       // e.g. 'iPhone Developer: ...'
+				certificateURI = gradle.certificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = gradle.certificatePassword // e.g. 'secret'
+				mobileProvisionURI = gradle.mobileProvisionURI   // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
 	}
