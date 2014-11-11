@@ -1,5 +1,8 @@
 ## 0.9.15 (TBA)
 
+Changes
+- Pods can no be reinstalled with --refresh-dependencies: Issue #90
+
 Bugfixes
 - Fixed that the provisioning profile is set: Issue #97
 
