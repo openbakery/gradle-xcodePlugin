@@ -6,12 +6,10 @@ buildscript {
 	}
 }
 
+def versionNumber = '0.1'
 
-def versionNumber = '0.9.14.a'
-
-group = 'org.openbakery'
+group = 'org.icecrystal23'
 version = versionNumber
-
 
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -19,19 +17,12 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
-
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
-
 
 dependencies {
 	compile gradleApi()
 	compile localGroovy()
-}
-
-
-repositories {
-	mavenCentral()
 }
 
 dependencies {
@@ -51,55 +42,6 @@ dependencies {
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
-
-uploadArchives {
-	repositories {
-		mavenDeployer {
-			repository(url: uri('../../repository'))
-		}
-	}
-}
-
 test {
 	useTestNG()
-}
-
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-
-
-def pomConfig = {
-	licenses {
-		license {
-    	name "The Apache Software License, Version 2.0"
-      url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-      distribution "repo"
-		}
-	}
-	developers {
-  	developer {
-			id "renep"
-      name "René Pirringer"
-      email "rene@openbakery.org"
-		}
-	}
-}
-
-publishing {
-	publications {
-  	mavenJava(MavenPublication) {
-    	from components.java
-      artifact sourcesJar
-
-      pom.withXml {
-      	def root = asNode()
-        	root.appendNode('description', 'A gradle plugin for building Xcode projects')
-          root.children().last() + pomConfig
-			}
-		}
-	}
 }
