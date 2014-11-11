@@ -16,6 +16,7 @@
 package org.openbakery
 
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
@@ -25,9 +26,10 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 	XcodeBuildTask() {
 		super()
-		dependsOn('keychain-create', 'provisioning-install', 'infoplist-modify')
-		this.description = "Builds the Xcode project"
-	}
+		dependsOn(BasePlugin.ASSEMBLE_TASK_NAME, 'keychain-create', 'provisioning-install', 'infoplist-modify')
+        setGroup(XcodePlugin.XCODE_GROUP_NAME);
+        this.description = "Builds the Xcode project"
+    }
 
 	@TaskAction
 	def xcodebuild() {
@@ -36,9 +38,6 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		}
 
 		def commandList = createCommandList()
-
-
-
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 
