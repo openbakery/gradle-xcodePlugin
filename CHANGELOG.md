@@ -1,3 +1,8 @@
+## 0.9.15 (TBA)
+
+Bugfixes
+- Fixed that the provisioning profile is set: Issue #97
+
 ## 0.9.14 (October 31, 2014)
 
 Bugfixes
