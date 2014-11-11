@@ -30,14 +30,12 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	def TEST_SUITE_FAILED_END_PATTERN = ~/^Test Suite '(.*)' failed.*/
 
 	boolean testsRunning = false
-	int testRun = 0
 	Project project
 
-	String currentTestCase = null;
 	Buffer fifoBuffer = new CircularFifoBuffer(100);
 
-	List<String> testSuites
-
+	List<String> runningTestSuites
+    List<String> runningTestCases
 
 	TestBuildOutputAppender(StyledTextOutput output, Project project) {
 		super(output)
@@ -49,15 +47,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void append(String line) {
 
 		checkTestSuite(line);
-
-		if (currentTestCase == null) {
-			currentTestCase = checkTestStart(line);
-		}
-
-		if (currentTestCase != null) {
-			checkTestFinished(line);
-		}
-
+		checkTestStart(line);
+		checkTestFinished(line);
 		checkAllTestsFinished(line);
 
 		if (!testsRunning) {
@@ -70,23 +61,24 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			if (testSuites == null) {
-				testSuites = new ArrayList<String>()
+			if (runningTestSuites == null) {
+				runningTestSuites = new ArrayList<String>()
 			}
-			testSuites.add(startMatcher[0][1].trim())
+			runningTestSuites.add(startMatcher[0][1].trim())
+            testsRunning = true;
 			return;
 		}
 
 		def endMatcher = TEST_SUITE_SUCCESS_END_PATTERN.matcher(line)
 		if (endMatcher.matches()) {
-			testSuites.remove(endMatcher[0][1].trim())
+			runningTestSuites?.remove(endMatcher[0][1].trim())
 			return;
 		}
 
 
 		endMatcher = TEST_SUITE_FAILED_END_PATTERN.matcher(line)
 		if (endMatcher.matches()) {
-			testSuites.remove(endMatcher[0][1].trim())
+			runningTestSuites?.remove(endMatcher[0][1].trim())
 			for (String cachedLine in fifoBuffer) {
 				output.println(cachedLine);
 			}
@@ -103,62 +95,38 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void checkAllTestsFinished(String line) {
 		fifoBuffer.add(line);
 
-		if (this.testSuites != null && this.testSuites.isEmpty()) {
-
-			if (currentTestCase) {
-				// current test case was not properly finished, so some other error occurred, so fail it
-				printTestResult(currentTestCase, true, "(unknown)");
-			}
-
-			currentTestCase = null
+		if (runningTestSuites != null && runningTestSuites.isEmpty() &&
+                runningTestCases != null && runningTestCases.isEmpty()) {
 			testsRunning = false
-
-			Destination destination = project.xcodebuild.destinations[testRun]
-			output.append("\n")
-			output.append("Tests finished: ")
-			output.append(destination.toPrettyString());
-			output.println();
-			output.println();
-			testRun++;
-
-			this.testSuites = null;
 		}
 	}
 
 	void checkTestFinished(String line) {
 		def finishMatcher = TEST_CASE_FINISH_PATTERN.matcher(line)
 		if (finishMatcher.matches()) {
+            String finishedTestCase = finishMatcher[0][1].trim();
 			String result = finishMatcher[0][2].trim()
 			String duration = finishMatcher[0][3].trim()
 
 			boolean failed = result.equals("failed");
 
-			printTestResult(currentTestCase, failed, duration);
+			printTestResult(finishedTestCase, failed, duration);
 
-			currentTestCase = null;
+			runningTestCases.remove(finishedTestCase);
 		}
-		return;
 	}
 
 
 
-	String checkTestStart(String line) {
+	void checkTestStart(String line) {
 		Matcher startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			if (!testsRunning) {
-				Destination destination = project.xcodebuild.destinations[testRun]
-				if (destination) {
-					output.append("\nPerform unit tests for: ")
-					output.append(destination.toPrettyString());
-					output.println();
-					output.println();
-				}
-
-				testsRunning = true;
-			}
-			return startMatcher[0][1].trim()
+            if (runningTestCases == null) {
+                runningTestCases = new ArrayList<String>()
+            }
+			runningTestCases.add(startMatcher[0][1].trim())
+            testsRunning = true;
 		}
-		return null;
 	}
 
 	void printTestResult(String testCase, boolean failed, String duration) {

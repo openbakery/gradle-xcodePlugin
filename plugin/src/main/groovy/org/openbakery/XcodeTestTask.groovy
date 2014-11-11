@@ -242,7 +242,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 						testSuites = new ArrayList<String>();
 					}
 					testSuites.add(testSuiteName);
-				} else if (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed')) {
+				} else if (testSuites != null && (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed'))) {
 					testSuites.remove(testSuiteName);
 				}
 
