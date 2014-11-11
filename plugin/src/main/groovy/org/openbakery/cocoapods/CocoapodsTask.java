@@ -1,5 +1,7 @@
 package org.openbakery.cocoapods;
 
+import org.apache.commons.io.FileUtils;
+import org.gradle.StartParameter;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.logging.StyledTextOutput;
 import org.gradle.logging.StyledTextOutputFactory;
@@ -30,17 +32,25 @@ public class CocoapodsTask extends AbstractXcodeTask {
 
 	@TaskAction
 	void install() throws IOException {
-		// first install or update cocoapods
+
 
 		File podsDirectory = new File(getProject().getProjectDir(), "Pods");
+
+		StartParameter startParameter = getProject().getGradle().getStartParameter();
+		if (startParameter.isRefreshDependencies()) {
+			if (podsDirectory.exists()) {
+				getLogger().lifecycle("Deleting pods directory");
+				FileUtils.deleteDirectory(podsDirectory);
+			}
+		}
+
 		if (podsDirectory.exists() && podsDirectory.isDirectory()) {
 			getLogger().lifecycle("Skipping installing pods, because the Pods directory already exists");
 			return;
 		}
 
-
 		getLogger().lifecycle("Install/Update cocoapods");
-		commandRunner.run("gem", "install", "--user-install", "cocoapods");
+		commandRunner.run("gem", "install", "-N", "--user-install", "cocoapods");
 
 		String result = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir");
 
