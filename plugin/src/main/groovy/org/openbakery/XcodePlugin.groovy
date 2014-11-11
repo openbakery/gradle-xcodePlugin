@@ -117,6 +117,7 @@ class XcodePlugin implements Plugin<Project> {
 
 		configureExtensions(project)
 		configureClean(project)
+		configureBuild(project)
 		configureTest(project)
 		configureArchive(project)
 		configureHockeyKit(project)
@@ -348,6 +349,19 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("sparkle", SparklePluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 	}
+
+	private void configureBuild(Project project) {
+		XcodeBuildTask buildTask = project.getTasks().create(BUILD_TASK_NAME, XcodeBuildTask.class);
+		buildTask.setGroup(BasePlugin.BUILD_GROUP);
+		buildTask.dependsOn(BasePlugin.ASSEMBLE_TASK_NAME);
+
+		DefaultTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, DefaultTask.class);
+		xcodebuildTask.setDescription(buildTask.description);
+		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
+		xcodebuildTask.dependsOn(buildTask);
+
+	}
+
 
 	private void configureClean(Project project) {
 		XcodeBuildCleanTask xcodeBuildCleanTask = project.getTasks().create(XCODE_CLEAN_TASK_NAME, XcodeBuildCleanTask.class);
