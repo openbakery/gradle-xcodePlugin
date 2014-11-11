@@ -270,9 +270,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		store()
 		logger.lifecycle("");
 		if (overallTestSuccess) {
-			logger.lifecycle("All " + numberSuccess() + " tests where successful");
+			logger.lifecycle("All " + numberSuccess() + " tests were successful");
 		} else {
-			logger.lifecycle(numberSuccess() + " tests where successful, and " + numberErrors() + " failues");
+			logger.lifecycle(numberSuccess() + " tests were successful, and " + numberErrors() + " failed");
 		}
 		//logger.quiet("overallTestResult " + overallTestSuccess)
 
