@@ -534,5 +534,8 @@ class XcodeBuildPluginExtension {
 		return new File(getOutputPath(), this.productName + ".ipa")
 	}
 
+	File getDSymBundle()  {
+		return new File(getOutputPath(), this.productName  + "." + this.productType + ".dSYM")
+	}
 
 }

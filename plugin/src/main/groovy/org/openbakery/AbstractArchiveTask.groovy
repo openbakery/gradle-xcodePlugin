@@ -1,6 +1,7 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 
 /**
@@ -9,25 +10,40 @@ import org.gradle.api.DefaultTask
  */
 class AbstractArchiveTask extends AbstractXcodeTask {
 
-	void copyIpaToDirectory(File outputDirectory) {
-
+	void copyBundleToDirectory(File outputDirectory, File bundle) {
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
 
-		if (!project.xcodebuild.getIpaBundle().exists()) {
-			throw new IllegalArgumentException("cannot find ipa: " + project.xcodebuild.getIpaBundle())
+		if (!bundle.exists()) {
+			throw new IllegalArgumentException("cannot find bundle: " + bundle)
 		}
 
-		File destinationIpa
+		String name = bundle.getName();
+		String extension = ""
+		int index = name.indexOf(".")
+		if (index > 0) {
+			extension = name.substring(index);
+		}
+
+		File destinationBundle
 		if (project.xcodebuild.bundleNameSuffix != null) {
-			destinationIpa = new File(outputDirectory, project.xcodebuild.productName + project.xcodebuild.bundleNameSuffix + ".ipa")
+			destinationBundle = new File(outputDirectory, project.xcodebuild.productName + project.xcodebuild.bundleNameSuffix + extension)
 		} else {
-			destinationIpa = new File(outputDirectory, project.xcodebuild.productName + ".ipa")
+			destinationBundle = new File(outputDirectory, project.xcodebuild.productName + extension)
 		}
-		FileUtils.copyFile(project.xcodebuild.getIpaBundle(), destinationIpa)
+		FileUtils.copyFile(project.xcodebuild.getIpaBundle(), destinationBundle)
 
 
-		logger.lifecycle("Created ipa archive in {}", outputDirectory)
+		logger.lifecycle("Created {} archive in {}", extension, outputDirectory)
+	}
+
+	void copyIpaToDirectory(File outputDirectory) {
+		copyBundleToDirectory(outputDirectory, project.xcodebuild.getIpaBundle())
+	}
+
+
+	void copyDsymToDirectory(File outputDirectory) {
+		copyBundleToDirectory(outputDirectory, project.xcodebuild.getDSymBundle())
 	}
 }

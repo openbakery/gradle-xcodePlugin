@@ -16,12 +16,10 @@
 package org.openbakery.testflight
 
 import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.ivy.util.FileUtil
-import org.apache.commons.io.FileUtils
+import org.openbakery.AbstractArchiveTask
 import org.openbakery.AbstractXcodeTask
 
-class TestFlightPrepareTask extends AbstractXcodeTask {
+class TestFlightPrepareTask extends AbstractArchiveTask {
 
 	TestFlightPrepareTask() {
 		super()
@@ -32,52 +30,25 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def archive() {
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 
-		def appName = getAppBundleName()
-		def baseName = appName.substring(0, appName.size() - 4)
-		def ipaName = baseName + ".ipa"
-		def dsymName = baseName + ".app.dSYM"
-
-		def zipFileName = baseName
-
-		if (!project.testflight.outputDirectory.exists()) {
-			project.testflight.outputDirectory.mkdirs()
-		}
-
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			logger.debug("Rename App")
-
-			File ipaFile = new File(ipaName)
-			if (ipaFile.exists()) {
-				ipaName = baseName + project.xcodebuild.bundleNameSuffix + ".ipa";
-				ipaFile.renameTo(ipaName)
-			}
-
-			File dsymFile = new File(dsymName)
-			if (dsymFile.exists()) {
-				dsymFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".app.dSYM")
-			}
-			zipFileName += project.xcodebuild.bundleNameSuffix
-
-		}
+		copyIpaToDirectory(project.testflight.outputDirectory)
+		copyDsymToDirectory(project.testflight.outputDirectory)
 
 
 		logger.debug("project.testflight.outputDirectory {}", project.testflight.outputDirectory)
-		int index = zipFileName.lastIndexOf('/')
-		def baseZipName = zipFileName.substring(index+1, zipFileName.length());
 
-		logger.debug("baseZipName {}", baseZipName)
-		logger.debug("buildOutputDirectory {}", buildOutputDirectory)
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			baseZipName = project.xcodebuild.productName + project.xcodebuild.bundleNameSuffix
+		} else {
+			baseZipName = project.xcodebuild.productName
+		}
 
+		logger.debug("baseZipName {}",  baseZipName)
 
 		def ant = new AntBuilder()
-		ant.zip(destfile: project.testflight.outputDirectory.absolutePath + "/" + baseZipName + ".app.dSYM.zip",
-						basedir: buildOutputDirectory.absolutePath,
+		ant.zip(destfile: project.testflight.outputDirectory.path + "/" + baseZipName + "." + project.xcodebuild.productType + ".dSYM.zip",
+						basedir: project.xcodebuild.getOutputPath().absolutePath,
 						includes: "*dSYM*/**")
-
-		FileUtils.copyFileToDirectory(new File(ipaName), project.testflight.outputDirectory)
 
 
 	}
