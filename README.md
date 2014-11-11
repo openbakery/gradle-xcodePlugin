@@ -30,11 +30,9 @@ __Requirements__
 0.9.14 supports Xcode 5, Xcode 6 and Xcode 6.1
 
 
-__Short Introduction:__ http://openbakery.org/gradle.php
+# Documentation
 
-
-
-[Full Documentation of the parameters](Documentation/Parameters.md)
+[Full documentation of the parameters](Documentation/Parameters.md)
 
 
 __Usage__
@@ -71,5 +69,5 @@ After you have fetched the example go to the `example/Example` directory and you
 * Build  with `gradle build`
 * Run the unit tests with `gradle test` or `gradle continuous`
 * Perform a device build an upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
-* Perform an appstore build with `gradle appstore`. (Also the sign settings are needed)
+* Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
 
