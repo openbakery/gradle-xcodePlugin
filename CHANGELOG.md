@@ -3,6 +3,7 @@
 Changes
 - Pods can no be reinstalled with --refresh-dependencies: Issue #90
 - If the provisioning profile has expired, the build fails early now, not after the build when signing: Issue #83
+- Added that the value for workspace parameter is set automatically: Issue #86
 
 Bugfixes
 - Fixed that the provisioning profile is set: Issue #97

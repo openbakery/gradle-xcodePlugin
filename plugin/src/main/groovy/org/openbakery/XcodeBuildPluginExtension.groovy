@@ -94,6 +94,17 @@ class XcodeBuildPluginExtension {
 
 	}
 
+	String getWorkspace() {
+		if (workspace != null) {
+			return workspace
+		}
+		String[] fileList = project.projectDir.list(new SuffixFileFilter(".xcworkspace"))
+		if (fileList.length) {
+			return fileList[0]
+		}
+		return null
+	}
+
 	void setDstRoot(File dstRoot) {
 		this.dstRoot = dstRoot
 	}

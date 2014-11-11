@@ -9,7 +9,7 @@
 
 * _workspace_ - the workspace file that should be used for the build.
 
-	default value: empty
+	default value: '*.xcworkspace' that was found in the project directory or empty if not found
 	
 * _configuration_ - the build configuration name that should be used (e.g. 'Debug', 'Release')
 

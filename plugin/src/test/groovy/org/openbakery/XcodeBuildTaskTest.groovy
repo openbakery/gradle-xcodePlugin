@@ -83,6 +83,11 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.scheme = 'myscheme'
 		expectedCommandList.add("-scheme")
 		expectedCommandList.add(project.xcodebuild.scheme)
+
+		project.xcodebuild.workspace = 'myworkspace'
+		expectedCommandList.add("-workspace")
+		expectedCommandList.add(project.xcodebuild.workspace)
+
 	}
 
 	def void addExpectedDefaultDirs() {
@@ -222,8 +227,11 @@ class XcodeBuildTaskTest {
 
 	@Test
 	public void run_command_with_workspace() {
-		addExpectedScheme()
+		project.xcodebuild.scheme = 'myscheme'
+		expectedCommandList.add("-scheme")
+		expectedCommandList.add(project.xcodebuild.scheme)
 
+		
 		project.xcodebuild.workspace = 'myworkspace'
 		expectedCommandList.add("-workspace")
 		expectedCommandList.add("myworkspace")
@@ -275,11 +283,6 @@ class XcodeBuildTaskTest {
 	void run_command_scheme_and_simulatorbuild() {
 		addExpectedScheme()
 
-
-		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-workspace")
-		expectedCommandList.add("myworkspace")
-
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")
 
@@ -298,11 +301,6 @@ class XcodeBuildTaskTest {
 	@Test
 	void run_command_scheme_and_simulatorbuild_and_arch() {
 		addExpectedScheme()
-
-
-		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-workspace")
-		expectedCommandList.add("myworkspace")
 
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")

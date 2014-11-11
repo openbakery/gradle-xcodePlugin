@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.testng.annotations.AfterMethod
 import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -40,7 +41,7 @@ class CocoapodsTaskTest {
 	}
 
 
-	@AfterTest
+	@AfterMethod
 	void cleanUp() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
