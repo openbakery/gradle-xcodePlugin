@@ -35,7 +35,6 @@ xcodebuild {
 	//version = "6A1052d"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 
 	scheme = 'Example'
-	workspace = 'Example.xcworkspace'
 	target = 'Example'
 	configuration = 'Debug'
 
