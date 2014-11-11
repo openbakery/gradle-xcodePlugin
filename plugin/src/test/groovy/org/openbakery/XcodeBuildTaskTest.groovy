@@ -146,7 +146,7 @@ class XcodeBuildTaskTest {
 	@Test
 	public void run_command_with_signIdentity() {
 		addExpectedScheme()
-
+		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
@@ -159,7 +159,7 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.signing.identity = signIdentity
 		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
 		expectedCommandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
-
+		expectedCommandList.add("PROVISIONING_PROFILE=FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)

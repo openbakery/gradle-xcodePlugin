@@ -41,7 +41,7 @@ class CodesignTaskTest {
 		List<String> commandList
 		commandList?.clear()
 		commandList = ["xcrun", "-sdk", "iphoneos", "--find", "PackageApplication"]
-		commandRunnerMock.runWithResult(commandList).returns("src/test/Resource/PackageApplication\n").times(1)
+			commandRunnerMock.runWithResult(commandList).returns("src/test/Resource/PackageApplication\n").times(1)
 	}
 
 	@Test

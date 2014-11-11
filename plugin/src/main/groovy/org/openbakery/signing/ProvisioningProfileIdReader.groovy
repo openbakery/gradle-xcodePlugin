@@ -15,22 +15,22 @@
  */
 package org.openbakery.signing
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 
 class ProvisioningProfileIdReader {
 
-	def readProvisioningProfileIdFromDestinationRoot(def destinationRoot) {
-		logger.debug("destinationRoot: {}", destinationRoot);
-		if (!destinationRoot.exists()) {
-			return
+	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileIdReader.class)
+
+
+	def readProvisioningProfileUUID(def source) {
+		logger.debug("destinationRoot: {}", source);
+		if (!(source instanceof File)) {
+			source = new File(source.toString())
 		}
-
-		def fileList = destinationRoot.list(
-						[accept: {d, f -> f ==~ /.*mobileprovision/ }] as FilenameFilter
-		).toList()
-
-		if (fileList.size() > 0) {
-			def mobileprovisionContent = new File(destinationRoot, fileList[0]).text
+		if (source.exists()) {
+			def mobileprovisionContent = source.text
 			def matcher = mobileprovisionContent =~ "<key>UUID</key>\\s*\\n\\s*<string>(.*?)</string>"
 			def uuid = matcher[0][1]
 			return uuid;
