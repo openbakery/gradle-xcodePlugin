@@ -90,7 +90,7 @@ class XcodeBuildOutputAppenderTest {
 					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
 
 	def linkData = "\n" +
-					"Ld build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
+					"Ld build/DUMMY.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
 					"    cd /Users/dummy/workspace/Dummy/Dummy-ios\n" +
 					"    setenv IPHONEOS_DEPLOYMENT_TARGET 5.0\n" +
 					"    setenv PATH \"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/local/git/bin:/Users/rene/Java/gradle/bin:/Applications/Xcode.app/Contents/Developer/usr/bin/:/Users/rene/.rvm/bin\"\n" +
@@ -99,7 +99,7 @@ class XcodeBuildOutputAppenderTest {
 					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
 
 	def linkErrorData = "\n" +
-					"Ld build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
+					"Ld build/DUMMY.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
 					"    cd /Users/dummy/workspace/Dummy/Dummy-ios\n" +
 					"    setenv IPHONEOS_DEPLOYMENT_TARGET 5.0\n" +
 					"    setenv PATH \"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/local/git/bin:/Users/rene/Java/gradle/bin:/Applications/Xcode.app/Contents/Developer/usr/bin/:/Users/rene/.rvm/bin\"\n" +
@@ -151,7 +151,7 @@ class XcodeBuildOutputAppenderTest {
 			appender.append(line)
 		}
 
-		String expected = "      OK - Linking: build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
+		String expected = "      OK - Linking: build/DUMMY.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
 		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
 
 	}
@@ -166,7 +166,7 @@ class XcodeBuildOutputAppenderTest {
 			appender.append(line)
 		}
 
-		String expected = "   ERROR - Linking: build/ELO.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
+		String expected = "   ERROR - Linking: build/DUMMY.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
 		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
 
 	}

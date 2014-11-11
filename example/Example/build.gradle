@@ -34,11 +34,13 @@ apply plugin: 'xcode'
 xcodebuild {
 	//version = "6A1052d"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 
-	scheme = 'Example'
+	//scheme = 'Example'
 	target = 'Example'
+
 	configuration = 'Debug'
+	//configuration = 'Release'
 
-
+	sdk = 'iphoneos'
 
 }
 
@@ -51,7 +53,7 @@ task continuous(dependsOn:'test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
 
-task integration(dependsOn: 'hockeyapp') {
+task integration(dependsOn: 'archive') {
 	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
 }
 task release(dependsOn: 'archive') {
@@ -62,6 +64,9 @@ task appstore(dependsOn: 'archive') {
 	description = 'Build for the AppStore'
 }
 
+task widget(dependsOn: 'archive') {
+	description = 'Build widget'
+}
 
 
 gradle.taskGraph.whenReady { taskGraph ->
@@ -135,14 +140,28 @@ gradle.taskGraph.whenReady { taskGraph ->
 	
 	// ------------------------------------------------------------------------------------------
 
+	if (taskGraph.hasTask(widget)) {
+		println "CONFIGURE WIDGET"
+	
+		xcodebuild {
+			target = 'ExampleTodayWidget'
+  			signing {
+				identity = signingIdentity                              // e.g. 'iPhone Developer: ...'
+				certificateURI = signingCertificateURI                  // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = signingCertificatePassword        // e.g. 'secret'
+				mobileProvisionURI = signingMobileProvisionURIWidget    // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+	}
+
 	if (taskGraph.hasTask(appstore)) {
 		println "Configure sign settings for the appstore build"
 		xcodebuild {
 			signing {
-				identity = 'iPhone Distribution: ...'
-				certificateURI = 'http://example.com/Provisioning/AppStore.p12'
-				certificatePassword = 'secret'
-				mobileProvisionURI = 'http://example.com/Provisioning/AppStore.mobileprovision'
+				identity = gradle.identity                       // e.g. 'iPhone Developer: ...'
+				certificateURI = gradle.certificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = gradle.certificatePassword // e.g. 'secret'
+				mobileProvisionURI = gradle.mobileProvisionURI   // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
 	}

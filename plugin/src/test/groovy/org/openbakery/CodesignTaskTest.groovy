@@ -24,12 +24,16 @@ class CodesignTaskTest {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
+
 		project = ProjectBuilder.builder().build()
-		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
+		project.buildDir = new File('build').absoluteFile
 		project.xcodebuild.sdk = 'iphoneos'
 		project.xcodebuild.configuration = 'release'
 		project.xcodebuild.symRoot = project.buildDir
+		project.xcodebuild.productName = 'My'
+		project.xcodebuild.projectType = 'app'
+
 
 		codesignTask = project.tasks.findByName('codesign')
 		codesignTask.setProperty("commandRunner", commandRunnerMock)
@@ -77,10 +81,7 @@ class CodesignTaskTest {
 		mockFindPackageApplication()
 
 
-		File buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		File appFile = new File(buildOutputDirectory, "My.app")
-
-		FileUtils.writeStringToFile(appFile, "dummy");
+		FileUtils.writeStringToFile(project.xcodebuild.getApplicationBundle(), "dummy");
 
 
 		List<String> commandList
@@ -92,9 +93,9 @@ class CodesignTaskTest {
 		commandList = [
 						packageApplicationScript,
 						"-v",
-						buildOutputDirectory.absolutePath + "/My.app",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.app",
 						"-o",
-						buildOutputDirectory.absolutePath + "/My.ipa",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.ipa",
 						"--keychain",
 						project.xcodebuild.signing.keychainPathInternal.absolutePath
 		]

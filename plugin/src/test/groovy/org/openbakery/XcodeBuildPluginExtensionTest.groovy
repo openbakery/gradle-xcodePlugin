@@ -59,7 +59,8 @@ class XcodeBuildPluginExtensionTest {
 		FileUtils.deleteDirectory(xcodebuild6_1)
 		FileUtils.deleteDirectory(xcodebuild6_0)
 		FileUtils.deleteDirectory(xcodebuild5_1)
-		FileUtils.deleteDirectory(project.projectDir)
+		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		FileUtils.deleteDirectory(projectDir)
 	}
 
 
@@ -428,4 +429,56 @@ class XcodeBuildPluginExtensionTest {
 
 	}
 
+
+	@Test
+	void testProductName() {
+		File projectDir =  new File("../example/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+
+		extension.target = "ExampleTodayWidget"
+
+		extension.parseInfoFromProjectFile(project)
+
+		assert extension.productName.equals("ExampleTodayWidget")
+
+	}
+
+	@Test
+	void testProductType() {
+		File projectDir =  new File("../example/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+
+		extension.target = "ExampleTodayWidget"
+
+		extension.parseInfoFromProjectFile(project)
+
+		assert extension.productType.equals("appex")
+
+	}
+
+	@Test
+	void testApplicationBundle() {
+		File projectDir =  new File("../example/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension.sdk = "iphoneos"
+		extension.target = "ExampleTodayWidget"
+		extension.parseInfoFromProjectFile(project)
+
+		String applicationBundle = extension.getApplicationBundle().absolutePath;
+		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleTodayWidget.appex")
+
+	}
+
+	@Test
+	void testIpaBundle() {
+		File projectDir =  new File("../example/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension.sdk = "iphoneos"
+		extension.target = "ExampleTodayWidget"
+		extension.parseInfoFromProjectFile(project)
+
+		String ipaBundle = extension.getIpaBundle().absolutePath;
+		assert ipaBundle.endsWith("build/sym/Debug-iphoneos/ExampleTodayWidget.ipa")
+
+	}
 }

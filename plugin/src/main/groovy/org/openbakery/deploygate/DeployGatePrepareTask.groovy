@@ -33,9 +33,7 @@ class DeployGatePrepareTask extends AbstractXcodeTask {
 	def archive() {
 		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 
-		def appName = getAppBundleName()
-		def baseName = appName.substring(0, appName.size() - 4)
-		def ipaName = baseName + ".ipa"
+		def ipaName = project.xcodebuild.productName + ".ipa"
 
 		if (!project.deploygate.outputDirectory.exists()) {
 			project.deploygate.outputDirectory.mkdirs()
@@ -46,7 +44,7 @@ class DeployGatePrepareTask extends AbstractXcodeTask {
 
 			File ipaFile = new File(ipaName)
 			if (ipaFile.exists()) {
-				ipaName = baseName + project.xcodebuild.bundleNameSuffix + ".ipa";
+				ipaName = project.xcodebuild.productName + project.xcodebuild.bundleNameSuffix + ".ipa";
 				ipaFile.renameTo(ipaName)
 			}
 		}

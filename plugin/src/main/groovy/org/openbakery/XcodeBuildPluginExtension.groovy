@@ -55,6 +55,8 @@ class XcodeBuildPluginExtension {
 	String workspace = null
 	String version = null
 	Map<String, String> environment = null
+	String productName = null
+	String productType = "app"
 
 	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
@@ -409,8 +411,8 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("using target: {}", this.target)
 		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
-    def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
-    def projectFile = new File(xcodeProjectDir, "project.pbxproj")
+		def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
+		def projectFile = new File(xcodeProjectDir, "project.pbxproj")
 
 		def buildRoot = project.buildDir
 		if (!buildRoot.exists()) {
@@ -435,6 +437,11 @@ class XcodeBuildPluginExtension {
 			def targetName = config.getString("objects." + target + ".name")
 			logger.debug("targetName: {}", targetName)
 
+			this.productName = config.getString("objects." + target + ".productName")
+			String type = config.getString("objects." + target + ".productType")
+			if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
+				this.productType = "appex"
+			}
 
 			if (targetName.equals(this.target)) {
 				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
@@ -514,5 +521,18 @@ class XcodeBuildPluginExtension {
 		}
 		return "xcrun"
 	}
+
+	File getOutputPath() {
+		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
+	}
+
+	File getApplicationBundle() {
+		return new File(getOutputPath(), this.productName + "." + this.productType)
+	}
+
+	File getIpaBundle() {
+		return new File(getOutputPath(), this.productName + ".ipa")
+	}
+
 
 }

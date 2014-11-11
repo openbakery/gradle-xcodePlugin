@@ -16,6 +16,7 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
+import org.apache.tools.ant.util.ResourceUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 
@@ -97,31 +98,23 @@ class CodesignTask extends AbstractXcodeTask {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration")
 		}
 
-		logger.debug("SymRoot: {}", project.xcodebuild.symRoot)
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		def fileList = buildOutputDirectory.list(
-						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
-		).toList()
-		if (fileList.size() == 0) {
-			throw new IllegalStateException("No App Found in directory " + buildOutputDirectory.absolutePath)
-		}
-		def appName = buildOutputDirectory.absolutePath + "/" + fileList[0]
-		def ipaName = appName.substring(0, appName.size()-4) + ".ipa"
-		logger.lifecycle("Signing {} to create {}", appName, ipaName)
+		File applicationBundle = project.xcodebuild.getApplicationBundle();
+		File ipaBundle = project.xcodebuild.getIpaBundle();
+
+		logger.lifecycle("Signing {} to create {}", applicationBundle, ipaBundle)
 
 		String packageApplicationScript = preparePackageApplication()
 
 		def commandList = [
 						packageApplicationScript,
 						"-v",
-						appName,
+						applicationBundle.absolutePath,
 						"-o",
-						ipaName,
+						ipaBundle.absolutePath,
 						"--keychain",
 						project.xcodebuild.signing.keychainPathInternal.absolutePath
 		]
 
-		//--keychain /Users/rene/workspace/coconatics/ELO/elo-ios/build/keychain/gradle-1403850484215.keychain
 
 		if (project.xcodebuild.signing.identity != null && project.xcodebuild.signing.mobileProvisionFile != null) {
 			commandList.add("--sign");
