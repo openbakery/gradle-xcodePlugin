@@ -2,6 +2,7 @@ package org.openbakery
 
 import org.openbakery.signing.ProvisioningProfileIdReader
 import org.testng.annotations.BeforeClass
+import org.testng.annotations.ExpectedExceptions
 import org.testng.annotations.Test
 
 /**
@@ -23,4 +24,11 @@ class ProvisioningProfileIdReaderTest {
 		String UUID = reader.readProvisioningProfileUUID("src/test/Resource/test.mobileprovision")
 		assert UUID.equals("FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
 	}
+
+	@Test(expectedExceptions = [IllegalArgumentException.class])
+	void readProfileHasExpired() {
+		reader.readProvisioningProfileUUID("src/test/Resource/expired.mobileprovision")
+	}
+
+
 }
