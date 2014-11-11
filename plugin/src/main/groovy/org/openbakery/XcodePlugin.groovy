@@ -30,10 +30,10 @@ import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGatePrepareTask
 import org.openbakery.deploygate.DeployGateUploadTask
-import org.openbakery.hockeykit.HockeyAppCleanTask
-import org.openbakery.hockeykit.HockeyAppPluginExtension
-import org.openbakery.hockeykit.HockeyAppPrepareTask
-import org.openbakery.hockeykit.HockeyAppUploadTask
+import org.openbakery.hockeyapp.HockeyAppCleanTask
+import org.openbakery.hockeyapp.HockeyAppPluginExtension
+import org.openbakery.hockeyapp.HockeyAppPrepareTask
+import org.openbakery.hockeyapp.HockeyAppUploadTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitCleanTask
 import org.openbakery.hockeykit.HockeyKitImageTask

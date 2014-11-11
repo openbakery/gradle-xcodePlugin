@@ -91,10 +91,14 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	def getAppBundleInfoPlist() {
-		File infoPlistFile = new File(project.xcodebuld.applicationBundle, "/Info.plist")
+		def convertedPlist = new File(project.buildDir, "Info.plist")
+		if (convertedPlist.exists()) {
+			return convertedPlist.absolutePath
+		}
+
+		File infoPlistFile = new File(project.xcodebuild.applicationBundle, "/Info.plist")
 		if (infoPlistFile.exists()) {
 
-			def convertedPlist = new File(project.buildDir, FilenameUtils.getName(infoPlistFile.getName()))
 			//plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
 
 			def convertCommand = [
