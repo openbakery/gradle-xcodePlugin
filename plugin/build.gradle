@@ -25,10 +25,6 @@ dependencies {
 	compile localGroovy()
 }
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	testCompile 'org.testng:testng:6.+'
 	testCompile 'org.gmock:gmock:0.8.+'
