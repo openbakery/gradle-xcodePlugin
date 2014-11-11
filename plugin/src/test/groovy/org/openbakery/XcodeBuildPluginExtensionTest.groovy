@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.AfterMethod
+import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -29,7 +30,10 @@ class XcodeBuildPluginExtensionTest {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
-		project = ProjectBuilder.builder().build()
+		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+
+
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunnerMock
 
@@ -55,7 +59,11 @@ class XcodeBuildPluginExtensionTest {
 		FileUtils.deleteDirectory(xcodebuild6_1)
 		FileUtils.deleteDirectory(xcodebuild6_0)
 		FileUtils.deleteDirectory(xcodebuild5_1)
+		FileUtils.deleteDirectory(project.projectDir)
 	}
+
+
+
 
 	void mockFindSimctl() {
 		def commandList = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
@@ -403,6 +411,21 @@ class XcodeBuildPluginExtensionTest {
 		mockControl.play {
 			extension.version = '5B1009';
 		}
+	}
+
+
+	@Test
+	void testWorkspaceNil() {
+		assert extension.workspace == null;
+	}
+
+	@Test
+	void testWorkspace() {
+
+		File workspace = new File(project.projectDir , "Test.xcworkspace")
+		workspace.mkdirs()
+		assert extension.workspace == "Test.xcworkspace";
+
 	}
 
 }

@@ -20,10 +20,8 @@ import org.openbakery.AbstractXcodeTask
 
 
 class ProvisioningCleanupTask extends AbstractXcodeTask {
-	ProvisioningProfileIdReader provisioningProfileIdReader
 
 	ProvisioningCleanupTask() {
-		provisioningProfileIdReader = new ProvisioningProfileIdReader()
 	}
 
 	@TaskAction

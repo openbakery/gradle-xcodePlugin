@@ -1,0 +1,113 @@
+Build settings from command line:
+    SDKROOT = iphonesimulator8.0
+
+2014-10-08 08:50:30.696 xcodebuild[5784:d07] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7f937d757c00 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
+=== BUILD TARGET Example OF PROJECT Example WITH CONFIGURATION Debug ===
+
+Check dependencies
+
+Ld /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example normal x86_64
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export IPHONEOS_DEPLOYMENT_TARGET=7.0
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk -L/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -F/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -filelist /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/Example.build/Objects-normal/x86_64/Example.LinkFileList -Xlinker -objc_abi_version -Xlinker 2 -fobjc-arc -fobjc-link-runtime -Xlinker -no_implicit_dylibs -mios-simulator-version-min=7.0 -framework CoreGraphics -framework UIKit -framework Foundation -Xlinker -dependency_info -Xlinker /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/Example.build/Objects-normal/x86_64/Example_dependency_info.dat -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example
+
+GenerateDSYMFile /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app.dSYM /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app.dSYM
+
+Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /usr/bin/touch -c /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app
+
+=== BUILD TARGET ExampleTests OF PROJECT Example WITH CONFIGURATION Debug ===
+
+Check dependencies
+
+Ld /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests normal x86_64
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export IPHONEOS_DEPLOYMENT_TARGET=7.0
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch x86_64 -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk -L/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -F/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk/Developer/Library/Frameworks -F/Applications/Xcode.app/Contents/Developer/Library/Frameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk/Developer/Library/Frameworks -filelist /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/ExampleTests.build/Objects-normal/x86_64/ExampleTests.LinkFileList -bundle_loader /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example -Xlinker -objc_abi_version -Xlinker 2 -framework XCTest -fobjc-arc -fobjc-link-runtime -Xlinker -no_implicit_dylibs -mios-simulator-version-min=7.0 -framework XCTest -framework UIKit -framework Foundation -Xlinker -dependency_info -Xlinker /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/ExampleTests.build/Objects-normal/x86_64/ExampleTests_dependency_info.dat -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests
+
+GenerateDSYMFile /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest.dSYM /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest.dSYM
+
+Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /usr/bin/touch -c /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest
+
+2014-10-08 08:50:32.199 xcodebuild[5784:1003]  iPhoneSimulator: Sim iPad Air is booted but getenv returned nil for test connection socket path.
+ Will retry in 1s (1 attempts so far).
+** TEST SUCCEEDED **
+
+2014-10-08 08:50:43.395 xcodebuild[5784:d07] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7f937f6b5520 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
+=== BUILD TARGET Example OF PROJECT Example WITH CONFIGURATION Debug ===
+
+Check dependencies
+
+Ld /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example normal i386
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export IPHONEOS_DEPLOYMENT_TARGET=7.0
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch i386 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk -L/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -F/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -filelist /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/Example.build/Objects-normal/i386/Example.LinkFileList -Xlinker -objc_abi_version -Xlinker 2 -fobjc-arc -fobjc-link-runtime -Xlinker -no_implicit_dylibs -mios-simulator-version-min=7.0 -framework CoreGraphics -framework UIKit -framework Foundation -Xlinker -dependency_info -Xlinker /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/Example.build/Objects-normal/i386/Example_dependency_info.dat -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example
+
+GenerateDSYMFile /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app.dSYM /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app.dSYM
+
+Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /usr/bin/touch -c /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app
+
+=== BUILD TARGET ExampleTests OF PROJECT Example WITH CONFIGURATION Debug ===
+
+Check dependencies
+
+Ld /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests normal i386
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export IPHONEOS_DEPLOYMENT_TARGET=7.0
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -arch i386 -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk -L/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -F/Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk/Developer/Library/Frameworks -F/Applications/Xcode.app/Contents/Developer/Library/Frameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.0.sdk/Developer/Library/Frameworks -filelist /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/ExampleTests.build/Objects-normal/i386/ExampleTests.LinkFileList -bundle_loader /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/Example.app/Example -Xlinker -objc_abi_version -Xlinker 2 -framework XCTest -fobjc-arc -fobjc-link-runtime -Xlinker -no_implicit_dylibs -mios-simulator-version-min=7.0 -framework XCTest -framework UIKit -framework Foundation -Xlinker -dependency_info -Xlinker /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Intermediates/Example.build/Debug-iphonesimulator/ExampleTests.build/Objects-normal/i386/ExampleTests_dependency_info.dat -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests
+
+GenerateDSYMFile /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest.dSYM /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests -o /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest.dSYM
+
+Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest
+    cd /Users/example/workspace/openbakery/xcodePlugin/gradle-xcodePlugin/example/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
+    /usr/bin/touch -c /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest
+
+** TEST SUCCEEDED **
+
+Test Suite 'All tests' started at 2014-10-08 06:50:43 +0000
+Test Suite 'ExampleTests.xctest' started at 2014-10-08 06:50:43 +0000
+Test Suite 'ExampleTests' started at 2014-10-08 06:50:43 +0000
+Test Case '-[ExampleTests testExample]' started.
+Test Case '-[ExampleTests testExample]' passed (0.000 seconds).
+Test Suite 'ExampleTests' passed at 2014-10-08 06:50:43 +0000.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'ExampleTests.xctest' passed at 2014-10-08 06:50:43 +0000.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+Test Suite 'All tests' passed at 2014-10-08 06:50:43 +0000.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.003) seconds
+Test Suite 'All tests' started at 2014-10-08 06:50:50 +0000
+Test Suite 'ExampleTests.xctest' started at 2014-10-08 06:50:50 +0000
+Test Suite 'ExampleTests' started at 2014-10-08 06:50:50 +0000
+Test Case '-[ExampleTests testExample]' started.
+Test Case '-[ExampleTests testExample]' passed (0.000 seconds).
+Test Suite 'ExampleTests' passed at 2014-10-08 06:50:50 +0000.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'ExampleTests.xctest' passed at 2014-10-08 06:50:50 +0000.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+Test Suite 'All tests' passed at 2014-10-08 06:50:50 +0000.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.004) seconds

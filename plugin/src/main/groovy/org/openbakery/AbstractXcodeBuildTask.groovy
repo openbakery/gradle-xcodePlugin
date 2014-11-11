@@ -29,11 +29,8 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add("-scheme");
 			commandList.add(project.xcodebuild.scheme);
 
-			// workspace makes only sense when using scheme
-			if (project.xcodebuild.workspace != null) {
-				commandList.add("-workspace")
-				commandList.add(project.xcodebuild.workspace)
-			}
+			commandList.add("-workspace")
+			commandList.add(project.xcodebuild.workspace)
 
 			if (project.xcodebuild.sdk != null) {
 				commandList.add("-sdk")
@@ -61,6 +58,8 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing != null && project.xcodebuild.signing.identity != null) {
 			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 			commandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
+			String uuid = provisioningProfileIdReader.readProvisioningProfileUUID(project.xcodebuild.signing.mobileProvisionFile)
+			commandList.add("PROVISIONING_PROFILE=" + uuid)
 		}
 
 		if (project.xcodebuild.arch != null) {

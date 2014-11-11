@@ -40,12 +40,13 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		def commandList = createCommandList()
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
+		Map<String, String> environment = project.xcodebuild.environment
 
 		if (!project.getBuildDir().exists()) {
 			project.getBuildDir().mkdirs()
 		}
 		commandRunner.setOutputFile(new File(project.getBuildDir(), "xcodebuild-output.txt"));
-		commandRunner.run("${project.projectDir.absolutePath}", commandList, new XcodeBuildOutputAppender(output))
+		commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(output))
 		logger.lifecycle("Done")
 	}
 

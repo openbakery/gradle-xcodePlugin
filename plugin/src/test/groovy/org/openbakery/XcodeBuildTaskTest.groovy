@@ -72,7 +72,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -83,6 +83,11 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.scheme = 'myscheme'
 		expectedCommandList.add("-scheme")
 		expectedCommandList.add(project.xcodebuild.scheme)
+
+		project.xcodebuild.workspace = 'myworkspace'
+		expectedCommandList.add("-workspace")
+		expectedCommandList.add(project.xcodebuild.workspace)
+
 	}
 
 	def void addExpectedDefaultDirs() {
@@ -114,7 +119,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -136,7 +141,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -146,7 +151,7 @@ class XcodeBuildTaskTest {
 	@Test
 	public void run_command_with_signIdentity() {
 		addExpectedScheme()
-
+		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
@@ -159,10 +164,10 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.signing.identity = signIdentity
 		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
 		expectedCommandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
-
+		expectedCommandList.add("PROVISIONING_PROFILE=FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -187,7 +192,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -213,7 +218,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -222,8 +227,11 @@ class XcodeBuildTaskTest {
 
 	@Test
 	public void run_command_with_workspace() {
-		addExpectedScheme()
+		project.xcodebuild.scheme = 'myscheme'
+		expectedCommandList.add("-scheme")
+		expectedCommandList.add(project.xcodebuild.scheme)
 
+		
 		project.xcodebuild.workspace = 'myworkspace'
 		expectedCommandList.add("-workspace")
 		expectedCommandList.add("myworkspace")
@@ -238,7 +246,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -262,7 +270,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -275,11 +283,6 @@ class XcodeBuildTaskTest {
 	void run_command_scheme_and_simulatorbuild() {
 		addExpectedScheme()
 
-
-		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-workspace")
-		expectedCommandList.add("myworkspace")
-
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")
 
@@ -288,7 +291,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -298,11 +301,6 @@ class XcodeBuildTaskTest {
 	@Test
 	void run_command_scheme_and_simulatorbuild_and_arch() {
 		addExpectedScheme()
-
-
-		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-workspace")
-		expectedCommandList.add("myworkspace")
 
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add("iphonesimulator")
@@ -321,7 +319,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
 			xcodeBuildTask.xcodebuild()
@@ -355,7 +353,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, anything()).times(1)
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 
 
