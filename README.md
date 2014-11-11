@@ -18,7 +18,7 @@ Here a brief overview of the features:
 * [Sparkle](http://sparkle-project.org)
 
 
-__Requirements__
+## Requirements
 
 * Xcode 5 or greater
 * [Gradle](http://gradle.org) 1.4 or greater
@@ -30,12 +30,12 @@ __Requirements__
 0.9.14 supports Xcode 5, Xcode 6 and Xcode 6.1
 
 
-# Documentation
+## Documentation
 
-[Full documentation of the parameters](Documentation/Parameters.md)
+* [Parameters Documentation](Documentation/Parameters.md)
 
 
-__Usage__
+## Usage
 
 Create a build.gradle file and place it in the same directory where xcodeproj file lies.
 
@@ -61,7 +61,7 @@ xcodebuild {
 
 ```
 
-__Example__
+## Example
 
 You find an example project in [example/Example/](example/Example/) with a working build.gradle file.
 After you have fetched the example go to the `example/Example` directory and you build the project different targets:
