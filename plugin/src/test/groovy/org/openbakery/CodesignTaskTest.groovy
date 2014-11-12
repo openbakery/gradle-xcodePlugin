@@ -33,6 +33,7 @@ class CodesignTaskTest {
 		project.xcodebuild.symRoot = project.buildDir
 		project.xcodebuild.productName = 'My'
 		project.xcodebuild.projectType = 'app'
+		project.xcodebuild.infoPlist = 'Info.plist'
 
 
 		codesignTask = project.tasks.findByName('codesign')

@@ -32,8 +32,9 @@ class HockeyAppPrepareTaskTest {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
-		project.xcodebuild.productName = 'Test'
 		project.xcodebuild.productType = 'app'
+		project.xcodebuild.productName = 'Test'
+		project.xcodebuild.infoPlist = 'Info.plist'
 
 		hockeyAppPrepareTask = project.getTasks().getByPath('hockeyapp-prepare')
 

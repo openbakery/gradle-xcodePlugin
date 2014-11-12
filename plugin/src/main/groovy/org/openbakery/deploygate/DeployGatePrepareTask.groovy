@@ -16,13 +16,9 @@
 package org.openbakery.deploygate
 
 import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.ivy.util.FileUtil
-import org.apache.commons.io.FileUtils
-import org.openbakery.AbstractArchiveTask
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.AbstractDistributeTask
 
-class DeployGatePrepareTask extends AbstractArchiveTask {
+class DeployGatePrepareTask extends AbstractDistributeTask {
 
 	DeployGatePrepareTask() {
 		super()

@@ -12,6 +12,9 @@ Create a gradle.properties and add the following values:
 	signingCertificatePassword = password // password to unlock to p12
 	signingMobileProvisionURI = http://../Development.mobileprovision
 	
+	signingMobileProvisionURIWidget = http://../Development.mobileprovision // provisioning profil for the widget
+	exampleTodayWidgetBundleIdentifier = com.example.MyWidget
+	
 You can also scroll down and add the values directly (line 115ff).
 
 */
@@ -20,13 +23,13 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://openbakery.org/repository/')
-			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			//url('http://openbakery.org/repository/')
+			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.9.14'
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.0-beta'
 	}
 }
 apply plugin: 'xcode'
@@ -145,12 +148,16 @@ gradle.taskGraph.whenReady { taskGraph ->
 	
 		xcodebuild {
 			target = 'ExampleTodayWidget'
-  			signing {
+ 			signing {
 				identity = signingIdentity                              // e.g. 'iPhone Developer: ...'
 				certificateURI = signingCertificateURI                  // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword        // e.g. 'secret'
 				mobileProvisionURI = signingMobileProvisionURIWidget    // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
+		}
+		
+		infoplist {
+			bundleIdentifier = exampleTodayWidgetBundleIdentifier
 		}
 	}
 

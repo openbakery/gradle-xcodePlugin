@@ -29,6 +29,7 @@ class DeployGatePrepareTaskTest {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Test'
+		project.xcodebuild.infoPlist = 'Info.plist'
 
 		deployGatePrepareTask = project.getTasks().getByPath('deploygate-prepare')
 

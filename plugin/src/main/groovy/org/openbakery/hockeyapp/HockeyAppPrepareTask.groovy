@@ -15,12 +15,10 @@
  */
 package org.openbakery.hockeyapp
 
-import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractArchiveTask
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.AbstractDistributeTask
 
-class HockeyAppPrepareTask extends AbstractArchiveTask {
+class HockeyAppPrepareTask extends AbstractDistributeTask {
 
 	HockeyAppPrepareTask() {
 		super()
@@ -31,26 +29,8 @@ class HockeyAppPrepareTask extends AbstractArchiveTask {
 
 	@TaskAction
 	def archive() {
-
 		copyIpaToDirectory(project.hockeyapp.outputDirectory)
 		copyDsymToDirectory(project.hockeyapp.outputDirectory)
-
-
-		logger.debug("project.hockeyapp.outputDirectory {}", project.hockeyapp.outputDirectory)
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			baseZipName = project.xcodebuild.productName + project.xcodebuild.bundleNameSuffix
-		} else {
-			baseZipName = project.xcodebuild.productName
-		}
-
-		logger.debug("baseZipName {}",  baseZipName)
-
-		def ant = new AntBuilder()
-		ant.zip(destfile: project.hockeyapp.outputDirectory.path + "/" + baseZipName + "." + project.xcodebuild.productType + ".dSYM.zip",
-						basedir: project.xcodebuild.getOutputPath().absolutePath,
-						includes: "*dSYM*/**")
-
-
+		createDsymZip(project.hockeyapp.outputDirectory)
 	}
 }

@@ -35,6 +35,7 @@ class HockeyKitArchiveTaskTest {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Test'
+		project.xcodebuild.infoPlist = 'Info.plist'
 
 		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykit-archive')
 

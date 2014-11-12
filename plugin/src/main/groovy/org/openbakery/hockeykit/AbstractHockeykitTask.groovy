@@ -15,6 +15,7 @@
  */
 package org.openbakery.hockeykit
 
+import org.openbakery.AbstractDistributeTask
 import org.openbakery.AbstractXcodeTask
 
 /**
@@ -22,7 +23,7 @@ import org.openbakery.AbstractXcodeTask
  * @author René Pirringer
  *
  */
-abstract class AbstractHockeykitTask extends AbstractXcodeTask {
+abstract class AbstractHockeyKitTask extends AbstractDistributeTask {
 
 	/**
 	 * Method to get the destination directory where the output of the generated files for hockeykit should be stored.
@@ -36,6 +37,6 @@ abstract class AbstractHockeykitTask extends AbstractXcodeTask {
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
-		return outputDirectory.absolutePath
+		return outputDirectory
 	}
 }

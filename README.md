@@ -25,9 +25,9 @@ Here a brief overview of the features:
 * Java
 
 
-**Current stable version is 0.9.14**
+**Current stable version is 0.10.0**
 
-0.9.14 supports Xcode 5, Xcode 6 and Xcode 6.1
+0.9.14 and 0.10.+ supports Xcode 5, Xcode 6 and Xcode 6.1
 
 
 ## Documentation

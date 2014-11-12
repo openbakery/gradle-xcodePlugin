@@ -16,12 +16,8 @@
 package org.openbakery.hockeykit
 
 import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.FileUtils
-import org.openbakery.AbstractArchiveTask
-import org.openbakery.AbstractXcodeTask
 
-class HockeyKitArchiveTask extends AbstractArchiveTask {
+class HockeyKitArchiveTask extends AbstractHockeyKitTask {
 
 	HockeyKitArchiveTask() {
 		super()
@@ -36,11 +32,8 @@ class HockeyKitArchiveTask extends AbstractArchiveTask {
 			throw new IllegalArgumentException("hockeykit.versionDirectoryName is missing")
 		}
 
-		def title = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
 
-		File outputDirectory = new File(project.hockeykit.outputDirectory, title + "/" + project.hockeykit.versionDirectoryName)
-
-		copyIpaToDirectory(outputDirectory);
+		copyIpaToDirectory(getOutputDirectory());
 
 
 	}

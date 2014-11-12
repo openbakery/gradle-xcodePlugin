@@ -56,6 +56,7 @@ class XcodeBuildPluginExtension {
 	String version = null
 	Map<String, String> environment = null
 	String productName = null
+	String bundleName = null
 	String productType = "app"
 
 	boolean isOSX = false;
@@ -419,12 +420,16 @@ class XcodeBuildPluginExtension {
 			buildRoot.mkdirs()
 		}
 
-		def projectPlist = new File(buildRoot, "project.plist").absolutePath
+		File projectPlistFile = new File(buildRoot, "project.plist")
+
+		if (projectPlistFile.exists()) {
+			projectPlistFile.delete()
+		}
 
 		// convert ascii plist to xml so that commons configuration can parse it!
-		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
+		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlistFile.absolutePath])
 
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
+		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(projectPlistFile)
 		def rootObjectKey = config.getString("rootObject")
 		logger.debug("rootObjectKey {}", rootObjectKey);
 
@@ -522,20 +527,54 @@ class XcodeBuildPluginExtension {
 		return "xcrun"
 	}
 
+
+	String getValueFromInfoPlist(key) {
+		try {
+			File infoPlistFile = new File(project.projectDir, infoPlist)
+			return commandRunner.runWithResult([
+							"/usr/libexec/PlistBuddy",
+							infoPlistFile.absolutePath,
+							"-c",
+							"Print :" + key])
+		} catch (IllegalStateException ex) {
+			return null
+		}
+	}
+
+	String getBundleName() {
+		if (bundleName != null) {
+			return bundleName
+		}
+		bundleName = getValueFromInfoPlist("CFBundleName")
+
+		if (bundleName.equals('${PRODUCT_NAME}') || bundleName.equals('$(PRODUCT_NAME)') ) {
+			bundleName = this.productName
+		}
+
+		if (bundleName.equals('${EXECUTABLE_NAME}')) {
+			bundleName = this.productName
+		}
+
+		if (StringUtils.isEmpty(bundleName)) {
+			bundleName = this.productName
+		}
+		return bundleName
+	}
+
 	File getOutputPath() {
 		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
 	}
 
 	File getApplicationBundle() {
-		return new File(getOutputPath(), this.productName + "." + this.productType)
+		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
 	File getIpaBundle() {
-		return new File(getOutputPath(), this.productName + ".ipa")
+		return new File(getOutputPath(), getBundleName() + ".ipa")
 	}
 
 	File getDSymBundle()  {
-		return new File(getOutputPath(), this.productName  + "." + this.productType + ".dSYM")
+		return new File(getOutputPath(), getBundleName()  + "." + this.productType + ".dSYM")
 	}
 
 }

@@ -19,7 +19,7 @@ import org.gradle.api.tasks.TaskAction
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FilenameUtils
 
-class HockeyKitManifestTask extends AbstractHockeykitTask {
+class HockeyKitManifestTask extends AbstractHockeyKitTask {
 
 	static final String XML_DEF_LINE = '<?xml version="1.0" encoding="UTF-8"?>'
 	static final String DOCTYPE_LINE = '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
@@ -34,8 +34,6 @@ class HockeyKitManifestTask extends AbstractHockeykitTask {
 	@TaskAction
 	def createManifest() {
 
-		def appName = getAppBundleName()
-		def basename = FilenameUtils.getBaseName(appName)
 
 		def infoPlist = getAppBundleInfoPlist()
 
@@ -43,8 +41,8 @@ class HockeyKitManifestTask extends AbstractHockeykitTask {
 		def bundleVersion = getValueFromPlist(infoPlist, "CFBundleVersion")
 		def bundleDisplayName = getValueFromPlist(infoPlist,"CFBundleDisplayName")
 
-		def outputDirectory = getOutputDirectory()
-		def manifestFilename = outputDirectory + "/" + basename + ".plist"
+		def manifestFilename = getDestinationFile(getOutputDirectory(), ".plist")
+
 
 
 		def title = project.hockeykit.displayName

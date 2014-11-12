@@ -16,10 +16,9 @@
 package org.openbakery.testflight
 
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractArchiveTask
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.AbstractDistributeTask
 
-class TestFlightPrepareTask extends AbstractArchiveTask {
+class TestFlightPrepareTask extends AbstractDistributeTask {
 
 	TestFlightPrepareTask() {
 		super()
@@ -30,26 +29,8 @@ class TestFlightPrepareTask extends AbstractArchiveTask {
 
 	@TaskAction
 	def archive() {
-
 		copyIpaToDirectory(project.testflight.outputDirectory)
 		copyDsymToDirectory(project.testflight.outputDirectory)
-
-
-		logger.debug("project.testflight.outputDirectory {}", project.testflight.outputDirectory)
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			baseZipName = project.xcodebuild.productName + project.xcodebuild.bundleNameSuffix
-		} else {
-			baseZipName = project.xcodebuild.productName
-		}
-
-		logger.debug("baseZipName {}",  baseZipName)
-
-		def ant = new AntBuilder()
-		ant.zip(destfile: project.testflight.outputDirectory.path + "/" + baseZipName + "." + project.xcodebuild.productType + ".dSYM.zip",
-						basedir: project.xcodebuild.getOutputPath().absolutePath,
-						includes: "*dSYM*/**")
-
-
+		createDsymZip(project.testflight.outputDirectory)
 	}
 }

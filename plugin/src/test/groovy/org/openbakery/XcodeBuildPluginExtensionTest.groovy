@@ -5,9 +5,9 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.AfterMethod
-import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+
 
 /**
  * Created by rene on 24.07.14.
@@ -24,7 +24,6 @@ class XcodeBuildPluginExtensionTest {
 	File xcodebuild6_0
 	File xcodebuild5_1
 
-
 	@BeforeMethod
 	def setup() {
 		mockControl = new GMockController()
@@ -36,6 +35,7 @@ class XcodeBuildPluginExtensionTest {
 
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunnerMock
+		extension.infoPlist = "Info.plist";
 
 
 		xcodebuild6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
@@ -431,20 +431,41 @@ class XcodeBuildPluginExtensionTest {
 
 
 	@Test
-	void testProductName() {
+	void testBundleNameWidget() {
+		extension.commandRunner = new CommandRunner()
+
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
 
 		extension.target = "ExampleTodayWidget"
 
 		extension.parseInfoFromProjectFile(project)
 
-		assert extension.productName.equals("ExampleTodayWidget")
+		assert extension.bundleName.equals("ExampleTodayWidget")
 
 	}
 
 	@Test
+	void testBundleName() {
+		File projectDir =  new File("../example/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.commandRunner = new CommandRunner()
+
+		extension.target = "Example"
+
+		extension.parseInfoFromProjectFile(project)
+
+		assert extension.bundleName.equals("Example")
+
+	}
+
+
+	@Test
 	void testProductType() {
+		extension.commandRunner = new CommandRunner()
+
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 
@@ -457,9 +478,11 @@ class XcodeBuildPluginExtensionTest {
 	}
 
 	@Test
-	void testApplicationBundle() {
+	void testApplicationBundleForWidget() {
+		extension.commandRunner = new CommandRunner()
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
 		extension.sdk = "iphoneos"
 		extension.target = "ExampleTodayWidget"
 		extension.parseInfoFromProjectFile(project)
@@ -470,9 +493,29 @@ class XcodeBuildPluginExtensionTest {
 	}
 
 	@Test
-	void testIpaBundle() {
+	void testApplicationBundle() {
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.commandRunner = new CommandRunner()
+
+		extension.sdk = "iphoneos"
+		extension.target = "Example"
+		extension.parseInfoFromProjectFile(project)
+
+		String applicationBundle = extension.getApplicationBundle().absolutePath;
+		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/Example.app")
+
+	}
+
+	@Test
+	void testIpaBundleForIpa() {
+
+		extension.commandRunner = new CommandRunner()
+
+		File projectDir =  new File("../example/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
 		extension.sdk = "iphoneos"
 		extension.target = "ExampleTodayWidget"
 		extension.parseInfoFromProjectFile(project)
@@ -481,4 +524,38 @@ class XcodeBuildPluginExtensionTest {
 		assert ipaBundle.endsWith("build/sym/Debug-iphoneos/ExampleTodayWidget.ipa")
 
 	}
+
+
+	void mockValueFromPlist(String key, String value) {
+		File infoPlist = new File(project.projectDir, "Info.plist")
+
+		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :" + key]
+		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
+	}
+
+
+
+	@Test
+	void testDefaultBundleNameEmpty() {
+		extension.productName = "TestApp1"
+
+		mockValueFromPlist("CFBundleName", "");
+
+		mockControl.play {
+			String bundleName = extension.getBundleName();
+			assert bundleName.equals("TestApp1")
+		}
+	}
+
+	@Test
+	void testDefaultBundleNameValue() {
+
+		mockValueFromPlist("CFBundleName", "TestApp2");
+
+		mockControl.play {
+			String bundleName = extension.getBundleName();
+			assert bundleName.equals("TestApp2")
+		}
+	}
+
 }
