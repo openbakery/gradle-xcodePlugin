@@ -6,10 +6,11 @@ buildscript {
 	}
 }
 
-def versionNumber = '0.2'
+import com.sarhanm.versioner.VersionerOptions
+project.extensions.create('versioner', VersionerOptions)
+apply plugin: 'com.sarhanm.versioner'
 
 group = 'org.icecrystal23'
-version = versionNumber
 
 apply plugin: 'java'
 apply plugin: 'groovy'

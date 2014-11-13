@@ -64,7 +64,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		if (!new File(keychainPath).exists()) {
 			commandRunner.run(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
 		}
-		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign", "-T", project.xcodebuild.xcodebuildCommand])
+		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
 
 
 		if (getOSVersion().minor >= 9) {
@@ -73,6 +73,9 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			keychainList.add(keychainPath)
 			setKeychainList(keychainList)
 		}
+
+        // Set a long timeout on the keychain so it doesn't lock before the build completes
+        commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", "7200", keychainPath])
 	}
 
 
