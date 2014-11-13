@@ -74,10 +74,10 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			setKeychainList(keychainList)
 		}
 
-        // Set a custom timeout on the keychain if requested
-        if (project.xcodebuild.signing.timeout != null) {
-            commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])
-        }
+		// Set a custom timeout on the keychain if requested
+		if (project.xcodebuild.signing.timeout != null) {
+				commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])
+		}
 	}
 
 

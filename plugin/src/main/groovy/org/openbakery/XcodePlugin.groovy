@@ -229,9 +229,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.signing.keychainPassword')) {
 				project.xcodebuild.signing.keychainPassword = project['signing.keychainPassword']
 			}
-            if (project.hasProperty('xcodebuild.signing.timeout')) {
-                project.xcodebuild.signing.timeout = project['signing.timeout']
-            }
+			if (project.hasProperty('xcodebuild.signing.timeout')) {
+				project.xcodebuild.signing.timeout = project['signing.timeout']
+			}
 
 			if (project.hasProperty('xcodebuild.additionalParameters')) {
 				project.xcodebuild.additionalParameters = project['xcodebuild.additionalParameters']
