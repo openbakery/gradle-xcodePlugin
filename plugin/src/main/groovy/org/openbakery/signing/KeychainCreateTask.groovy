@@ -75,7 +75,9 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		}
 
         // Set a long timeout on the keychain so it doesn't lock before the build completes
-        commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", "7200", keychainPath])
+        if (project.xcodebuild.signing.timeout != null) {
+            commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])
+        }
 	}
 
 
