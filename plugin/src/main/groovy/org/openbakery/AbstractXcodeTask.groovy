@@ -64,8 +64,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File destinationFile = new File(toDirectory, FilenameUtils.getName(address))
 		return destinationFile.absolutePath
-
-		return destinationFile.absolutePath
 	}
 
 

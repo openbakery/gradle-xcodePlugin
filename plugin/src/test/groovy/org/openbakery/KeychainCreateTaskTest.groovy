@@ -13,9 +13,8 @@ import org.testng.annotations.Test
  * User: rene
  * Date: 22.08.13
  * Time: 17:29
- * To change this template use File | Settings | File Templates.
  */
-class KeychainCreateTest {
+class KeychainCreateTaskTest {
 
 	Project project
 	KeychainCreateTask keychainCreateTask

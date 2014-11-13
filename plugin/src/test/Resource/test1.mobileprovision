@@ -36,7 +36,7 @@
 		</array>
 	</dict>
 	<key>ExpirationDate</key>
-	<date>2014-10-04T08:57:51Z</date>
+	<date>2079-07-04T08:57:51Z</date>
 	<key>Name</key>
 	<string>ad hoc</string>
 	<key>ProvisionedDevices</key>
@@ -46,7 +46,7 @@
 	<key>TimeToLive</key>
 	<integer>24855</integer>
 	<key>UUID</key>
-	<string>EEEEFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF</string>
+	<string>XXXXFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF</string>
 	<key>Version</key>
 	<integer>1</integer>
 </dict>

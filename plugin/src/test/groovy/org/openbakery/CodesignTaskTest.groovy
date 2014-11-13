@@ -39,6 +39,8 @@ class CodesignTaskTest {
 		codesignTask = project.tasks.findByName('codesign')
 		codesignTask.setProperty("commandRunner", commandRunnerMock)
 
+
+		new File("build/codesign/PackageApplication").delete()
 	}
 
 
@@ -99,6 +101,47 @@ class CodesignTaskTest {
 						project.xcodebuild.getOutputPath().absolutePath + "/My.ipa",
 						"--keychain",
 						project.xcodebuild.signing.keychainPathInternal.absolutePath
+		]
+
+		def environment = ["CODESIGN_ALLOCATE":"MYENV"]
+
+
+		commandRunnerMock.run(".", commandList, environment, null).times(1)
+
+		mockControl.play {
+			codesignTask.codesign()
+		}
+
+	}
+
+
+	@Test
+	void testCodesignWithPlugin() {
+
+		project.xcodebuild.signing.plugin = "MyWidget"
+
+		mockFindPackageApplication()
+
+
+		FileUtils.writeStringToFile(project.xcodebuild.getApplicationBundle(), "dummy");
+
+
+		List<String> commandList
+		commandList?.clear()
+		def packageApplicationScript = new File("build/codesign/PackageApplication").absolutePath
+
+		commandRunnerMock.runWithResult(["xcrun", "-find", "codesign_allocate"]).returns("MYENV");
+
+		commandList = [
+						packageApplicationScript,
+						"-v",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.app",
+						"-o",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.ipa",
+						"--keychain",
+						project.xcodebuild.signing.keychainPathInternal.absolutePath,
+						"--plugin",
+						"MyWidget"
 		]
 
 		def environment = ["CODESIGN_ALLOCATE":"MYENV"]

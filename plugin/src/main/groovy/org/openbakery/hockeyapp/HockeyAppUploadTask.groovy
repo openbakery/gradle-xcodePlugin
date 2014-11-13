@@ -137,13 +137,16 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 
 	def void uploadProvisioningProfile() {
 
+		if (project.xcodebuild.signing.mobileProvisionFile.size() != 1) {
+			return;
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		try {
 			HttpPost httpPost = new HttpPost(HOCKEY_APP_API_URL + project.hockeyapp.appID + "/provisioning_profiles");
 
 			HttpEntity requestEntity = MultipartEntityBuilder.create()
-							.addBinaryBody("mobileprovision", project.xcodebuild.signing.mobileProvisionFile)
+							.addBinaryBody("mobileprovision", project.xcodebuild.signing.mobileProvisionFile.get(0))
 							.build()
 
 			httpPost.setEntity(requestEntity);

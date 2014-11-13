@@ -18,12 +18,14 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.Task
+import org.openbakery.signing.CodesignTask
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	XcodeBuildArchiveTask() {
 		super()
-		dependsOn('codesign')
+
+		dependsOn('xcodebuild', 'codesign')
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 

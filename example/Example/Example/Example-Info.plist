@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>MyExample</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.openbakery.Example-Test</string>
+	<string>org.openbakery.Example</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

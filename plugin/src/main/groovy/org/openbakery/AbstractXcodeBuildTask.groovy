@@ -58,8 +58,10 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		if (project.xcodebuild.sdk.startsWith("iphoneos") && project.xcodebuild.signing != null && project.xcodebuild.signing.identity != null) {
 			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 			commandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
-			String uuid = provisioningProfileIdReader.readProvisioningProfileUUID(project.xcodebuild.signing.mobileProvisionFile)
-			commandList.add("PROVISIONING_PROFILE=" + uuid)
+			if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
+				String uuid = provisioningProfileIdReader.readProvisioningProfileUUID(project.xcodebuild.signing.mobileProvisionFile.get(0))
+				commandList.add("PROVISIONING_PROFILE=" + uuid)
+			}
 		}
 
 		if (project.xcodebuild.arch != null) {

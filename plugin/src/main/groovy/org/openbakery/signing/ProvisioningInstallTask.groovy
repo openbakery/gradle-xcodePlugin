@@ -20,14 +20,35 @@ import org.openbakery.AbstractXcodeTask
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
 
+	public final static PROVISIONING_NAME_BASE = "gradle-"
+
+	ProvisioningProfileIdReader provisioningProfileIdReader;
+
 
 	ProvisioningInstallTask() {
 		super()
 		this.description = "Installs the given provisioning profile"
-
+		provisioningProfileIdReader = new ProvisioningProfileIdReader()
 		this.setOnlyIf {
 			return !project.xcodebuild.sdk.startsWith("iphonesimulator")
 		}
+	}
+
+
+	void linkToLibraray(File mobileProvisionFile) {
+		File provisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
+		if (!provisionPath.exists()) {
+			provisionPath.mkdirs()
+		}
+
+		File mobileProvisionFileLinkToLibrary =  new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + mobileProvisionFile.getName());
+		if (mobileProvisionFileLinkToLibrary.exists()) {
+			mobileProvisionFileLinkToLibrary.delete()
+		}
+
+
+		commandRunner.run(["/bin/ln", "-s", mobileProvisionFile.absolutePath, mobileProvisionFileLinkToLibrary.absolutePath])
+
 	}
 
 	@TaskAction
@@ -43,16 +64,20 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 			return
 		}
 
-		def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, project.xcodebuild.signing.mobileProvisionURI)
-		project.xcodebuild.signing.mobileProvisionFile = new File(mobileProvisionFile)
+		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
+			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
-		File provisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
-		if (!provisionPath.exists()) {
-			provisionPath.mkdirs()
+			String uuid = provisioningProfileIdReader.readProvisioningProfileUUID(mobileProvisionFile)
+			String mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
+
+			File downloadedFile = new File(mobileProvisionFile)
+			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)
+			downloadedFile.renameTo(renamedProvisionFile)
+
+			project.xcodebuild.signing.mobileProvisionFile = renamedProvisionFile;
+
+			linkToLibraray(renamedProvisionFile	)
 		}
 
-
-
-		commandRunner.run(["/bin/ln", "-s", mobileProvisionFile, project.xcodebuild.signing.mobileProvisionFileLinkToLibrary.absolutePath])
 	}
 }

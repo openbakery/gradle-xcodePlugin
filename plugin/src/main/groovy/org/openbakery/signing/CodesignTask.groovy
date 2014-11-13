@@ -29,7 +29,7 @@ class CodesignTask extends AbstractXcodeTask {
 
 	CodesignTask() {
 		super()
-		dependsOn("xcodebuild")
+		dependsOn('keychain-create', 'provisioning-install', 'infoplist-modify')
 		this.description = "Signs the app bundle that was created by xcodebuild"
 	}
 
@@ -41,6 +41,11 @@ class CodesignTask extends AbstractXcodeTask {
 	 */
 	String preparePackageApplication() {
 
+		File destinationFile = new File(project.xcodebuild.signing.signingDestinationRoot.absolutePath, "PackageApplication")
+		if (destinationFile.exists()) {
+			return destinationFile.absolutePath
+		}
+
 		def commandListFindPackageApplication = [
 						project.xcodebuild.xcrunCommand,
 						"-sdk",
@@ -50,7 +55,7 @@ class CodesignTask extends AbstractXcodeTask {
 		];
 		def packageApplicationFile = commandRunner.runWithResult(commandListFindPackageApplication).trim();
 
-		File destinationFile = new File(project.xcodebuild.signing.signingDestinationRoot.absolutePath, "PackageApplication")
+
 
 		FileUtils.copyFile(new File(packageApplicationFile), destinationFile);
 
@@ -123,7 +128,10 @@ class CodesignTask extends AbstractXcodeTask {
 			commandList.add(project.xcodebuild.signing.mobileProvisionFile.absolutePath)
 		}
 
-
+		if (project.xcodebuild.signing.plugin) {
+			commandList.add("--plugin");
+			commandList.add(project.xcodebuild.signing.plugin)
+		}
 
 
 		def codesignAllocateCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-find", "codesign_allocate"]).trim();

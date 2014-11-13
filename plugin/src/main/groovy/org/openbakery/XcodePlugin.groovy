@@ -418,21 +418,18 @@ class XcodePlugin implements Plugin<Project> {
 
 		if (project.xcodebuild.signing.mobileProvisionURI != null) {
 			logger.debug("added cleanup for provisioning profile")
-			codesignTask.doLast {
-				logger.debug("run provisioning cleanup")
-				ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
-				provisioningCleanup.clean()
-			}
+			ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
+			provisioningCleanup.mustRunAfter(codesignTask)
 		}
 
 		if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
 			logger.debug("added cleanup for certificate")
-			codesignTask.doLast {
-				logger.debug("run certificate cleanup")
-				KeychainCleanupTask keychainCleanup = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
-				keychainCleanup.clean()
-			}
+			ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
+			provisioningCleanup.mustRunAfter(codesignTask)
 		}
+
+		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(BUILD_TASK_NAME)
+		codesignTask.shouldRunAfter(xcodeBuildTask)
 	}
 
 	private configureTestflight(Project project) {
