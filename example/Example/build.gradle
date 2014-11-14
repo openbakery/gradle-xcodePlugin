@@ -37,11 +37,9 @@ apply plugin: 'xcode'
 xcodebuild {
 	//version = "6A1052d"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 
-	//scheme = 'Example'
 	target = 'Example'
 
 	configuration = 'Debug'
-	//configuration = 'Release'
 
 	sdk = 'iphoneos'
 
@@ -56,7 +54,7 @@ task continuous(dependsOn:'test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
 
-task integration(dependsOn: 'archive') {
+task integration(dependsOn: ['xcodebuild', 'package']) {
 	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
 }
 task release(dependsOn: 'archive') {

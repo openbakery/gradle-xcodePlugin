@@ -22,13 +22,11 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	public final static PROVISIONING_NAME_BASE = "gradle-"
 
-	ProvisioningProfileIdReader provisioningProfileIdReader;
 
 
 	ProvisioningInstallTask() {
 		super()
 		this.description = "Installs the given provisioning profile"
-		provisioningProfileIdReader = new ProvisioningProfileIdReader()
 		this.setOnlyIf {
 			return !project.xcodebuild.sdk.startsWith("iphonesimulator")
 		}
@@ -67,7 +65,9 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
 			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
-			String uuid = provisioningProfileIdReader.readProvisioningProfileUUID(mobileProvisionFile)
+			ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(mobileProvisionFile)
+
+			String uuid = provisioningProfileIdReader.getUUID()
 			String mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
 
 			File downloadedFile = new File(mobileProvisionFile)

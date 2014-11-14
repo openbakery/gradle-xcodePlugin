@@ -125,7 +125,7 @@ class CodesignTask extends AbstractXcodeTask {
 			commandList.add("--sign");
 			commandList.add(project.xcodebuild.signing.identity)
 			commandList.add("--embed");
-			commandList.add(project.xcodebuild.signing.mobileProvisionFile.absolutePath)
+			commandList.add(project.xcodebuild.signing.mobileProvisionFile.get(0).absolutePath)
 		}
 
 		if (project.xcodebuild.signing.plugin) {

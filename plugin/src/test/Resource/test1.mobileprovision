@@ -4,7 +4,7 @@
 <dict>
 	<key>ApplicationIdentifierPrefix</key>
 	<array>
-		<string>6P2Z3HB85N</string>
+		<string>AAAAAAAAAAA</string>
 	</array>
 	<key>CreationDate</key>
 	<date>2011-06-16T08:57:51Z</date>
@@ -27,12 +27,12 @@
 	<key>Entitlements</key>
 	<dict>
 		<key>application-identifier</key>
-		<string>AW543HBASDN.*</string>
+		<string>AAAAAAAAAAA.org.openbakery.ExampleWidget</string>
 		<key>get-task-allow</key>
 		<false/>
 		<key>keychain-access-groups</key>
 		<array>
-			<string>AW543HBASDN.*</string>
+			<string>AAAAAAAAAAA.*</string>
 		</array>
 	</dict>
 	<key>ExpirationDate</key>

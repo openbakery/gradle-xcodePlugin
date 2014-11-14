@@ -21,7 +21,6 @@ class ProvisioningInstallTaskTest {
 
 	GMockController mockControl
 	CommandRunner commandRunnerMock
-	ProvisioningProfileIdReader provisioningProfileIdReader;
 
 	File provisionLibraryPath
 	File projectDir
@@ -43,7 +42,7 @@ class ProvisioningInstallTaskTest {
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
 		provisioningInstallTask.setProperty("commandRunner", commandRunnerMock)
-		provisioningProfileIdReader = new ProvisioningProfileIdReader()
+
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 	}
@@ -71,8 +70,8 @@ class ProvisioningInstallTaskTest {
 		File testMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-
-		String uuid = provisioningProfileIdReader.readProvisioningProfileUUID(testMobileprovision.absolutePath)
+		ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(testMobileprovision.absolutePath)
+		String uuid = provisioningProfileIdReader.getUUID()
 		String name =  "gradle-" + uuid + ".mobileprovision";
 
 		mockLinking(name)
@@ -94,9 +93,8 @@ class ProvisioningInstallTaskTest {
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
 
-
-		String firstName = "gradle-" + provisioningProfileIdReader.readProvisioningProfileUUID(firstMobileprovision.absolutePath) + ".mobileprovision";
-		String secondName = "gradle-" + provisioningProfileIdReader.readProvisioningProfileUUID(secondMobileprovision.absolutePath) + ".mobileprovision";
+		String firstName = "gradle-" + new ProvisioningProfileIdReader(firstMobileprovision.absolutePath).getUUID() + ".mobileprovision";
+		String secondName = "gradle-" + new ProvisioningProfileIdReader(secondMobileprovision.absolutePath).getUUID() + ".mobileprovision";
 
 		mockLinking(firstName)
 		mockLinking(secondName)

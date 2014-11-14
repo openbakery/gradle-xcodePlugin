@@ -43,6 +43,7 @@ import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
 import org.openbakery.signing.CodesignTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.PackageTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.sparkle.SparkleArchiveTask
@@ -88,6 +89,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioning-install'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioning-clean'
 	public static final String CODESIGN_TASK_NAME = 'codesign'
+	public static final String PACKAGE_TASK_NAME = 'package'
 	public static final String TESTFLIGHT_PREPARE_TASK_NAME = 'testflight-prepare'
 	public static final String TESTFLIGHT_TASK_NAME = 'testflight'
 	public static final String TESTFLIGHT_CLEAN_TASK_NAME = 'testflight-clean'
@@ -416,20 +418,32 @@ class XcodePlugin implements Plugin<Project> {
 	private configureCodesign(Project project) {
 		CodesignTask codesignTask = project.task(CODESIGN_TASK_NAME, type: CodesignTask, group: XCODE_GROUP_NAME)
 
-		if (project.xcodebuild.signing.mobileProvisionURI != null) {
-			logger.debug("added cleanup for provisioning profile")
-			ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
-			provisioningCleanup.mustRunAfter(codesignTask)
+		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
+
+		ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
+
+		//provisioningCleanup.mustRunAfter(codesignTask)
+		//provisioningCleanup.mustRunAfter(packageTask)
+
+		KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
+		//keychainCleanupTask.mustRunAfter(codesignTask)
+		//keychainCleanupTask.mustRunAfter(packageTask)
+
+		packageTask.doLast {
+			provisioningCleanup.clean()
+			keychainCleanupTask.clean()
 		}
 
-		if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
-			logger.debug("added cleanup for certificate")
-			ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
-			provisioningCleanup.mustRunAfter(codesignTask)
+		codesignTask.doLast {
+			provisioningCleanup.clean()
+			keychainCleanupTask.clean()
 		}
 
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(BUILD_TASK_NAME)
 		codesignTask.shouldRunAfter(xcodeBuildTask)
+		packageTask.shouldRunAfter(xcodeBuildTask)
+
+
 	}
 
 	private configureTestflight(Project project) {

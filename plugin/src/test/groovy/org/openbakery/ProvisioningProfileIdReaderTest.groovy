@@ -1,8 +1,6 @@
 package org.openbakery
 
 import org.openbakery.signing.ProvisioningProfileIdReader
-import org.testng.annotations.BeforeClass
-import org.testng.annotations.ExpectedExceptions
 import org.testng.annotations.Test
 
 /**
@@ -11,23 +9,30 @@ import org.testng.annotations.Test
  */
 class ProvisioningProfileIdReaderTest {
 
-	ProvisioningProfileIdReader reader;
 
-	@BeforeClass
-	void setup() {
-		reader = new ProvisioningProfileIdReader();
+	@Test
+	void readUUIDFromFile() {
+		ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision");
+		assert reader.getUUID().equals("FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
+	}
+
+	@Test
+	void readApplicationIdentifierPrefix() {
+		ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision");
+		assert reader.getApplicationIdentifierPrefix().equals("AAAAAAAAAAA")
 	}
 
 
 	@Test
-	void readUUIDFromFile() {
-		String UUID = reader.readProvisioningProfileUUID("src/test/Resource/test.mobileprovision")
-		assert UUID.equals("FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
+	void readApplicationIdentifier() {
+		ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision");
+		assert reader.getApplicationIdentifier().equals("org.openbakery.Example")
 	}
+
 
 	@Test(expectedExceptions = [IllegalArgumentException.class])
 	void readProfileHasExpired() {
-		reader.readProvisioningProfileUUID("src/test/Resource/expired.mobileprovision")
+		new ProvisioningProfileIdReader("src/test/Resource/expired.mobileprovision");
 	}
 
 
