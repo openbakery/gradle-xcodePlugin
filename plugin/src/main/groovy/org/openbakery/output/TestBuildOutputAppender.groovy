@@ -1,14 +1,10 @@
 package org.openbakery.output
 
-import org.apache.commons.collections.Buffer
-import org.apache.commons.collections.buffer.CircularFifoBuffer
 import org.gradle.api.Project
 import org.gradle.logging.StyledTextOutput
 import org.openbakery.Destination
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
-import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,109 +15,74 @@ import java.util.regex.Matcher
  */
 class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
-	private static Logger logger = LoggerFactory.getLogger(TestBuildOutputAppender.class)
-
 	def TEST_CASE_FINISH_PATTERN = ~/^Test Case '(.*)'\s(\w+)\s\((\d+\.\d+)\sseconds\)\./
-
 	def TEST_CASE_START_PATTERN = ~/^Test Case '(.*)' started./
-
-	def TEST_SUITE_START_PATTERN = ~/^Test Suite '(.*)' started.*/
-	def TEST_SUITE_SUCCESS_END_PATTERN = ~/^Test Suite '(.*)' passed.*/
-	def TEST_SUITE_FAILED_END_PATTERN = ~/^Test Suite '(.*)' failed.*/
+	def TEST_SUITE_START_PATTERN = ~/.*Test Suite '(.*)' started.*/
+	def FAILED_TESTS_PATTERN = ~/^Failing tests:/
+	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
+	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
 	boolean testsRunning = false
+	boolean outputLine = false
 	int testRun = 0
+	int startedDestination = -1
 	Project project
-
 	String currentTestCase = null;
-	Buffer fifoBuffer = new CircularFifoBuffer(100);
-
-	List<String> testSuites
-
 
 	TestBuildOutputAppender(StyledTextOutput output, Project project) {
 		super(output)
 		this.project = project
 	}
 
-
-
+	@Override
 	void append(String line) {
 
 		checkTestSuite(line);
 
+		def startedTest = checkTestStart(line)
 		if (currentTestCase == null) {
-			currentTestCase = checkTestStart(line);
-		}
-
-		if (currentTestCase != null) {
+			currentTestCase = startedTest;
+		} else if (startedTest != null) {
+			// current test case was not properly finished, so some other error occurred, so fail it
+			printTestResult(currentTestCase, true, "(unknown)");
+			currentTestCase = startedTest
+		} else {
 			checkTestFinished(line);
 		}
-
 		checkAllTestsFinished(line);
 
-		if (!testsRunning) {
+		if (outputLine) {
+			output.append("\n")
+			output.append(line)
+		} else if (!testsRunning) {
 			super.append(line)
 		}
-
 	}
 
 	void checkTestSuite(String line) {
-
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			if (testSuites == null) {
-				testSuites = new ArrayList<String>()
-			}
-			testSuites.add(startMatcher[0][1].trim())
-			return;
+			testsRunning = true
+			startDestination()
 		}
-
-		def endMatcher = TEST_SUITE_SUCCESS_END_PATTERN.matcher(line)
-		if (endMatcher.matches()) {
-			testSuites.remove(endMatcher[0][1].trim())
-			return;
-		}
-
-
-		endMatcher = TEST_SUITE_FAILED_END_PATTERN.matcher(line)
-		if (endMatcher.matches()) {
-			testSuites.remove(endMatcher[0][1].trim())
-			for (String cachedLine in fifoBuffer) {
-				output.println(cachedLine);
-			}
-			output.println();
-			output.println();
-			output.append("TESTS FAILED");
-			output.println();
-			output.println();
-		}
-
-
 	}
 
 	void checkAllTestsFinished(String line) {
-		fifoBuffer.add(line);
-
-		if (this.testSuites != null && this.testSuites.isEmpty()) {
-
-			if (currentTestCase) {
-				// current test case was not properly finished, so some other error occurred, so fail it
-				printTestResult(currentTestCase, true, "(unknown)");
-			}
-
-			currentTestCase = null
+		def successMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
+		def failedMatcher = TEST_FAILED_PATTERN.matcher(line)
+		if (successMatcher.matches() || failedMatcher.matches()) {
+			finishDestination()
 			testsRunning = false
-
-			Destination destination = project.xcodebuild.destinations[testRun]
-			output.append("\n")
-			output.append("Tests finished: ")
-			output.append(destination.toPrettyString());
-			output.println();
-			output.println();
-			testRun++;
-
-			this.testSuites = null;
+			outputLine = false
+		} else {
+			def failingTestsMatcher = FAILED_TESTS_PATTERN.matcher(line)
+			if (failingTestsMatcher.matches()) {
+				testsRunning = false
+				outputLine = true
+				output.println();
+				output.append("TESTS FAILED");
+				output.println();
+			}
 		}
 	}
 
@@ -130,35 +91,46 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		if (finishMatcher.matches()) {
 			String result = finishMatcher[0][2].trim()
 			String duration = finishMatcher[0][3].trim()
-
 			boolean failed = result.equals("failed");
-
 			printTestResult(currentTestCase, failed, duration);
-
 			currentTestCase = null;
 		}
-		return;
 	}
 
-
-
 	String checkTestStart(String line) {
-		Matcher startMatcher = TEST_CASE_START_PATTERN.matcher(line)
+		def startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			if (!testsRunning) {
-				Destination destination = project.xcodebuild.destinations[testRun]
-				if (destination) {
-					output.append("\nPerform unit tests for: ")
-					output.append(destination.toPrettyString());
-					output.println();
-					output.println();
-				}
-
-				testsRunning = true;
-			}
+			testsRunning = true
+			startDestination()
 			return startMatcher[0][1].trim()
 		}
 		return null;
+	}
+
+	void startDestination() {
+		if (startedDestination != testRun) {
+			Destination destination = project.xcodebuild.destinations[testRun]
+			if (destination) {
+				startedDestination = testRun
+				output.append("\nPerform unit tests for: ")
+				output.append(destination.toPrettyString());
+				output.println();
+				output.println();
+			}
+		}
+	}
+
+	void finishDestination() {
+		Destination destination = project.xcodebuild.destinations[testRun]
+		if (destination != null) {
+			output.println();
+			output.append("\n")
+			output.append("Tests finished: ")
+			output.append(destination.toPrettyString());
+			output.println();
+			output.println();
+			testRun++;
+		}
 	}
 
 	void printTestResult(String testCase, boolean failed, String duration) {
@@ -169,11 +141,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		}
 		output.append(" ")
 		output.append(testCase);
-
 		output.append(" - (")
 		output.append(duration)
 		output.append(" seconds)")
 		output.println();
-
 	}
 }
