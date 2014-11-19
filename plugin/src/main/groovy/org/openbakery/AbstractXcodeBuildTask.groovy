@@ -29,8 +29,10 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add("-scheme");
 			commandList.add(project.xcodebuild.scheme);
 
-			commandList.add("-workspace")
-			commandList.add(project.xcodebuild.workspace)
+			if (project.xcodebuild.workspace != null) {
+				commandList.add("-workspace")
+				commandList.add(project.xcodebuild.workspace)
+			}
 
 			if (project.xcodebuild.sdk != null) {
 				commandList.add("-sdk")
