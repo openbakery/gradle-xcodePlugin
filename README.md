@@ -64,9 +64,9 @@ xcodebuild Parameters:
 
 		Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
-    * _timeout_ - A custom timeout before the keychain automatically locks, in seconds.  Set this to be longer than your build time if you are getting a prompt for the keychain password.
+    * _timeout_ - A custom timeout in seconds before the keychain automatically locks. If your build take longer than 5 minutes then set this value so that the keychain remains accessible for signing.
 
-        default value: empty
+        default value: empty (= 300 seconds)
 
 * _destination_ * - destination configuration, that is used for the unit test execution
 
