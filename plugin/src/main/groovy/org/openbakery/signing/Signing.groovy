@@ -18,7 +18,7 @@ class Signing {
 	String mobileProvisionURI
 	String keychainPassword = "This_is_the_default_keychain_password"
 	File keychain
-
+	Integer timeout
 
 
 	/**
