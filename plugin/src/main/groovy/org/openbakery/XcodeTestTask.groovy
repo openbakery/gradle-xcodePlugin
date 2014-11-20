@@ -152,6 +152,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);LogLevel.INFO
+			throw new Exception("Error attempting to run the unit tests!");
 		} finally {
 
 			if (!parseResult(outputFile)) {
