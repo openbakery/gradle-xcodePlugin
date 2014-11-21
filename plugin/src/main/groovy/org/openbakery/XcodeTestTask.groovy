@@ -105,6 +105,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def commandList = createCommandList()
 
+		// Run the command in a pseudo-terminal to force line-buffered output
+		// (Otherwise stderr can corrupt the stdout output)
+		commandList = ["script", "-q", "/dev/null"] + commandList
+
 
 		for (Destination destination in project.xcodebuild.destinations) {
 
@@ -167,6 +171,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def resultList = []
 
+		List<String> testSuites = null;
+
 		int testRun = 0;
 
 		StringBuilder output = new StringBuilder()
@@ -203,6 +209,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 					testClass.results << new TestResult(method: method)
 
 				} else {
+					//TestCase testCase = resultMap.get(testClass).find{ testCase -> testCase.method.equals(method) }
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
 					if (testClass != null) {
 						TestResult testResult = testClass.results.find { testResult -> testResult.method.equals(method) }
@@ -227,14 +234,33 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 
-			def successMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
-			def failedMatcher = TEST_FAILED_PATTERN.matcher(line)
-			if (successMatcher.matches() || failedMatcher.matches()) {
+			def testSuiteMatcher = TEST_SUITE_PATTERN.matcher(line)
+			if (testSuiteMatcher.matches()) {
+
+				String testSuiteName = testSuiteMatcher[0][1].trim();
+				def testSuiteAction = testSuiteMatcher[0][2].trim();
+
+
+				if (testSuiteAction.startsWith('started')) {
+					if (testSuites == null) {
+						testSuites = new ArrayList<String>();
+					}
+					testSuites.add(testSuiteName);
+				} else if (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed')) {
+					testSuites.remove(testSuiteName);
+				}
+
+
+			}
+
+
+			if (testSuites != null && testSuites.isEmpty()) {
 				Destination destination = project.xcodebuild.destinations[testRun]
 				this.allResults.put(destination, resultList)
 				testRun ++;
 
 				resultList = []
+				testSuites = null
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {
