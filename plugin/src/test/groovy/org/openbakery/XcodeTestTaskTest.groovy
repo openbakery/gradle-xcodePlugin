@@ -48,7 +48,6 @@ class XcodeTestTaskTest {
 		destinationPhone.os = "iOS"
 
 
-		project.xcodebuild.availableDevices = []
 		project.xcodebuild.availableSimulators << destinationPad
 		project.xcodebuild.availableSimulators << destinationPhone
 
@@ -141,6 +140,16 @@ class XcodeTestTaskTest {
 		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
 
 		assert xcodeTestTask.numberSuccess() == 8
+		assert xcodeTestTask.numberErrors() == 0
+
+
+	}
+
+	@Test
+	void parseComplexTestOutput() {
+		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
+
+		assert xcodeTestTask.numberSuccess() == 60
 		assert xcodeTestTask.numberErrors() == 0
 
 

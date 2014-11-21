@@ -107,9 +107,6 @@ Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxic
 
 2014-10-08 11:21:18.935 xcodebuild[8142:2007]  iPhoneSimulator: Sim iPad Air is booted but getenv returned nil for test connection socket path.
  Will retry in 1s (1 attempts so far).
-Failing tests:
-	-[ExampleTests testExample]
-** TEST FAILED **
 
 2014-10-08 11:21:28.817 xcodebuild[8142:d07] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7fcda4dbfdf0 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
 === BUILD TARGET Example OF PROJECT Example WITH CONFIGURATION Debug ===
@@ -184,9 +181,6 @@ Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxic
 
 2014-10-08 11:21:30.042 xcodebuild[8142:4303]  iPhoneSimulator: Sim iPhone 4s is booted but getenv returned nil for test connection socket path.
  Will retry in 1s (1 attempts so far).
-Failing tests:
-	-[ExampleTests testExample]
-** TEST FAILED **
 
 Test Suite 'All tests' started at 2014-10-08 09:21:28 +0000
 Test Suite 'ExampleTests.xctest' started at 2014-10-08 09:21:28 +0000
@@ -200,6 +194,11 @@ Test Suite 'ExampleTests.xctest' failed at 2014-10-08 09:21:28 +0000.
 	 Executed 1 test, with 1 failure (0 unexpected) in 0.001 (0.003) seconds
 Test Suite 'All tests' failed at 2014-10-08 09:21:28 +0000.
 	 Executed 1 test, with 1 failure (0 unexpected) in 0.001 (0.005) seconds
+
+Failing tests:
+    -[ExampleTests testExample]
+** TEST FAILED **
+
 Test Suite 'All tests' started at 2014-10-08 09:21:35 +0000
 Test Suite 'ExampleTests.xctest' started at 2014-10-08 09:21:35 +0000
 Test Suite 'ExampleTests' started at 2014-10-08 09:21:35 +0000
@@ -212,3 +211,7 @@ Test Suite 'ExampleTests.xctest' failed at 2014-10-08 09:21:35 +0000.
 	 Executed 1 test, with 1 failure (0 unexpected) in 0.001 (0.003) seconds
 Test Suite 'All tests' failed at 2014-10-08 09:21:35 +0000.
 	 Executed 1 test, with 1 failure (0 unexpected) in 0.001 (0.005) seconds
+
+Failing tests:
+	-[ExampleTests testExample]
+** TEST FAILED **
