@@ -44,7 +44,6 @@ Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxic
 
 2014-10-08 08:50:32.199 xcodebuild[5784:1003]  iPhoneSimulator: Sim iPad Air is booted but getenv returned nil for test connection socket path.
  Will retry in 1s (1 attempts so far).
-** TEST SUCCEEDED **
 
 2014-10-08 08:50:43.395 xcodebuild[5784:d07] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7f937f6b5520 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
 === BUILD TARGET Example OF PROJECT Example WITH CONFIGURATION Debug ===
@@ -87,8 +86,6 @@ Touch /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxic
     export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin"
     /usr/bin/touch -c /Users/example/Library/Developer/Xcode/DerivedData/Example-gzxkuommzsgsxicqlcnrrqgobshp/Build/Products/Debug-iphonesimulator/ExampleTests.xctest
 
-** TEST SUCCEEDED **
-
 Test Suite 'All tests' started at 2014-10-08 06:50:43 +0000
 Test Suite 'ExampleTests.xctest' started at 2014-10-08 06:50:43 +0000
 Test Suite 'ExampleTests' started at 2014-10-08 06:50:43 +0000
@@ -100,6 +97,9 @@ Test Suite 'ExampleTests.xctest' passed at 2014-10-08 06:50:43 +0000.
 	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
 Test Suite 'All tests' passed at 2014-10-08 06:50:43 +0000.
 	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.003) seconds
+
+** TEST SUCCEEDED **
+
 Test Suite 'All tests' started at 2014-10-08 06:50:50 +0000
 Test Suite 'ExampleTests.xctest' started at 2014-10-08 06:50:50 +0000
 Test Suite 'ExampleTests' started at 2014-10-08 06:50:50 +0000
@@ -111,3 +111,5 @@ Test Suite 'ExampleTests.xctest' passed at 2014-10-08 06:50:50 +0000.
 	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
 Test Suite 'All tests' passed at 2014-10-08 06:50:50 +0000.
 	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.004) seconds
+
+** TEST SUCCEEDED **

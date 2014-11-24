@@ -78,7 +78,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
 
-	def TEST_SUITE_PATTERN = ~/^Test Suite '(.*)'(.*)/
+	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
+	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
+
+	def TEST_SUITE_PATTERN = ~/.*Test Suite '(.*)'(.*)/
 
 
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
@@ -105,6 +108,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def commandList = createCommandList()
 
+		// Run the command in a pseudo-terminal to force line-buffered output
+		// (Otherwise stderr can corrupt the stdout output)
+		commandList = ["script", "-q", "/dev/null"] + commandList
 
 		for (Destination destination in project.xcodebuild.destinations) {
 
@@ -249,11 +255,23 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 			}
 
+			def testSuccessMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
+			def testFailedMatcher = TEST_FAILED_PATTERN.matcher(line)
+
+			if (testSuccessMatcher.matches() || testFailedMatcher.matches()) {
+				testRun ++;
+			}
+
 
 			if (testSuites != null && testSuites.isEmpty()) {
 				Destination destination = project.xcodebuild.destinations[testRun]
-				this.allResults.put(destination, resultList)
-				testRun ++;
+
+				if (this.allResults.containsKey(destination)) {
+					def destinationResultList = this.allResults.get(destination)
+					destinationResultList.addAll(resultList);
+				} else {
+					this.allResults.put(destination, resultList)
+				}
 
 				resultList = []
 				testSuites = null
@@ -270,11 +288,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		store()
 		logger.lifecycle("");
 		if (overallTestSuccess) {
-			logger.lifecycle("All " + numberSuccess() + " tests where successful");
+			logger.lifecycle("All " + numberSuccess() + " tests were successful");
 		} else {
-			logger.lifecycle(numberSuccess() + " tests where successful, and " + numberErrors() + " failues");
+			logger.lifecycle(numberSuccess() + " tests were successful, and " + numberErrors() + " failed");
 		}
-		//logger.quiet("overallTestResult " + overallTestSuccess)
 
 		return overallTestSuccess;
 	}

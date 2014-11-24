@@ -51,13 +51,12 @@ class TestBuildOutputAppenderTest {
 
 		Destination destinationPhone = new Destination()
 		destinationPhone.platform = "iPhoneSimulator"
-		destinationPhone.name = "iPad"
+		destinationPhone.name = "iPhone"
 		destinationPhone.arch = "i386"
 		destinationPhone.id = "iPhone 4s"
 		destinationPhone.os = "iOS"
 
 
-		project.xcodebuild.availableDevices = []
 		project.xcodebuild.availableSimulators << destinationPad
 		project.xcodebuild.availableSimulators << destinationPhone
 
@@ -145,6 +144,20 @@ class TestBuildOutputAppenderTest {
 
 		assert output.toString().contains("TESTS FAILED")
 
+	}
+
+	@Test
+	void testComplexOutput() {
+		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
+		for (String line : simctlOutput.split("\n")) {
+			appender.append(line);
+		}
+		assert output.toString().contains("Perform unit tests for: iPad/iPhoneSimulator/iOS")
+		assert output.toString().contains("Tests finished: iPad/iPhoneSimulator/iOS")
+		assert output.toString().contains("Perform unit tests for: iPhone/iPhoneSimulator/iOS")
+		assert output.toString().contains("Tests finished: iPhone/iPhoneSimulator/iOS")
 	}
 
 }
