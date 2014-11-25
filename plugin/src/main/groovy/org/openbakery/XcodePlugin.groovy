@@ -23,6 +23,7 @@ import org.gradle.api.plugins.BasePlugin
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.cocoapods.CocoapodsTask
+import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
@@ -77,6 +78,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuild-clean"
+	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuild-config"
 	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykit-manifest"
 	public static final String HOCKEYKIT_ARCHIVE_TASK_NAME = "hockeykit-archive"
 	public static final String HOCKEYKIT_NOTES_TASK_NAME = "hockeykit-notes"
@@ -334,10 +336,7 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
-			project.xcodebuild.finishConfiguration(project);
-
 		}
-
 
 	}
 
@@ -361,6 +360,9 @@ class XcodePlugin implements Plugin<Project> {
 		xcodebuildTask.setDescription(buildTask.description);
 		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
 		xcodebuildTask.dependsOn(buildTask);
+
+		XcodeConfigTask configTask = project.getTasks().create(XCODE_CONFIG_TASK_NAME, XcodeConfigTask.class);
+		configTask.setGroup(BasePlugin.BUILD_GROUP);
 
 	}
 

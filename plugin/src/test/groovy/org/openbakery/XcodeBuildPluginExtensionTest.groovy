@@ -55,7 +55,6 @@ class XcodeBuildPluginExtensionTest {
 
 	@AfterMethod
 	def cleanup() {
-		FileUtils.deleteDirectory(new File("build/Platforms"))
 		FileUtils.deleteDirectory(xcodebuild6_1)
 		FileUtils.deleteDirectory(xcodebuild6_0)
 		FileUtils.deleteDirectory(xcodebuild5_1)
@@ -63,300 +62,6 @@ class XcodeBuildPluginExtensionTest {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
-
-
-
-	void mockFindSimctl() {
-		def commandList = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
-		commandRunnerMock.runWithResult(commandList).returns("/Applications/Xcode.app/Contents/Developer/usr/bin/simctl").times(1)
-	}
-
-	void mockSimctlList() {
-		def commandList = ["/Applications/Xcode.app/Contents/Developer/usr/bin/simctl", "list"]
-
-		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/simctl-output.txt"))
-
-		commandRunnerMock.runWithResult(commandList).returns(simctlOutput).times(1)
-	}
-
-
-
-	@Test
-	void testCreateDeviceList_parseDevices() {
-
-		mockFindSimctl()
-		mockSimctlList()
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-		assert extension.availableSimulators.size() == 14 : "expected 14 elements in the availableSimulators list but was: " + extension.availableSimulators.size()
-
-	}
-
-
-
-	@Test
-	void testDestinationFilterPhone() {
-		mockFindSimctl()
-		mockSimctlList()
-
-
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = 'iPhone 4s'
-		}
-
-		assert extension.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
-	}
-
-	@Test
-	void testDestinationFilterPhoneiOS7() {
-		mockFindSimctl()
-		mockSimctlList()
-
-
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = 'iPhone 4s'
-			os = '7.0'
-		}
-
-		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
-	}
-
-	@Test
-	void testDestinationFilteriOS7() {
-		mockFindSimctl()
-		mockSimctlList()
-
-
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			os = '7.0'
-		}
-
-		assert extension.destinations.size() == 6 : "expected 6 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
-	}
-
-
-
-	@Test
-	void testDestinationFilterPhoneWildcard() {
-		mockFindSimctl()
-		mockSimctlList()
-
-
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = '.*iPhone.*'
-		}
-
-		assert extension.destinations.size() == 7 : "expected 7 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
-	}
-
-
-	@Test
-	void testDestinations_iPhoneOS_Build() {
-
-		mockFindSimctl()
-		mockSimctlList()
-
-		extension.sdk = 'iphoneos'
-
-		extension.destination {
-			platform = 'iphoneos'
-			name = 'iPhone 5s'
-			id = '60B5BBDA-6485-44B4-AB87-9C0421EF5D8F'
-		}
-
-
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-
-		assert extension.destinations.asList()[0].id.equals("60B5BBDA-6485-44B4-AB87-9C0421EF5D8F")
-
-	}
-
-
-	void mockDisplayName() {
-		def commandList = [
-											"/usr/libexec/PlistBuddy",
-											new File("build/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices/iPad/Info.plist").getAbsolutePath(),
-											"-c",
-											"Print :displayName"
-							]
-		commandRunnerMock.runWithResult(commandList).returns("iPad").times(1)
-
-
-	}
-
-	void mockNewerEquivalentDevice(String result) {
-		def commandList = [
-						"/usr/libexec/PlistBuddy",
-						new File("build/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices/iPad/Info.plist").getAbsolutePath(),
-						"-c",
-						"Print :newerEquivalentDevice"
-		]
-
-		if (result == null) {
-			commandRunnerMock.runWithResult(commandList).raises(new CommandRunnerException(""));
-		} else {
-			commandRunnerMock.runWithResult(commandList).returns(result)
-		}
-
-
-	}
-
-
-	void mockXcodePath() {
-		def commandList = ["xcode-select", "-p"]
-		commandRunnerMock.runWithResult(commandList).returns("build").times(1)
-
-		File simulatorDirectory = new File("build/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices/iPad");
-		simulatorDirectory.mkdirs()
-	}
-
-
-
-	@Test
-	void testDeviceListXcode5() {
-
-		mockXcodePath();
-		mockDisplayName();
-		mockNewerEquivalentDevice(null);
-
-		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.0.sdk").mkdirs()
-
-
-		mockControl.play {
-			extension.createXcode5DeviceList()
-		}
-
-		assert extension.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		Destination destination =  extension.destinations[0];
-
-		assert destination.name.equals("iPad");
-		assert destination.platform.equals("iOS Simulator")
-		assert destination.os.equals("7.0")
-
-	}
-
-
-	@Test
-	void testDeviceListXcode5_mutibleSimualtors() {
-
-		mockXcodePath();
-		mockDisplayName();
-		mockNewerEquivalentDevice(null);
-
-		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.0.sdk").mkdirs()
-		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk").mkdirs()
-		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
-
-		mockControl.play {
-			extension.createXcode5DeviceList()
-		}
-
-		assert extension.destinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		Destination destination =  extension.destinations[0];
-
-		assert destination.name.equals("iPad");
-		assert destination.platform.equals("iOS Simulator")
-		assert destination.os.equals("7.0")
-
-		assert extension.destinations[1].os.equals("7.1");
-		assert extension.destinations[2].os.equals("6.0");
-
-	}
-
-
-	@Test
-	void testDeviceListXcode5_skipDevice() {
-
-		mockNewerEquivalentDevice("iPhone Retina (3.5-inch)");
-		mockXcodePath();
-		mockDisplayName();
-
-		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
-
-		mockControl.play {
-			extension.createXcode5DeviceList()
-		}
-
-		assert extension.destinations.size() == 0
-
-
-	}
-
-
-	@Test
-	void testDestinationFilter_PhoneAndPad() {
-		mockFindSimctl()
-		mockSimctlList()
-
-		mockControl.play {
-			extension.createDeviceList()
-		}
-
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = 'iPad 2'
-			os = '7.0'
-		}
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = 'iPhone 4s'
-			os = '7.0'
-		}
-
-
-		assert extension.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		assert extension.destinations.asList()[0].id != null: "id of the destination should not be null"
-	}
 
 
 
@@ -430,52 +135,6 @@ class XcodeBuildPluginExtensionTest {
 	}
 
 
-	@Test
-	void testBundleNameWidget() {
-		extension.commandRunner = new CommandRunner()
-
-		File projectDir =  new File("../example/Example")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-
-		extension.target = "ExampleTodayWidget"
-
-		extension.parseInfoFromProjectFile(project)
-
-		assert extension.bundleName.equals("ExampleTodayWidget")
-
-	}
-
-	@Test
-	void testBundleName() {
-		File projectDir =  new File("../example/Example")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-		extension.commandRunner = new CommandRunner()
-
-		extension.target = "Example"
-
-		extension.parseInfoFromProjectFile(project)
-
-		assert extension.bundleName.equals("Example")
-
-	}
-
-
-	@Test
-	void testProductType() {
-		extension.commandRunner = new CommandRunner()
-
-		File projectDir =  new File("../example/Example")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-
-		extension.target = "ExampleTodayWidget"
-
-		extension.parseInfoFromProjectFile(project)
-
-		assert extension.productType.equals("appex")
-
-	}
 
 	@Test
 	void testApplicationBundleForWidget() {
@@ -484,8 +143,9 @@ class XcodeBuildPluginExtensionTest {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.sdk = "iphoneos"
-		extension.target = "ExampleTodayWidget"
-		extension.parseInfoFromProjectFile(project)
+		extension.productName = "ExampleTodayWidget"
+		extension.productType = "appex"
+		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
 
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
 		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleTodayWidget.appex")
@@ -501,7 +161,8 @@ class XcodeBuildPluginExtensionTest {
 
 		extension.sdk = "iphoneos"
 		extension.target = "Example"
-		extension.parseInfoFromProjectFile(project)
+		extension.productName = "Example"
+		extension.infoPlist = "../../example/Example/Example/Example-Info.plist"
 
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
 		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/Example.app")
@@ -517,8 +178,8 @@ class XcodeBuildPluginExtensionTest {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.sdk = "iphoneos"
-		extension.target = "ExampleTodayWidget"
-		extension.parseInfoFromProjectFile(project)
+		extension.productName = "ExampleTodayWidget"
+		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
 
 		String ipaBundle = extension.getIpaBundle().absolutePath;
 		assert ipaBundle.endsWith("build/sym/Debug-iphoneos/ExampleTodayWidget.ipa")

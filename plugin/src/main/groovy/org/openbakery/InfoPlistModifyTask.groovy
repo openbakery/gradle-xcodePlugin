@@ -21,6 +21,10 @@ import org.gradle.api.tasks.TaskAction
 
 class InfoPlistModifyTask extends AbstractXcodeTask {
 
+	public InfoPlistModifyTask() {
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+	}
+
 	@TaskAction
 	def prepare() {
 		def infoPlist = project.xcodebuild.infoPlist

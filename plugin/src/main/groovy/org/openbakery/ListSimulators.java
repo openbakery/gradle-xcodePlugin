@@ -30,7 +30,12 @@ public class ListSimulators extends DefaultTask {
 	}
 
 	public ListSimulators() {
+
 		setDescription("List all available iOS Simulators");
+		dependsOn(
+						XcodePlugin.XCODE_CONFIG_TASK_NAME
+		);
+
 	}
 
 	@TaskAction

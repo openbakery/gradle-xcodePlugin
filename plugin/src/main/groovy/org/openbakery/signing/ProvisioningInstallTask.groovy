@@ -17,6 +17,7 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.XcodePlugin
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
 
@@ -26,6 +27,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	ProvisioningInstallTask() {
 		super()
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		this.description = "Installs the given provisioning profile"
 		this.setOnlyIf {
 			return !project.xcodebuild.sdk.startsWith("iphonesimulator")

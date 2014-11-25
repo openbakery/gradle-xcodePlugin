@@ -110,8 +110,9 @@ class PackageTask extends AbstractXcodeTask {
 		def codesignCommand = [
 						"/usr/bin/codesign",
 		"--force",
-		"--preserve-metadata=identifier,entitlements,resource-rules",
-		"--resource-rules=" + bundle.absolutePath + "/ResourceRules.plist", // "/var/folders/wd/7sh5_vr13w17mmybfj62p29w0000gn/T/vnZO8pD0A6/Payload/ELO-DMS.app/ResourceRules.plist
+		"--preserve-metadata=identifier,entitlements",
+		//"--preserve-metadata=identifier,entitlements,resource-rules",
+		//"--resource-rules=" + bundle.absolutePath + "/ResourceRules.plist",
 		"--sign",
 		project.xcodebuild.getSigning().getIdentity(),
 		bundle.absolutePath,
