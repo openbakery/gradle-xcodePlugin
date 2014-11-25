@@ -72,7 +72,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 
-	public static final String BUILD_TASK_NAME = "build";
 	public static final String TEST_TASK_NAME = "test"
 	public static final String ARCHIVE_TASK_NAME = "archive"
 	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
@@ -355,18 +354,13 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureBuild(Project project) {
-		XcodeBuildTask buildTask = project.getTasks().create(BUILD_TASK_NAME, XcodeBuildTask.class);
-		buildTask.setGroup(BasePlugin.BUILD_GROUP);
-		buildTask.dependsOn(BasePlugin.ASSEMBLE_TASK_NAME);
-
-		DefaultTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, DefaultTask.class);
-		xcodebuildTask.setDescription(buildTask.description);
+		XcodeBuildTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, XcodeBuildTask.class);
 		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
-		xcodebuildTask.dependsOn(buildTask);
 
 		XcodeConfigTask configTask = project.getTasks().create(XCODE_CONFIG_TASK_NAME, XcodeConfigTask.class);
-		configTask.setGroup(BasePlugin.BUILD_GROUP);
+		configTask.setGroup(XCODE_GROUP_NAME);
 
+		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(xcodebuildTask);
 	}
 
 
@@ -444,7 +438,7 @@ class XcodePlugin implements Plugin<Project> {
 			keychainCleanupTask.clean()
 		}
 
-		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(BUILD_TASK_NAME)
+		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		codesignTask.shouldRunAfter(xcodeBuildTask)
 		packageTask.shouldRunAfter(xcodeBuildTask)
 
@@ -502,7 +496,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void addDependencyToBuild(Project project, Task task) {
-		XcodeBuildTask buildTask = project.getTasks().getByName(BUILD_TASK_NAME)
+		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		buildTask.dependsOn(task)
 
 		XcodeTestTask testTask = project.getTasks().getByName(TEST_TASK_NAME)

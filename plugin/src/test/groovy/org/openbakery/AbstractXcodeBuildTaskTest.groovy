@@ -21,7 +21,7 @@ class AbstractXcodeBuildTaskTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin:org.openbakery.XcodePlugin
 
-		xcodeBuildTask = project.getTasks().getByPath('build')
+		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 	}
 
 	@Test

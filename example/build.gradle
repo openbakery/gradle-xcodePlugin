@@ -38,22 +38,22 @@ buildscript {
 	Create custom tasks that 4 different kind of builds
 */
 
-task continuous(dependsOn:'test') {
+task continuous(dependsOn:':Example:test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
 
-task integration(dependsOn: ['xcodebuild', 'package']) {
+task integration(dependsOn: [':Example:xcodebuild', ':Example:package']) {
 	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
 }
-task release(dependsOn: 'archive') {
+task release(dependsOn: ':Example:package') {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
 }
-
-task appstore(dependsOn: 'archive') {
+/*
+task appstore(dependsOn: ':Example:package') {
 	description = 'Build for the AppStore'
 }
-
-task signWidget(dependsOn: 'codesign') {
+*/
+task signWidget(dependsOn: ':Example:codesign') {
 	description = 'Build widget'
 }
 
