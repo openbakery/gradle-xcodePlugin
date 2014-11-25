@@ -27,7 +27,7 @@ Here a brief overview of the features:
 
 **Current stable version is 0.9.15**
 
-0.9.14 supports Xcode 5, Xcode 6 and Xcode 6.1
+0.9.15 supports Xcode 5, Xcode 6 and Xcode 6.1
 
 
 ## Documentation
