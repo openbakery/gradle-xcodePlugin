@@ -25,12 +25,14 @@ import org.apache.http.entity.mime.MultipartEntity
 import org.apache.http.HttpResponse
 import org.apache.http.HttpEntity
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractDistributeTask
+
 import java.util.regex.Pattern
 import org.apache.http.util.EntityUtils
 import org.apache.http.HttpHost
 import org.apache.http.conn.params.ConnRoutePNames
 
-class TestFlightUploadTask extends DefaultTask {
+class TestFlightUploadTask extends AbstractDistributeTask {
 
 	TestFlightUploadTask() {
 		super()
@@ -38,17 +40,6 @@ class TestFlightUploadTask extends DefaultTask {
 		this.description = "Distributes the build to TestFlight"
 	}
 
-	def getFile(String extension) {
-		def buildOutputDirectory = project.testflight.outputDirectory
-		def pattern = Pattern.compile(".*" + extension)
-		def fileList = buildOutputDirectory.list(
-						[accept: {d, f -> f ==~ pattern }] as FilenameFilter
-		).toList()
-		if (fileList == null || fileList.size() == 0) {
-			throw new IllegalStateException("No *" + extension + " file found in directory " + buildOutputDirectory.absolutePath)
-		}
-		return new File(buildOutputDirectory, fileList[0])
-	}
 
 	@TaskAction
 	def upload() throws IOException {
@@ -81,8 +72,8 @@ class TestFlightUploadTask extends DefaultTask {
 		replace - Optional, replace binary for an existing build if one is found with the same name/bundle version (defaults to False)
 */
 
-		def ipaFile = getFile("ipa");
-		def dSYMFile = getFile("dSYM.zip");
+		def ipaFile = getIpaFile(project.testflight.outputDirectory)
+		def dSYMFile = getDsymZipFile(project.testflight.outputDirectory)
 
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 		logger.debug("dSYMFile: {}", dSYMFile.absolutePath)

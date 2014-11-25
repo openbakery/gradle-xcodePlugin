@@ -17,6 +17,7 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.InvalidUserDataException
+import org.openbakery.XcodePlugin
 
 class KeychainCreateTask extends AbstractKeychainTask {
 
@@ -24,6 +25,8 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	KeychainCreateTask() {
 		super()
 		this.description = "Create a keychain that is used for signing the app"
+
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
 		this.setOnlyIf {
 			return !project.xcodebuild.sdk.startsWith("iphonesimulator")

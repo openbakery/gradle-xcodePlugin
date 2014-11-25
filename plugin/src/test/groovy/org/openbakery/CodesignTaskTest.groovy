@@ -24,16 +24,23 @@ class CodesignTaskTest {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
+
 		project = ProjectBuilder.builder().build()
-		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
+		project.buildDir = new File('build').absoluteFile
 		project.xcodebuild.sdk = 'iphoneos'
 		project.xcodebuild.configuration = 'release'
 		project.xcodebuild.symRoot = project.buildDir
+		project.xcodebuild.productName = 'My'
+		project.xcodebuild.projectType = 'app'
+		project.xcodebuild.infoPlist = 'Info.plist'
+
 
 		codesignTask = project.tasks.findByName('codesign')
 		codesignTask.setProperty("commandRunner", commandRunnerMock)
 
+
+		new File("build/codesign/PackageApplication").delete()
 	}
 
 
@@ -77,10 +84,7 @@ class CodesignTaskTest {
 		mockFindPackageApplication()
 
 
-		File buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		File appFile = new File(buildOutputDirectory, "My.app")
-
-		FileUtils.writeStringToFile(appFile, "dummy");
+		FileUtils.writeStringToFile(project.xcodebuild.getApplicationBundle(), "dummy");
 
 
 		List<String> commandList
@@ -92,11 +96,52 @@ class CodesignTaskTest {
 		commandList = [
 						packageApplicationScript,
 						"-v",
-						buildOutputDirectory.absolutePath + "/My.app",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.app",
 						"-o",
-						buildOutputDirectory.absolutePath + "/My.ipa",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.ipa",
 						"--keychain",
 						project.xcodebuild.signing.keychainPathInternal.absolutePath
+		]
+
+		def environment = ["CODESIGN_ALLOCATE":"MYENV"]
+
+
+		commandRunnerMock.run(".", commandList, environment, null).times(1)
+
+		mockControl.play {
+			codesignTask.codesign()
+		}
+
+	}
+
+
+	@Test
+	void testCodesignWithPlugin() {
+
+		project.xcodebuild.signing.plugin = "MyWidget"
+
+		mockFindPackageApplication()
+
+
+		FileUtils.writeStringToFile(project.xcodebuild.getApplicationBundle(), "dummy");
+
+
+		List<String> commandList
+		commandList?.clear()
+		def packageApplicationScript = new File("build/codesign/PackageApplication").absolutePath
+
+		commandRunnerMock.runWithResult(["xcrun", "-find", "codesign_allocate"]).returns("MYENV");
+
+		commandList = [
+						packageApplicationScript,
+						"-v",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.app",
+						"-o",
+						project.xcodebuild.getOutputPath().absolutePath + "/My.ipa",
+						"--keychain",
+						project.xcodebuild.signing.keychainPathInternal.absolutePath,
+						"--plugin",
+						"MyWidget"
 		]
 
 		def environment = ["CODESIGN_ALLOCATE":"MYENV"]

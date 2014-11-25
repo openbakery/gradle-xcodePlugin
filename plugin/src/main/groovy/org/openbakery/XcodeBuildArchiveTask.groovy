@@ -18,12 +18,14 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.Task
+import org.openbakery.signing.CodesignTask
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	XcodeBuildArchiveTask() {
 		super()
-		dependsOn('codesign')
+
+		dependsOn('xcodebuild', 'package')
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 
@@ -31,32 +33,29 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	@TaskAction
 	def archive() {
 		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		def appName = getAppBundleName()
-		def baseName =  appName.substring(0, appName.size()-4)
-		def ipaName =  baseName + ".ipa"
-		def dsynName = baseName + ".app.dSYM"
-		logger.debug("basename: {}", baseName)
+		def ipaName =  project.xcodebuild.bundleName + ".ipa"
+		def dsynName = project.xcodebuild.bundleName + "." + project.xcodebuild.productType + ".dSYM"
 		logger.debug("ipaName: {}", ipaName)
 		logger.debug("dsymName: {}", dsynName)
 
-		def zipFileName = baseName
+		def zipFileName = new File(project.getBuildDir(), project.xcodebuild.bundleName).absolutePath
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			logger.debug("Rename App")
 
 			File appFile = new File(appName)
 			if (appFile.exists()) {
-				appFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".app")
+				appFile.renameTo(project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType)
 			}
 
 			File ipaFile = new File(ipaName)
 			if (ipaFile.exists()) {
-				ipaFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".ipa")
+				ipaFile.renameTo(project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + ".ipa")
 			}
 
 			File dsymFile = new File(dsynName)
 			if (dsymFile.exists()) {
-				dsymFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".app.dSYM")
+				dsymFile.renameTo(project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType + ".dSYM")
 			}
 			zipFileName += project.xcodebuild.bundleNameSuffix
 

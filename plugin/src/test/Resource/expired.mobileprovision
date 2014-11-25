@@ -46,7 +46,7 @@
 	<key>TimeToLive</key>
 	<integer>24855</integer>
 	<key>UUID</key>
-	<string>FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF</string>
+	<string>EEEEFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF</string>
 	<key>Version</key>
 	<integer>1</integer>
 </dict>

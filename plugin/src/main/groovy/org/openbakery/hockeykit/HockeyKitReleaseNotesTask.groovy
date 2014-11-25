@@ -23,7 +23,7 @@ import org.pegdown.PegDownProcessor
  * @author René Pirringer
  *
  */
-class HockeyKitReleaseNotesTask extends AbstractHockeykitTask {
+class HockeyKitReleaseNotesTask extends AbstractHockeyKitTask {
 
 	HockeyKitReleaseNotesTask() {
 		super()

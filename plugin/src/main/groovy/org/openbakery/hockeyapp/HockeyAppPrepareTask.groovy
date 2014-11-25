@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery.testflight
+package org.openbakery.hockeyapp
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 
-class TestFlightPrepareTask extends AbstractDistributeTask {
+class HockeyAppPrepareTask extends AbstractDistributeTask {
 
-	TestFlightPrepareTask() {
+	HockeyAppPrepareTask() {
 		super()
 		dependsOn("codesign")
-		this.description = "Prepare the app bundle and dSYM to publish with using testflight"
+		this.description = "Prepare the app bundle and dSYM to publish with using hockeyapp"
 	}
 
 
 	@TaskAction
 	def archive() {
-		copyIpaToDirectory(project.testflight.outputDirectory)
-		copyDsymToDirectory(project.testflight.outputDirectory)
-		createDsymZip(project.testflight.outputDirectory)
+		copyIpaToDirectory(project.hockeyapp.outputDirectory)
+		copyDsymToDirectory(project.hockeyapp.outputDirectory)
+		createDsymZip(project.hockeyapp.outputDirectory)
 	}
 }

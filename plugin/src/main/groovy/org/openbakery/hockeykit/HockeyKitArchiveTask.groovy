@@ -16,11 +16,8 @@
 package org.openbakery.hockeykit
 
 import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.FileUtils
-import org.openbakery.AbstractXcodeTask
 
-class HockeyKitArchiveTask extends AbstractXcodeTask{
+class HockeyKitArchiveTask extends AbstractHockeyKitTask {
 
 	HockeyKitArchiveTask() {
 		super()
@@ -35,23 +32,9 @@ class HockeyKitArchiveTask extends AbstractXcodeTask{
 			throw new IllegalArgumentException("hockeykit.versionDirectoryName is missing")
 		}
 
-		def title = getValueFromPlist(getAppBundleInfoPlist(), "CFBundleIdentifier")
 
-		File outputDirectory = new File(project.hockeykit.outputDirectory, title + "/" + project.hockeykit.versionDirectoryName)
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
-		}
+		copyIpaToDirectory(getOutputDirectory());
 
-		def appName = getAppBundleName()
-		def baseName =  appName.substring(0, appName.size()-4)
 
-		File sourceIpa = new File(baseName + ".ipa")
-		if (!sourceIpa.exists()) {
-			throw new IllegalArgumentException("cannot find ipa: " + sourceIpa)
-		}
-		File destinationIpa = new File(outputDirectory, FilenameUtils.getBaseName(appName) + ".ipa")
-		FileUtils.copyFile(sourceIpa, destinationIpa)
-
-		logger.lifecycle("Created hockeykit archive in {}", outputDirectory)
 	}
 }

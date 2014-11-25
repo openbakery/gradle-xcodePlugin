@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery.hockeykit
+package org.openbakery.hockeyapp
 
 import org.gradle.api.Project
 

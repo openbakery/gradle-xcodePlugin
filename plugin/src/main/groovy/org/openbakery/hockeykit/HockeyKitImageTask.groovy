@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage
 import java.awt.RenderingHints
 import org.gradle.api.tasks.TaskAction
 
-class HockeyKitImageTask extends AbstractHockeykitTask {
+class HockeyKitImageTask extends AbstractHockeyKitTask {
 
 	private static final int IMAGE_WIDTH = 114
 
@@ -78,9 +78,6 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 		def infoplist = getAppBundleInfoPlist()
 		logger.debug("infoplist: {}", infoplist)
 
-		String appPath = new File(getAppBundleName()).getAbsolutePath();
-		logger.lifecycle("appPath: {}", infoplist)
-
 
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist))
 		ArrayList<String> iconList = new ArrayList<String>();
@@ -98,12 +95,12 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 
 					String extension = FilenameUtils.getExtension(item);
 					if (StringUtils.isEmpty(extension)) {
-						iconFile = new File(appPath + File.separator + item + "@2x.png");
+						iconFile = new File(project.xcodebuild.applicationBundle, item + "@2x.png");
 						if (!iconFile.exists()) {
-							iconFile = new File(appPath + File.separator + item + ".png");
+							iconFile = new File(project.xcodebuild.applicationBundle, item + ".png");
 						}
 					} else {
-						iconFile = new File(appPath + File.separator + item)
+						iconFile = new File(project.xcodebuild.applicationBundle, item)
 					}
 
 
@@ -121,7 +118,7 @@ class HockeyKitImageTask extends AbstractHockeykitTask {
 				}
 		}
 		logger.debug("Images to choose from: {}", iconMap)
-		def outputDirectory = new File(getOutputDirectory()).getParent()
+		def outputDirectory = getOutputDirectory().getParent()
 
 		def selectedImage = iconMap.get(114)
 

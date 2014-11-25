@@ -25,12 +25,14 @@ import org.apache.http.entity.mime.MultipartEntity
 import org.apache.http.HttpResponse
 import org.apache.http.HttpEntity
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractDistributeTask
+
 import java.util.regex.Pattern
 import org.apache.http.util.EntityUtils
 import org.apache.http.HttpHost
 import org.apache.http.conn.params.ConnRoutePNames
 
-class DeployGateUploadTask extends DefaultTask {
+class DeployGateUploadTask extends AbstractDistributeTask {
 
 	DeployGateUploadTask() {
 		super()
@@ -38,17 +40,6 @@ class DeployGateUploadTask extends DefaultTask {
 		this.description = "Distributes the build to DeployGate"
 	}
 
-	def getFile(String extension) {
-		def buildOutputDirectory = project.deploygate.outputDirectory
-		def pattern = Pattern.compile(".*" + extension)
-		def fileList = buildOutputDirectory.list(
-						[accept: {d, f -> f ==~ pattern }] as FilenameFilter
-		).toList()
-		if (fileList == null || fileList.size() == 0) {
-			throw new IllegalStateException("No *" + extension + " file found in directory " + buildOutputDirectory.absolutePath)
-		}
-		return new File(buildOutputDirectory, fileList[0])
-	}
 
 	@TaskAction
 	def upload() throws IOException {
@@ -77,7 +68,7 @@ class DeployGateUploadTask extends DefaultTask {
 		message - Optional, release notes for the build
 */
 
-		def ipaFile = getFile("ipa");
+		def ipaFile = getIpaFile(project.deploygate.outputDirectory)
 
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 

@@ -16,6 +16,7 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
+import org.apache.tools.ant.util.ResourceUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 
@@ -28,7 +29,7 @@ class CodesignTask extends AbstractXcodeTask {
 
 	CodesignTask() {
 		super()
-		dependsOn("xcodebuild")
+		dependsOn('keychain-create', 'provisioning-install', 'infoplist-modify')
 		this.description = "Signs the app bundle that was created by xcodebuild"
 	}
 
@@ -40,6 +41,11 @@ class CodesignTask extends AbstractXcodeTask {
 	 */
 	String preparePackageApplication() {
 
+		File destinationFile = new File(project.xcodebuild.signing.signingDestinationRoot.absolutePath, "PackageApplication")
+		if (destinationFile.exists()) {
+			return destinationFile.absolutePath
+		}
+
 		def commandListFindPackageApplication = [
 						project.xcodebuild.xcrunCommand,
 						"-sdk",
@@ -49,7 +55,7 @@ class CodesignTask extends AbstractXcodeTask {
 		];
 		def packageApplicationFile = commandRunner.runWithResult(commandListFindPackageApplication).trim();
 
-		File destinationFile = new File(project.xcodebuild.signing.signingDestinationRoot.absolutePath, "PackageApplication")
+
 
 		FileUtils.copyFile(new File(packageApplicationFile), destinationFile);
 
@@ -97,40 +103,35 @@ class CodesignTask extends AbstractXcodeTask {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration")
 		}
 
-		logger.debug("SymRoot: {}", project.xcodebuild.symRoot)
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		def fileList = buildOutputDirectory.list(
-						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
-		).toList()
-		if (fileList.size() == 0) {
-			throw new IllegalStateException("No App Found in directory " + buildOutputDirectory.absolutePath)
-		}
-		def appName = buildOutputDirectory.absolutePath + "/" + fileList[0]
-		def ipaName = appName.substring(0, appName.size()-4) + ".ipa"
-		logger.lifecycle("Signing {} to create {}", appName, ipaName)
+		File applicationBundle = project.xcodebuild.getApplicationBundle();
+		File ipaBundle = project.xcodebuild.getIpaBundle();
+
+		logger.lifecycle("Signing {} to create {}", applicationBundle, ipaBundle)
 
 		String packageApplicationScript = preparePackageApplication()
 
 		def commandList = [
 						packageApplicationScript,
 						"-v",
-						appName,
+						applicationBundle.absolutePath,
 						"-o",
-						ipaName,
+						ipaBundle.absolutePath,
 						"--keychain",
 						project.xcodebuild.signing.keychainPathInternal.absolutePath
 		]
 
-		//--keychain /Users/rene/workspace/coconatics/ELO/elo-ios/build/keychain/gradle-1403850484215.keychain
 
 		if (project.xcodebuild.signing.identity != null && project.xcodebuild.signing.mobileProvisionFile != null) {
 			commandList.add("--sign");
 			commandList.add(project.xcodebuild.signing.identity)
 			commandList.add("--embed");
-			commandList.add(project.xcodebuild.signing.mobileProvisionFile.absolutePath)
+			commandList.add(project.xcodebuild.signing.mobileProvisionFile.get(0).absolutePath)
 		}
 
-
+		if (project.xcodebuild.signing.plugin) {
+			commandList.add("--plugin");
+			commandList.add(project.xcodebuild.signing.plugin)
+		}
 
 
 		def codesignAllocateCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-find", "codesign_allocate"]).trim();
