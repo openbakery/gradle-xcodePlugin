@@ -109,7 +109,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	void startDestination() {
 		if (startedDestination != testRun) {
-			Destination destination = project.xcodebuild.destinations[testRun]
+			Destination destination = project.xcodebuild.availableDestinations[testRun]
 			if (destination) {
 				startedDestination = testRun
 				output.append("\nPerform unit tests for: ")
@@ -121,7 +121,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	void finishDestination() {
-		Destination destination = project.xcodebuild.destinations[testRun]
+		Destination destination = project.xcodebuild.availableDestinations[testRun]
 		if (destination != null) {
 			output.println();
 			output.append("\n")

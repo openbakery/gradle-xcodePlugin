@@ -144,7 +144,7 @@ class XcodeConfigTaskTest {
 			xcodeConfigTask.configuration()
 		}
 
-		assert project.xcodebuild.availableSimulators.size() == 14 : "expected 14 elements in the availableSimulators list but was: " + extension.availableSimulators.size()
+		assert project.xcodebuild.availableSimulators.size() == 14 : "expected 14 elements in the availableSimulators list but was: " +  project.xcodebuild.availableSimulators.size()
 
 	}
 
@@ -165,9 +165,9 @@ class XcodeConfigTaskTest {
 			xcodeConfigTask.configuration()
 		}
 
-		assert project.xcodebuild.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + project.xcodebuild.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " +  project.xcodebuild.availableDestinations.size()
 
-		Destination destination =  project.xcodebuild.destinations[0];
+		Destination destination =  project.xcodebuild.availableDestinations[0];
 
 		assert destination.name.equals("iPad");
 		assert destination.platform.equals("iOS Simulator")
@@ -192,16 +192,16 @@ class XcodeConfigTaskTest {
 			xcodeConfigTask.configuration()
 		}
 
-		assert project.xcodebuild.destinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " +  project.xcodebuild.availableDestinations.size()
 
-		Destination destination =  project.xcodebuild.destinations[0];
+		Destination destination =  project.xcodebuild.availableDestinations[0];
 
 		assert destination.name.equals("iPad");
 		assert destination.platform.equals("iOS Simulator")
-		assert destination.os.equals("7.0")
+		assert destination.os.equals("6.0")
 
-		assert project.xcodebuild.destinations[1].os.equals("7.1");
-		assert project.xcodebuild.destinations[2].os.equals("6.0");
+		assert project.xcodebuild.availableDestinations[1].os.equals("7.0");
+		assert project.xcodebuild.availableDestinations[2].os.equals("7.1");
 
 	}
 
@@ -221,7 +221,7 @@ class XcodeConfigTaskTest {
 			xcodeConfigTask.configuration()
 		}
 
-		assert project.xcodebuild.destinations.size() == 0
+		assert project.xcodebuild.availableDestinations.size() == 0
 
 
 	}
@@ -252,9 +252,9 @@ class XcodeConfigTaskTest {
 		}
 
 
-		assert project.xcodebuild.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " +  project.xcodebuild.availableDestinations.size()
 
-		assert project.xcodebuild.destinations.asList()[0].id != null: "id of the destination should not be null"
+		assert project.xcodebuild.availableDestinations.asList()[0].id != null: "id of the destination should not be null"
 	}
 
 
@@ -321,20 +321,19 @@ class XcodeConfigTaskTest {
 		mockSimctlList()
 
 
+		project.xcodebuild.destination {
+			platform = 'iOS Simulator'
+			name = 'iPhone 4s'
+		}
 
 		mockControl.play {
 			xcodeConfigTask.configuration()
 		}
 
 
-		project.xcodebuild.destination {
-			platform = 'iOS Simulator'
-			name = 'iPhone 4s'
-		}
+		assert project.xcodebuild.availableDestinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
-		assert project.xcodebuild.destinations.size() == 2 : "expected 2 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		assert project.xcodebuild.destinations.asList()[0].id != null: "id of the destination should not be null"
+		assert project.xcodebuild.availableDestinations.asList()[0].id != null: "id of the destination should not be null"
 	}
 
 	@Test
@@ -355,9 +354,9 @@ class XcodeConfigTaskTest {
 			os = '7.0'
 		}
 
-		assert project.xcodebuild.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
-		assert project.xcodebuild.destinations.asList()[0].id != null: "id of the destination should not be null"
+		assert project.xcodebuild.availableDestinations.asList()[0].id != null: "id of the destination should not be null"
 	}
 
 	@Test
@@ -379,9 +378,9 @@ class XcodeConfigTaskTest {
 			os = '7.0'
 		}
 
-		assert project.xcodebuild.destinations.size() == 6 : "expected 6 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 6 : "expected 6 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
-		assert project.xcodebuild.destinations.asList()[0].id != null: "id of the destination should not be null"
+		assert project.xcodebuild.availableDestinations.asList()[0].id != null: "id of the destination should not be null"
 	}
 
 
@@ -405,9 +404,9 @@ class XcodeConfigTaskTest {
 			name = '.*iPhone.*'
 		}
 
-		assert project.xcodebuild.destinations.size() == 7 : "expected 7 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 7 : "expected 7 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
-		assert project.xcodebuild.destinations.asList()[0].id != null: "id of the destination should not be null"
+		assert project.xcodebuild.availableDestinations.asList()[0].id != null: "id of the destination should not be null"
 	}
 
 
@@ -432,10 +431,10 @@ class XcodeConfigTaskTest {
 			xcodeConfigTask.configuration()
 		}
 
-		assert project.xcodebuild.destinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
 
-		assert project.xcodebuild.destinations.asList()[0].id.equals("60B5BBDA-6485-44B4-AB87-9C0421EF5D8F")
+		assert project.xcodebuild.availableDestinations.asList()[0].id.equals("60B5BBDA-6485-44B4-AB87-9C0421EF5D8F")
 
 	}
 

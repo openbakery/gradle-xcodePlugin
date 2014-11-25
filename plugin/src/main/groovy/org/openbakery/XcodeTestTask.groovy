@@ -112,7 +112,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		// (Otherwise stderr can corrupt the stdout output)
 		commandList = ["script", "-q", "/dev/null"] + commandList
 
-		for (Destination destination in project.xcodebuild.destinations) {
+		for (Destination destination in project.xcodebuild.availableDestinations) {
 
 			def destinationParameters = []
 
@@ -264,7 +264,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 			if (testSuites != null && testSuites.isEmpty()) {
-				Destination destination = project.xcodebuild.destinations[testRun]
+				Destination destination = project.xcodebuild.availableDestinations[testRun]
 
 				if (this.allResults.containsKey(destination)) {
 					def destinationResultList = this.allResults.get(destination)
@@ -306,7 +306,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		def xmlBuilder = new MarkupBuilder(writer)
 
 		xmlBuilder.testsuites() {
-			for (Destination destination in project.xcodebuild.destinations) {
+			for (Destination destination in project.xcodebuild.availableDestinations) {
 				String name = destination.toPrettyString()
 
 				def resultList = this.allResults[destination]
@@ -378,7 +378,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		logger.lifecycle("Saving test results")
 
 		def list = [];
-		for (Destination destination in project.xcodebuild.destinations) {
+		for (Destination destination in project.xcodebuild.availableDestinations) {
 
 			def resultList = this.allResults[destination]
 

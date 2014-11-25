@@ -161,13 +161,17 @@ class XcodeBuildPluginExtension {
 			destinations = [] as Set
 		}
 
+		destinations << destination
 
+/*
 		if (isSimulatorBuild()) {
 			// filter only on simulator builds
 			destinations.addAll(findMatchingDestinations(destination))
 		} else {
 			destinations << destination
 		}
+
+		*/
 	}
 
 	boolean matches(String first, String second) {
@@ -193,6 +197,7 @@ class XcodeBuildPluginExtension {
 
 	List<Destination> findMatchingDestinations(Destination destination) {
 		def result = [];
+
 
 		logger.debug("finding matching destination for: {}", destination)
 
@@ -228,31 +233,43 @@ class XcodeBuildPluginExtension {
 		return result.asList();
 	}
 
-	List<Destination> getDestinations() {
+	List<Destination> getAvailableDestinations() {
+		def availableDestinations = []
 
-		if (!this.destinations) {
-			logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
-			this.destinations = []
-			switch (this.devices) {
-				case Devices.PHONE:
-					this.destinations = availableSimulators.findAll {
-						d -> d.name.contains("iPhone");
-					};
-					break;
-				case Devices.PAD:
-					this.destinations = availableSimulators.findAll {
-						d -> d.name.contains("iPad");
-					};
-					break;
-				default:
-					this.destinations.addAll(availableSimulators);
-					break;
+		if (isSimulatorBuild()) {
+			// filter only on simulator builds
+			for (Destination destination in this.destinations) {
+				availableDestinations.addAll(findMatchingDestinations(destination))
 			}
+
+			if (availableDestinations.isEmpty()) {
+				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
+
+				switch (this.devices) {
+					case Devices.PHONE:
+						availableDestinations = availableSimulators.findAll {
+							d -> d.name.contains("iPhone");
+						};
+						break;
+					case Devices.PAD:
+						availableDestinations = availableSimulators.findAll {
+							d -> d.name.contains("iPad");
+						};
+						break;
+					default:
+						availableDestinations.addAll(availableSimulators);
+						break;
+				}
+			}
+		} else {
+			// on the device build add the given destinations
+			availableDestinations.addAll(this.destinations)
+
 		}
 
-		logger.debug("this.destination: " + this.destinations);
+		logger.debug("availableDestinations: " + availableDestinations);
 
-		return this.destinations.asList();
+		return availableDestinations
 	}
 
 	void setArch(Object arch) {
