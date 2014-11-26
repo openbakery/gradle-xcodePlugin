@@ -48,11 +48,11 @@ task integration(dependsOn: [':Example:xcodebuild', ':Example:package']) {
 task release(dependsOn: ':Example:package') {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
 }
-/*
+
 task appstore(dependsOn: ':Example:package') {
 	description = 'Build for the AppStore'
 }
-*/
+
 task signWidget(dependsOn: ':Example:codesign') {
 	description = 'Build widget'
 }
