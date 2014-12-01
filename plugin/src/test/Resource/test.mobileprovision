@@ -1,10 +1,10 @@
-// a Dummy Mobile Provistioning File to test the ProvisioningProfileIDReader
+0<82>=À^F   *<86>H<86>÷^M^A^G^B <82>=±0<82>=­^B^A^A1^K0 ^F^E+^N^C^B^Z^E^@0<82>-<86>^F   *<86>H<86>÷^M^A^G^A <82>-w^D<82>-s<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>ApplicationIdentifierPrefix</key>
 	<array>
-		<string>6P2Z3HB85N</string>
+		<string>AAAAAAAAAAA</string>
 	</array>
 	<key>CreationDate</key>
 	<date>2011-06-16T08:57:51Z</date>
@@ -27,12 +27,12 @@
 	<key>Entitlements</key>
 	<dict>
 		<key>application-identifier</key>
-		<string>AW543HBASDN.*</string>
+		<string>AAAAAAAAAAA.org.openbakery.Example</string>
 		<key>get-task-allow</key>
 		<false/>
 		<key>keychain-access-groups</key>
 		<array>
-			<string>AW543HBASDN.*</string>
+			<string>AAAAAAAAAAA.*</string>
 		</array>
 	</dict>
 	<key>ExpirationDate</key>
@@ -50,4 +50,4 @@
 	<key>Version</key>
 	<integer>1</integer>
 </dict>
-</plist>
+</plist> <82>^M²0<82>^Có0<82>^BÛ ^C^B^A^B^B^A^W0^M^F    *<86>H<86>÷^M^A^A^E^E^@0b1^K0   ^F^CU^D^F^S^BUS1^S0^Q^F^CU^D

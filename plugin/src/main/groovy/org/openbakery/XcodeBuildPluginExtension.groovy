@@ -55,14 +55,16 @@ class XcodeBuildPluginExtension {
 	String workspace = null
 	String version = null
 	Map<String, String> environment = null
+	String productName = null
+	String bundleName = null
+	String productType = "app"
 
-	boolean isOSX = false;
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
 
 	Set<Destination> destinations = null
 
-	private String xcodePath = null
+	String xcodePath = null
 	CommandRunner commandRunner
 
 	/**
@@ -159,13 +161,17 @@ class XcodeBuildPluginExtension {
 			destinations = [] as Set
 		}
 
+		destinations << destination
 
+/*
 		if (isSimulatorBuild()) {
 			// filter only on simulator builds
 			destinations.addAll(findMatchingDestinations(destination))
 		} else {
 			destinations << destination
 		}
+
+		*/
 	}
 
 	boolean matches(String first, String second) {
@@ -191,6 +197,7 @@ class XcodeBuildPluginExtension {
 
 	List<Destination> findMatchingDestinations(Destination destination) {
 		def result = [];
+
 
 		logger.debug("finding matching destination for: {}", destination)
 
@@ -226,31 +233,43 @@ class XcodeBuildPluginExtension {
 		return result.asList();
 	}
 
-	List<Destination> getDestinations() {
+	List<Destination> getAvailableDestinations() {
+		def availableDestinations = []
 
-		if (!this.destinations) {
-			logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
-			this.destinations = []
-			switch (this.devices) {
-				case Devices.PHONE:
-					this.destinations = availableSimulators.findAll {
-						d -> d.name.contains("iPhone");
-					};
-					break;
-				case Devices.PAD:
-					this.destinations = availableSimulators.findAll {
-						d -> d.name.contains("iPad");
-					};
-					break;
-				default:
-					this.destinations.addAll(availableSimulators);
-					break;
+		if (isSimulatorBuild()) {
+			// filter only on simulator builds
+			for (Destination destination in this.destinations) {
+				availableDestinations.addAll(findMatchingDestinations(destination))
 			}
+
+			if (availableDestinations.isEmpty()) {
+				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
+
+				switch (this.devices) {
+					case Devices.PHONE:
+						availableDestinations = availableSimulators.findAll {
+							d -> d.name.contains("iPhone");
+						};
+						break;
+					case Devices.PAD:
+						availableDestinations = availableSimulators.findAll {
+							d -> d.name.contains("iPad");
+						};
+						break;
+					default:
+						availableDestinations.addAll(availableSimulators);
+						break;
+				}
+			}
+		} else {
+			// on the device build add the given destinations
+			availableDestinations.addAll(this.destinations)
+
 		}
 
-		logger.debug("this.destination: " + this.destinations);
+		logger.debug("availableDestinations: " + availableDestinations);
 
-		return this.destinations.asList();
+		return availableDestinations
 	}
 
 	void setArch(Object arch) {
@@ -286,193 +305,8 @@ class XcodeBuildPluginExtension {
 		}
 	}
 
-	void createXcode5DeviceList() {
-
-		logger.debug("xcodePath is {}", xcodePath);
-		String xcodeDeveloperPath;
-		if (xcodePath != null) {
-			xcodeDeveloperPath = xcodePath + "/Contents/Developer";
-		} else {
-			xcodeDeveloperPath = commandRunner.runWithResult(["xcode-select", "-p"])
-		}
 
 
-		File sdksDirectory = new File(xcodeDeveloperPath, "Platforms/iPhoneSimulator.platform/Developer/SDKs")
-		logger.debug("investigating sdk directory {}", sdksDirectory);
-		def versions = [];
-		for (String sdk in sdksDirectory.list()) {
-			String basename = FilenameUtils.getBaseName(sdk)
-			versions << StringUtils.removeStart(basename, "iPhoneSimulator")
-		}
-
-
-		File simulatorDirectory = new File(xcodeDeveloperPath, "Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/SimulatorHost.framework/Versions/A/Resources/Devices")
-		String[] simulators = simulatorDirectory.list()
-		for (String simulator in simulators) {
-
-			File infoPlistFile = new File(simulatorDirectory, simulator + "/Info.plist")
-			String name = commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlistFile.absolutePath,
-							"-c",
-							"Print :displayName"
-			])
-
-
-			if (hasNewerEquivalentDevice(infoPlistFile)) {
-				continue;
-			}
-
-
-			for (String version in versions) {
-				Destination destination = new Destination();
-				destination.platform = 'iOS Simulator'
-				destination.name = name
-				destination.os = version
-
-				availableSimulators << destination;
-			}
-		}
-	}
-
-	boolean hasNewerEquivalentDevice(File infoPlistFile) {
-		try {
-			commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlistFile.absolutePath,
-							"-c",
-							"Print :newerEquivalentDevice"
-			])
-			return true
-			// if the "Print :newerEquivalentDevice" is found, then to not add the simulator
-		} catch (CommandRunnerException ex) {
-			return false
-		}
-	}
-
-	void createDeviceList() {
-		String simctlCommand = commandRunner.runWithResult([getXcrunCommand(), "-sdk", "iphoneos", "-find", "simctl"]);
-		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
-
-		String iOSVersion = null
-		for (String line in simctlList.split("\n")) {
-
-
-			if (line.startsWith("--")) {
-				String[] tokens = line.split(" ");
-				if (tokens.length > 2) {
-					iOSVersion = tokens[2];
-				}
-			} else 	if (iOSVersion != null) {
-				// now we are in the devices section
-				Destination destination = new Destination();
-				destination.platform = 'iOS Simulator'
-				destination.os = iOSVersion
-
-				def pattern = ~/^\s+([^\(]+)\(([^\)]+)/
-				def matcher = ( line =~ pattern )
-				if (matcher.getCount() && matcher[0].size() == 3) {
-					destination.name = matcher[0][1].trim()
-					destination.id = matcher[0][2].trim()
-					availableSimulators << destination;
-				}
-			}
-		}
-	}
-
-	void finishConfiguration(Project project) {
-
-		parseInfoFromProjectFile(project)
-
-		if (isOSX) {
-			return;
-		}
-
-		String version = commandRunner.runWithResult([xcodebuildCommand		, "-version"])
-		boolean isXcode5 = version.startsWith("Xcode 5");
-		logger.debug("isXcode5 {}", isXcode5);
-
-
-		if (isXcode5) {
-			createXcode5DeviceList()
-		} else {
-			createDeviceList()
-		}
-
-		logger.debug("availableSimulators: {}", availableSimulators)
-
-	}
-
-
-
-	void parseInfoFromProjectFile(Project project) {
-
-		logger.debug("using target: {}", this.target)
-		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
-    def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
-    def projectFile = new File(xcodeProjectDir, "project.pbxproj")
-
-		def buildRoot = project.buildDir
-		if (!buildRoot.exists()) {
-			buildRoot.mkdirs()
-		}
-
-		def projectPlist = new File(buildRoot, "project.plist").absolutePath
-
-		// convert ascii plist to xml so that commons configuration can parse it!
-		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlist])
-
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(projectPlist))
-		def rootObjectKey = config.getString("rootObject")
-		logger.debug("rootObjectKey {}", rootObjectKey);
-
-		List<String> list = config.getList("objects." + rootObjectKey + ".targets")
-
-		for (target in list) {
-
-			def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
-			logger.debug("buildConfigurationList={}", buildConfigurationList)
-			def targetName = config.getString("objects." + target + ".name")
-			logger.debug("targetName: {}", targetName)
-
-
-			if (targetName.equals(this.target)) {
-				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
-				for (buildConfigurationsItem in buildConfigurations) {
-					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
-
-					logger.debug("buildName: {} equals {}", buildName, this.configuration)
-
-					if (buildName.equals(this.configuration)) {
-						//String productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
-						String sdkRoot = config.getString("objects." + buildConfigurationsItem + ".buildSettings.SDKROOT")
-						if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
-							// is os x build
-							this.isOSX = true
-						} else {
-							String devicesString = config.getString("objects." + buildConfigurationsItem + ".buildSettings.TARGETED_DEVICE_FAMILY")
-
-							if (devicesString.equals("1")) {
-								this.devices = Devices.PHONE;
-							} else if (devicesString.equals("2")) {
-								this.devices = Devices.PAD;
-							}
-
-						}
-
-						if (this.infoPlist == null) {
-							infoPlist = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
-							logger.info("infoPlist: {}", infoPlist)
-						}
-
-						logger.info("devices: {}", this.devices)
-						logger.info("isOSX: {}", this.isOSX)
-						return;
-					}
-				}
-			}
-		}
-	}
 
 
 	void setVersion(String version) {
@@ -513,6 +347,56 @@ class XcodeBuildPluginExtension {
 			return xcodePath + "/Contents/Developer/usr/bin/xcrun"
 		}
 		return "xcrun"
+	}
+
+
+	String getValueFromInfoPlist(key) {
+		try {
+			File infoPlistFile = new File(project.projectDir, infoPlist)
+			return commandRunner.runWithResult([
+							"/usr/libexec/PlistBuddy",
+							infoPlistFile.absolutePath,
+							"-c",
+							"Print :" + key])
+		} catch (IllegalStateException ex) {
+			return null
+		}
+	}
+
+	String getBundleName() {
+		if (bundleName != null) {
+			return bundleName
+		}
+		bundleName = getValueFromInfoPlist("CFBundleName")
+
+		if (bundleName.equals('${PRODUCT_NAME}') || bundleName.equals('$(PRODUCT_NAME)') ) {
+			bundleName = this.productName
+		}
+
+		if (bundleName.equals('${EXECUTABLE_NAME}')) {
+			bundleName = this.productName
+		}
+
+		if (StringUtils.isEmpty(bundleName)) {
+			bundleName = this.productName
+		}
+		return bundleName
+	}
+
+	File getOutputPath() {
+		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
+	}
+
+	File getApplicationBundle() {
+		return new File(getOutputPath(), getBundleName() + "." + this.productType)
+	}
+
+	File getIpaBundle() {
+		return new File(getOutputPath(), getBundleName() + ".ipa")
+	}
+
+	File getDSymBundle()  {
+		return new File(getOutputPath(), getBundleName()  + "." + this.productType + ".dSYM")
 	}
 
 }

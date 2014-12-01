@@ -23,6 +23,7 @@ import org.gradle.api.plugins.BasePlugin
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.cocoapods.CocoapodsTask
+import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
@@ -30,10 +31,10 @@ import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGatePrepareTask
 import org.openbakery.deploygate.DeployGateUploadTask
-import org.openbakery.hockeykit.HockeyAppCleanTask
-import org.openbakery.hockeykit.HockeyAppPluginExtension
-import org.openbakery.hockeykit.HockeyAppPrepareTask
-import org.openbakery.hockeykit.HockeyAppUploadTask
+import org.openbakery.hockeyapp.HockeyAppCleanTask
+import org.openbakery.hockeyapp.HockeyAppPluginExtension
+import org.openbakery.hockeyapp.HockeyAppPrepareTask
+import org.openbakery.hockeyapp.HockeyAppUploadTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitCleanTask
 import org.openbakery.hockeykit.HockeyKitImageTask
@@ -43,6 +44,7 @@ import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
 import org.openbakery.signing.CodesignTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.PackageTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.sparkle.SparkleArchiveTask
@@ -70,12 +72,12 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 
-	public static final String BUILD_TASK_NAME = "build";
 	public static final String TEST_TASK_NAME = "test"
 	public static final String ARCHIVE_TASK_NAME = "archive"
 	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuild-clean"
+	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuild-config"
 	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykit-manifest"
 	public static final String HOCKEYKIT_ARCHIVE_TASK_NAME = "hockeykit-archive"
 	public static final String HOCKEYKIT_NOTES_TASK_NAME = "hockeykit-notes"
@@ -88,6 +90,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioning-install'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioning-clean'
 	public static final String CODESIGN_TASK_NAME = 'codesign'
+	public static final String PACKAGE_TASK_NAME = 'package'
 	public static final String TESTFLIGHT_PREPARE_TASK_NAME = 'testflight-prepare'
 	public static final String TESTFLIGHT_TASK_NAME = 'testflight'
 	public static final String TESTFLIGHT_CLEAN_TASK_NAME = 'testflight-clean'
@@ -335,10 +338,7 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
-			project.xcodebuild.finishConfiguration(project);
-
 		}
-
 
 	}
 
@@ -354,15 +354,13 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureBuild(Project project) {
-		XcodeBuildTask buildTask = project.getTasks().create(BUILD_TASK_NAME, XcodeBuildTask.class);
-		buildTask.setGroup(BasePlugin.BUILD_GROUP);
-		buildTask.dependsOn(BasePlugin.ASSEMBLE_TASK_NAME);
-
-		DefaultTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, DefaultTask.class);
-		xcodebuildTask.setDescription(buildTask.description);
+		XcodeBuildTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, XcodeBuildTask.class);
 		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
-		xcodebuildTask.dependsOn(buildTask);
 
+		XcodeConfigTask configTask = project.getTasks().create(XCODE_CONFIG_TASK_NAME, XcodeConfigTask.class);
+		configTask.setGroup(XCODE_GROUP_NAME);
+
+		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(xcodebuildTask);
 	}
 
 
@@ -419,23 +417,32 @@ class XcodePlugin implements Plugin<Project> {
 	private configureCodesign(Project project) {
 		CodesignTask codesignTask = project.task(CODESIGN_TASK_NAME, type: CodesignTask, group: XCODE_GROUP_NAME)
 
-		if (project.xcodebuild.signing.mobileProvisionURI != null) {
-			logger.debug("added cleanup for provisioning profile")
-			codesignTask.doLast {
-				logger.debug("run provisioning cleanup")
-				ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
-				provisioningCleanup.clean()
-			}
+		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
+
+		ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
+
+		//provisioningCleanup.mustRunAfter(codesignTask)
+		//provisioningCleanup.mustRunAfter(packageTask)
+
+		KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
+		//keychainCleanupTask.mustRunAfter(codesignTask)
+		//keychainCleanupTask.mustRunAfter(packageTask)
+
+		packageTask.doLast {
+			provisioningCleanup.clean()
+			keychainCleanupTask.clean()
 		}
 
-		if (project.xcodebuild.signing != null && project.xcodebuild.signing.certificateURI != null) {
-			logger.debug("added cleanup for certificate")
-			codesignTask.doLast {
-				logger.debug("run certificate cleanup")
-				KeychainCleanupTask keychainCleanup = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
-				keychainCleanup.clean()
-			}
+		codesignTask.doLast {
+			provisioningCleanup.clean()
+			keychainCleanupTask.clean()
 		}
+
+		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
+		codesignTask.shouldRunAfter(xcodeBuildTask)
+		packageTask.shouldRunAfter(xcodeBuildTask)
+
+
 	}
 
 	private configureTestflight(Project project) {
@@ -489,7 +496,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void addDependencyToBuild(Project project, Task task) {
-		XcodeBuildTask buildTask = project.getTasks().getByName(BUILD_TASK_NAME)
+		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		buildTask.dependsOn(task)
 
 		XcodeTestTask testTask = project.getTasks().getByName(TEST_TASK_NAME)

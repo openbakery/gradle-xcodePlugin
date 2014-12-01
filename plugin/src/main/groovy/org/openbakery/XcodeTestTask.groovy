@@ -81,6 +81,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
+	def TEST_SUITE_PATTERN = ~/.*Test Suite '(.*)'(.*)/
+
+
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
@@ -105,8 +108,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def commandList = createCommandList()
 
+		// Run the command in a pseudo-terminal to force line-buffered output
+		// (Otherwise stderr can corrupt the stdout output)
+		commandList = ["script", "-q", "/dev/null"] + commandList
 
-		for (Destination destination in project.xcodebuild.destinations) {
+		for (Destination destination in project.xcodebuild.availableDestinations) {
 
 			def destinationParameters = []
 
@@ -228,14 +234,45 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 
-			def successMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
-			def failedMatcher = TEST_FAILED_PATTERN.matcher(line)
-			if (successMatcher.matches() || failedMatcher.matches()) {
-				Destination destination = project.xcodebuild.destinations[testRun]
-				this.allResults.put(destination, resultList)
+			def testSuiteMatcher = TEST_SUITE_PATTERN.matcher(line)
+			if (testSuiteMatcher.matches()) {
+
+				String testSuiteName = testSuiteMatcher[0][1].trim();
+				def testSuiteAction = testSuiteMatcher[0][2].trim();
+
+
+				if (testSuiteAction.startsWith('started')) {
+					if (testSuites == null) {
+						testSuites = new ArrayList<String>();
+					}
+					testSuites.add(testSuiteName);
+				} else if (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed')) {
+					testSuites.remove(testSuiteName);
+				}
+
+
+			}
+
+			def testSuccessMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
+			def testFailedMatcher = TEST_FAILED_PATTERN.matcher(line)
+
+			if (testSuccessMatcher.matches() || testFailedMatcher.matches()) {
 				testRun ++;
+			}
+
+
+			if (testSuites != null && testSuites.isEmpty()) {
+				Destination destination = project.xcodebuild.availableDestinations[testRun]
+
+				if (this.allResults.containsKey(destination)) {
+					def destinationResultList = this.allResults.get(destination)
+					destinationResultList.addAll(resultList);
+				} else {
+					this.allResults.put(destination, resultList)
+				}
 
 				resultList = []
+				testSuites = null
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {
@@ -267,7 +304,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		def xmlBuilder = new MarkupBuilder(writer)
 
 		xmlBuilder.testsuites() {
-			for (Destination destination in project.xcodebuild.destinations) {
+			for (Destination destination in project.xcodebuild.availableDestinations) {
 				String name = destination.toPrettyString()
 
 				def resultList = this.allResults[destination]
@@ -339,7 +376,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		logger.lifecycle("Saving test results")
 
 		def list = [];
-		for (Destination destination in project.xcodebuild.destinations) {
+		for (Destination destination in project.xcodebuild.availableDestinations) {
 
 			def resultList = this.allResults[destination]
 

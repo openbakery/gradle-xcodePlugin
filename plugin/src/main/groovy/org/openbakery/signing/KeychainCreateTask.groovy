@@ -17,6 +17,7 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.InvalidUserDataException
+import org.openbakery.XcodePlugin
 
 class KeychainCreateTask extends AbstractKeychainTask {
 
@@ -24,6 +25,8 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	KeychainCreateTask() {
 		super()
 		this.description = "Create a keychain that is used for signing the app"
+
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
 		this.setOnlyIf {
 			return !project.xcodebuild.sdk.startsWith("iphonesimulator")
@@ -74,7 +77,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			setKeychainList(keychainList)
 		}
 
-		// Set a long timeout on the keychain so it doesn't lock before the build completes
+		// Set a custom timeout on the keychain if requested
 		if (project.xcodebuild.signing.timeout != null) {
 			commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])
 		}

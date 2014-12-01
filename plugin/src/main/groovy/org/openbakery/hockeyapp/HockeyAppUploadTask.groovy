@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery.hockeykit
+package org.openbakery.hockeyapp
 
 import org.apache.http.Consts
 import org.apache.http.HttpEntity
@@ -34,10 +34,11 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractDistributeTask
 
 import java.util.regex.Pattern
 
-class HockeyAppUploadTask extends DefaultTask {
+class HockeyAppUploadTask extends AbstractDistributeTask {
 
 
 	public static final String HOCKEY_APP_API_URL = "https://rink.hockeyapp.net/api/2/apps/"
@@ -50,16 +51,7 @@ class HockeyAppUploadTask extends DefaultTask {
 		this.description = "Uploades the app (.ipa, .dsym) to HockeyApp"
 	}
 
-	def getFile(String extension) {
-		def pattern = Pattern.compile(".*" + extension)
-		def fileList = project.hockeyapp.outputDirectory.list(
-						[accept: { d, f -> f ==~ pattern }] as FilenameFilter
-		).toList()
-		if (fileList == null || fileList.size() == 0) {
-			throw new IllegalStateException("No *" + extension + " file found in directory " + project.hockeyapp.outputDirectory.absolutePath)
-		}
-		return new File(project.hockeyapp.outputDirectory, fileList[0])
-	}
+
 
 	@TaskAction
 	def upload() throws IOException {
@@ -68,8 +60,8 @@ class HockeyAppUploadTask extends DefaultTask {
 			throw new IllegalArgumentException("Cannot upload to HockeyApp because API Token is missing")
 		}
 
-		def ipaFile = getFile("ipa");
-		def dSYMFile = getFile("dSYM.zip");
+		def ipaFile = getIpaFile(project.hockeyapp.outputDirectory)
+		def dSYMFile = getDsymZipFile(project.hockeyapp.outputDirectory)
 
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 		logger.debug("dSYMFile: {}",  dSYMFile.absolutePath)
@@ -145,13 +137,16 @@ class HockeyAppUploadTask extends DefaultTask {
 
 	def void uploadProvisioningProfile() {
 
+		if (project.xcodebuild.signing.mobileProvisionFile.size() != 1) {
+			return;
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		try {
 			HttpPost httpPost = new HttpPost(HOCKEY_APP_API_URL + project.hockeyapp.appID + "/provisioning_profiles");
 
 			HttpEntity requestEntity = MultipartEntityBuilder.create()
-							.addBinaryBody("mobileprovision", project.xcodebuild.signing.mobileProvisionFile)
+							.addBinaryBody("mobileprovision", project.xcodebuild.signing.mobileProvisionFile.get(0))
 							.build()
 
 			httpPost.setEntity(requestEntity);

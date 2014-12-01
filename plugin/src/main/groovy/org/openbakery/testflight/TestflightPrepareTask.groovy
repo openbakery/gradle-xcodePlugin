@@ -16,12 +16,9 @@
 package org.openbakery.testflight
 
 import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.ivy.util.FileUtil
-import org.apache.commons.io.FileUtils
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.AbstractDistributeTask
 
-class TestFlightPrepareTask extends AbstractXcodeTask {
+class TestFlightPrepareTask extends AbstractDistributeTask {
 
 	TestFlightPrepareTask() {
 		super()
@@ -32,53 +29,8 @@ class TestFlightPrepareTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def archive() {
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-
-		def appName = getAppBundleName()
-		def baseName = appName.substring(0, appName.size() - 4)
-		def ipaName = baseName + ".ipa"
-		def dsymName = baseName + ".app.dSYM"
-
-		def zipFileName = baseName
-
-		if (!project.testflight.outputDirectory.exists()) {
-			project.testflight.outputDirectory.mkdirs()
-		}
-
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			logger.debug("Rename App")
-
-			File ipaFile = new File(ipaName)
-			if (ipaFile.exists()) {
-				ipaName = baseName + project.xcodebuild.bundleNameSuffix + ".ipa";
-				ipaFile.renameTo(ipaName)
-			}
-
-			File dsymFile = new File(dsymName)
-			if (dsymFile.exists()) {
-				dsymFile.renameTo(baseName + project.xcodebuild.bundleNameSuffix + ".app.dSYM")
-			}
-			zipFileName += project.xcodebuild.bundleNameSuffix
-
-		}
-
-
-		logger.debug("project.testflight.outputDirectory {}", project.testflight.outputDirectory)
-		int index = zipFileName.lastIndexOf('/')
-		def baseZipName = zipFileName.substring(index+1, zipFileName.length());
-
-		logger.debug("baseZipName {}", baseZipName)
-		logger.debug("buildOutputDirectory {}", buildOutputDirectory)
-
-
-		def ant = new AntBuilder()
-		ant.zip(destfile: project.testflight.outputDirectory.absolutePath + "/" + baseZipName + ".app.dSYM.zip",
-						basedir: buildOutputDirectory.absolutePath,
-						includes: "*dSYM*/**")
-
-		FileUtils.copyFileToDirectory(new File(ipaName), project.testflight.outputDirectory)
-
-
+		copyIpaToDirectory(project.testflight.outputDirectory)
+		copyDsymToDirectory(project.testflight.outputDirectory)
+		createDsymZip(project.testflight.outputDirectory)
 	}
 }

@@ -10,15 +10,16 @@ import org.gradle.api.Project
 class Signing {
 
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
-	public final static PROVISIONING_NAME_BASE = "gradle-"
+
 
 	String identity
 	String certificateURI
 	String certificatePassword
-	String mobileProvisionURI
+	List<String> mobileProvisionURI = null
 	String keychainPassword = "This_is_the_default_keychain_password"
 	File keychain
 	Integer timeout
+	String plugin
 
 
 	/**
@@ -31,9 +32,7 @@ class Signing {
 
 
 	Object mobileProvisionDestinationRoot
-	Object mobileProvisionFile
-	Object mobileProvisionFileLinkToLibrary
-	final String mobileProvisionName =  PROVISIONING_NAME_BASE + System.currentTimeMillis() +  ".mobileprovision"
+	List<File> mobileProvisionFile = new ArrayList<File>()
 
 
 
@@ -56,9 +55,6 @@ class Signing {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("provision")
 		}
 
-		this.mobileProvisionFileLinkToLibrary = {
-			return new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + mobileProvisionName);
-		}
 	}
 
 	void setKeychain(Object keychain) {
@@ -86,9 +82,31 @@ class Signing {
 		this.mobileProvisionDestinationRoot = mobileProvisionDestinationRoot
 	}
 
-	File getMobileProvisionFileLinkToLibrary() {
-		return project.file(mobileProvisionFileLinkToLibrary)
+	void setMobileProvisionURI(Object mobileProvisionURI) {
+		if (mobileProvisionURI instanceof List) {
+			this.mobileProvisionURI = mobileProvisionURI;
+		} else {
+			this.mobileProvisionURI = new ArrayList<String>();
+			this.mobileProvisionURI.add(mobileProvisionURI.toString());
+		}
 	}
+
+	void setMobileProvisionFile(Object mobileProvision) {
+
+		File fileToAdd = null
+
+		if (mobileProvision instanceof File) {
+			fileToAdd = mobileProvision
+		} else {
+			fileToAdd = new File(mobileProvision.toString());
+		}
+
+		if (!fileToAdd.exists()) {
+			throw new IllegalArgumentException("given mobile provision file does not exist: " +	fileToAdd.absolutePath)
+		}
+		mobileProvisionFile.add(fileToAdd)
+	}
+
 
 	@Override
 	public String toString() {

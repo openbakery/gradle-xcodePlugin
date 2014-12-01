@@ -45,7 +45,7 @@ class XcodeBuildTaskTest {
 		projectDir = project.projectDir.absolutePath
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		xcodeBuildTask = project.getTasks().getByPath('build')
+		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.setProperty("commandRunner", commandRunnerMock)
 
 		expectedCommandList?.clear()

@@ -21,13 +21,13 @@ Here a brief overview of the features:
 ## Requirements
 
 * Xcode 5 or greater
-* [Gradle](http://gradle.org) 1.4 or greater
-* Java
+* [Gradle](http://gradle.org) 2.0 or greater
+* Java 1.6 or greater
 
 
-**Current stable version is 0.9.14**
+**Current stable version is 0.9.15**
 
-0.9.14 supports Xcode 5, Xcode 6 and Xcode 6.1
+0.9.14 and 0.10.+ supports Xcode 5, Xcode 6 and Xcode 6.1
 
 
 ## Documentation

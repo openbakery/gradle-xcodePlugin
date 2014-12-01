@@ -64,25 +64,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File destinationFile = new File(toDirectory, FilenameUtils.getName(address))
 		return destinationFile.absolutePath
-
-		return destinationFile.absolutePath
 	}
 
-	/**
-	 *
-	 * @return the absolute path to the generated app bundle
-	 */
-	def getAppBundleName() {
-		//println project.xcodebuild.symRoot
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		def fileList = buildOutputDirectory.list(
-						[accept: {d, f -> f ==~ /.*app/ }] as FilenameFilter
-		).toList()
-		if (fileList.size() == 0) {
-			throw new IllegalStateException("No App Found in directory " + buildOutputDirectory.absolutePath)
-		}
-		return buildOutputDirectory.absolutePath + "/" + fileList[0]
-	}
 
 	/**
 	 * Reads the value for the given key from the given plist
@@ -106,10 +89,16 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	def getAppBundleInfoPlist() {
-		File infoPlistFile = new File(getAppBundleName() + "/Info.plist")
+
+		/*
+		def convertedPlist = new File(project.buildDir, "Info.plist")
+		if (convertedPlist.exists()) {
+			return convertedPlist.absolutePath
+		}
+
+		File infoPlistFile = new File(project.xcodebuild.applicationBundle, "/Info.plist")
 		if (infoPlistFile.exists()) {
 
-			def convertedPlist = new File(project.buildDir, FilenameUtils.getName(infoPlistFile.getName()))
 			//plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
 
 			def convertCommand = [
@@ -125,7 +114,9 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 			return convertedPlist.absolutePath
 		}
-		return null
+
+		*/
+		return new File(project.xcodebuild.applicationBundle, "Info.plist").absolutePath
 	}
 
 

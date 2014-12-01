@@ -16,12 +16,9 @@
 package org.openbakery.deploygate
 
 import org.gradle.api.tasks.TaskAction
-import org.apache.commons.io.FilenameUtils
-import org.apache.ivy.util.FileUtil
-import org.apache.commons.io.FileUtils
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.AbstractDistributeTask
 
-class DeployGatePrepareTask extends AbstractXcodeTask {
+class DeployGatePrepareTask extends AbstractDistributeTask {
 
 	DeployGatePrepareTask() {
 		super()
@@ -31,27 +28,8 @@ class DeployGatePrepareTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def archive() {
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 
-		def appName = getAppBundleName()
-		def baseName = appName.substring(0, appName.size() - 4)
-		def ipaName = baseName + ".ipa"
+		copyIpaToDirectory(project.deploygate.outputDirectory);
 
-		if (!project.deploygate.outputDirectory.exists()) {
-			project.deploygate.outputDirectory.mkdirs()
-		}
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			logger.debug("Rename App")
-
-			File ipaFile = new File(ipaName)
-			if (ipaFile.exists()) {
-				ipaName = baseName + project.xcodebuild.bundleNameSuffix + ".ipa";
-				ipaFile.renameTo(ipaName)
-			}
-		}
-
-		logger.debug("project.deploygate.outputDirectory {}", project.deploygate.outputDirectory)
-		FileUtils.copyFileToDirectory(new File(ipaName), project.deploygate.outputDirectory)
 	}
 }

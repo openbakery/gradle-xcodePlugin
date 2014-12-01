@@ -1,27 +1,26 @@
 Build settings from command line:
-    DSTROOT = /Users/Tracyk/Dev/Rentals/build/dst
-    OBJROOT = /Users/Tracyk/Dev/Rentals/build/obj
+    DSTROOT = /Users/John/Dev/Example/build/dst
+    OBJROOT = /Users/John/Dev/Example/build/obj
     SDKROOT = iphonesimulator8.1
-    SHARED_PRECOMPS_DIR = /Users/Tracyk/Dev/Rentals/build/shared
-    SYMROOT = /Users/Tracyk/Dev/Rentals/build/sym
+    SHARED_PRECOMPS_DIR = /Users/John/Dev/Example/build/shared
+    SYMROOT = /Users/John/Dev/Example/build/sym
 
-[1mGenerateDSYMFile[0m build/sym/Debug-iphonesimulator/RentalsTests.xctest.dSYM build/sym/Debug-iphonesimulator/RentalsTests.xctest/RentalsTests
-    cd /Users/Tracyk/Dev/Rentals
-    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/Users/Tracyk/.sprinter/zillow/bin:/usr/local/bin:/Users/Tracyk/.sprinter/zillow/features/ant/apache-ant-1.7.1/bin:/Users/Tracyk/.sprinter/zillow/features/maven3.1.1/apache-maven-3.1.1/bin:/Users/Tracyk/.sprinter/sprinter/bin:/Users/Tracyk/.rvm/gems/ruby-2.0.0-p0/bin:/Users/Tracyk/.rvm/gems/ruby-2.0.0-p0@global/bin:/Users/Tracyk/.rvm/rubies/ruby-2.0.0-p0/bin:/Users/Tracyk/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/Tracyk/Dev/Rentals/build/sym/Debug-iphonesimulator/RentalsTests.xctest/RentalsTests -o /Users/Tracyk/Dev/Rentals/build/sym/Debug-iphonesimulator/RentalsTests.xctest.dSYM
+[1mGenerateDSYMFile[0m build/sym/Debug-iphonesimulator/ExampleTests.xctest.dSYM build/sym/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests
+    cd /Users/John/Dev/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/John/Dev/Example/build/sym/Debug-iphonesimulator/ExampleTests.xctest/ExampleTests -o /Users/John/Dev/Example/build/sym/Debug-iphonesimulator/ExampleTests.xctest.dSYM
 
-[1mCpResource[0m build/sym/Debug-iphonesimulator/REModelsResources.bundle build/sym/Debug-iphonesimulator/RentalsTests.xctest/REModelsResources.bundle
-    cd /Users/Tracyk/Dev/Rentals
-    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/Users/Tracyk/.sprinter/zillow/bin:/usr/local/bin:/Users/Tracyk/.sprinter/zillow/features/ant/apache-ant-1.7.1/bin:/Users/Tracyk/.sprinter/zillow/features/maven3.1.1/apache-maven-3.1.1/bin:/Users/Tracyk/.sprinter/sprinter/bin:/Users/Tracyk/.rvm/gems/ruby-2.0.0-p0/bin:/Users/Tracyk/.rvm/gems/ruby-2.0.0-p0@global/bin:/Users/Tracyk/.rvm/rubies/ruby-2.0.0-p0/bin:/Users/Tracyk/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/Tracyk/Dev/Rentals/build/sym/Debug-iphonesimulator/REModelsResources.bundle /Users/Tracyk/Dev/Rentals/build/sym/Debug-iphonesimulator/RentalsTests.xctest
+[1mCpResource[0m build/sym/Debug-iphonesimulator/ExampleResources.bundle build/sym/Debug-iphonesimulator/ExampleTests.xctest/ExampleResources.bundle
+    cd /Users/John/Dev/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/John/Dev/Example/build/sym/Debug-iphonesimulator/ExampleResources.bundle /Users/John/Dev/Example/build/sym/Debug-iphonesimulator/ExampleTests.xctest
 
-[1mTouch[0m build/sym/Debug-iphonesimulator/RentalsTests.xctest
-    cd /Users/Tracyk/Dev/Rentals
-    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/Users/Tracyk/.sprinter/zillow/bin:/usr/local/bin:/Users/Tracyk/.sprinter/zillow/features/ant/apache-ant-1.7.1/bin:/Users/Tracyk/.sprinter/zillow/features/maven3.1.1/apache-maven-3.1.1/bin:/Users/Tracyk/.sprinter/sprinter/bin:/Users/Tracyk/.rvm/gems/ruby-2.0.0-p0/bin:/Users/Tracyk/.rvm/gems/ruby-2.0.0-p0@global/bin:/Users/Tracyk/.rvm/rubies/ruby-2.0.0-p0/bin:/Users/Tracyk/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-    /usr/bin/touch -c /Users/Tracyk/Dev/Rentals/build/sym/Debug-iphonesimulator/RentalsTests.xctest
+[1mTouch[0m build/sym/Debug-iphonesimulator/ExampleTests.xctest
+    cd /Users/John/Dev/Example
+    export PATH="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    /usr/bin/touch -c /Users/John/Dev/Example/build/sym/Debug-iphonesimulator/ExampleTests.xctest
 
 [?1034hTest Suite 'All tests' started at 2014-11-16 21:05:01 +0000
-Test Suite 'RECommonUITests.xctest' started at 2014-11-16 21:05:01 +0000
 Test Suite 'TestGoogleWebStreetViewProvider' started at 2014-11-16 21:05:01 +0000
 Test Case '-[TestGoogleWebStreetViewProvider testEmptyJSON]' started.
 Test Case '-[TestGoogleWebStreetViewProvider testEmptyJSON]' passed (0.001 seconds).
@@ -59,12 +58,10 @@ Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHi
 Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHide]' passed (0.001 seconds).
 Test Suite 'TestZBuildingDetailsPageViewModel' passed at 2014-11-16 21:05:01 +0000.
      Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
-Test Suite 'RECommonUITests.xctest' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.405) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.407) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:02 +0000
-Test Suite 'REMappingTests.xctest' started at 2014-11-16 21:05:02 +0000
 Test Suite 'TestZMapAnnotationChangeQueue' started at 2014-11-16 21:05:02 +0000
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' started.
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' passed (0.000 seconds).
@@ -99,12 +96,10 @@ Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' starte
 Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' passed (0.001 seconds).
 Test Suite 'TestZMapAnnotationViewModel' passed at 2014-11-16 21:05:02 +0000.
      Executed 10 tests, with 0 failures (0 unexpected) in 0.006 (0.011) seconds
-Test Suite 'REMappingTests.xctest' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.262) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.264) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:05 +0000
-Test Suite 'RentalsTests.xctest' started at 2014-11-16 21:05:05 +0000
 Test Suite 'TestZRSettingsViewControllerModel' started at 2014-11-16 21:05:06 +0000
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' started.
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' passed (0.000 seconds).
@@ -112,7 +107,6 @@ Test Case '-[TestZRSettingsViewControllerModel testNotifications]' started.
 Test Case '-[TestZRSettingsViewControllerModel testNotifications]' passed (0.000 seconds).
 Test Suite 'TestZRSettingsViewControllerModel' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
-Test Suite 'RentalsTests.xctest' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.215) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.217) seconds
@@ -122,24 +116,10 @@ Test Suite 'All tests' passed at 2014-11-16 21:05:06 +0000.
 2014-11-16 13:05:39.885 xcodebuild[69175:23959421] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7feebafb5310 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
 2014-11-16 13:05:40.929 xcodebuild[69175:23959421] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7feec0a521f0 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
 
-[1m[36m=== BUILD TARGET RentalsTests OF PROJECT Rentals WITH CONFIGURATION Debug ===[0m
 
 Check dependencies
 
 Test Suite 'All tests' started at 2014-11-16 21:06:04 +0000
-Test Suite 'RECommonUITests.xctest' started at 2014-11-16 21:05:01 +0000
-Test Suite 'TestGoogleWebStreetViewProvider' started at 2014-11-16 21:05:01 +0000
-Test Case '-[TestGoogleWebStreetViewProvider testEmptyJSON]' started.
-Test Case '-[TestGoogleWebStreetViewProvider testEmptyJSON]' passed (0.001 seconds).
-Test Case '-[TestGoogleWebStreetViewProvider testMissingBestViewDegree]' started.
-Test Case '-[TestGoogleWebStreetViewProvider testMissingBestViewDegree]' passed (0.001 seconds).
-Test Case '-[TestGoogleWebStreetViewProvider testMissingPanoId]' started.
-Test Case '-[TestGoogleWebStreetViewProvider testMissingPanoId]' passed (0.000 seconds).
-Test Case '-[TestGoogleWebStreetViewProvider testNilHomeInfo]' started.
-Test Case '-[TestGoogleWebStreetViewProvider testNilHomeInfo]' passed (0.000 seconds).
-Test Case '-[TestGoogleWebStreetViewProvider testValidJSON]' started.
-Test Case '-[TestGoogleWebStreetViewProvider testValidJSON]' passed (0.001 seconds).
-Test Suite 'TestGoogleWebStreetViewProvider' passed at 2014-11-16 21:05:01 +0000.
      Executed 5 tests, with 0 failures (0 unexpected) in 0.003 (0.007) seconds
 Test Suite 'TestMapFeatureProviderUtil' started at 2014-11-16 21:05:01 +0000
 Test Case '-[TestMapFeatureProviderUtil testInvalidTypesReturnNone]' started.
@@ -165,12 +145,10 @@ Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHi
 Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHide]' passed (0.001 seconds).
 Test Suite 'TestZBuildingDetailsPageViewModel' passed at 2014-11-16 21:05:01 +0000.
      Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
-Test Suite 'RECommonUITests.xctest' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.405) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.407) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:02 +0000
-Test Suite 'REMappingTests.xctest' started at 2014-11-16 21:05:02 +0000
 Test Suite 'TestZMapAnnotationChangeQueue' started at 2014-11-16 21:05:02 +0000
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' started.
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' passed (0.000 seconds).
@@ -205,12 +183,10 @@ Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' starte
 Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' passed (0.001 seconds).
 Test Suite 'TestZMapAnnotationViewModel' passed at 2014-11-16 21:05:02 +0000.
      Executed 10 tests, with 0 failures (0 unexpected) in 0.006 (0.011) seconds
-Test Suite 'REMappingTests.xctest' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.262) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.264) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:05 +0000
-Test Suite 'RentalsTests.xctest' started at 2014-11-16 21:05:05 +0000
 Test Suite 'TestZRSettingsViewControllerModel' started at 2014-11-16 21:05:06 +0000
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' started.
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' passed (0.000 seconds).
@@ -218,7 +194,6 @@ Test Case '-[TestZRSettingsViewControllerModel testNotifications]' started.
 Test Case '-[TestZRSettingsViewControllerModel testNotifications]' passed (0.000 seconds).
 Test Suite 'TestZRSettingsViewControllerModel' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
-Test Suite 'RentalsTests.xctest' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.215) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.217) seconds

@@ -15,6 +15,7 @@
  */
 package org.openbakery.signing
 
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.time.DateUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,36 +28,72 @@ class ProvisioningProfileIdReader {
 
 	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileIdReader.class)
 
+	XMLPropertyListConfiguration config;
 
-	boolean checkExpired(String source) {
-		def matcher = source =~ "<key>ExpirationDate</key>\\s*\\n\\s*<date>(.*?)</date>"
-		if (matcher.find()) {
-			String[] dateParsePatterns = ["yyyy-MM-dd'T'HH:mm:ssX"];
-			Date date = DateUtils.parseDate(matcher[0][1], dateParsePatterns);
-			if (date.before(new Date())) {
-				DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
-				throw new IllegalArgumentException("The Provisioning Profile has expired on " + formatter.format(date) );
+	ProvisioningProfileIdReader(def provisioningProfile) {
+		String text = load(provisioningProfile)
+		config = new XMLPropertyListConfiguration()
+		config.load(new StringReader(text))
+		checkExpired();
+	}
+
+	String load(def provisioningProfile) {
+		if (!(provisioningProfile instanceof File)) {
+			provisioningProfile = new File(provisioningProfile.toString())
+		}
+		if (!provisioningProfile.exists()) {
+			return nil;
+		}
+
+		StringBuffer result = new StringBuffer();
+
+		boolean append = false;
+		for (String line : provisioningProfile.text.split("\n")) {
+			if (line.startsWith("<!DOCTYPE plist PUBLIC")) {
+				append = true;
 			}
+
+			if (line.startsWith("</plist>")) {
+				result.append("</plist>")
+				return result.toString();
+			}
+
+			if (append) {
+				result.append(line)
+				result.append("\n");
+			}
+
+
+		}
+		return ""
+	}
+
+
+	boolean checkExpired() {
+
+		Date expireDate = config.getProperty("ExpirationDate")
+		if (expireDate.before(new Date())) {
+			DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
+			throw new IllegalArgumentException("The Provisioning Profile has expired on " + formatter.format(expireDate) );
 		}
 	}
 
 
-	String readProvisioningProfileUUID(def source) {
-		logger.debug("destinationRoot: {}", source);
-		if (!(source instanceof File)) {
-			source = new File(source.toString())
-		}
-		if (source.exists()) {
-			def mobileprovisionContent = source.text
-			checkExpired(mobileprovisionContent);
-
-			def matcher = mobileprovisionContent =~ "<key>UUID</key>\\s*\\n\\s*<string>(.*?)</string>"
-			if (matcher.find()) {
-				return matcher[0][1];
-			}
-		}
-		return null;
+	String getUUID() {
+		return config.getString("UUID")
 	}
 
+	String getApplicationIdentifierPrefix() {
+		return config.getString("ApplicationIdentifierPrefix")
 
+	}
+
+	String getApplicationIdentifier() {
+		String value = config.getString("Entitlements.application-identifier")
+		String prefix = getApplicationIdentifierPrefix() + "."
+		if (value.startsWith(prefix)) {
+			return value.substring(prefix.length())
+		}
+		return value;
+	}
 }

@@ -20,6 +20,16 @@ class XcodeTestTaskTest {
 	Destination destinationPad
 	Destination destinationPhone
 
+	Destination createDestination(String name, String id) {
+		Destination destination = new Destination()
+		destination.platform = "iPhoneSimulator"
+		destination.name = name
+		destination.arch = "i386"
+		destination.id = id
+		destination.os = "iOS"
+		return destination
+	}
+
 	@BeforeMethod
 	def setup() {
 
@@ -33,30 +43,20 @@ class XcodeTestTaskTest {
 
 		xcodeTestTask.setOutputDirectory(new File("build/test"));
 
-		destinationPad = new Destination()
-		destinationPad.platform = "iPhoneSimulator"
-		destinationPad.name = "iPad"
-		destinationPad.arch = "i386"
-		destinationPad.id = "iPad Air"
-		destinationPad.os = "iOS"
-
-		destinationPhone = new Destination()
-		destinationPhone.platform = "iPhoneSimulator"
-		destinationPhone.name = "iPhone"
-		destinationPhone.arch = "i386"
-		destinationPhone.id = "iPhone 4s"
-		destinationPhone.os = "iOS"
+		destinationPad = createDestination("iPad", "iPad Air")
+		destinationPhone = createDestination("iPhone", "iPhone 4s")
 
 
 		project.xcodebuild.availableSimulators << destinationPad
 		project.xcodebuild.availableSimulators << destinationPhone
 
 		project.xcodebuild.destination {
-			name = "iPad"
+			name = destinationPad.name
 		}
 		project.xcodebuild.destination {
-			name = "iPhone"
+			name = destinationPhone.name
 		}
+
 
 		File outputDirectory = new File("build/test");
 		if (!outputDirectory.exists()) {
@@ -147,6 +147,8 @@ class XcodeTestTaskTest {
 
 	@Test
 	void parseComplexTestOutput() {
+
+
 		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
 
 		assert xcodeTestTask.numberSuccess() == 60

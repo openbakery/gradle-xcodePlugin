@@ -78,7 +78,7 @@ class XcodePluginTest {
 
 	@Test
 	void contain_task_xcodebuild() {
-		assert project.tasks.findByName('build') instanceof XcodeBuildTask
+		assert project.tasks.findByName('xcodebuild') instanceof XcodeBuildTask
 	}
 
 	/* TODO clarify if makes sense to exclude deploy tasks into another xcodeplugin?
@@ -118,7 +118,7 @@ e.g. xcodeplugin-deploy-testflight and xcodeplugin-deploy-hockeykit. */
 	void group_tasks() {
 		project.tasks.each { task ->
 			if (task.getClass().getName().startsWith("org.openbakery.XcodeBuildTask")) {
-				assert task.group == 'build'
+				assert task.group == XcodePlugin.XCODE_GROUP_NAME
 			} else if (task.getClass().getName().startsWith("org.openbakery.Xcode")) {
 				assert task.group == XcodePlugin.XCODE_GROUP_NAME
 			} else if (task.getClass().getName().startsWith("org.openbakery.HockeyKit")) {
