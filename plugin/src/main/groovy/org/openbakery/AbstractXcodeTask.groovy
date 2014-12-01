@@ -89,6 +89,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	def getAppBundleInfoPlist() {
+
+		/*
 		def convertedPlist = new File(project.buildDir, "Info.plist")
 		if (convertedPlist.exists()) {
 			return convertedPlist.absolutePath
@@ -112,7 +114,9 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 			return convertedPlist.absolutePath
 		}
-		return null
+
+		*/
+		return new File(project.xcodebuild.applicationBundle, "Info.plist").absolutePath
 	}
 
 

@@ -41,7 +41,7 @@ class HockeyKitArchiveTaskTest {
 
 		hockeyKitArchiveTask.setProperty("commandRunner", commandRunnerMock)
 
-		infoPlist = new File(project.buildDir, "Info.plist")
+		infoPlist = new File(project.buildDir, "sym/Debug-iphonesimulator/Test.app/Info.plist")
 		FileUtils.writeStringToFile(infoPlist, "dummy")
 
 		FileUtils.writeStringToFile(project.xcodebuild.getIpaBundle(), "dummy")
