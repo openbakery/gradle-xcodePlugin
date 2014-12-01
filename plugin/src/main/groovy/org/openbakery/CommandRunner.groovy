@@ -65,10 +65,6 @@ class CommandRunner {
 
 	def run(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
 
-		// Run the command in a pseudo-terminal to force line-buffered output
-		// (Otherwise stderr can corrupt the stdout output)
-		commandList = ["script", "-q", "/dev/null"] + commandList
-
 		logger.debug("Run command: {}", commandListToString(commandList))
 		if (environment != null) {
 			logger.debug("with additional environment variables: {}", environment)

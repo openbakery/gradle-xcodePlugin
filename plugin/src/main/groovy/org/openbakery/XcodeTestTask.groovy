@@ -174,6 +174,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def resultList = []
 
+		List<String> testSuites = null;
+
 		int testRun = 0;
 
 		StringBuilder output = new StringBuilder()
@@ -210,6 +212,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 					testClass.results << new TestResult(method: method)
 
 				} else {
+					//TestCase testCase = resultMap.get(testClass).find{ testCase -> testCase.method.equals(method) }
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
 					if (testClass != null) {
 						TestResult testResult = testClass.results.find { testResult -> testResult.method.equals(method) }

@@ -21,6 +21,7 @@ Build settings from command line:
     /usr/bin/touch -c /Users/John/Dev/Example/build/sym/Debug-iphonesimulator/ExampleTests.xctest
 
 [?1034hTest Suite 'All tests' started at 2014-11-16 21:05:01 +0000
+Test Suite 'ExampleCommonUITests.xctest' started at 2014-11-16 21:05:01 +0000
 Test Suite 'TestGoogleWebStreetViewProvider' started at 2014-11-16 21:05:01 +0000
 Test Case '-[TestGoogleWebStreetViewProvider testEmptyJSON]' started.
 Test Case '-[TestGoogleWebStreetViewProvider testEmptyJSON]' passed (0.001 seconds).
@@ -58,10 +59,12 @@ Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHi
 Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHide]' passed (0.001 seconds).
 Test Suite 'TestZBuildingDetailsPageViewModel' passed at 2014-11-16 21:05:01 +0000.
      Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+Test Suite 'ExampleCommonUITests.xctest' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.405) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.407) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:02 +0000
+Test Suite 'ExampleMappingTests.xctest' started at 2014-11-16 21:05:02 +0000
 Test Suite 'TestZMapAnnotationChangeQueue' started at 2014-11-16 21:05:02 +0000
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' started.
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' passed (0.000 seconds).
@@ -96,10 +99,12 @@ Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' starte
 Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' passed (0.001 seconds).
 Test Suite 'TestZMapAnnotationViewModel' passed at 2014-11-16 21:05:02 +0000.
      Executed 10 tests, with 0 failures (0 unexpected) in 0.006 (0.011) seconds
+Test Suite 'ExampleMappingTests.xctest' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.262) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.264) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:05 +0000
+Test Suite 'ExampleTests.xctest' started at 2014-11-16 21:05:05 +0000
 Test Suite 'TestZRSettingsViewControllerModel' started at 2014-11-16 21:05:06 +0000
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' started.
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' passed (0.000 seconds).
@@ -107,6 +112,7 @@ Test Case '-[TestZRSettingsViewControllerModel testNotifications]' started.
 Test Case '-[TestZRSettingsViewControllerModel testNotifications]' passed (0.000 seconds).
 Test Suite 'TestZRSettingsViewControllerModel' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'ExampleTests.xctest' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.215) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.217) seconds
@@ -116,10 +122,24 @@ Test Suite 'All tests' passed at 2014-11-16 21:05:06 +0000.
 2014-11-16 13:05:39.885 xcodebuild[69175:23959421] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7feebafb5310 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
 2014-11-16 13:05:40.929 xcodebuild[69175:23959421] [MT] iPhoneSimulator: Unable to connect to "com.apple.instruments.deviceservice.lockdown" (Error Domain=com.apple.CoreSimulator.SimError Code=146 "Unable to lookup in current state: Shutdown" UserInfo=0x7feec0a521f0 {NSLocalizedDescription=Unable to lookup in current state: Shutdown})
 
+[1m[36m=== BUILD TARGET ExampleTests OF PROJECT Example WITH CONFIGURATION Debug ===[0m
 
 Check dependencies
 
 Test Suite 'All tests' started at 2014-11-16 21:06:04 +0000
+Test Suite 'ExampleCommonUITests.xctest' started at 2014-11-16 21:05:01 +0000
+Test Suite 'TestWebStreetViewProvider' started at 2014-11-16 21:05:01 +0000
+Test Case '-[TestWebStreetViewProvider testEmptyJSON]' started.
+Test Case '-[TestWebStreetViewProvider testEmptyJSON]' passed (0.001 seconds).
+Test Case '-[TestWebStreetViewProvider testMissingBestViewDegree]' started.
+Test Case '-[TestWebStreetViewProvider testMissingBestViewDegree]' passed (0.001 seconds).
+Test Case '-[TestWebStreetViewProvider testMissingPanoId]' started.
+Test Case '-[TestWebStreetViewProvider testMissingPanoId]' passed (0.000 seconds).
+Test Case '-[TestWebStreetViewProvider testNilHomeInfo]' started.
+Test Case '-[TestWebStreetViewProvider testNilHomeInfo]' passed (0.000 seconds).
+Test Case '-[TestWebStreetViewProvider testValidJSON]' started.
+Test Case '-[TestWebStreetViewProvider testValidJSON]' passed (0.001 seconds).
+Test Suite 'TestWebStreetViewProvider' passed at 2014-11-16 21:05:01 +0000.
      Executed 5 tests, with 0 failures (0 unexpected) in 0.003 (0.007) seconds
 Test Suite 'TestMapFeatureProviderUtil' started at 2014-11-16 21:05:01 +0000
 Test Case '-[TestMapFeatureProviderUtil testInvalidTypesReturnNone]' started.
@@ -145,10 +165,12 @@ Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHi
 Test Case '-[TestZBuildingDetailsPageViewModel testViewModel_UnitsUpdateOnUnitHide]' passed (0.001 seconds).
 Test Suite 'TestZBuildingDetailsPageViewModel' passed at 2014-11-16 21:05:01 +0000.
      Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+Test Suite 'ExampleCommonUITests.xctest' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.405) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:01 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.327 (0.407) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:02 +0000
+Test Suite 'ExampleMappingTests.xctest' started at 2014-11-16 21:05:02 +0000
 Test Suite 'TestZMapAnnotationChangeQueue' started at 2014-11-16 21:05:02 +0000
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' started.
 Test Case '-[TestZMapAnnotationChangeQueue testAddNilChange]' passed (0.000 seconds).
@@ -183,10 +205,12 @@ Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' starte
 Test Case '-[TestZMapAnnotationViewModel testUpdateRequestedOnProviders]' passed (0.001 seconds).
 Test Suite 'TestZMapAnnotationViewModel' passed at 2014-11-16 21:05:02 +0000.
      Executed 10 tests, with 0 failures (0 unexpected) in 0.006 (0.011) seconds
+Test Suite 'ExampleMappingTests.xctest' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.262) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:03 +0000.
      Executed 14 tests, with 0 failures (0 unexpected) in 0.226 (0.264) seconds
 Test Suite 'All tests' started at 2014-11-16 21:05:05 +0000
+Test Suite 'ExampleTests.xctest' started at 2014-11-16 21:05:05 +0000
 Test Suite 'TestZRSettingsViewControllerModel' started at 2014-11-16 21:05:06 +0000
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' started.
 Test Case '-[TestZRSettingsViewControllerModel testMapType]' passed (0.000 seconds).
@@ -194,6 +218,7 @@ Test Case '-[TestZRSettingsViewControllerModel testNotifications]' started.
 Test Case '-[TestZRSettingsViewControllerModel testNotifications]' passed (0.000 seconds).
 Test Suite 'TestZRSettingsViewControllerModel' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'ExampleTests.xctest' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.215) seconds
 Test Suite 'All tests' passed at 2014-11-16 21:05:06 +0000.
      Executed 2 tests, with 0 failures (0 unexpected) in 0.209 (0.217) seconds
