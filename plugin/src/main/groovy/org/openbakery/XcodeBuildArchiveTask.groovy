@@ -29,6 +29,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 
+	def renameFileTo(String name) {
+
+
+	}
 
 	@TaskAction
 	def archive() {
@@ -38,24 +42,28 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		logger.debug("ipaName: {}", ipaName)
 		logger.debug("dsymName: {}", dsynName)
 
+
+
 		def zipFileName = new File(project.getBuildDir(), project.xcodebuild.bundleName).absolutePath
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			logger.debug("Rename App")
 
-			File appFile = new File(appName)
-			if (appFile.exists()) {
-				appFile.renameTo(project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType)
+			File applicationBundle = project.xcodebuild.getApplicationBundle();
+			//File appFile = new File(buildOutputDirectory, appName)
+			if (applicationBundle.exists()) {
+
+				applicationBundle.renameTo(new File(applicationBundle.parentFile,  project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType))
 			}
 
 			File ipaFile = new File(ipaName)
 			if (ipaFile.exists()) {
-				ipaFile.renameTo(project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + ".ipa")
+				ipaFile.renameTo(new File(ipaFile.parentFile, project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + ".ipa"))
 			}
 
 			File dsymFile = new File(dsynName)
 			if (dsymFile.exists()) {
-				dsymFile.renameTo(project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType + ".dSYM")
+				dsymFile.renameTo(dsymFile.parentFile, project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType + ".dSYM")
 			}
 			zipFileName += project.xcodebuild.bundleNameSuffix
 

@@ -1,1 +1,4 @@
 include 'Example'
+
+
+println project( ':Example' ).projectDir
