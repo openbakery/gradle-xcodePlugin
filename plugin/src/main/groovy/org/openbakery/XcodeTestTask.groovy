@@ -135,7 +135,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 
 			commandList.add("-destination")
-			commandList.add(destinationParameters.join(","));
+			commandList.add(destinationParameters.join(","))
 
 
 		}
@@ -143,21 +143,20 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		commandList.add('test');
 
-		File outputFile = new File(outputDirectory, "xcodebuild-output.txt");
+		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project);
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project)
 			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);LogLevel.INFO
+		} catch (CommandRunnerException ex) {
+			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
-
 			if (!parseResult(outputFile)) {
-				logger.lifecycle("Tests Failed!");
-				throw new Exception("Not all unit tests are successful!");
-			};
+				logger.lifecycle("Tests Failed!")
+				throw new Exception("Not all unit tests are successful!")
+			} 
 			logger.lifecycle("Done")
 		}
 	}
