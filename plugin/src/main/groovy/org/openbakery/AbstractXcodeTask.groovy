@@ -120,6 +120,33 @@ abstract class AbstractXcodeTask extends DefaultTask {
 			result.maintenance = scanner.nextInt();
 		}
 		return result;
-
 	}
+
+
+	def createZip(File fileToZip) {
+		File zipFile = new File(fileToZip.parentFile, FilenameUtils.getBaseName(fileToZip.getName()) + ".zip")
+		createZip(zipFile, zipFile.parentFile, fileToZip);
+	}
+
+
+
+	def createZip(File zipFile, File baseDirectory, File... filesToZip) {
+		// we want to preserve the permissions, so use the zip command line tool
+		// maybe this can be replaced by Apache Commons Compress
+
+		ant.exec(failonerror: 'true',
+						executable: '/usr/bin/zip',
+						dir: baseDirectory) {
+			arg(value: '--symlinks')
+			arg(value: '--verbose')
+			arg(value: '--recurse-paths')
+			arg(value: zipFile.absolutePath)
+			for (File file : filesToZip) {
+				println "arg: " + file
+				arg(value: file.getName())
+			}
+
+		}
+	}
+
 }

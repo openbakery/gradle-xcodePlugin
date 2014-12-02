@@ -88,6 +88,10 @@ class PackageTask extends AbstractXcodeTask {
 
 
 	private void createIpa(File payloadPath) {
+
+		createZip(project.xcodebuild.ipaBundle, payloadPath.getParentFile(), payloadPath)
+
+		/*
 		// use /usr/bin/zip to preserve permission
 		ant.exec(failonerror: 'true',
 						executable: '/usr/bin/zip',
@@ -97,11 +101,10 @@ class PackageTask extends AbstractXcodeTask {
 			arg(value: '--recurse-paths')
 			arg(value: project.xcodebuild.ipaBundle.absolutePath)
 			arg(value: 'Payload')
-		}
 
-//		ant.zip(destfile: project.xcodebuild.ipaBundle.absolutePath,
-//						basedir: payloadPath.getParentFile().absolutePath,
-//						includes: "Payload/**/*")
+		}
+		*/
+
 
 	}
 
