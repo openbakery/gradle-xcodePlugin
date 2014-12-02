@@ -10,6 +10,42 @@ import org.gradle.api.DefaultTask
  */
 class AbstractDistributeTask extends AbstractXcodeTask {
 
+	def getAppBundleInfoPlist() {
+
+		/*
+		def convertedPlist = new File(project.buildDir, "Info.plist")
+		if (convertedPlist.exists()) {
+			return convertedPlist.absolutePath
+		}
+
+		File infoPlistFile = new File(project.xcodebuild.applicationBundle, "/Info.plist")
+		if (infoPlistFile.exists()) {
+
+			//plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
+
+			def convertCommand = [
+							"plutil",
+							"-convert",
+							"xml1",
+							infoPlistFile.absolutePath,
+							"-o",
+							convertedPlist.absolutePath
+			]
+
+			commandRunner.run(convertCommand)
+
+			return convertedPlist.absolutePath
+		}
+
+		*/
+		File infoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
+		if (!infoPlist.exists()) {
+			throw new IllegalStateException("Info.plist not found: " + infoPlist.absolutePath);
+		}
+		return infoPlist.absolutePath;
+	}
+
+
 
 	File getDestinationFile(File outputDirectory, String extension) {
 		if (project.xcodebuild.bundleNameSuffix != null) {

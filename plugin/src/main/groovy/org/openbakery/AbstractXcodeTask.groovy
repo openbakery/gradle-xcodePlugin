@@ -76,48 +76,33 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 */
 	def getValueFromPlist(plist, key) {
 		try {
-			return commandRunner.runWithResult([
+			String result = commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
 							plist,
 							"-c",
 							"Print :" + key])
+
+			if (result.startsWith("Array {")) {
+
+				ArrayList<String> resultArray = new ArrayList<String>();
+
+				String[] tokens = result.split("\n");
+
+				for (int i = 1; i < tokens.length - 1; i++) {
+					resultArray.add(tokens[i].trim());
+				}
+				return resultArray;
+			}
+			return result;
 		} catch (IllegalStateException ex) {
+			return null
+		} catch (CommandRunnerException ex) {
 			return null
 		}
 	}
 
 
 
-	def getAppBundleInfoPlist() {
-
-		/*
-		def convertedPlist = new File(project.buildDir, "Info.plist")
-		if (convertedPlist.exists()) {
-			return convertedPlist.absolutePath
-		}
-
-		File infoPlistFile = new File(project.xcodebuild.applicationBundle, "/Info.plist")
-		if (infoPlistFile.exists()) {
-
-			//plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
-
-			def convertCommand = [
-							"plutil",
-							"-convert",
-							"xml1",
-							infoPlistFile.absolutePath,
-							"-o",
-							convertedPlist.absolutePath
-			]
-
-			commandRunner.run(convertCommand)
-
-			return convertedPlist.absolutePath
-		}
-
-		*/
-		return new File(project.xcodebuild.applicationBundle, "Info.plist").absolutePath
-	}
 
 
 
