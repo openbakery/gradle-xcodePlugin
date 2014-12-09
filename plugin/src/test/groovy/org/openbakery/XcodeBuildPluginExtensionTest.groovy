@@ -219,4 +219,49 @@ class XcodeBuildPluginExtensionTest {
 		}
 	}
 
+
+	@Test
+	void xcodeVersionSimple() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns( xcodebuild5_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath).times(1)
+
+		commandRunnerMock.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+		mockControl.play {
+			extension.version = '5.1';
+		}
+
+		assert extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+	@Test
+	void xcodeVersionSimple_1() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns(xcodebuild5_1.absolutePath + "\n" + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath).times(1)
+
+		commandRunnerMock.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+		mockControl.play {
+			extension.version = '5.1.1';
+		}
+
+		assert extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+	@Test(expectedExceptions = IllegalStateException.class)
+	void xcodeVersionSimple_not_found() {
+
+		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns(xcodebuild6_1.absolutePath + "\n" + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath).times(1)
+
+
+		commandRunnerMock.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult(xcodebuild6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 6.0\nBuild version 6A000").times(1)
+		commandRunnerMock.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008").times(1)
+
+
+		mockControl.play {
+			extension.version = '5.1.2';
+		}
+	}
+
 }

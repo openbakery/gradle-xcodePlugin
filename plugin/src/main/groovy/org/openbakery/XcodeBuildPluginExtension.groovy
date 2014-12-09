@@ -322,10 +322,24 @@ class XcodeBuildPluginExtension {
 
 				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
 
-				if (xcodeVersion.endsWith(version)) {
-					xcodePath = xcode
-					return
+				def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
+				def matcher = VERSION_PATTERN.matcher(xcodeVersion)
+				if (matcher.matches()) {
+					String versionString = matcher[0][1]
+					String buildNumberString = matcher[0][2]
+
+					if (versionString.startsWith(version)) {
+						xcodePath = xcode
+						return
+					}
+
+					if (buildNumberString.equals(version)) {
+						xcodePath = xcode
+						return
+					}
 				}
+
+
 			}
 		}
 
