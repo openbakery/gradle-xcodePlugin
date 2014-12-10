@@ -3,6 +3,7 @@ package org.openbakery
 import groovy.xml.MarkupBuilder
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
+import org.apache.commons.io.input.ReversedLinesFileReader
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
@@ -155,11 +156,41 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} finally {
 			if (!parseResult(outputFile)) {
 				logger.lifecycle("Tests Failed!")
+				logger.lifecycle(getFailureFromLog(outputFile));
 				throw new Exception("Not all unit tests are successful!")
 			} 
 			logger.lifecycle("Done")
 		}
 	}
+
+
+	String getFailureFromLog(File outputFile) {
+
+		ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(outputFile);
+
+		ArrayList<String> result = new ArrayList<>(100);
+
+		for (int i=0; i<100; i++) {
+			String line = reversedLinesFileReader.readLine()
+
+			result.add(line);
+
+			if (line.startsWith("Testing failed:")) {
+				break
+			}
+
+		}
+
+		Collections.reverse(result)
+		StringBuilder builder = new StringBuilder()
+		for (String line : result) {
+		  builder.append(line)
+			builder.append("\n")
+		}
+
+		return builder.toString()
+	}
+
 
 
 	boolean parseResult(File outputFile) {
@@ -177,8 +208,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		int testRun = 0;
 
 		StringBuilder output = new StringBuilder()
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(outputFile)));
 
 		outputFile.eachLine{
 		  String line =  it
@@ -261,6 +290,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				testRun ++;
 			}
 
+			if (testFailedMatcher.matches()) {
+				overallTestSuccess = false;
+			}
+
 
 			if (testSuites != null && testSuites.isEmpty()) {
 				Destination destination = project.xcodebuild.availableDestinations[testRun]
@@ -283,7 +316,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 		}
-		reader.close()
 		store()
 		logger.lifecycle("");
 		if (overallTestSuccess) {
