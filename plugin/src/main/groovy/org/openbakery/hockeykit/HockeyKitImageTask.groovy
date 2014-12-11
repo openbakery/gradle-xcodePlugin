@@ -16,7 +16,6 @@
 package org.openbakery.hockeykit
 
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
@@ -73,17 +72,28 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 		return outputFile;
 	}
 
+
+
 	@TaskAction
 	def imageCreate() {
 		def infoplist = getAppBundleInfoPlist()
 		logger.debug("infoplist: {}", infoplist)
 
 
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(new File(infoplist))
+		def iconKeys = [
+						"CFBundleIconFiles",
+						"CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconFiles",
+						"CFBundleIcons~ipad:CFBundlePrimaryIcon:CFBundleIconFiles"
+		]
+
 		ArrayList<String> iconList = new ArrayList<String>();
-		iconList.addAll(config.getList("CFBundleIconFiles"))
-		iconList.addAll(config.getList("CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"))
-		iconList.addAll(config.getList("CFBundleIcons~ipad.CFBundlePrimaryIcon.CFBundleIconFiles"))
+		for (String key : iconKeys) {
+			def value = getValueFromPlist(infoplist, key);
+			if (value != null) {
+				iconList.addAll(value)
+			}
+		}
+
 
 
 		File iconFile;

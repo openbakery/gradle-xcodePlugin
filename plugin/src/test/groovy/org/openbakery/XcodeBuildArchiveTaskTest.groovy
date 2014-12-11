@@ -31,7 +31,7 @@ class XcodeBuildArchiveTaskTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = "iphoneos"
+		project.xcodebuild.sdk = "iphonesimulator"
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
@@ -66,6 +66,7 @@ class XcodeBuildArchiveTaskTest {
 	void createArchiveWithBundleSuffix() {
 
 		project.xcodebuild.bundleNameSuffix = "-1.2.3"
+		project.xcodebuild.sdk = "iphonesimulator"
 
 		xcodeBuildArchiveTask.archive();
 
@@ -74,4 +75,20 @@ class XcodeBuildArchiveTaskTest {
 
 	}
 
+
+	@Test
+	void createDeviceArchive() {
+		project.xcodebuild.sdk = "iphoneos"
+		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+
+		new File(buildOutputDirectory, "Example.app").mkdirs()
+		new File(buildOutputDirectory, "Example.ipa").mkdirs()
+		new File(buildOutputDirectory, "Example.app.dSym").mkdirs()
+
+		xcodeBuildArchiveTask.archive();
+
+		File zipFile = new File(projectDir, "build/Example.zip");
+		assert zipFile.exists() : "Zipfile does not exist: " + zipFile.absolutePath
+
+	}
 }

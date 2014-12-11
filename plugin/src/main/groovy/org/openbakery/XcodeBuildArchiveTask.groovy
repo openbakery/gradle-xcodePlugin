@@ -36,43 +36,23 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def archive() {
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
-		def ipaName =  project.xcodebuild.bundleName + ".ipa"
-		def dsynName = project.xcodebuild.bundleName + "." + project.xcodebuild.productType + ".dSYM"
-		logger.debug("ipaName: {}", ipaName)
-		logger.debug("dsymName: {}", dsynName)
 
-
-
-		def zipFileName = new File(project.getBuildDir(), project.xcodebuild.bundleName).absolutePath
-
+		String zipFileName = project.xcodebuild.bundleName
 		if (project.xcodebuild.bundleNameSuffix != null) {
-			logger.debug("Rename App")
-
-			File applicationBundle = project.xcodebuild.getApplicationBundle();
-			//File appFile = new File(buildOutputDirectory, appName)
-			if (applicationBundle.exists()) {
-
-				applicationBundle.renameTo(new File(applicationBundle.parentFile,  project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType))
-			}
-
-			File ipaFile = new File(ipaName)
-			if (ipaFile.exists()) {
-				ipaFile.renameTo(new File(ipaFile.parentFile, project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + ".ipa"))
-			}
-
-			File dsymFile = new File(dsynName)
-			if (dsymFile.exists()) {
-				dsymFile.renameTo(dsymFile.parentFile, project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + "." + project.xcodebuild.productType + ".dSYM")
-			}
 			zipFileName += project.xcodebuild.bundleNameSuffix
-
 		}
+		zipFileName += ".zip"
 
-		def ant = new AntBuilder()
-		ant.zip(destfile: zipFileName + ".zip",
-						basedir: buildOutputDirectory,
-						includes: "*.app*/**")
+
+		def zipFile = new File(project.getBuildDir(), zipFileName)
+
+		File baseDirectory = project.xcodebuild.applicationBundle.parentFile
+		if (project.xcodebuild.sdk.startsWith("iphoneos")) {
+
+			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle, project.xcodebuild.ipaBundle, project.xcodebuild.getDSymBundle())
+		} else {
+			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle)
+		}
 
 	}
 }
