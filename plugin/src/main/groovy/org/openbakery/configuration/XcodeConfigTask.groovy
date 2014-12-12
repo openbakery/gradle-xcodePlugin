@@ -127,7 +127,9 @@ class XcodeConfigTask extends AbstractXcodeTask {
 					}
 				}
 			}
+
 		}
+		logger.lifecycle("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
 	}
 
 

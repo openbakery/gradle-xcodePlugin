@@ -366,7 +366,9 @@ class XcodeBuildPluginExtension {
 
 	String getValueFromInfoPlist(key) {
 		try {
+			logger.debug("project.projectDir {}", project.projectDir)
 			File infoPlistFile = new File(project.projectDir, infoPlist)
+			logger.debug("get value {} from plist file {}", key, infoPlistFile)
 			return commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
 							infoPlistFile.absolutePath,
@@ -382,6 +384,7 @@ class XcodeBuildPluginExtension {
 			return bundleName
 		}
 		bundleName = getValueFromInfoPlist("CFBundleName")
+
 
 		if (bundleName.equals('${PRODUCT_NAME}') || bundleName.equals('$(PRODUCT_NAME)') ) {
 			bundleName = this.productName

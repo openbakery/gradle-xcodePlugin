@@ -41,6 +41,7 @@ class XcodeConfigTaskTest {
 		xcodeConfigTask = project.getTasks().getByName(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		xcodeConfigTask.setProperty("commandRunner", commandRunnerMock)
 
+		project.xcodebuild.target = "test"
 
 	}
 

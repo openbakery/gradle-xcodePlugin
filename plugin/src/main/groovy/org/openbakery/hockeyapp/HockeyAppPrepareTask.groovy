@@ -22,7 +22,7 @@ class HockeyAppPrepareTask extends AbstractDistributeTask {
 
 	HockeyAppPrepareTask() {
 		super()
-		dependsOn("codesign")
+		dependsOn("package")
 		this.description = "Prepare the app bundle and dSYM to publish with using hockeyapp"
 	}
 

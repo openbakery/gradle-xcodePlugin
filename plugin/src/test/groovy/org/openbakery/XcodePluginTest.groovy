@@ -22,7 +22,6 @@ import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
-import org.openbakery.signing.CodesignTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.testflight.TestFlightPluginExtension
@@ -56,10 +55,6 @@ class XcodePluginTest {
 		assert project.tasks.findByName('xcodebuild-clean') instanceof XcodeBuildCleanTask
 	}
 
-	@Test
-	void contain_task_codesign() {
-		assert project.tasks.findByName('codesign') instanceof CodesignTask
-	}
 
 	@Test
 	void contain_task_infoplist_modify() {
