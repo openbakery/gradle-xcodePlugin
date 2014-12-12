@@ -416,4 +416,19 @@ class XcodeBuildPluginExtension {
 		return new File(getOutputPath(), getBundleName()  + "." + this.productType + ".dSYM")
 	}
 
+
+	File getArchiveDirectory() {
+
+		def archiveDirectoryName = "archive/" +  project.xcodebuild.bundleName
+
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
+		}
+		archiveDirectoryName += ".xcarchive"
+
+		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
+		archiveDirectory.mkdirs()
+		return archiveDirectory
+	}
+
 }

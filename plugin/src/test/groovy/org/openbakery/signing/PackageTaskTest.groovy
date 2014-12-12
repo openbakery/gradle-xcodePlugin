@@ -61,12 +61,16 @@ class PackageTaskTest {
 		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
+
 	}
 
 	void mockExampleApp(boolean withPlugin) {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
-		File appDirectory = project.xcodebuild.getApplicationBundle()
+
+		def applicationBundle = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+
+		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
 			appDirectory.mkdirs();
 		}
@@ -74,7 +78,7 @@ class PackageTaskTest {
 		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
 
 		if (withPlugin) {
-			File widgetsDirectory = new File(project.xcodebuild.getApplicationBundle(), widgetPath)
+			File widgetsDirectory = new File(applicationBundle, widgetPath)
 			FileUtils.writeStringToFile(new File(widgetsDirectory, "ExampleTodayWidget"), "dummy");
 		}
 
@@ -90,6 +94,7 @@ class PackageTaskTest {
 		if (withPlugin) {
 			mockCodesignCommand("Payload/Example.app/" + widgetPath)
 		}
+		project.xcodebuild.outputPath.mkdirs()
 
 	}
 

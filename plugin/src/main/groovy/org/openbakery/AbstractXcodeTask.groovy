@@ -149,19 +149,36 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		// we want to preserve the permissions, so use the zip command line tool
 		// maybe this can be replaced by Apache Commons Compress
 
-		logger.debug("create zip file: " + zipFile.absolutePath)
+
+		if (!zipFile.parentFile.exists()) {
+			zipFile.parentFile.mkdirs()
+		}
+
+		logger.debug("create zip file: {}: {} ", zipFile.absolutePath, zipFile.parentFile.exists())
+		logger.debug("baseDirectory: {} ", baseDirectory)
+
+		for (File file : filesToZip) {
+			logger.debug("create of: {}: {}", file, file.exists() )
+		}
+
+		def arguments = []
+		arguments << '--symlinks';
+		arguments << '--verbose';
+		arguments << '--recurse-paths';
+		arguments << zipFile.absolutePath;
+		for (File file : filesToZip) {
+			arguments << file.getName()
+		}
+
+		logger.debug("arguments: {}", arguments)
 
 		ant.exec(failonerror: 'true',
 						executable: '/usr/bin/zip',
 						dir: baseDirectory) {
-			arg(value: '--symlinks')
-			arg(value: '--verbose')
-			arg(value: '--recurse-paths')
-			arg(value: zipFile.absolutePath)
-			for (File file : filesToZip) {
-				arg(value: file.getName())
-			}
 
+			for (def argument : arguments) {
+				arg(value: argument)
+			}
 		}
 	}
 

@@ -37,18 +37,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		return archiveDirectory
 	}
 
-	def getArchiveDirectory() {
-		def archiveDirectoryName = project.xcodebuild.bundleName
 
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
-		}
-		archiveDirectoryName += ".xcarchive"
-
-		def archiveDirectory = new File(getOutputDirectory(), archiveDirectoryName)
-		archiveDirectory.mkdirs()
-		return archiveDirectory
-	}
 
 
 	def getIcons() {
@@ -70,7 +59,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	}
 
 
-	def createInfoPlist() {
+	def createInfoPlist(def applicationsDirectory) {
 
 		StringBuilder content = new StringBuilder();
 
@@ -141,7 +130,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 
-		File infoPlist = new File(getArchiveDirectory(), "Info.plist")
+		File infoPlist = new File(applicationsDirectory, "Info.plist")
 		FileUtils.writeStringToFile(infoPlist, content.toString())
 
 
@@ -153,13 +142,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			logger.debug("Create xcarchive")
 
 			// create xcarchive
-			def applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
+			def applicationsDirectory = new File(project.xcodebuild.archiveDirectory, "Products/Applications")
 			applicationsDirectory.mkdirs()
 
 			copy(project.xcodebuild.applicationBundle, applicationsDirectory)
 
 
-			def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
+			def dSymDirectory = new File(project.xcodebuild.archiveDirectory, "dSYMs")
 			dSymDirectory.mkdirs()
 
 			List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
@@ -172,7 +161,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			}
 
 
-			createInfoPlist()
+			createInfoPlist(project.xcodebuild.archiveDirectory)
 
 		} else {
 			logger.debug("Create zip archive")
@@ -184,7 +173,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			}
 			zipFileName += ".zip"
 
-			def zipFile = new File(getOutputDirectory(), zipFileName)
+			def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
 			def baseDirectory = project.xcodebuild.applicationBundle.parentFile
 
 			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle)

@@ -14,14 +14,19 @@ class PackageTask extends AbstractXcodeTask {
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
-		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
+		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME, XcodePlugin.ARCHIVE_TASK_NAME)
 	}
 
+
+	def getArchiveApplicationBundle() {
+		def application = "Products/Applications/" + project.xcodebuild.applicationBundle.name
+		return new File(project.xcodebuild.archiveDirectory, application);
+	}
 
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			logger.lifecycle("not a device build, so no codesign needed");
+			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
 
@@ -32,16 +37,8 @@ class PackageTask extends AbstractXcodeTask {
 
 		File payloadPath = createPayload();
 
-		// copy the build app
-		// use cp to preserve permission
+		copy(getArchiveApplicationBundle(), payloadPath)
 
-		ant.exec(failonerror: "true",
-						executable: '/bin/cp') {
-			arg(value: '-rp')
-			arg(value: project.xcodebuild.applicationBundle.absolutePath)
-			arg(value: payloadPath.absolutePath)
-		}
-		//FileUtils.copyDirectoryToDirectory(project.xcodebuild.applicationBundle, payloadPath);
 
 		List<File> appBundles = getAppBundles(payloadPath)
 
