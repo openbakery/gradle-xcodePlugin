@@ -87,9 +87,9 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 			project.xcodebuild.productName = config.getString("objects." + target + ".productName")
 			String type = config.getString("objects." + target + ".productType")
-			if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
-				project.xcodebuild.productType = "appex"
-			}
+//			if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
+//				project.xcodebuild.productType = "appex"
+//			}
 
 			if (targetName.equals(project.xcodebuild.target)) {
 				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
