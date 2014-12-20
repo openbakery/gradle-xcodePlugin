@@ -126,7 +126,7 @@
 
   default value: empty
 	
-* _version_ - set the xcode version that should be used if multiple versions of Xcode are installed. Here the build number must be specifed e.g. '5B1008' for Xcode 5.1.1.
+* _version_ - set the xcode version that should be used if multiple versions of Xcode are installed. Here you can set the version with '6.1' that selects 6.1 or 6.1.x if present. Or you can use the build number e.g. '5B1008' for Xcode 5.1.1.
 	If this value is empty then the default version is used that is selected using 'xcode-select'
 
   defaul value: empty

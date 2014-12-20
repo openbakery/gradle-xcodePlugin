@@ -28,7 +28,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.0-beta2'
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.+'
 	}
 }
 
@@ -37,6 +37,15 @@ buildscript {
 /*
 	Create custom tasks that 4 different kind of builds
 */
+
+task deviceBuild(dependsOn: ':Example:xcodebuild') {
+}
+
+task deviceArchive(dependsOn: ':Example:archive') {
+}
+
+
+
 
 task continuous(dependsOn:':Example:test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
@@ -53,7 +62,7 @@ task appstore(dependsOn: ':Example:package') {
 	description = 'Build for the AppStore'
 }
 
-task signWidget(dependsOn: ':Example:codesign') {
+task signWidget(dependsOn: ':Example:package') {
 	description = 'Build widget'
 }
 
@@ -77,9 +86,16 @@ subprojects {
 
 
 
-
-
 gradle.taskGraph.whenReady { taskGraph ->
+
+
+	if (taskGraph.hasTask(deviceBuild) || taskGraph.hasTask(deviceArchive)) {
+		println "Configure Device build"
+		xcodebuild {
+			sdk = 'iphoneos'
+		}
+	}
+
 
 	// ------------------------------------------------------------------------------------------
 
@@ -133,7 +149,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
 				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
-			
 		}
 	}
 	

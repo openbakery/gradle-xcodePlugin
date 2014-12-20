@@ -22,7 +22,7 @@ class TestFlightPrepareTask extends AbstractDistributeTask {
 
 	TestFlightPrepareTask() {
 		super()
-		dependsOn("codesign")
+		dependsOn("package")
 		this.description = "Prepare the app bundle and dSYM to publish with using testflight"
 	}
 

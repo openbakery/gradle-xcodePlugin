@@ -112,7 +112,9 @@ class CommandRunner {
 					} else {
 
 						if (outputAppender) {
-							outputAppender.append(line)
+
+							// remove ansi colors:
+							outputAppender.append(line.replaceAll(/\u001B\[[\d]*m/, ""))
 						}
 
 						if (resultStringBuilder != null) {

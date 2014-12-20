@@ -41,7 +41,6 @@ import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
-import org.openbakery.signing.CodesignTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.PackageTask
@@ -89,7 +88,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplist-modify'
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioning-install'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioning-clean'
-	public static final String CODESIGN_TASK_NAME = 'codesign'
 	public static final String PACKAGE_TASK_NAME = 'package'
 	public static final String TESTFLIGHT_PREPARE_TASK_NAME = 'testflight-prepare'
 	public static final String TESTFLIGHT_TASK_NAME = 'testflight'
@@ -415,31 +413,19 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configureCodesign(Project project) {
-		CodesignTask codesignTask = project.task(CODESIGN_TASK_NAME, type: CodesignTask, group: XCODE_GROUP_NAME)
-
 		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
 
 		ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
 
-		//provisioningCleanup.mustRunAfter(codesignTask)
-		//provisioningCleanup.mustRunAfter(packageTask)
-
 		KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
-		//keychainCleanupTask.mustRunAfter(codesignTask)
-		//keychainCleanupTask.mustRunAfter(packageTask)
 
+/*  // disabled clean because of #115
 		packageTask.doLast {
 			provisioningCleanup.clean()
 			keychainCleanupTask.clean()
 		}
-
-		codesignTask.doLast {
-			provisioningCleanup.clean()
-			keychainCleanupTask.clean()
-		}
-
+*/
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
-		codesignTask.shouldRunAfter(xcodeBuildTask)
 		packageTask.shouldRunAfter(xcodeBuildTask)
 
 

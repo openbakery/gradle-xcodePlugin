@@ -22,6 +22,8 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.gradle.api.DefaultTask
 
+import java.text.SimpleDateFormat
+
 /**
  *
  * @author René Pirringer
@@ -44,8 +46,17 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 * @param destination
 	 */
 	def copy(File source, File destination) {
-		logger.lifecycle("Copy '{}' -> '{}'", source, destination);
-		FileUtils.copyFile(source, destination)
+		logger.debug("Copy '{}' -> '{}'", source, destination);
+
+		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
+		ant.exec(failonerror: "true",
+						executable: '/bin/cp') {
+			arg(value: '-rp')
+			arg(value: source.absolutePath)
+			arg(value: destination.absolutePath)
+		}
+
+		//FileUtils.copyFile(source, destination)
 	}
 
 	/**
@@ -75,6 +86,10 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 * @return returns the value for the given key
 	 */
 	def getValueFromPlist(plist, key) {
+		if (plist instanceof File) {
+			plist = plist.absolutePath
+		}
+
 		try {
 			String result = commandRunner.runWithResult([
 							"/usr/libexec/PlistBuddy",
@@ -134,6 +149,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		// we want to preserve the permissions, so use the zip command line tool
 		// maybe this can be replaced by Apache Commons Compress
 
+		logger.debug("create zip file: " + zipFile.absolutePath)
+
 		ant.exec(failonerror: 'true',
 						executable: '/usr/bin/zip',
 						dir: baseDirectory) {
@@ -142,11 +159,45 @@ abstract class AbstractXcodeTask extends DefaultTask {
 			arg(value: '--recurse-paths')
 			arg(value: zipFile.absolutePath)
 			for (File file : filesToZip) {
-				println "arg: " + file
 				arg(value: file.getName())
 			}
 
 		}
 	}
 
+	/**
+	 * formats the date as ISO 8601 date
+	 * @param date
+	 * @return
+	 */
+	def formatDate(date) {
+		TimeZone timeZone = TimeZone.getTimeZone("UTC")
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+		dateFormat.setTimeZone(timeZone)
+		return dateFormat.format(date)
+	}
+
+
+
+	List<File> getAppBundles(File appPath) {
+
+		ArrayList<File> bundles = new ArrayList<File>();
+
+		File appBundle = new File(appPath, project.xcodebuild.applicationBundle.name)
+
+		File plugins = new File(appBundle, "PlugIns")
+		if (plugins.exists()) {
+
+			for (File pluginBundle : plugins.listFiles()) {
+				if (pluginBundle.isDirectory()) {
+					bundles.add(pluginBundle)
+				}
+			}
+		}
+
+		bundles.add(appBundle)
+
+		return bundles;
+
+	}
 }

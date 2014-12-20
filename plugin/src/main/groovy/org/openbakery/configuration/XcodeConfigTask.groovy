@@ -10,6 +10,7 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
+import org.openbakery.Devices
 import org.testng.annotations.AfterMethod
 
 /**
@@ -126,7 +127,9 @@ class XcodeConfigTask extends AbstractXcodeTask {
 					}
 				}
 			}
+
 		}
+		logger.lifecycle("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
 	}
 
 

@@ -15,44 +15,182 @@
  */
 package org.openbakery
 
-import org.gradle.api.DefaultTask
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.Task
-import org.openbakery.signing.CodesignTask
+
+import java.text.SimpleDateFormat
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	XcodeBuildArchiveTask() {
 		super()
 
-		dependsOn('xcodebuild', 'package')
+		dependsOn('xcodebuild')
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 
-	def renameFileTo(String name) {
+
+	def getOutputDirectory() {
+		def archiveDirectory = new File(project.getBuildDir(), "archive/")
+		archiveDirectory.mkdirs()
+		return archiveDirectory
+	}
+
+	def getArchiveDirectory() {
+		def archiveDirectoryName = project.xcodebuild.bundleName
+
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
+		}
+		archiveDirectoryName += ".xcarchive"
+
+		def archiveDirectory = new File(getOutputDirectory(), archiveDirectoryName)
+		archiveDirectory.mkdirs()
+		return archiveDirectory
+	}
+
+
+	def getIcons() {
+		ArrayList<String> icons = new ArrayList<>();
+
+		File applicationBundle = project.xcodebuild.applicationBundle
+		def fileList = applicationBundle.list(
+						[accept: { d, f -> f ==~ /Icon(-\d+)??\.png/ }] as FilenameFilter // matches Icon.png or Icon-72.png
+		).toList()
+
+		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
+
+		for (String item in fileList) {
+			icons.add(applicationPath + "/" + item)
+		}
+
+
+		return icons;
+	}
+
+
+	def createInfoPlist() {
+
+		StringBuilder content = new StringBuilder();
+
+		File appInfoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
+
+		def name = project.xcodebuild.bundleName
+		def schemeName = name
+		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
+		def bundleIdentifier = getValueFromPlist(appInfoPlist, "CFBundleIdentifier")
+		int time = System.currentTimeMillis() / 1000;
+
+		def creationDate = formatDate(new Date());
+
+		def shortBundleVersion = getValueFromPlist(appInfoPlist, "CFBundleShortVersionString")
+		def bundleVersion = getValueFromPlist(appInfoPlist, "CFBundleVersion")
+
+
+
+		List icons = getIcons()
+
+		content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+		content.append("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n")
+		content.append("<plist version=\"1.0\">\n")
+		content.append("<dict>\n")
+		content.append("	<key>ApplicationProperties</key>\n")
+		content.append("	<dict>\n")
+		content.append("		<key>ApplicationPath</key>\n")
+		content.append("		<string>" + applicationPath + "</string>\n")
+		content.append("		<key>CFBundleIdentifier</key>\n")
+		content.append("		<string>" + bundleIdentifier + "</string>\n")
+
+		if (shortBundleVersion != null) {
+			content.append("		<key>CFBundleShortVersionString</key>\n")
+			content.append("		<string>" + shortBundleVersion + "</string>\n")
+		}
+
+		if (bundleVersion != null) {
+			content.append("		<key>CFBundleVersion</key>\n")
+			content.append("		<string>" + bundleVersion + "</string>\n")
+		}
+
+		if (project.xcodebuild.getSigning().getIdentity()) {
+			content.append("		<key>SigningIdentity</key>\n")
+			content.append("		<string>" + project.xcodebuild.getSigning().getIdentity() + "</string>\n")
+
+		}
+
+		if (icons.size() > 0) {
+			content.append("		<key>IconPaths</key>\n")
+			content.append("		<array>\n")
+			for (String icon : icons) {
+				content.append("			<string>" + icon + "</string>\n")
+			}
+			content.append("		</array>\n")
+		}
+
+		content.append("	</dict>\n")
+		content.append("	<key>ArchiveVersion</key>\n")
+		content.append("	<integer>2</integer>\n")
+		content.append("	<key>CreationDate</key>\n")
+		content.append("	<date>" + creationDate + "</date>\n")
+		content.append("	<key>Name</key>\n")
+		content.append("	<string>" + name  + "</string>\n")
+		content.append("	<key>SchemeName</key>\n")
+		content.append("	<string>" + schemeName + "</string>\n")
+		content.append("</dict>\n")
+		content.append("</plist>")
+
+
+
+		File infoPlist = new File(getArchiveDirectory(), "Info.plist")
+		FileUtils.writeStringToFile(infoPlist, content.toString())
 
 
 	}
 
 	@TaskAction
 	def archive() {
-
-		String zipFileName = project.xcodebuild.bundleName
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			zipFileName += project.xcodebuild.bundleNameSuffix
-		}
-		zipFileName += ".zip"
-
-
-		def zipFile = new File(project.getBuildDir(), zipFileName)
-
-		File baseDirectory = project.xcodebuild.applicationBundle.parentFile
 		if (project.xcodebuild.sdk.startsWith("iphoneos")) {
+			logger.debug("Create xcarchive")
 
-			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle, project.xcodebuild.ipaBundle, project.xcodebuild.getDSymBundle())
+			// create xcarchive
+			def applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
+			applicationsDirectory.mkdirs()
+
+			copy(project.xcodebuild.applicationBundle, applicationsDirectory)
+
+
+			def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
+			dSymDirectory.mkdirs()
+
+			List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
+
+			for (File bundle : appBundles) {
+				File dsymPath = new File(project.xcodebuild.outputPath, bundle.getName() + ".dSYM");
+				if (dsymPath.exists()) {
+					copy(dsymPath, dSymDirectory)
+				}
+			}
+
+
+			createInfoPlist()
+
 		} else {
+			logger.debug("Create zip archive")
+
+			// create zip archive
+			String zipFileName = project.xcodebuild.bundleName
+			if (project.xcodebuild.bundleNameSuffix != null) {
+				zipFileName += project.xcodebuild.bundleNameSuffix
+			}
+			zipFileName += ".zip"
+
+			def zipFile = new File(getOutputDirectory(), zipFileName)
+			def baseDirectory = project.xcodebuild.applicationBundle.parentFile
+
 			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle)
 		}
+
+		logger.debug("create archive done")
 
 	}
 }

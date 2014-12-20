@@ -3,9 +3,12 @@ package org.openbakery
 import org.apache.commons.lang.StringUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+
+import static org.hamcrest.core.IsAnything.anything
 
 /**
  * Created by rene on 01.07.14.
@@ -13,6 +16,8 @@ import org.testng.annotations.Test
 class XcodeTestTaskTest {
 
 
+	GMockController mockControl
+	CommandRunner commandRunnerMock
 
 	Project project
 	XcodeTestTask xcodeTestTask
@@ -32,14 +37,15 @@ class XcodeTestTaskTest {
 
 	@BeforeMethod
 	def setup() {
-
+		mockControl = new GMockController()
+		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-
-		xcodeTestTask = project.tasks.findByName('test')
+		xcodeTestTask = project.tasks.findByName('test');
+		xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
 
 		xcodeTestTask.setOutputDirectory(new File("build/test"));
 
@@ -154,6 +160,18 @@ class XcodeTestTaskTest {
 		assert xcodeTestTask.numberSuccess() == 60
 		assert xcodeTestTask.numberErrors() == 0
 
+
+	}
+
+
+	@Test
+	void compileErrorTest() {
+
+		String result = xcodeTestTask.getFailureFromLog(new File("src/test/Resource/xcodebuild-output-test-compile-error.txt"))
+
+		assert result.startsWith("Testing failed:");
+
+		assert result.split("\n").length == 8
 
 	}
 

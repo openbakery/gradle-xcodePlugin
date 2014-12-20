@@ -140,27 +140,6 @@ class PackageTask extends AbstractXcodeTask {
 
 
 
-	List<File> getAppBundles(File payloadPath) {
-
-		ArrayList<File> bundles = new ArrayList<File>();
-
-		File appBundle = new File(payloadPath, project.xcodebuild.applicationBundle.name)
-
-		File plugins = new File(appBundle, "PlugIns")
-		if (plugins.exists()) {
-
-			for (File pluginBundle : plugins.listFiles()) {
-				if (pluginBundle.isDirectory()) {
-					bundles.add(pluginBundle)
-				}
-			}
-		}
-
-		bundles.add(appBundle)
-
-		return bundles;
-
-	}
 
 
 	private File createPayload() throws IOException {
