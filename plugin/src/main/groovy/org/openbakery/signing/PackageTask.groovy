@@ -14,7 +14,7 @@ class PackageTask extends AbstractXcodeTask {
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
-		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
+		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 	}
 
 
@@ -36,6 +36,7 @@ class PackageTask extends AbstractXcodeTask {
 		// use cp to preserve permission
 
 		ant.exec(failonerror: "true",
+
 						executable: '/bin/cp') {
 			arg(value: '-rp')
 			arg(value: project.xcodebuild.applicationBundle.absolutePath)
@@ -88,8 +89,19 @@ class PackageTask extends AbstractXcodeTask {
 
 
 	private void createIpa(File payloadPath) {
-
-		createZip(project.xcodebuild.ipaBundle, payloadPath.getParentFile(), payloadPath)
+        def xcrunCommand = project.xcodebuild.xcrunCommand
+        ant.exec(failonerror: 'true',
+                executable: xcrunCommand
+        ) {
+            arg(value: '-sdk')
+            arg(value: 'iphoneos')
+            arg(value: 'PackageApplication')
+            arg(value: '-v')
+            arg(value: "${project.xcodebuild.getOutputPath()}/${project.xcodebuild.bundleName}.app")
+            arg(value: "-o")
+            arg(value: "${project.xcodebuild.getOutputPath()}/${project.xcodebuild.bundleName}.ipa")
+        }
+		//createZip(project.xcodebuild.ipaBundle, payloadPath.getParentFile(), payloadPath)
 
 		/*
 		// use /usr/bin/zip to preserve permission
