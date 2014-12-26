@@ -58,6 +58,7 @@ class XcodeBuildPluginExtension {
 	String productName = null
 	String bundleName = null
 	String productType = "app"
+    def targetsBundleIdentifiersAndEntitlements = null
 
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
