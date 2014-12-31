@@ -10,13 +10,11 @@ import org.openbakery.XcodePlugin
  */
 class PackageTask extends AbstractXcodeTask {
 
-
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 	}
-
 
 	@TaskAction
 	void packageApplication() throws IOException {
@@ -29,29 +27,21 @@ class PackageTask extends AbstractXcodeTask {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
 		}
 
-
 		File payloadPath = createPayload();
 
 		// copy the build app
 		// use cp to preserve permission
-
-		ant.exec(failonerror: "true",
-
-						executable: '/bin/cp') {
-			arg(value: '-rp')
-			arg(value: project.xcodebuild.applicationBundle.absolutePath)
-			arg(value: payloadPath.absolutePath)
-		}
-		//FileUtils.copyDirectoryToDirectory(project.xcodebuild.applicationBundle, payloadPath);
+		copy(project.xcodebuild.applicationBundle, payloadPath)
 
 		List<File> appBundles = getAppBundles(payloadPath)
-
 		for (File bundle : appBundles) {
 			embedProvisioningProfileToBundle(bundle)
 			codesign(bundle)
 		}
 
-		createIpa(payloadPath);
+		File swiftSupport = createSwiftSupportFolder(payloadPath)
+
+		createIpa(payloadPath, swiftSupport);
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -84,40 +74,10 @@ class PackageTask extends AbstractXcodeTask {
 		}
 
 		return null
-
 	}
 
-
-	private void createIpa(File payloadPath) {
-        def xcrunCommand = project.xcodebuild.xcrunCommand
-        ant.exec(failonerror: 'true',
-                executable: xcrunCommand
-        ) {
-            arg(value: '-sdk')
-            arg(value: 'iphoneos')
-            arg(value: 'PackageApplication')
-            arg(value: '-v')
-            arg(value: "${project.xcodebuild.getOutputPath()}/${project.xcodebuild.bundleName}.app")
-            arg(value: "-o")
-            arg(value: "${project.xcodebuild.getOutputPath()}/${project.xcodebuild.bundleName}.ipa")
-        }
-		//createZip(project.xcodebuild.ipaBundle, payloadPath.getParentFile(), payloadPath)
-
-		/*
-		// use /usr/bin/zip to preserve permission
-		ant.exec(failonerror: 'true',
-						executable: '/usr/bin/zip',
-						dir: payloadPath.getParentFile().absolutePath) {
-			arg(value: '--symlinks')
-			arg(value: '--verbose')
-			arg(value: '--recurse-paths')
-			arg(value: project.xcodebuild.ipaBundle.absolutePath)
-			arg(value: 'Payload')
-
-		}
-		*/
-
-
+	private void createIpa(File... files) {
+		createZip(project.xcodebuild.ipaBundle, project.xcodebuild.signing.signingDestinationRoot, files)
 	}
 
 	private void codesign(File bundle) {
@@ -135,8 +95,6 @@ class PackageTask extends AbstractXcodeTask {
 		project.xcodebuild.signing.keychainPathInternal.absolutePath,
 		]
 		commandRunner.run(codesignCommand)
-
-
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
@@ -150,16 +108,34 @@ class PackageTask extends AbstractXcodeTask {
 		}
 	}
 
-
-
-
+	private File createSigningDestination(String name) throws IOException {
+		File destination = new File(project.xcodebuild.signing.signingDestinationRoot, name);
+		if (destination.exists()) {
+			FileUtils.deleteDirectory(destination);
+		}
+		destination.mkdirs();
+		return destination;
+	}
 
 	private File createPayload() throws IOException {
-		File payloadPath = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload");
-		if (payloadPath.exists()) {
-			FileUtils.deleteDirectory(payloadPath);
+		createSigningDestination("Payload")
+	}
+
+	private File createSwiftSupportFolder(File appPath) {
+		File appBundle = new File(appPath, project.xcodebuild.applicationBundle.name)
+		File frameworks = new File(appBundle, "Frameworks")
+		File swiftSupport = createSigningDestination("SwiftSupport")
+		if (frameworks.exists()) {
+			def xcodePath = project.xcodebuild.xcodePath
+			if (null == xcodePath) {
+				xcodePath = "/Applications/Xcode.app"
+			}
+			def swiftLibsPath = "${xcodePath}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/".toString()
+			for (File swiftLib : frameworks.listFiles()) {
+				File toCopy = new File(swiftLibsPath, swiftLib.name);
+				copy(toCopy, swiftSupport)
+			}
 		}
-		payloadPath.mkdirs();
-		return payloadPath;
+		return swiftSupport
 	}
 }
