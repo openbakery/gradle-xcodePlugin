@@ -93,14 +93,14 @@ class XcodeConfigTask extends AbstractXcodeTask {
 //				project.xcodebuild.productType = "appex"
 //			}
 
-            if (shouldUpdateBundleIdentifier(targetName)) {
-                def newIdentifier = project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName].bundleIdentifier
-                def newEntitlementsGroupIDs = project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName].entitlementsGroupIDs
-                def didUpdate = updateBundleIdentifierAndEntitlements(newIdentifier,newEntitlementsGroupIDs,target,config)
-                if (didUpdate == false) {
-                    logger.info("Info plist was not updated with the new bundle identifier")
-                }
-            }
+			if (shouldUpdateBundleIdentifier(targetName)) {
+				def newIdentifier = project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName].bundleIdentifier
+				def newEntitlementsGroupIDs = project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName].entitlementsGroupIDs
+				def didUpdate = updateBundleIdentifierAndEntitlements(newIdentifier,newEntitlementsGroupIDs,target,config)
+				if (didUpdate == false) {
+					logger.info("Info plist was not updated with the new bundle identifier")
+				}
+			}
 
 			if (targetName.equals(project.xcodebuild.target)) {
 				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
@@ -223,84 +223,84 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		}
 	}
 
-    boolean updateBundleIdentifierAndEntitlements(String newBundleIdentifier,List<String> newEntitlementsGroupIDs, String targetID,XMLPropertyListConfiguration config) {
-        def infoPlistPath = infoPlistFilePath(targetID,config)
-        def entitlementsPath = entitlementsFilePath(targetID,config)
-        def result = false;
-        if (infoPlistPath ) {
-            commandRunner.run([
-                    "/usr/libexec/PlistBuddy",
-                    infoPlistPath,
-                    "-c",
-                    "Set :CFBundleIdentifier " + newBundleIdentifier
-            ])
+	boolean updateBundleIdentifierAndEntitlements(String newBundleIdentifier,List<String> newEntitlementsGroupIDs, String targetID,XMLPropertyListConfiguration config) {
+		def infoPlistPath = infoPlistFilePath(targetID,config)
+		def entitlementsPath = entitlementsFilePath(targetID,config)
+		def result = false;
+		if (infoPlistPath ) {
+			commandRunner.run([
+					"/usr/libexec/PlistBuddy",
+					infoPlistPath,
+					"-c",
+					"Set :CFBundleIdentifier " + newBundleIdentifier
+			])
 
-            def bundleIdentifierFromInfoPlist = commandRunner.runWithResult([
-                    "/usr/libexec/PlistBuddy",
-                    infoPlistPath,
-                    "-c",
-                    "Print :CFBundleIdentifier"])
-            if (bundleIdentifierFromInfoPlist.equals(newBundleIdentifier) ) {
-                result = true
-            }
-        }
+			def bundleIdentifierFromInfoPlist = commandRunner.runWithResult([
+					"/usr/libexec/PlistBuddy",
+					infoPlistPath,
+					"-c",
+					"Print :CFBundleIdentifier"])
+			if (bundleIdentifierFromInfoPlist.equals(newBundleIdentifier) ) {
+				result = true
+			}
+		}
 
-        if (entitlementsPath) {
-            result = true
-            if (newEntitlementsGroupIDs) {
-                def i = 0
-                for(newEntitlements in newEntitlementsGroupIDs) {
-                    commandRunner.run([
-                            "/usr/libexec/PlistBuddy",
-                            entitlementsPath,
-                            "-c",
-                            "Set :com.apple.security.application-groups:" + i + " " + newEntitlements
-                    ])
-                    i = i + 1
-                }
-            }
-        }
+		if (entitlementsPath) {
+			result = true
+			if (newEntitlementsGroupIDs) {
+				def i = 0
+				for(newEntitlements in newEntitlementsGroupIDs) {
+					commandRunner.run([
+							"/usr/libexec/PlistBuddy",
+							entitlementsPath,
+							"-c",
+							"Set :com.apple.security.application-groups:" + i + " " + newEntitlements
+					])
+					i = i + 1
+				}
+			}
+		}
 
-        result
-    }
+		result
+	}
 
-    boolean shouldUpdateBundleIdentifier(String targetName) {
-        return project.xcodebuild.targetsBundleIdentifiersAndEntitlements!=null && project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName] != null
-    }
+	boolean shouldUpdateBundleIdentifier(String targetName) {
+		return project.xcodebuild.targetsBundleIdentifiersAndEntitlements!=null && project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName] != null
+	}
 
-    String infoPlistFilePath(String targetID,XMLPropertyListConfiguration config) {
-        def path = null
-        def buildConfigurationListID = config.getString("objects." + targetID + ".buildConfigurationList")
-        def buildConfigurationList = config.getList("objects." + buildConfigurationListID + ".buildConfigurations")
-        for(buildConfiguration in buildConfigurationList) {
-            def buildConfigurationType = config.getString("objects." + buildConfiguration + ".name")
-            if(buildConfigurationType.equals(project.xcodebuild.configuration)) {
-                path = config.getString("objects."+ buildConfiguration  +".buildSettings.INFOPLIST_FILE")
-            }
-        }
+	String infoPlistFilePath(String targetID,XMLPropertyListConfiguration config) {
+		def path = null
+		def buildConfigurationListID = config.getString("objects." + targetID + ".buildConfigurationList")
+		def buildConfigurationList = config.getList("objects." + buildConfigurationListID + ".buildConfigurations")
+		for(buildConfiguration in buildConfigurationList) {
+			def buildConfigurationType = config.getString("objects." + buildConfiguration + ".name")
+			if(buildConfigurationType.equals(project.xcodebuild.configuration)) {
+				path = config.getString("objects."+ buildConfiguration  +".buildSettings.INFOPLIST_FILE")
+			}
+		}
 
-        if (path != null) {
-            path = project.projectDir.toString() + "/" + path
-        }
-        path
-    }
+		if (path != null) {
+			path = project.projectDir.toString() + "/" + path
+		}
+		path
+	}
 
-    String entitlementsFilePath(String targetID,XMLPropertyListConfiguration config) {
-        def path = null
-        def buildConfigurationListID = config.getString("objects." + targetID + ".buildConfigurationList")
-        def buildConfigurationList = config.getList("objects." + buildConfigurationListID + ".buildConfigurations")
-        for(buildConfiguration in buildConfigurationList) {
-            def buildConfigurationType = config.getString("objects." + buildConfiguration + ".name")
-            if(buildConfigurationType.equals(project.xcodebuild.configuration)) {
-                path = config.getString("objects."+ buildConfiguration  +".buildSettings.CODE_SIGN_ENTITLEMENTS")
-            }
-        }
+	String entitlementsFilePath(String targetID,XMLPropertyListConfiguration config) {
+		def path = null
+		def buildConfigurationListID = config.getString("objects." + targetID + ".buildConfigurationList")
+		def buildConfigurationList = config.getList("objects." + buildConfigurationListID + ".buildConfigurations")
+		for(buildConfiguration in buildConfigurationList) {
+			def buildConfigurationType = config.getString("objects." + buildConfiguration + ".name")
+			if(buildConfigurationType.equals(project.xcodebuild.configuration)) {
+				path = config.getString("objects."+ buildConfiguration  +".buildSettings.CODE_SIGN_ENTITLEMENTS")
+			}
+		}
 
-        if (path != null) {
-            path = project.projectDir.toString() + "/" + path
-        }
-        path
-    }
+		if (path != null) {
+			path = project.projectDir.toString() + "/" + path
+		}
+		path
+	}
 
 	boolean hasNewerEquivalentDevice(File infoPlistFile) {
 		try {
