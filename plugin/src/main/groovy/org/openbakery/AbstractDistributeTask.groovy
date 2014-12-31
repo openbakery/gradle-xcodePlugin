@@ -96,8 +96,8 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 		def ant = new AntBuilder()
 		ant.zip(destfile: getDsymZipFile(outputDirectory).absolutePath,
-						basedir: project.xcodebuild.getOutputPath().absolutePath,
-						includes: "*dSYM*/**")
+				basedir: project.xcodebuild.getOutputPath().absolutePath,
+				includes: project.xcodebuild.bundleName + ".app.dSYM*/**")
 
 	}
 
