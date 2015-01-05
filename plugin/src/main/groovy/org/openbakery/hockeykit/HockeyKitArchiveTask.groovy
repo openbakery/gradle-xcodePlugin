@@ -21,7 +21,6 @@ class HockeyKitArchiveTask extends AbstractHockeyKitTask {
 
 	HockeyKitArchiveTask() {
 		super()
-		dependsOn("package")
 		this.description = "Prepare the app bundle so that it can be uploaded to the Hockeykit Server"
 	}
 
@@ -31,7 +30,6 @@ class HockeyKitArchiveTask extends AbstractHockeyKitTask {
 		if (project.hockeykit.versionDirectoryName == null) {
 			throw new IllegalArgumentException("hockeykit.versionDirectoryName is missing")
 		}
-
 
 		copyIpaToDirectory(getOutputDirectory());
 

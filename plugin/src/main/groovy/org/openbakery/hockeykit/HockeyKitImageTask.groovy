@@ -95,7 +95,7 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 		}
 
 
-
+		File applicationBundle = getApplicationBundleDirectory();
 		File iconFile;
 		TreeMap<Integer, String> iconMap = new TreeMap<Integer, String>()
 		iconList.each {
@@ -105,12 +105,12 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 
 					String extension = FilenameUtils.getExtension(item);
 					if (StringUtils.isEmpty(extension)) {
-						iconFile = new File(project.xcodebuild.applicationBundle, item + "@2x.png");
+						iconFile = new File(applicationBundle, item + "@2x.png");
 						if (!iconFile.exists()) {
-							iconFile = new File(project.xcodebuild.applicationBundle, item + ".png");
+							iconFile = new File(applicationBundle, item + ".png");
 						}
 					} else {
-						iconFile = new File(project.xcodebuild.applicationBundle, item)
+						iconFile = new File(applicationBundle, item)
 					}
 
 

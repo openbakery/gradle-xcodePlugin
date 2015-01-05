@@ -13,10 +13,17 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 	private File archiveDirectory;
 
+	File getApplicationBundleDirectory() {
+		File appBundleDirectory = new File(getArchiveDirectory(), "Products/Applications/" + getApplicationNameFromArchive() + ".app")
+		if (!appBundleDirectory.exists()) {
+			throw new IllegalStateException("app directory not found: " + appBundleDirectory.absolutePath);
+		}
+		return appBundleDirectory;
+	}
 
 	def getAppBundleInfoPlist() {
 
-		File infoPlist = new File(getArchiveDirectory(), "Products/Applications/" + getApplicationNameFromArchive() + ".app/Info.plist")
+		File infoPlist = new File(getApplicationBundleDirectory(), "Info.plist")
 
 		if (!infoPlist.exists()) {
 			throw new IllegalStateException("Info.plist not found: " + infoPlist.absolutePath);
