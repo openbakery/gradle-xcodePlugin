@@ -354,6 +354,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 					errors = numberErrors(resultList);
 				}
 
+				testsuite(name: name, tests: success, errors: errors, failures: "0", skipped: "0") {
 
 					for (TestClass testClass in resultList) {
 
