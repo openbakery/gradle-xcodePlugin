@@ -46,9 +46,7 @@ class PackageTask extends AbstractDistributeTask {
 			codesign(bundle)
 		}
 
-
-		File swiftSupport = createSwiftSupportFolder(appBundles.last())
-		createIpa(payloadPath, swiftSupport);
+		createIpa(payloadPath, applicationBundleName);
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -83,14 +81,27 @@ class PackageTask extends AbstractDistributeTask {
 		return null
 	}
 
-	private void createIpa(File... files) {
+	private void createIpa(File payloadPath, String applicationBundleName) {
 
 		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
 		if (!ipaBundle.parentFile.exists()) {
 			ipaBundle.parentFile.mkdirs()
 		}
 
-		createZip(ipaBundle, payloadPath.getParentFile(), files)
+
+		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
+		if (frameworksPath.exists()) {
+
+			File swiftSupportPath = new File(payloadPath.getParentFile(), "SwiftSupport")
+			swiftSupportPath.mkdirs()
+			frameworksPath.listFiles().each() {
+				copy(it, swiftSupportPath)
+			}
+
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
+		} else {
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
+		}
 
 	}
 
@@ -135,22 +146,6 @@ class PackageTask extends AbstractDistributeTask {
 		createSigningDestination("Payload")
 	}
 
-	private File createSwiftSupportFolder(File appBundle) {
-		File frameworks = new File(appBundle, "Frameworks")
-		File swiftSupport = createSigningDestination("SwiftSupport")
-		if (frameworks.exists()) {
-			def xcodePath = project.xcodebuild.xcodePath
-			if (null == xcodePath) {
-				xcodePath = "/Applications/Xcode.app"
-			}
-			def swiftLibsPath = "${xcodePath}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/".toString()
-			for (File swiftLib : frameworks.listFiles()) {
-				File toCopy = new File(swiftLibsPath, swiftLib.name);
-				copy(toCopy, swiftSupport)
-			}
-		}
-		return swiftSupport
-	}
 
 	def getArchiveApplicationBundle(String applicationName) {
 		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)

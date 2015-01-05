@@ -135,6 +135,27 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	}
 
+	def createFrameworks(def applicationsDirectory) {
+
+		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
+
+
+		if (frameworksPath.exists()) {
+			File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
+			if (!swiftSupportDirectory.exists()) {
+				swiftSupportDirectory.mkdirs()
+			}
+
+			frameworksPath.listFiles().each() {
+				copy(it, swiftSupportDirectory)
+			}
+
+		}
+
+
+	}
+
+
 	@TaskAction
 	def archive() {
 		if (project.xcodebuild.sdk.startsWith("iphoneos")) {
@@ -161,6 +182,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 			createInfoPlist(project.xcodebuild.archiveDirectory)
+
+			createFrameworks(project.xcodebuild.archiveDirectory)
 
 		} else {
 			logger.debug("Create zip archive")
