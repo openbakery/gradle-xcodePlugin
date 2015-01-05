@@ -60,15 +60,11 @@ class PackageTaskTest {
 		//infoPlist = new File(project.buildDir, project.xcodebuild.infoPlist)
 		//FileUtils.writeStringToFile(infoPlist, "dummy")
 
-
-
 		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
-
-
 	}
 
-	void mockExampleApp(boolean withPlugin) {
+	void mockExampleApp(boolean withPlugin, boolean withSwift) {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
 
@@ -100,6 +96,14 @@ class PackageTaskTest {
 			mockCodesignCommand("Payload/Example.app/" + widgetPath)
 		}
 		project.xcodebuild.outputPath.mkdirs()
+
+		if (withSwift) {
+
+			File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib");
+			FileUtils.writeStringToFile(libSwiftCore, "dummy");
+
+
+		}
 
 	}
 
@@ -136,7 +140,7 @@ class PackageTaskTest {
 
 	@Test
 	void testCreatePayload() {
-		mockExampleApp(false)
+		mockExampleApp(false, false)
 
 		packageTask.packageApplication()
 		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
@@ -146,7 +150,7 @@ class PackageTaskTest {
 	@Test
 	void testCopyApp() {
 
-		mockExampleApp(false)
+		mockExampleApp(false, false)
 
 		packageTask.packageApplication()
 		assert payloadAppDirectory.exists()
@@ -156,7 +160,7 @@ class PackageTaskTest {
 	@Test
 	void embedProvisioningProfile() {
 
-		mockExampleApp(false)
+		mockExampleApp(false, false)
 
 		File mobileprovision = new File("src/test/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
@@ -174,7 +178,7 @@ class PackageTaskTest {
 
 	@Test
 	void embedMultipleProvisioningProfile() {
-		mockExampleApp(true)
+		mockExampleApp(true, false)
 
 		File firstMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
@@ -200,7 +204,7 @@ class PackageTaskTest {
 	@Test
 	void testSign() {
 
-		mockExampleApp(false)
+		mockExampleApp(false, false)
 
 
 		mockControl.play {
@@ -211,7 +215,7 @@ class PackageTaskTest {
 	@Test
 	void testSignMultiple() {
 
-		mockExampleApp(true)
+		mockExampleApp(true, false)
 
 		mockControl.play {
 			packageTask.packageApplication()
@@ -220,7 +224,7 @@ class PackageTaskTest {
 
 	@Test
 	void testIpa() {
-		mockExampleApp(false)
+		mockExampleApp(false, false)
 
 		packageTask.packageApplication()
 
@@ -257,7 +261,28 @@ class PackageTaskTest {
 		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Test") == wildcardMobileprovision
 		assert packageTask.getMobileProvisionFileForIdentifier("org.Test") == wildcardMobileprovision
 
+	}
 
+	@Test
+	void swiftFramework() {
+
+		mockExampleApp(false, true)
+
+		packageTask.packageApplication()
+
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
+
+		assert ipaBundle.exists()
+
+		ZipFile zipFile = new ZipFile(ipaBundle);
+
+		List<String> entries = new ArrayList<String>()
+
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+
+		assert entries.contains("SwiftSupport/libswiftCore.dylib")
 	}
 
 }

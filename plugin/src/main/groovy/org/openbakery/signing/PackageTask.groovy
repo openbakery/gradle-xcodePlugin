@@ -21,7 +21,6 @@ class PackageTask extends AbstractDistributeTask {
 		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
-
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
@@ -33,22 +32,21 @@ class PackageTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
 		}
 
-
 		File payloadPath = createPayload();
 
 		def applicationName = getApplicationNameFromArchive()
-
 		copy(getArchiveApplicationBundle(applicationName), payloadPath)
 
+		def applicationBundleName = applicationName + ".app"
 
-		List<File> appBundles = getAppBundles(payloadPath, applicationName + ".app")
+		List<File> appBundles = getAppBundles(payloadPath, applicationBundleName)
 
 		for (File bundle : appBundles) {
 			embedProvisioningProfileToBundle(bundle)
 			codesign(bundle)
 		}
 
-		createIpa(payloadPath);
+		createIpa(payloadPath, applicationBundleName);
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -81,34 +79,29 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		return null
-
 	}
 
-
-
-	private void createIpa(File payloadPath) {
+	private void createIpa(File payloadPath, String applicationBundleName) {
 
 		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
 		if (!ipaBundle.parentFile.exists()) {
 			ipaBundle.parentFile.mkdirs()
 		}
 
-		createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
 
-		/*
-		// use /usr/bin/zip to preserve permission
-		ant.exec(failonerror: 'true',
-						executable: '/usr/bin/zip',
-						dir: payloadPath.getParentFile().absolutePath) {
-			arg(value: '--symlinks')
-			arg(value: '--verbose')
-			arg(value: '--recurse-paths')
-			arg(value: project.xcodebuild.ipaBundle.absolutePath)
-			arg(value: 'Payload')
+		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
+		if (frameworksPath.exists()) {
 
+			File swiftSupportPath = new File(payloadPath.getParentFile(), "SwiftSupport")
+			swiftSupportPath.mkdirs()
+			frameworksPath.listFiles().each() {
+				copy(it, swiftSupportPath)
+			}
+
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
+		} else {
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
 		}
-		*/
-
 
 	}
 
@@ -127,8 +120,6 @@ class PackageTask extends AbstractDistributeTask {
 		project.xcodebuild.signing.keychainPathInternal.absolutePath,
 		]
 		commandRunner.run(codesignCommand)
-
-
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
@@ -142,18 +133,19 @@ class PackageTask extends AbstractDistributeTask {
 		}
 	}
 
-
-
-
+	private File createSigningDestination(String name) throws IOException {
+		File destination = new File(project.xcodebuild.signing.signingDestinationRoot, name);
+		if (destination.exists()) {
+			FileUtils.deleteDirectory(destination);
+		}
+		destination.mkdirs();
+		return destination;
+	}
 
 	private File createPayload() throws IOException {
-		File payloadPath = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload");
-		if (payloadPath.exists()) {
-			FileUtils.deleteDirectory(payloadPath);
-		}
-		payloadPath.mkdirs();
-		return payloadPath;
+		createSigningDestination("Payload")
 	}
+
 
 	def getArchiveApplicationBundle(String applicationName) {
 		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
