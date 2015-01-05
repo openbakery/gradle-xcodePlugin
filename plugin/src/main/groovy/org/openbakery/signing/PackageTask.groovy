@@ -21,7 +21,6 @@ class PackageTask extends AbstractDistributeTask {
 		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
-
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
@@ -33,22 +32,23 @@ class PackageTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
 		}
 
-
 		File payloadPath = createPayload();
 
 		def applicationName = getApplicationNameFromArchive()
-
 		copy(getArchiveApplicationBundle(applicationName), payloadPath)
 
+		def applicationBundleName = applicationName + ".app"
 
-		List<File> appBundles = getAppBundles(payloadPath, applicationName + ".app")
+		List<File> appBundles = getAppBundles(payloadPath, applicationBundleName)
 
 		for (File bundle : appBundles) {
 			embedProvisioningProfileToBundle(bundle)
 			codesign(bundle)
 		}
 
-		createIpa(payloadPath);
+
+		File swiftSupport = createSwiftSupportFolder(appBundles.last())
+		createIpa(payloadPath, swiftSupport);
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -81,34 +81,16 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		return null
-
 	}
 
-
-
-	private void createIpa(File payloadPath) {
+	private void createIpa(File... files) {
 
 		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
 		if (!ipaBundle.parentFile.exists()) {
 			ipaBundle.parentFile.mkdirs()
 		}
 
-		createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
-
-		/*
-		// use /usr/bin/zip to preserve permission
-		ant.exec(failonerror: 'true',
-						executable: '/usr/bin/zip',
-						dir: payloadPath.getParentFile().absolutePath) {
-			arg(value: '--symlinks')
-			arg(value: '--verbose')
-			arg(value: '--recurse-paths')
-			arg(value: project.xcodebuild.ipaBundle.absolutePath)
-			arg(value: 'Payload')
-
-		}
-		*/
-
+		createZip(ipaBundle, payloadPath.getParentFile(), files)
 
 	}
 
@@ -127,8 +109,6 @@ class PackageTask extends AbstractDistributeTask {
 		project.xcodebuild.signing.keychainPathInternal.absolutePath,
 		]
 		commandRunner.run(codesignCommand)
-
-
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
@@ -142,17 +122,34 @@ class PackageTask extends AbstractDistributeTask {
 		}
 	}
 
-
-
-
+	private File createSigningDestination(String name) throws IOException {
+		File destination = new File(project.xcodebuild.signing.signingDestinationRoot, name);
+		if (destination.exists()) {
+			FileUtils.deleteDirectory(destination);
+		}
+		destination.mkdirs();
+		return destination;
+	}
 
 	private File createPayload() throws IOException {
-		File payloadPath = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload");
-		if (payloadPath.exists()) {
-			FileUtils.deleteDirectory(payloadPath);
+		createSigningDestination("Payload")
+	}
+
+	private File createSwiftSupportFolder(File appBundle) {
+		File frameworks = new File(appBundle, "Frameworks")
+		File swiftSupport = createSigningDestination("SwiftSupport")
+		if (frameworks.exists()) {
+			def xcodePath = project.xcodebuild.xcodePath
+			if (null == xcodePath) {
+				xcodePath = "/Applications/Xcode.app"
+			}
+			def swiftLibsPath = "${xcodePath}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/".toString()
+			for (File swiftLib : frameworks.listFiles()) {
+				File toCopy = new File(swiftLibsPath, swiftLib.name);
+				copy(toCopy, swiftSupport)
+			}
 		}
-		payloadPath.mkdirs();
-		return payloadPath;
+		return swiftSupport
 	}
 
 	def getArchiveApplicationBundle(String applicationName) {

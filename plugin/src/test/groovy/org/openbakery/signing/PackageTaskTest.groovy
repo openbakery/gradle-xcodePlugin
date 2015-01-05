@@ -60,12 +60,8 @@ class PackageTaskTest {
 		//infoPlist = new File(project.buildDir, project.xcodebuild.infoPlist)
 		//FileUtils.writeStringToFile(infoPlist, "dummy")
 
-
-
 		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
-
-
 	}
 
 	void mockExampleApp(boolean withPlugin) {
