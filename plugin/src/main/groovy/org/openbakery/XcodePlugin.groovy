@@ -29,11 +29,9 @@ import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
 import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
-import org.openbakery.deploygate.DeployGatePrepareTask
 import org.openbakery.deploygate.DeployGateUploadTask
 import org.openbakery.hockeyapp.HockeyAppCleanTask
 import org.openbakery.hockeyapp.HockeyAppPluginExtension
-import org.openbakery.hockeyapp.HockeyAppPrepareTask
 import org.openbakery.hockeyapp.HockeyAppUploadTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitCleanTask
@@ -93,9 +91,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String TESTFLIGHT_TASK_NAME = 'testflight'
 	public static final String TESTFLIGHT_CLEAN_TASK_NAME = 'testflight-clean'
 	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyapp-clean'
-	public static final String HOCKEYAPP_PREPARE_TASK_NAME = 'hockeyapp-prepare'
 	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
-	public static final String DEPLOYGATE_PREPARE_TASK_NAME = 'deploygate-prepare'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygate-clean'
 	public static final String SPARKLE_TASK_NAME = 'sparkle'
@@ -440,7 +436,6 @@ class XcodePlugin implements Plugin<Project> {
 
 	private void configureHockeyApp(Project project) {
 		project.task(HOCKEYAPP_CLEAN_TASK_NAME, type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
-		project.task(HOCKEYAPP_PREPARE_TASK_NAME, type: HockeyAppPrepareTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task(HOCKEYAPP_TASK_NAME, type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
 	}
 	
@@ -468,7 +463,6 @@ class XcodePlugin implements Plugin<Project> {
 
 	private void configureDeployGate(Project project) {
 		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
-		project.task(DEPLOYGATE_PREPARE_TASK_NAME, type: DeployGatePrepareTask, group: DEPLOYGATE_GROUP_NAME)
 		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
 	}
 

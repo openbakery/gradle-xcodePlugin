@@ -3,6 +3,7 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
+import org.openbakery.signing.PackageTask
 
 /**
  * User: rene
@@ -10,35 +11,13 @@ import org.gradle.api.DefaultTask
  */
 class AbstractDistributeTask extends AbstractXcodeTask {
 
+	private File archiveDirectory;
+
+
 	def getAppBundleInfoPlist() {
 
-		/*
-		def convertedPlist = new File(project.buildDir, "Info.plist")
-		if (convertedPlist.exists()) {
-			return convertedPlist.absolutePath
-		}
+		File infoPlist = new File(getArchiveDirectory(), "Products/Applications/" + getApplicationNameFromArchive() + ".app/Info.plist")
 
-		File infoPlistFile = new File(project.xcodebuild.applicationBundle, "/Info.plist")
-		if (infoPlistFile.exists()) {
-
-			//plutil -convert xml1 "$BINARY_INFO_PLIST" -o "${INFO_PLIST}.plist"
-
-			def convertCommand = [
-							"plutil",
-							"-convert",
-							"xml1",
-							infoPlistFile.absolutePath,
-							"-o",
-							convertedPlist.absolutePath
-			]
-
-			commandRunner.run(convertCommand)
-
-			return convertedPlist.absolutePath
-		}
-
-		*/
-		File infoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
 		if (!infoPlist.exists()) {
 			throw new IllegalStateException("Info.plist not found: " + infoPlist.absolutePath);
 		}
@@ -49,10 +28,9 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 	File getDestinationFile(File outputDirectory, String extension) {
 		if (project.xcodebuild.bundleNameSuffix != null) {
-			return new File(outputDirectory, project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix + extension)
+			return new File(outputDirectory, getApplicationNameFromArchive() + project.xcodebuild.bundleNameSuffix + extension)
 		}
-		return new File(outputDirectory, project.xcodebuild.bundleName + extension)
-
+		return new File(outputDirectory, getApplicationNameFromArchive() + extension)
 	}
 
 	File getDestinationBundleFile(File outputDirectory, File bundle) {
@@ -78,42 +56,90 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 
 		File destinationBundle = getDestinationBundleFile(outputDirectory, bundle)
-		FileUtils.copyFile(project.xcodebuild.getIpaBundle(), destinationBundle)
+		FileUtils.copyFile(getIpaBundle()	, destinationBundle)
 
 		logger.lifecycle("Created bundle archive in {}", outputDirectory)
 	}
 
 	void copyIpaToDirectory(File outputDirectory) {
-		copyBundleToDirectory(outputDirectory, project.xcodebuild.getIpaBundle())
+		copyBundleToDirectory(outputDirectory, getIpaBundle())
 	}
 
 
 	void copyDsymToDirectory(File outputDirectory) {
-		copyBundleToDirectory(outputDirectory, project.xcodebuild.getDSymBundle())
+		copyBundleToDirectory(outputDirectory, getDSymBundle())
 	}
 
-	void createDsymZip(File outputDirectory) {
+	File getIpaBundle() {
+		File packageDirectory = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
 
-		def ant = new AntBuilder()
-		ant.zip(destfile: getDsymZipFile(outputDirectory).absolutePath,
-						basedir: project.xcodebuild.getOutputPath().absolutePath,
-						includes: "*dSYM*/**")
-
-	}
-
-
-	File getIpaFile(File outputDirectory) {
-		return getDestinationBundleFile(outputDirectory, project.xcodebuild.getIpaBundle())
-	}
-
-	File getDsymZipFile(File outputDirectory) {
-		String baseZipName;
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			baseZipName = project.xcodebuild.bundleName + project.xcodebuild.bundleNameSuffix
-		} else {
-			baseZipName = project.xcodebuild.bundleName
+		if (!packageDirectory.exists()) {
+			throw new IllegalArgumentException("package does not exist: " + packageDirectory)
 		}
 
-		return new File(outputDirectory.path, baseZipName + "." + project.xcodebuild.productType + ".dSYM.zip")
+		def fileList = packageDirectory.list(
+						[accept: { d, f -> f ==~ /.*ipa/ }] as FilenameFilter
+		).toList()
+
+
+		if (fileList.isEmpty()) {
+			throw new IllegalArgumentException("No ipa found")
+		}
+
+		return new File(packageDirectory, fileList.get(0))
 	}
+
+
+
+	File getDSymBundle() {
+		File dSym = new File(getArchiveDirectory(), "dSYMs/" + getApplicationNameFromArchive() + ".app.dSYM");
+		if (!dSym.exists()) {
+			throw new IllegalArgumentException("dSYM not found: " + dSym)
+		}
+		return dSym;
+	}
+
+
+
+	def getArchiveDirectory() {
+		if (archiveDirectory != null) {
+			return archiveDirectory;
+		}
+		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
+		if (!archiveDirectory.exists()) {
+			throw new IllegalArgumentException("Archive does not exist: " + archiveDirectory)
+		}
+
+		def fileList = archiveDirectory.list(
+						[accept: { d, f -> f ==~ /.*xcarchive/ }] as FilenameFilter
+		).toList()
+		if (fileList.isEmpty()) {
+			throw new IllegalArgumentException("No xcarchive found")
+		}
+		return new File(archiveDirectory, fileList.get(0))
+
+	}
+
+	def getApplicationNameFromArchive() {
+
+		return getArchiveDirectory().name - ".xcarchive"
+
+		/*
+		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
+		if (!archiveDirectory.exists()) {
+			throw new IllegalArgumentException("Archive does not exist: " + archiveDirectory)
+		}
+
+		def fileList = archiveDirectory.list(
+						[accept: { d, f -> f ==~ /.*xcarchive/ }] as FilenameFilter
+		).toList()
+
+		if (fileList.isEmpty()) {
+			throw new IllegalArgumentException("No xcarchive found")
+		}
+		return fileList.get(0) - ".xcarchive"
+		*/
+	}
+
+
 }

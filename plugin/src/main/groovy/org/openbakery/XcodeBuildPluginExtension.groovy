@@ -408,18 +408,21 @@ class XcodeBuildPluginExtension {
 		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
+	/*
 	File getIpaBundle() {
-		return new File(getOutputPath(), getBundleName() + ".ipa")
+		return new File(project.getBuildDir(), "package/" + getConfiguration().toLowerCase() + "/" + getBundleName() + ".ipa")
 	}
 
 	File getDSymBundle()  {
 		return new File(getOutputPath(), getBundleName()  + "." + this.productType + ".dSYM")
 	}
 
+*/
+
 
 	File getArchiveDirectory() {
 
-		def archiveDirectoryName = "archive/" +  project.xcodebuild.bundleName
+		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveDirectoryName += project.xcodebuild.bundleNameSuffix

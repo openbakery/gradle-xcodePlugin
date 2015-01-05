@@ -34,12 +34,18 @@ import org.apache.http.conn.params.ConnRoutePNames
 
 class DeployGateUploadTask extends AbstractDistributeTask {
 
+	File ipaFile;
+
 	DeployGateUploadTask() {
 		super()
-		dependsOn("deploygate-prepare")
+		dependsOn("package")
 		this.description = "Distributes the build to DeployGate"
 	}
 
+
+	def prepare() {
+		ipaFile =  copyIpaToDirectory(project.deploygate.outputDirectory)
+	}
 
 	@TaskAction
 	def upload() throws IOException {
@@ -67,8 +73,6 @@ class DeployGateUploadTask extends AbstractDistributeTask {
 		file - Required, file data for the build
 		message - Optional, release notes for the build
 */
-
-		def ipaFile = getIpaFile(project.deploygate.outputDirectory)
 
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 

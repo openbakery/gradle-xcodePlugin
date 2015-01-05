@@ -15,13 +15,12 @@
  */
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 
-import java.text.SimpleDateFormat
-
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
+
+	public static final String ARCHIVE_FOLDER = "archive"
 
 	XcodeBuildArchiveTask() {
 		super()
@@ -32,7 +31,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 	def getOutputDirectory() {
-		def archiveDirectory = new File(project.getBuildDir(), "archive/")
+		def archiveDirectory = new File(project.getBuildDir(), ARCHIVE_FOLDER)
 		archiveDirectory.mkdirs()
 		return archiveDirectory
 	}

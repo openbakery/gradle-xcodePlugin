@@ -2,26 +2,25 @@ package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractDistributeTask
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 
 /**
  * Created by rene on 14.11.14.
  */
-class PackageTask extends AbstractXcodeTask {
+class PackageTask extends AbstractDistributeTask {
 
+
+	public static final String PACKAGE_PATH = "package"
 
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
-		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME, XcodePlugin.ARCHIVE_TASK_NAME)
+		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
-
-	def getArchiveApplicationBundle() {
-		def application = "Products/Applications/" + project.xcodebuild.applicationBundle.name
-		return new File(project.xcodebuild.archiveDirectory, application);
-	}
 
 	@TaskAction
 	void packageApplication() throws IOException {
@@ -37,10 +36,12 @@ class PackageTask extends AbstractXcodeTask {
 
 		File payloadPath = createPayload();
 
-		copy(getArchiveApplicationBundle(), payloadPath)
+		def applicationName = getApplicationNameFromArchive()
+
+		copy(getArchiveApplicationBundle(applicationName), payloadPath)
 
 
-		List<File> appBundles = getAppBundles(payloadPath)
+		List<File> appBundles = getAppBundles(payloadPath, applicationName + ".app")
 
 		for (File bundle : appBundles) {
 			embedProvisioningProfileToBundle(bundle)
@@ -84,9 +85,15 @@ class PackageTask extends AbstractXcodeTask {
 	}
 
 
+
 	private void createIpa(File payloadPath) {
 
-		createZip(project.xcodebuild.ipaBundle, payloadPath.getParentFile(), payloadPath)
+		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
+		if (!ipaBundle.parentFile.exists()) {
+			ipaBundle.parentFile.mkdirs()
+		}
+
+		createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
 
 		/*
 		// use /usr/bin/zip to preserve permission
@@ -147,4 +154,15 @@ class PackageTask extends AbstractXcodeTask {
 		payloadPath.mkdirs();
 		return payloadPath;
 	}
+
+	def getArchiveApplicationBundle(String applicationName) {
+		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
+
+		def application = applicationName + ".xcarchive/Products/Applications/" + applicationName + ".app"
+		return new File(archiveDirectory, application);
+	}
+
+
+
+
 }

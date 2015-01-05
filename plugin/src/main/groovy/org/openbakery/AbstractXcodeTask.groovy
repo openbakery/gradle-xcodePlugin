@@ -195,12 +195,15 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
-
 	List<File> getAppBundles(File appPath) {
+		return getAppBundles(appPath, project.xcodebuild.applicationBundle.name)
+	}
+
+	List<File> getAppBundles(File appPath, applicationBundleName) {
 
 		ArrayList<File> bundles = new ArrayList<File>();
 
-		File appBundle = new File(appPath, project.xcodebuild.applicationBundle.name)
+		File appBundle = new File(appPath, applicationBundleName)
 
 		File plugins = new File(appBundle, "PlugIns")
 		if (plugins.exists()) {

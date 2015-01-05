@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.testng.annotations.AfterMethod
@@ -31,6 +32,7 @@ class PackageTaskTest {
 	File projectDir
 	File infoPlist
 	File payloadAppDirectory
+	File archiveDirectory
 
 	@BeforeMethod
 	void setup() {
@@ -42,7 +44,7 @@ class PackageTaskTest {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
-		project.xcodebuild.infoPlist = 'Info.plist'
+		//project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.sdk = "iphoneos"
@@ -53,8 +55,10 @@ class PackageTaskTest {
 		packageTask.setProperty("commandRunner", commandRunnerMock)
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
-		infoPlist = new File(project.buildDir, project.xcodebuild.infoPlist)
-		FileUtils.writeStringToFile(infoPlist, "dummy")
+		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
+
+		//infoPlist = new File(project.buildDir, project.xcodebuild.infoPlist)
+		//FileUtils.writeStringToFile(infoPlist, "dummy")
 
 
 
@@ -68,7 +72,8 @@ class PackageTaskTest {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
 
-		def applicationBundle = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+
+		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
 
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
@@ -220,9 +225,11 @@ class PackageTaskTest {
 		packageTask.packageApplication()
 
 
-		assert project.xcodebuild.getIpaBundle().exists()
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
 
-		ZipFile zipFile = new ZipFile(project.xcodebuild.getIpaBundle());
+		assert ipaBundle.exists()
+
+		ZipFile zipFile = new ZipFile(ipaBundle);
 
 		List<String> entries = new ArrayList<String>()
 

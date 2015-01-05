@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodeBuildArchiveTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -13,9 +14,9 @@ import org.testng.annotations.Test
  * User: rene
  * Date: 11/11/14
  */
-class HockeyAppPrepareTaskTest {
+class HockeyAppTaskTest {
 	Project project
-	HockeyAppPrepareTask hockeyAppPrepareTask;
+	HockeyAppUploadTask hockeyAppUploadTask;
 
 	GMockController mockControl
 	CommandRunner commandRunnerMock
@@ -34,17 +35,24 @@ class HockeyAppPrepareTaskTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.productName = 'Test'
-		project.xcodebuild.infoPlist = 'Info.plist'
 
-		hockeyAppPrepareTask = project.getTasks().getByPath('hockeyapp-prepare')
+		hockeyAppUploadTask = project.getTasks().getByPath('hockeyapp')
 
-		hockeyAppPrepareTask.setProperty("commandRunner", commandRunnerMock)
+		hockeyAppUploadTask.setProperty("commandRunner", commandRunnerMock)
 
-		infoPlist = new File(project.buildDir, "Info.plist")
-		FileUtils.writeStringToFile(infoPlist, "dummy")
 
-		FileUtils.writeStringToFile(project.xcodebuild.getIpaBundle(), "dummy")
-		FileUtils.writeStringToFile(project.xcodebuild.getDSymBundle(), "dummy")
+		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
+		FileUtils.writeStringToFile(ipaBundle, "dummy")
+
+		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
+		archiveDirectory.mkdirs()
+
+		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
+		infoPlist.parentFile.mkdirs();
+
+
+		File dsymBundle = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
+		FileUtils.writeStringToFile(dsymBundle, "dummy")
 
 	}
 
@@ -58,16 +66,14 @@ class HockeyAppPrepareTaskTest {
 	@Test
 	void testArchive() {
 
-		hockeyAppPrepareTask.archive()
+		hockeyAppUploadTask.prepare()
 
 		File expectedIpa = new File(project.buildDir, "hockeyapp/Test.ipa")
 		assert expectedIpa.exists()
 
-		File expectedDSYM = new File(project.buildDir, "hockeyapp/Test.app.dSYM")
+		File expectedDSYM = new File(project.buildDir, "hockeyapp/Test.app.dSYM.zip")
 		assert expectedDSYM.exists()
 
-		File expectedZip = new File(project.buildDir, "hockeyapp/Test.app.dSYM.zip")
-		assert expectedZip.exists()
 
 	}
 
@@ -76,7 +82,7 @@ class HockeyAppPrepareTaskTest {
 
 		project.xcodebuild.bundleNameSuffix = '-SUFFIX'
 
-		hockeyAppPrepareTask.archive()
+		hockeyAppUploadTask.prepare()
 
 		File expectedIpa = new File(project.buildDir, "hockeyapp/Test-SUFFIX.ipa")
 		assert expectedIpa.exists()

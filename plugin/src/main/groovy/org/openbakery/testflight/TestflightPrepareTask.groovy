@@ -31,6 +31,5 @@ class TestFlightPrepareTask extends AbstractDistributeTask {
 	def archive() {
 		copyIpaToDirectory(project.testflight.outputDirectory)
 		copyDsymToDirectory(project.testflight.outputDirectory)
-		createDsymZip(project.testflight.outputDirectory)
 	}
 }

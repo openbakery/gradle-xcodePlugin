@@ -21,7 +21,7 @@ class HockeyKitArchiveTask extends AbstractHockeyKitTask {
 
 	HockeyKitArchiveTask() {
 		super()
-		dependsOn("archive")
+		dependsOn("package")
 		this.description = "Prepare the app bundle so that it can be uploaded to the Hockeykit Server"
 	}
 
