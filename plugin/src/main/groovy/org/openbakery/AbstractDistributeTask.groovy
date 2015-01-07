@@ -21,6 +21,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return appBundleDirectory;
 	}
 
+
 	def getAppBundleInfoPlist() {
 
 		File infoPlist = new File(getApplicationBundleDirectory(), "Info.plist")
@@ -28,7 +29,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		if (!infoPlist.exists()) {
 			throw new IllegalStateException("Info.plist not found: " + infoPlist.absolutePath);
 		}
-		return infoPlist.absolutePath;
+		return infoPlist;
 	}
 
 
@@ -128,25 +129,12 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 	}
 
 	def getApplicationNameFromArchive() {
-
 		return getArchiveDirectory().name - ".xcarchive"
-
-		/*
-		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
-		if (!archiveDirectory.exists()) {
-			throw new IllegalArgumentException("Archive does not exist: " + archiveDirectory)
-		}
-
-		def fileList = archiveDirectory.list(
-						[accept: { d, f -> f ==~ /.*xcarchive/ }] as FilenameFilter
-		).toList()
-
-		if (fileList.isEmpty()) {
-			throw new IllegalArgumentException("No xcarchive found")
-		}
-		return fileList.get(0) - ".xcarchive"
-		*/
 	}
+
+
+
+
 
 
 }

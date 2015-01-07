@@ -1,3 +1,16 @@
+## 0.10.0 (TAB)
+
+Changes
+- New package task to creates IPAs
+  - supports Swift
+	- supports App Extensions
+- package task has now dependency to infoplist-modify, xcodebuild task doesn't
+- Codesign task was removed (is replaced by package task)
+- archive task now creates a xcarchive: Issue #1
+- distribution tasks (e.g. hockeykit) does not have a dependences to the build tasks anymore, if you want this define this in you build.gradle file
+- distribution tasks uses the xcarchive as input now
+
+
 ## 0.9.15 (November 25, 2014)
 
 Changes

@@ -35,7 +35,7 @@ class PackageTask extends AbstractDistributeTask {
 		File payloadPath = createPayload();
 
 		def applicationName = getApplicationNameFromArchive()
-		copy(getArchiveApplicationBundle(applicationName), payloadPath)
+		copy(getApplicationBundleDirectory(), payloadPath)
 
 		def applicationBundleName = applicationName + ".app"
 
@@ -144,14 +144,6 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createPayload() throws IOException {
 		createSigningDestination("Payload")
-	}
-
-
-	def getArchiveApplicationBundle(String applicationName) {
-		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
-
-		def application = applicationName + ".xcarchive/Products/Applications/" + applicationName + ".app"
-		return new File(archiveDirectory, application);
 	}
 
 

@@ -117,8 +117,28 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
+	String setValueForPlist(def plist, String key, String value) {
+		setValueForPlist(plist, "Set :" + key + " " + value)
+	}
 
 
+	String setValueForPlist(def plist, String command) {
+		File infoPlistFile;
+		if (plist instanceof File) {
+			infoPlistFile = plist
+		} else {
+			infoPlistFile = new File(project.projectDir, plist)
+		}
+		if (!infoPlistFile.exists()) {
+			throw new IllegalStateException("Info Plist does not exist: " + infoPlistFile.absolutePath);
+		}
+		commandRunner.run([
+						"/usr/libexec/PlistBuddy",
+						infoPlistFile.absolutePath,
+						"-c",
+						command
+		])
+	}
 
 
 	def getOSVersion() {

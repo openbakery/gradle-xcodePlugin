@@ -19,68 +19,51 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 
 
-class InfoPlistModifyTask extends AbstractXcodeTask {
+class InfoPlistModifyTask extends AbstractDistributeTask {
+
+
+
+
 
 	public InfoPlistModifyTask() {
 		//dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
+
+
+
 	@TaskAction
 	def prepare() {
-		def infoPlist = project.xcodebuild.infoPlist
 
 
-		if (StringUtils.isEmpty(infoPlist)) {
-			logger.lifecycle("Info Plist not found, so skipping this task")
-			return
-		}
+		def infoPlist = getAppBundleInfoPlist()
+
 
 		logger.lifecycle("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
-
-			commandRunner.run([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							"Set :CFBundleIdentifier " + project.infoplist.bundleIdentifier
-			])
+			setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier)
 		}
 
 		// add suffix to bundleIdentifier
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
 
-			commandRunner.run([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							"Set :CFBundleIdentifier " + bundleIdentifier + project.infoplist.bundleIdentifierSuffix
-			])
+			setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
+
 		}
 
-        // Modify bundle bundleDisplayName
-        if (project.infoplist.bundleDisplayName != null) {
+		// Modify bundle bundleDisplayName
+		if (project.infoplist.bundleDisplayName != null) {
+			setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName)
+		}
 
-					commandRunner.run([
-                    "/usr/libexec/PlistBuddy",
-                    infoPlist,
-                    "-c",
-                    "Set :CFBundleDisplayName " + project.infoplist.bundleDisplayName
-            ])
-        }
+		// add suffix to bundleDisplayName
+		if (project.infoplist.bundleDisplayNameSuffix != null) {
+			def bundleDisplayName = getValueFromPlist(infoPlist, "CFBundleDisplayName")
+			setValueForPlist(infoPlist, "CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix)
 
-        // add suffix to bundleDisplayName
-        if (project.infoplist.bundleDisplayNameSuffix != null) {
-            def bundleDisplayName = getValueFromPlist(infoPlist, "CFBundleDisplayName")
-
-					commandRunner.run([
-                    "/usr/libexec/PlistBuddy",
-                    infoPlist,
-                    "-c",
-                    "Set :CFBundleDisplayName " + bundleDisplayName + project.infoplist.bundleDisplayNameSuffix
-            ])
-        }
+		}
 
 		logger.debug("project.infoplist.version: {}", project.infoplist.version)
 
@@ -89,16 +72,12 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 
 
 		for(String command in project.infoplist.commands) {
-			commandRunner.run([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							command])
+			setValueForPlist(infoPlist, command)
 		}
 
 	}
 
-	private void modifyVersion(String infoPlist) {
+	private void modifyVersion(File infoPlist) {
 		if (project.infoplist.version == null && project.infoplist.versionSuffix == null && project.infoplist.versionPrefix == null) {
 			return
 		}
@@ -108,11 +87,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
 		} else {
-			version = commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							"Print :CFBundleVersion"])
+			version = getValueFromPlist(infoPlist, "CFBundleVersion")
 		}
 
 		if (project.infoplist.versionSuffix) {
@@ -124,26 +99,18 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("Modify CFBundleVersion to {}", version)
-		commandRunner.run([
-						"/usr/libexec/PlistBuddy",
-						infoPlist,
-						"-c",
-						"Set :CFBundleVersion " + version])
+		setValueForPlist(infoPlist, "CFBundleVersion", version)
 	}
 
 
-	private void modifyShortVersion(String infoPlist) {
+	private void modifyShortVersion(File infoPlist) {
 		if (project.infoplist.shortVersionString == null && project.infoplist.shortVersionStringSuffix == null && project.infoplist.shortVersionStringPrefix == null) {
 			return
 		}
 
 		def shortVersionString
 		try {
-			shortVersionString = commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlist,
-							"-c",
-							"Print :CFBundleShortVersionString"])
+			shortVersionString = getValueFromPlist(infoPlist, "CFBundleShortVersionString")
 		} catch (IllegalStateException ex) {
 			// no CFBundleShortVersionString exists so noting can be modified!
 			return
@@ -161,11 +128,7 @@ class InfoPlistModifyTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
-		commandRunner.run([
-						"/usr/libexec/PlistBuddy",
-						infoPlist,
-						"-c",
-						"Set :CFBundleShortVersionString " + shortVersionString])
+		setValueForPlist(infoPlist, "CFBundleShortVersionString", shortVersionString)
 
 	}
 
