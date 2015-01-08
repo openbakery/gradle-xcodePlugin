@@ -38,7 +38,7 @@ class DeployGateUploadTask extends AbstractDistributeTask {
 
 	DeployGateUploadTask() {
 		super()
-		dependsOn("package")
+		dependsOn()
 		this.description = "Distributes the build to DeployGate"
 	}
 

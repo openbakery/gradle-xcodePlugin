@@ -26,7 +26,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 	public InfoPlistModifyTask() {
-		//dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
 
@@ -36,7 +36,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 	def prepare() {
 
 
-		def infoPlist = getAppBundleInfoPlist()
+		def infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
 
 
 		logger.lifecycle("Updating {}", infoPlist)

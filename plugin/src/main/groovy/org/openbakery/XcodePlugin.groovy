@@ -305,6 +305,13 @@ class XcodePlugin implements Plugin<Project> {
 				project.coverage.exclude = project['coverage.exclude']
 			}
 
+			if (project.hasProperty('appstore.username')) {
+				project.appstore.username = project['appstore.username']
+			}
+			if (project.hasProperty('appstore.password')) {
+				project.appstore.username = project['appstore.password']
+			}
+
 
 		}
 

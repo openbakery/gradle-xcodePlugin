@@ -17,6 +17,7 @@ package org.openbakery.sparkle
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
+import org.openbakery.XcodePlugin
 
 /**
  *
@@ -27,7 +28,10 @@ class SparkleArchiveTask extends DefaultTask {
 
 	SparkleArchiveTask() {
 		super()
-		dependsOn("xcodebuild", "sparkle-notes")
+		dependsOn(
+						XcodePlugin.XCODE_BUILD_TASK_NAME,
+						XcodePlugin.SPARKLE_NOTES_TASK_NAME
+		)
 		this.description = "Compresses app to ZIP when building Mac Apps with Sparkle"
 	}
 	

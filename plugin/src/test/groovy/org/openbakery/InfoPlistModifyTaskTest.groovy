@@ -15,6 +15,7 @@ class InfoPlistModifyTaskTest {
 
 
 	Project project
+	File projectDir
 	InfoPlistModifyTask task
 	File infoPlist
 
@@ -26,23 +27,20 @@ class InfoPlistModifyTaskTest {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
-		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.buildDir = new File(projectDir, 'build').absoluteFile
-
 		project.apply plugin: org.openbakery.XcodePlugin
+
+
+
+		project.xcodebuild.infoPlist = "App-Info.plist"
 
 		task = project.tasks.findByName('infoplistModify')
 		task.setProperty("commandRunner", commandRunnerMock)
 
-
-		def archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive/Products/Applications/Example.app")
-
-		archiveDirectory.mkdirs()
-
-		infoPlist = new File(archiveDirectory, "Info.plist")
-
+		infoPlist = new File(task.project.projectDir, "App-Info.plist")
 		FileUtils.write(infoPlist, "dummy")
+
 
 	}
 

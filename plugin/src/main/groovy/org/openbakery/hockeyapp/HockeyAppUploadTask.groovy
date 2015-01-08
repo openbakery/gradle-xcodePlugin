@@ -51,7 +51,6 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 
 	HockeyAppUploadTask() {
 		super()
-		dependsOn("package")
 		this.description = "Uploades the app (.ipa, .dsym) to HockeyApp"
 	}
 

@@ -29,7 +29,6 @@ class XcodeBuildArchiveTaskTest {
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
-
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin

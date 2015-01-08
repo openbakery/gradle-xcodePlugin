@@ -9,6 +9,8 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import static org.hamcrest.Matchers.anything
+
 /**
  * Created by rene on 08.01.15.
  */
@@ -59,7 +61,7 @@ class AppstoreValidateTaskTest {
 	}
 
 	@Test
-	void testUpload() {
+	void testValidate() {
 
 		project.appstore.username = "me@example.com"
 		project.appstore.password = "1234"
@@ -69,7 +71,7 @@ class AppstoreValidateTaskTest {
 		List<String> commandList
 		commandList?.clear()
 		commandList = [command, "--validate-app", "--username", "me@example.com", "--password", "1234", "--file", ipaBundle.absolutePath]
-		commandRunnerMock.run(commandList).times(1)
+		commandRunnerMock.run(commandList, anything()).times(1)
 
 
 		mockControl.play {

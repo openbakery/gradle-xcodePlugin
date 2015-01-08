@@ -372,8 +372,7 @@ class XcodeBuildTaskTest {
 		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
-
-		assert !dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
 }

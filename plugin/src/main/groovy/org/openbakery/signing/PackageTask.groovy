@@ -18,7 +18,7 @@ class PackageTask extends AbstractDistributeTask {
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
-		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME, XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
+		dependsOn(XcodePlugin.ARCHIVE_TASK_NAME)
 	}
 
 	@TaskAction
@@ -107,12 +107,11 @@ class PackageTask extends AbstractDistributeTask {
 
 	private void codesign(File bundle) {
 
+		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
 		def codesignCommand = [
 						"/usr/bin/codesign",
 		"--force",
 		"--preserve-metadata=identifier,entitlements",
-		//"--preserve-metadata=identifier,entitlements,resource-rules",
-		//"--resource-rules=" + bundle.absolutePath + "/ResourceRules.plist",
 		"--sign",
 		project.xcodebuild.getSigning().getIdentity(),
 		bundle.absolutePath,
