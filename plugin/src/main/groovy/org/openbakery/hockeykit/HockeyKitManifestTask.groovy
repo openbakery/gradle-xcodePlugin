@@ -18,6 +18,7 @@ package org.openbakery.hockeykit
 import org.gradle.api.tasks.TaskAction
 import groovy.xml.MarkupBuilder
 import org.apache.commons.io.FilenameUtils
+import org.openbakery.XcodePlugin
 
 class HockeyKitManifestTask extends AbstractHockeyKitTask {
 
@@ -27,7 +28,7 @@ class HockeyKitManifestTask extends AbstractHockeyKitTask {
 
 	HockeyKitManifestTask() {
 		super()
-		dependsOn("hockeykit-archive")
+		dependsOn(XcodePlugin.HOCKEYKIT_ARCHIVE_TASK_NAME)
 		this.description = "Creates the manifest that is needed to deploy on a HockeyKit Server"
 	}
 

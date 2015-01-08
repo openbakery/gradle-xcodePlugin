@@ -22,6 +22,8 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
+import org.openbakery.appstore.AppstorePluginExtension
+import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.cocoapods.CocoapodsTask
 import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
@@ -48,10 +50,7 @@ import org.openbakery.sparkle.SparkleArchiveTask
 import org.openbakery.sparkle.SparkleCleanTask
 import org.openbakery.sparkle.SparklePluginExtension
 import org.openbakery.sparkle.SparkleReleaseNotesTask
-import org.openbakery.testflight.TestFlightCleanTask
-import org.openbakery.testflight.TestFlightPluginExtension
-import org.openbakery.testflight.TestFlightPrepareTask
-import org.openbakery.testflight.TestFlightUploadTask
+import org.openbakery.appstore.AppstoreUploadTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -62,7 +61,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String XCODE_GROUP_NAME = "Xcode"
 	public static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
 	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
-	public static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
+	public static final String APPSTORE_GROUP_NAME = "AppStore"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
@@ -71,40 +70,39 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String TEST_TASK_NAME = "test"
 	public static final String ARCHIVE_TASK_NAME = "archive"
-	public static final String LIST_SIMULATORS_TASK_NAME = "list-simulators"
+	public static final String LIST_SIMULATORS_TASK_NAME = "listSimulators"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
-	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuild-clean"
-	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuild-config"
-	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykit-manifest"
-	public static final String HOCKEYKIT_ARCHIVE_TASK_NAME = "hockeykit-archive"
-	public static final String HOCKEYKIT_NOTES_TASK_NAME = "hockeykit-notes"
-	public static final String HOCKEYKIT_IMAGE_TASK_NAME = "hockeykit-image"
-	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykit-clean"
+	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
+	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
+	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykitManifest"
+	public static final String HOCKEYKIT_ARCHIVE_TASK_NAME = "hockeykitArchive"
+	public static final String HOCKEYKIT_NOTES_TASK_NAME = "hockeykitNotes"
+	public static final String HOCKEYKIT_IMAGE_TASK_NAME = "hockeykitImage"
+	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykitClean"
 	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
-	public static final String KEYCHAIN_CREATE_TASK_NAME = "keychain-create"
-	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychain-clean"
-	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplist-modify'
-	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioning-install'
-	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioning-clean'
+	public static final String KEYCHAIN_CREATE_TASK_NAME = "keychainCreate"
+	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
+	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
+	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
+	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_TASK_NAME = 'package'
-	public static final String TESTFLIGHT_PREPARE_TASK_NAME = 'testflight-prepare'
-	public static final String TESTFLIGHT_TASK_NAME = 'testflight'
-	public static final String TESTFLIGHT_CLEAN_TASK_NAME = 'testflight-clean'
-	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyapp-clean'
+	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
+	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
+	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyappClean'
 	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
-	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygate-clean'
+	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String SPARKLE_TASK_NAME = 'sparkle'
-	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkle-archive'
-	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkle-notes'
-	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkle-clean'
+	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkleArchive'
+	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkleNotes'
+	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkleClean'
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
-	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledoc-clean'
+	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
 
 	public static final COVERAGE_TASK_NAME = 'coverage'
-	public static final COVERAGE_CLEAN_TASK_NAME = 'coverage-clean'
+	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
 
 
 	void apply(Project project) {
@@ -121,7 +119,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureKeychain(project)
 		configureInfoPlist(project)
 		configureProvisioning(project)
-		configureTestflight(project)
+		configureAppstore(project)
 		configureHockeyApp(project)
 		configureDeployGate(project)
 		configureCodesign(project)
@@ -279,30 +277,6 @@ class XcodePlugin implements Plugin<Project> {
 				project.hockeyapp.notesType = project['hockeyapp.notesType']
 			}
 
-
-			if (project.hasProperty('testflight.outputDirectory')) {
-				project.testflight.outputDirectory = project['testflight.outputDirectory']
-			}
-
-			if (project.hasProperty('testflight.apiToken')) {
-				project.testflight.apiToken = project['testflight.apiToken']
-			}
-			if (project.hasProperty('testflight.teamToken')) {
-				project.testflight.teamToken = project['testflight.teamToken']
-			}
-			if (project.hasProperty('testflight.notes')) {
-				project.testflight.notes = project['testflight.notes']
-			}
-			if (project.hasProperty('testflight.distributionLists')) {
-				project.testflight.distributionLists = project['testflight.distributionLists']
-			}
-			if (project.hasProperty('testflight.notifyDistributionList')) {
-				project.testflight.notifyDistributionList = project['testflight.notifyDistributionList']
-			}
-			if (project.hasProperty('testflight.replaceBuild')) {
-				project.testflight.replaceBuild = project['testflight.replaceBuild']
-			}
-			
 			if (project.hasProperty('sparkle.outputDirectory')) {
 				project.sparkle.output = project['sparkle.outputDirectory']
 			}
@@ -340,7 +314,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
-		project.extensions.create("testflight", TestFlightPluginExtension, project)
+		project.extensions.create("appstore", AppstorePluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("sparkle", SparklePluginExtension, project)
@@ -426,10 +400,9 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
-	private configureTestflight(Project project) {
-		project.task(TESTFLIGHT_PREPARE_TASK_NAME, type: TestFlightPrepareTask, group: TESTFLIGHT_GROUP_NAME)
-		project.task(TESTFLIGHT_TASK_NAME, type: TestFlightUploadTask, group: TESTFLIGHT_GROUP_NAME)
-		project.task(TESTFLIGHT_CLEAN_TASK_NAME, type: TestFlightCleanTask, group: TESTFLIGHT_GROUP_NAME)
+	private configureAppstore(Project project) {
+		project.task(APPSTORE_UPLOAD_TASK_NAME, type: AppstoreUploadTask, group: APPSTORE_GROUP_NAME)
+		project.task(APPSTORE_VALIDATE_TASK_NAME, type: AppstoreValidateTask, group: APPSTORE_GROUP_NAME)
 	}
 
 

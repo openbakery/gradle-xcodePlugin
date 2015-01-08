@@ -82,7 +82,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		File packageDirectory = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
 
 		if (!packageDirectory.exists()) {
-			throw new IllegalArgumentException("package does not exist: " + packageDirectory)
+			throw new IllegalStateException("package does not exist: " + packageDirectory)
 		}
 
 		def fileList = packageDirectory.list(
@@ -91,7 +91,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 
 		if (fileList.isEmpty()) {
-			throw new IllegalArgumentException("No ipa found")
+			throw new IllegalStateException("No ipa found")
 		}
 
 		return new File(packageDirectory, fileList.get(0))
@@ -102,7 +102,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 	File getDSymBundle() {
 		File dSym = new File(getArchiveDirectory(), "dSYMs/" + getApplicationNameFromArchive() + ".app.dSYM");
 		if (!dSym.exists()) {
-			throw new IllegalArgumentException("dSYM not found: " + dSym)
+			throw new IllegalStateException("dSYM not found: " + dSym)
 		}
 		return dSym;
 	}
@@ -115,14 +115,14 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		}
 		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
 		if (!archiveDirectory.exists()) {
-			throw new IllegalArgumentException("Archive does not exist: " + archiveDirectory)
+			throw new IllegalStateException("Archive does not exist: " + archiveDirectory)
 		}
 
 		def fileList = archiveDirectory.list(
 						[accept: { d, f -> f ==~ /.*xcarchive/ }] as FilenameFilter
 		).toList()
 		if (fileList.isEmpty()) {
-			throw new IllegalArgumentException("No xcarchive found")
+			throw new IllegalStateException("No xcarchive found")
 		}
 		return new File(archiveDirectory, fileList.get(0))
 

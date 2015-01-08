@@ -32,7 +32,7 @@ class KeychainCleanupTaskTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		keychainCleanupTask = project.tasks.findByName('keychain-clean')
+		keychainCleanupTask = project.tasks.findByName('keychainClean')
 		commandRunnerMock = mockControl.mock(CommandRunner)
 		keychainCleanupTask.setProperty("commandRunner", commandRunnerMock)
 

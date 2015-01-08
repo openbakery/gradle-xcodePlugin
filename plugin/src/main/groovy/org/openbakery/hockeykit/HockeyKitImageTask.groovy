@@ -19,6 +19,7 @@ package org.openbakery.hockeykit
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
 
 import javax.imageio.ImageIO
 import org.apache.commons.io.FileUtils
@@ -32,7 +33,7 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 
 	public HockeyKitImageTask() {
 		super()
-		dependsOn("hockeykit-archive")
+		dependsOn(XcodePlugin.HOCKEYKIT_ARCHIVE_TASK_NAME)
 		this.description = "Creates the image that is used on the HockeyKit Server"
 	}
 

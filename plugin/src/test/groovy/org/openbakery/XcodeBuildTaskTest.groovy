@@ -27,7 +27,7 @@ class XcodeBuildTaskTest {
 	Project project
 	XcodeBuildTask xcodeBuildTask
 
-	GMockController mockControl = new GMockController()
+	GMockController mockControl
 	def commandRunnerMock
 	List<String> expectedCommandList
 
@@ -36,6 +36,7 @@ class XcodeBuildTaskTest {
 
 	@BeforeMethod
 	def setup() {
+		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		commandRunnerMock.setOutputFile(new File('build/xcodebuild-output.txt').absoluteFile)

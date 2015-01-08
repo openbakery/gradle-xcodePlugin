@@ -39,7 +39,7 @@ class HockeyKitArchiveTaskTest {
 		project.xcodebuild.productName = 'Test'
 		project.xcodebuild.infoPlist = 'Info.plist'
 
-		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykit-archive')
+		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykitArchive')
 
 		hockeyKitArchiveTask.setProperty("commandRunner", commandRunnerMock)
 

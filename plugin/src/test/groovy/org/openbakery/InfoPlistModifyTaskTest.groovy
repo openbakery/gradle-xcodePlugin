@@ -32,7 +32,7 @@ class InfoPlistModifyTaskTest {
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		task = project.tasks.findByName('infoplist-modify')
+		task = project.tasks.findByName('infoplistModify')
 		task.setProperty("commandRunner", commandRunnerMock)
 
 

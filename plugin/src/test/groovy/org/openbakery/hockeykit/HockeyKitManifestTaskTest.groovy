@@ -38,7 +38,7 @@ class HockeyKitManifestTaskTest {
 		project.xcodebuild.productName = 'Test'
 		project.xcodebuild.infoPlist = 'Info.plist'
 
-		hockeyKitManifestTask = project.getTasks().getByPath('hockeykit-manifest')
+		hockeyKitManifestTask = project.getTasks().getByPath('hockeykitManifest')
 
 		hockeyKitManifestTask.setProperty("commandRunner", commandRunnerMock)
 
