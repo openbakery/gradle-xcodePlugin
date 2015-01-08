@@ -306,6 +306,7 @@
 					};
 					D99F95441A0EBB11007BB79F = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = Z7L2YCUH45;
 					};
 				};
 			};

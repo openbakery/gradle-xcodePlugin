@@ -91,7 +91,12 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	XcodeTestTask() {
 		super()
-		dependsOn('keychain-create', 'provisioning-install')
+		dependsOn(
+						XcodePlugin.XCODE_CONFIG_TASK_NAME,
+						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
+						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
+		)
+
 		this.description = "Runs the unit tests for the Xcode project"
 	}
 
@@ -349,7 +354,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 					errors = numberErrors(resultList);
 				}
 
-				testsuite(name: name, tests: success, errors: errors, failures: "0", skip: "0") {
+				testsuite(name: name, tests: success, errors: errors, failures: "0", skipped: "0") {
 
 					for (TestClass testClass in resultList) {
 

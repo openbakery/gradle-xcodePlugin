@@ -15,40 +15,28 @@
  */
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 
-import java.text.SimpleDateFormat
-
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
+
+	public static final String ARCHIVE_FOLDER = "archive"
 
 	XcodeBuildArchiveTask() {
 		super()
 
-		dependsOn('xcodebuild')
+		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 
 
 	def getOutputDirectory() {
-		def archiveDirectory = new File(project.getBuildDir(), "archive/")
+		def archiveDirectory = new File(project.getBuildDir(), ARCHIVE_FOLDER)
 		archiveDirectory.mkdirs()
 		return archiveDirectory
 	}
 
-	def getArchiveDirectory() {
-		def archiveDirectoryName = project.xcodebuild.bundleName
 
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
-		}
-		archiveDirectoryName += ".xcarchive"
-
-		def archiveDirectory = new File(getOutputDirectory(), archiveDirectoryName)
-		archiveDirectory.mkdirs()
-		return archiveDirectory
-	}
 
 
 	def getIcons() {
@@ -70,7 +58,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	}
 
 
-	def createInfoPlist() {
+	def createInfoPlist(def applicationsDirectory) {
 
 		StringBuilder content = new StringBuilder();
 
@@ -141,11 +129,32 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 
-		File infoPlist = new File(getArchiveDirectory(), "Info.plist")
+		File infoPlist = new File(applicationsDirectory, "Info.plist")
 		FileUtils.writeStringToFile(infoPlist, content.toString())
 
 
 	}
+
+	def createFrameworks(def applicationsDirectory) {
+
+		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
+
+
+		if (frameworksPath.exists()) {
+			File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
+			if (!swiftSupportDirectory.exists()) {
+				swiftSupportDirectory.mkdirs()
+			}
+
+			frameworksPath.listFiles().each() {
+				copy(it, swiftSupportDirectory)
+			}
+
+		}
+
+
+	}
+
 
 	@TaskAction
 	def archive() {
@@ -153,13 +162,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			logger.debug("Create xcarchive")
 
 			// create xcarchive
-			def applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
+			def applicationsDirectory = new File(project.xcodebuild.archiveDirectory, "Products/Applications")
 			applicationsDirectory.mkdirs()
 
 			copy(project.xcodebuild.applicationBundle, applicationsDirectory)
 
 
-			def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
+			def dSymDirectory = new File(project.xcodebuild.archiveDirectory, "dSYMs")
 			dSymDirectory.mkdirs()
 
 			List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
@@ -172,7 +181,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			}
 
 
-			createInfoPlist()
+			createInfoPlist(project.xcodebuild.archiveDirectory)
+
+			createFrameworks(project.xcodebuild.archiveDirectory)
 
 		} else {
 			logger.debug("Create zip archive")
@@ -184,7 +195,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			}
 			zipFileName += ".zip"
 
-			def zipFile = new File(getOutputDirectory(), zipFileName)
+			def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
 			def baseDirectory = project.xcodebuild.applicationBundle.parentFile
 
 			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle)

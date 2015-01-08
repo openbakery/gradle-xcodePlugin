@@ -19,6 +19,7 @@ package org.openbakery.hockeykit
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
 
 import javax.imageio.ImageIO
 import org.apache.commons.io.FileUtils
@@ -32,7 +33,7 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 
 	public HockeyKitImageTask() {
 		super()
-		dependsOn("hockeykit-archive")
+		dependsOn(XcodePlugin.HOCKEYKIT_ARCHIVE_TASK_NAME)
 		this.description = "Creates the image that is used on the HockeyKit Server"
 	}
 
@@ -95,7 +96,7 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 		}
 
 
-
+		File applicationBundle = getApplicationBundleDirectory();
 		File iconFile;
 		TreeMap<Integer, String> iconMap = new TreeMap<Integer, String>()
 		iconList.each {
@@ -105,12 +106,12 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 
 					String extension = FilenameUtils.getExtension(item);
 					if (StringUtils.isEmpty(extension)) {
-						iconFile = new File(project.xcodebuild.applicationBundle, item + "@2x.png");
+						iconFile = new File(applicationBundle, item + "@2x.png");
 						if (!iconFile.exists()) {
-							iconFile = new File(project.xcodebuild.applicationBundle, item + ".png");
+							iconFile = new File(applicationBundle, item + ".png");
 						}
 					} else {
-						iconFile = new File(project.xcodebuild.applicationBundle, item)
+						iconFile = new File(applicationBundle, item)
 					}
 
 

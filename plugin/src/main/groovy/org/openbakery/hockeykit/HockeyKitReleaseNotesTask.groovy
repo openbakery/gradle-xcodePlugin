@@ -16,6 +16,7 @@
 package org.openbakery.hockeykit
 
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.XcodePlugin
 import org.pegdown.PegDownProcessor
 
 /**
@@ -27,7 +28,7 @@ class HockeyKitReleaseNotesTask extends AbstractHockeyKitTask {
 
 	HockeyKitReleaseNotesTask() {
 		super()
-		dependsOn("hockeykit-archive")
+		dependsOn(XcodePlugin.HOCKEYKIT_ARCHIVE_TASK_NAME)
 		this.description = "Creates the releasenotes.html and includes the notes that can be deployed to the HockeyKit Server"
 	}
 

@@ -56,6 +56,10 @@ class CocoapodsTaskTest {
 		commandRunnerMock.runWithResult(installDirectoryCommand).returns("/tmp/gems").times(1)
 
 
+		def podSetupCommandList = ["/tmp/gems/bin/pod", "setup"];
+		commandRunnerMock.run(podSetupCommandList, anything()).times(1)
+
+
 		def podInstallCommandList = ["/tmp/gems/bin/pod", "install"];
 		commandRunnerMock.run(podInstallCommandList, anything()).times(1)
 

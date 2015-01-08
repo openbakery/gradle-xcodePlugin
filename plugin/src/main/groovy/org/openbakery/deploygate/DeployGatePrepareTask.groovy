@@ -22,7 +22,6 @@ class DeployGatePrepareTask extends AbstractDistributeTask {
 
 	DeployGatePrepareTask() {
 		super()
-		dependsOn("package")
 		this.description = "Prepare the app bundle to publish with using deploygate"
 	}
 

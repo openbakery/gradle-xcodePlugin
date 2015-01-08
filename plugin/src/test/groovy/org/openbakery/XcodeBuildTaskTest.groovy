@@ -27,7 +27,7 @@ class XcodeBuildTaskTest {
 	Project project
 	XcodeBuildTask xcodeBuildTask
 
-	GMockController mockControl = new GMockController()
+	GMockController mockControl
 	def commandRunnerMock
 	List<String> expectedCommandList
 
@@ -36,6 +36,7 @@ class XcodeBuildTaskTest {
 
 	@BeforeMethod
 	def setup() {
+		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		commandRunnerMock.setOutputFile(new File('build/xcodebuild-output.txt').absoluteFile)
@@ -362,6 +363,16 @@ class XcodeBuildTaskTest {
 
 			xcodeBuildTask.xcodebuild()
 		}
+	}
+
+	@Test
+	void dependsOn() {
+		def dependsOn  = xcodeBuildTask.getDependsOn()
+
+		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
 }

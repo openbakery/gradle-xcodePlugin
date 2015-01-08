@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.XcodeBuildArchiveTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -12,12 +13,14 @@ import org.testng.annotations.Test
  * User: rene
  * Date: 11/11/14
  */
-class DeployGatePrepareTaskTest {
+class DeployGateUploadTaskTest {
 
 	Project project
-	DeployGatePrepareTask deployGatePrepareTask;
+	DeployGateUploadTask deployGateUploadTask;
 
 	GMockController mockControl
+
+	File infoPlist
 
 	@BeforeMethod
 	void setup() {
@@ -29,9 +32,18 @@ class DeployGatePrepareTaskTest {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Test'
-		project.xcodebuild.infoPlist = 'Info.plist'
 
-		deployGatePrepareTask = project.getTasks().getByPath('deploygate-prepare')
+		deployGateUploadTask = project.getTasks().getByPath('deploygate')
+
+		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
+		FileUtils.writeStringToFile(ipaBundle, "dummy")
+
+		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
+		archiveDirectory.mkdirs()
+
+		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
+		infoPlist.parentFile.mkdirs();
+
 
 	}
 
@@ -44,11 +56,8 @@ class DeployGatePrepareTaskTest {
 	@Test
 	void testArchive() {
 
-		FileUtils.writeStringToFile(project.xcodebuild.getIpaBundle(), "dummy")
-
-
 		mockControl.play {
-			deployGatePrepareTask.archive()
+			deployGateUploadTask.prepare()
 		}
 
 		File expectedIpa = new File(project.buildDir, "deploygate/Test.ipa")
@@ -60,11 +69,9 @@ class DeployGatePrepareTaskTest {
 
 		project.xcodebuild.bundleNameSuffix = '-SUFFIX'
 
-		FileUtils.writeStringToFile(project.xcodebuild.getIpaBundle(), "dummy")
-
 
 		mockControl.play {
-			deployGatePrepareTask.archive()
+			deployGateUploadTask.prepare()
 		}
 
 		File expectedIpa = new File(project.buildDir, "deploygate/Test-SUFFIX.ipa")

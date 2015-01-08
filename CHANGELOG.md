@@ -1,3 +1,19 @@
+## 0.10.0 (TAB)
+
+Changes
+- Renamed all tasks with dashes in the name and removed the dash, e.g hockeykit-clean to hockeykitClean
+- New package task to creates IPAs
+  - supports Swift
+	- supports App Extensions
+- Codesign task was removed (is replaced by package task)
+- archive task now creates a xcarchive: Issue #1
+- distribution tasks (e.g. hockeykit) does not have a dependences to the build tasks anymore, if you want this define this in you build.gradle file
+- distribution tasks uses the xcarchive as input now
+- Added new 'appstoreValidate' that validates the created ipa with the apple appstore
+- Added new 'appstoreUpload' target that submits the ipa to apple
+- Remove Testflight. Is Replaced by the appstoreUpload target
+
+
 ## 0.9.15 (November 25, 2014)
 
 Changes

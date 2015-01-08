@@ -18,15 +18,15 @@ package org.openbakery
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.appstore.AppstorePluginExtension
+import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.testflight.TestFlightPluginExtension
-import org.openbakery.testflight.TestFlightPrepareTask
-import org.openbakery.testflight.TestFlightUploadTask
+import org.openbakery.appstore.AppstoreUploadTask
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
@@ -52,23 +52,23 @@ class XcodePluginTest {
 
 	@Test
 	void contain_task_clean() {
-		assert project.tasks.findByName('xcodebuild-clean') instanceof XcodeBuildCleanTask
+		assert project.tasks.findByName('xcodebuildClean') instanceof XcodeBuildCleanTask
 	}
 
 
 	@Test
 	void contain_task_infoplist_modify() {
-		assert project.tasks.findByName('infoplist-modify') instanceof InfoPlistModifyTask
+		assert project.tasks.findByName('infoplistModify') instanceof InfoPlistModifyTask
 	}
 
 	@Test
 	void contain_task_keychain_create() {
-		assert project.tasks.findByName('keychain-create') instanceof KeychainCreateTask
+		assert project.tasks.findByName('keychainCreate') instanceof KeychainCreateTask
 	}
 
 	@Test
 	void contain_task_provisioning_install() {
-		assert project.tasks.findByName('provisioning-install') instanceof ProvisioningInstallTask
+		assert project.tasks.findByName('provisioningInstall') instanceof ProvisioningInstallTask
 	}
 
 	@Test
@@ -76,18 +76,17 @@ class XcodePluginTest {
 		assert project.tasks.findByName('xcodebuild') instanceof XcodeBuildTask
 	}
 
-	/* TODO clarify if makes sense to exclude deploy tasks into another xcodeplugin?
-e.g. xcodeplugin-deploy-testflight and xcodeplugin-deploy-hockeykit. */
-
 	@Test
-	void contain_task_testflight() {
-		assert project.tasks.findByName('testflight') instanceof TestFlightUploadTask
+	void appstoreUploadTask() {
+		assert project.tasks.findByName('appstoreUpload') instanceof AppstoreUploadTask
 	}
 
+
 	@Test
-	void contain_task_testflight_prepare() {
-		assert project.tasks.findByName('testflight-prepare') instanceof TestFlightPrepareTask
+	void appstoreValidateTask() {
+		assert project.tasks.findByName('appstoreValidate') instanceof AppstoreValidateTask
 	}
+
 
 	@Test
 	void contain_task_hockeykit() {
@@ -96,17 +95,17 @@ e.g. xcodeplugin-deploy-testflight and xcodeplugin-deploy-hockeykit. */
 
 	@Test
 	void contain_task_hockeykit_archive() {
-		assert project.tasks.findByName('hockeykit-archive') instanceof HockeyKitArchiveTask
+		assert project.tasks.findByName('hockeykitArchive') instanceof HockeyKitArchiveTask
 	}
 
 	@Test
 	void contain_task_hockeykit_image() {
-		assert project.tasks.findByName('hockeykit-image') instanceof HockeyKitImageTask
+		assert project.tasks.findByName('hockeykitImage') instanceof HockeyKitImageTask
 	}
 
 	@Test
 	void contain_task_hockeykit_manifest() {
-		assert project.tasks.findByName('hockeykit-manifest') instanceof HockeyKitManifestTask
+		assert project.tasks.findByName('hockeykitManifest') instanceof HockeyKitManifestTask
 	}
 
 	@Test
@@ -142,8 +141,8 @@ e.g. xcodeplugin-deploy-testflight and xcodeplugin-deploy-hockeykit. */
 	}
 
 	@Test
-	void contain_extension_testflight() {
-		assert project.extensions.findByName('testflight') instanceof TestFlightPluginExtension
+	void contain_extension_appstore() {
+		assert project.extensions.findByName('appstore') instanceof AppstorePluginExtension
 	}
 
 }

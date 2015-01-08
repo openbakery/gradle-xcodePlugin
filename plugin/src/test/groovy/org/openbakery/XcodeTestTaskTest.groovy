@@ -8,6 +8,10 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
+
 import static org.hamcrest.core.IsAnything.anything
 
 /**
@@ -110,6 +114,12 @@ class XcodeTestTaskTest {
 
 		assert StringUtils.countMatches(testXML, "<error type='failure'") == 6
 
+
+		File junitXmlSchema = new File('src/test/Resource/junit-4.xsd')
+		def factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+		def schema = factory.newSchema(new StreamSource(new FileReader(junitXmlSchema)))
+		def validator = schema.newValidator()
+		validator.validate(new StreamSource(new StringReader(testXML)))
 
 	}
 

@@ -117,8 +117,30 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
+	String setValueForPlist(def plist, String key, String value) {
+		setValueForPlist(plist, "Set :" + key + " " + value)
+	}
 
 
+	String setValueForPlist(def plist, String command) {
+		File infoPlistFile;
+		if (plist instanceof File) {
+			infoPlistFile = plist
+		} else {
+			infoPlistFile = new File(project.projectDir, plist)
+		}
+		if (!infoPlistFile.exists()) {
+			throw new IllegalStateException("Info Plist does not exist: " + infoPlistFile.absolutePath);
+		}
+
+		logger.quiet("Set Info Plist Value: {}", command)
+		commandRunner.run([
+						"/usr/libexec/PlistBuddy",
+						infoPlistFile.absolutePath,
+						"-c",
+						command
+		])
+	}
 
 
 	def getOSVersion() {
@@ -149,19 +171,36 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		// we want to preserve the permissions, so use the zip command line tool
 		// maybe this can be replaced by Apache Commons Compress
 
-		logger.debug("create zip file: " + zipFile.absolutePath)
+
+		if (!zipFile.parentFile.exists()) {
+			zipFile.parentFile.mkdirs()
+		}
+
+		logger.debug("create zip file: {}: {} ", zipFile.absolutePath, zipFile.parentFile.exists())
+		logger.debug("baseDirectory: {} ", baseDirectory)
+
+		for (File file : filesToZip) {
+			logger.debug("create of: {}: {}", file, file.exists() )
+		}
+
+		def arguments = []
+		arguments << '--symlinks';
+		arguments << '--verbose';
+		arguments << '--recurse-paths';
+		arguments << zipFile.absolutePath;
+		for (File file : filesToZip) {
+			arguments << file.getName()
+		}
+
+		logger.debug("arguments: {}", arguments)
 
 		ant.exec(failonerror: 'true',
 						executable: '/usr/bin/zip',
 						dir: baseDirectory) {
-			arg(value: '--symlinks')
-			arg(value: '--verbose')
-			arg(value: '--recurse-paths')
-			arg(value: zipFile.absolutePath)
-			for (File file : filesToZip) {
-				arg(value: file.getName())
-			}
 
+			for (def argument : arguments) {
+				arg(value: argument)
+			}
 		}
 	}
 
@@ -178,12 +217,15 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
-
 	List<File> getAppBundles(File appPath) {
+		return getAppBundles(appPath, project.xcodebuild.applicationBundle.name)
+	}
+
+	List<File> getAppBundles(File appPath, String applicationBundleName) {
 
 		ArrayList<File> bundles = new ArrayList<File>();
 
-		File appBundle = new File(appPath, project.xcodebuild.applicationBundle.name)
+		File appBundle = new File(appPath, applicationBundleName)
 
 		File plugins = new File(appBundle, "PlugIns")
 		if (plugins.exists()) {

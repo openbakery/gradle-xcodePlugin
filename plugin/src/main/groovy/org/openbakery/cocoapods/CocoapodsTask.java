@@ -17,6 +17,7 @@ import java.util.ArrayList;
  */
 public class CocoapodsTask extends AbstractXcodeTask {
 
+	String podCommand = null;
 
 	public CocoapodsTask() {
 		super();
@@ -29,6 +30,26 @@ public class CocoapodsTask extends AbstractXcodeTask {
 		return podFile.exists();
  	}
 
+	void runPod(String parameter) {
+
+		if (podCommand == null) {
+
+			String podPath = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir");
+
+			podCommand = podPath + "/bin/pod";
+
+		}
+		getLogger().lifecycle("Run pod install");
+
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(CocoapodsTask.class);
+
+
+	 	ArrayList<String>commandList = new ArrayList<String>();
+		commandList.add(podCommand);
+		commandList.add(parameter);
+		commandRunner.run(commandList, new ConsoleOutputAppender(output));
+
+	}
 
 	@TaskAction
 	void install() throws IOException {
@@ -52,17 +73,9 @@ public class CocoapodsTask extends AbstractXcodeTask {
 		getLogger().lifecycle("Install/Update cocoapods");
 		commandRunner.run("gem", "install", "-N", "--user-install", "cocoapods");
 
-		String result = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir");
 
-		getLogger().lifecycle("Run pod install");
-
-		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(CocoapodsTask.class);
-
-	 	ArrayList<String>commandList = new ArrayList<String>();
-		commandList.add(result + "/bin/pod");
-		commandList.add("install");
-
-		commandRunner.run(commandList, new ConsoleOutputAppender(output));
+		runPod("setup");
+		runPod("install");
 
 	}
 }

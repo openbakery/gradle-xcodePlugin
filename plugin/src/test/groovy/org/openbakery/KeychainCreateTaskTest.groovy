@@ -32,7 +32,7 @@ class KeychainCreateTaskTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		keychainCreateTask = project.tasks.findByName('keychain-create')
+		keychainCreateTask = project.tasks.findByName('keychainCreate')
 		keychainCreateTask.setProperty("commandRunner", commandRunnerMock)
 
 		certificateFile = File.createTempFile("test", ".cert")

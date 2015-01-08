@@ -29,7 +29,6 @@ class XcodeBuildArchiveTaskTest {
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
-
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
@@ -49,6 +48,10 @@ class XcodeBuildArchiveTaskTest {
 
 		File app = new File(appDirectory, "Example")
 		FileUtils.writeStringToFile(app, "dummy")
+
+		File libswiftCore = new File(appDirectory, "Frameworks/libswiftCore.dylib")
+		FileUtils.writeStringToFile(libswiftCore, "dummy")
+
 
 		File dSymDirectory = new File(buildOutputDirectory, "Example.app.dSym")
 		dSymDirectory.mkdirs()
@@ -207,5 +210,23 @@ class XcodeBuildArchiveTaskTest {
 
 	}
 
+
+
+
+	@Test
+	void swiftFrameworkInApp() {
+
+		xcodeBuildArchiveTask.archive()
+
+		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
+
+		assert libswiftCore.exists(): "libswiftCore file does not exist: " + libswiftCore.absolutePath
+
+		File supportLibswiftCore = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/libswiftCore.dylib")
+
+		assert supportLibswiftCore.exists(): "libswiftCore file does not exist: " + supportLibswiftCore.absolutePath
+
+
+	}
 
 }

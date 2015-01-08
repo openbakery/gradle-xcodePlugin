@@ -15,6 +15,7 @@
  */
 package org.openbakery.hockeyapp
 
+import org.apache.commons.io.FilenameUtils
 import org.apache.http.Consts
 import org.apache.http.HttpEntity
 import org.apache.http.HttpHost
@@ -45,12 +46,23 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 
 	private static final ContentType contentType = ContentType.create("application/x-www-form-urlencoded", Consts.UTF_8)
 
+	File ipaFile;
+	File dSYMFile;
+
 	HockeyAppUploadTask() {
 		super()
-		dependsOn("hockeyapp-prepare")
 		this.description = "Uploades the app (.ipa, .dsym) to HockeyApp"
 	}
 
+
+	def prepare() {
+		ipaFile =  copyIpaToDirectory(project.hockeyapp.outputDirectory)
+
+		File dSymBundle = getDSymBundle();
+
+		dSYMFile = getDestinationFile(project.hockeyapp.outputDirectory, ".app.dSYM.zip")
+		createZip(dSYMFile, dSymBundle.parentFile, dSymBundle);
+	}
 
 
 	@TaskAction
@@ -60,8 +72,8 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("Cannot upload to HockeyApp because API Token is missing")
 		}
 
-		def ipaFile = getIpaFile(project.hockeyapp.outputDirectory)
-		def dSYMFile = getDsymZipFile(project.hockeyapp.outputDirectory)
+		prepare();
+
 
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 		logger.debug("dSYMFile: {}",  dSYMFile.absolutePath)

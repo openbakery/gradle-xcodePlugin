@@ -2,24 +2,29 @@ package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractDistributeTask
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 
 /**
  * Created by rene on 14.11.14.
  */
-class PackageTask extends AbstractXcodeTask {
+class PackageTask extends AbstractDistributeTask {
+
+
+	public static final String PACKAGE_PATH = "package"
 
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
-		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
+		dependsOn(XcodePlugin.ARCHIVE_TASK_NAME)
 	}
 
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
-			logger.lifecycle("not a device build, so no codesign needed");
+			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
 
@@ -29,19 +34,19 @@ class PackageTask extends AbstractXcodeTask {
 
 		File payloadPath = createPayload();
 
-		// copy the build app
-		// use cp to preserve permission
-		copy(project.xcodebuild.applicationBundle, payloadPath)
+		def applicationName = getApplicationNameFromArchive()
+		copy(getApplicationBundleDirectory(), payloadPath)
 
-		List<File> appBundles = getAppBundles(payloadPath)
+		def applicationBundleName = applicationName + ".app"
+
+		List<File> appBundles = getAppBundles(payloadPath, applicationBundleName)
+
 		for (File bundle : appBundles) {
 			embedProvisioningProfileToBundle(bundle)
 			codesign(bundle)
 		}
 
-		File swiftSupport = createSwiftSupportFolder(payloadPath)
-
-		createIpa(payloadPath, swiftSupport);
+		createIpa(payloadPath, applicationBundleName);
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -76,18 +81,37 @@ class PackageTask extends AbstractXcodeTask {
 		return null
 	}
 
-	private void createIpa(File... files) {
-		createZip(project.xcodebuild.ipaBundle, project.xcodebuild.signing.signingDestinationRoot, files)
+	private void createIpa(File payloadPath, String applicationBundleName) {
+
+		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
+		if (!ipaBundle.parentFile.exists()) {
+			ipaBundle.parentFile.mkdirs()
+		}
+
+
+		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
+		if (frameworksPath.exists()) {
+
+			File swiftSupportPath = new File(payloadPath.getParentFile(), "SwiftSupport")
+			swiftSupportPath.mkdirs()
+			frameworksPath.listFiles().each() {
+				copy(it, swiftSupportPath)
+			}
+
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
+		} else {
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
+		}
+
 	}
 
 	private void codesign(File bundle) {
 
+		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
 		def codesignCommand = [
 						"/usr/bin/codesign",
 		"--force",
 		"--preserve-metadata=identifier,entitlements",
-		//"--preserve-metadata=identifier,entitlements,resource-rules",
-		//"--resource-rules=" + bundle.absolutePath + "/ResourceRules.plist",
 		"--sign",
 		project.xcodebuild.getSigning().getIdentity(),
 		bundle.absolutePath,
@@ -121,21 +145,7 @@ class PackageTask extends AbstractXcodeTask {
 		createSigningDestination("Payload")
 	}
 
-	private File createSwiftSupportFolder(File appPath) {
-		File appBundle = new File(appPath, project.xcodebuild.applicationBundle.name)
-		File frameworks = new File(appBundle, "Frameworks")
-		File swiftSupport = createSigningDestination("SwiftSupport")
-		if (frameworks.exists()) {
-			def xcodePath = project.xcodebuild.xcodePath
-			if (null == xcodePath) {
-				xcodePath = "/Applications/Xcode.app"
-			}
-			def swiftLibsPath = "${xcodePath}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/".toString()
-			for (File swiftLib : frameworks.listFiles()) {
-				File toCopy = new File(swiftLibsPath, swiftLib.name);
-				copy(toCopy, swiftSupport)
-			}
-		}
-		return swiftSupport
-	}
+
+
+
 }

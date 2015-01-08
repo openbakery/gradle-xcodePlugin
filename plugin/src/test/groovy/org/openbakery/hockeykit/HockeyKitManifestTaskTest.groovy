@@ -6,6 +6,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodeBuildArchiveTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -37,10 +38,16 @@ class HockeyKitManifestTaskTest {
 		project.xcodebuild.productName = 'Test'
 		project.xcodebuild.infoPlist = 'Info.plist'
 
-		hockeyKitManifestTask = project.getTasks().getByPath('hockeykit-manifest')
+		hockeyKitManifestTask = project.getTasks().getByPath('hockeykitManifest')
 
 		hockeyKitManifestTask.setProperty("commandRunner", commandRunnerMock)
-		infoPlist = new File(project.buildDir, "sym/Debug-iphonesimulator/Test.app/Info.plist")
+
+
+		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
+		archiveDirectory.mkdirs()
+
+		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
+		infoPlist.parentFile.mkdirs();
 		FileUtils.writeStringToFile(infoPlist, "dummy")
 
 	}
