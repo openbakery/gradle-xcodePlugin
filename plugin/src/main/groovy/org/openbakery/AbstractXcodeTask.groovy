@@ -132,6 +132,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (!infoPlistFile.exists()) {
 			throw new IllegalStateException("Info Plist does not exist: " + infoPlistFile.absolutePath);
 		}
+
+		logger.quiet("Set Info Plist Value: {}", command)
 		commandRunner.run([
 						"/usr/libexec/PlistBuddy",
 						infoPlistFile.absolutePath,
