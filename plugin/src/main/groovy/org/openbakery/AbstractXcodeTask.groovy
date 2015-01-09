@@ -202,6 +202,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 				arg(value: argument)
 			}
 		}
+		zipFile
 	}
 
 	/**
