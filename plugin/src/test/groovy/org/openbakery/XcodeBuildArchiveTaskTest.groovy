@@ -24,6 +24,10 @@ class XcodeBuildArchiveTaskTest {
 
 	File projectDir
 	File buildOutputDirectory
+	File appDirectory
+
+	GMockController mockControl
+	CommandRunner commandRunnerMock
 
 	@BeforeMethod
 	void setup() {
@@ -40,10 +44,11 @@ class XcodeBuildArchiveTaskTest {
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 
+
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 		buildOutputDirectory.mkdirs()
 
-		File appDirectory = new File(buildOutputDirectory, "Example.app")
+		appDirectory = new File(buildOutputDirectory, "Example.app")
 		appDirectory.mkdirs()
 
 		File app = new File(appDirectory, "Example")
@@ -226,6 +231,38 @@ class XcodeBuildArchiveTaskTest {
 
 		assert supportLibswiftCore.exists(): "libswiftCore file does not exist: " + supportLibswiftCore.absolutePath
 
+
+	}
+
+
+	void mockGetPlistValues(File plist, String key, String value) {
+
+		def commandList = ["/usr/libexec/PlistBuddy", plist.absolutePath, "-c", "Print :" + key]
+		commandRunnerMock.runWithResult(commandList).returns(value);
+
+	}
+
+	@Test
+	void convertInfoPlistToBinary() {
+		mockControl = new GMockController()
+		commandRunnerMock = mockControl.mock(CommandRunner)
+		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
+
+		File infoPlist = new File(appDirectory, "Info.plist")
+		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");
+		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
+		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
+
+
+		List<String> commandList
+		commandList?.clear()
+		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlist.absolutePath]
+		commandRunnerMock.run(commandList).times(1)
+
+
+		mockControl.play {
+			xcodeBuildArchiveTask.archive()
+		}
 
 	}
 

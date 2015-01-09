@@ -309,7 +309,7 @@ class XcodePlugin implements Plugin<Project> {
 				project.appstore.username = project['appstore.username']
 			}
 			if (project.hasProperty('appstore.password')) {
-				project.appstore.username = project['appstore.password']
+				project.appstore.password = project['appstore.password']
 			}
 
 

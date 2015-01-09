@@ -17,6 +17,7 @@ package org.openbakery
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import static groovy.io.FileType.FILES
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
@@ -185,6 +186,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 			createFrameworks(project.xcodebuild.archiveDirectory)
 
+			convertInfoPlistToBinary(appBundles.last())
+
 		} else {
 			logger.debug("Create zip archive")
 
@@ -202,6 +205,17 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("create archive done")
+
+	}
+
+	def convertInfoPlistToBinary(File archiveDirectory) {
+
+		archiveDirectory.eachFileRecurse(FILES) {
+		    if(it.name.endsWith('.plist')) {
+					def commandList = ["/usr/bin/plutil", "-convert", "binary1", it.absolutePath]
+					commandRunner.run(commandList)
+		    }
+		}
 
 	}
 }
