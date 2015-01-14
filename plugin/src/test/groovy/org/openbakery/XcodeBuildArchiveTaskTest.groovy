@@ -68,8 +68,6 @@ class XcodeBuildArchiveTaskTest {
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon.png"), "dummy")
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
 
-
-
 	}
 
 	@AfterMethod
@@ -220,6 +218,12 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void swiftFrameworkInApp() {
+		project.xcodebuild.xcodePath =  new File(projectDir, "xcode");
+
+		File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+		swiftLibs.mkdirs();
+		File sourcelibSwift = new File(swiftLibs, "libswiftCore.dylib")
+		FileUtils.write(sourcelibSwift, "foobar")
 
 		xcodeBuildArchiveTask.archive()
 
@@ -227,11 +231,12 @@ class XcodeBuildArchiveTaskTest {
 
 		assert libswiftCore.exists(): "libswiftCore file does not exist: " + libswiftCore.absolutePath
 
+
 		File supportLibswiftCore = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/libswiftCore.dylib")
 
 		assert supportLibswiftCore.exists(): "libswiftCore file does not exist: " + supportLibswiftCore.absolutePath
 
-
+		assert FileUtils.readFileToString(supportLibswiftCore).equals("foobar")
 	}
 
 
@@ -253,10 +258,11 @@ class XcodeBuildArchiveTaskTest {
 		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
 		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
 
+		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
 
 		List<String> commandList
 		commandList?.clear()
-		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlist.absolutePath]
+		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
 		commandRunnerMock.run(commandList).times(1)
 
 
