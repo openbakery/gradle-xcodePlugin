@@ -285,4 +285,8 @@ class PackageTaskTest {
 		assert entries.contains("SwiftSupport/libswiftCore.dylib")
 	}
 
+
+
+
+
 }

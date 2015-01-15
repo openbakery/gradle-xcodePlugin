@@ -54,9 +54,6 @@ class XcodeBuildArchiveTaskTest {
 		File app = new File(appDirectory, "Example")
 		FileUtils.writeStringToFile(app, "dummy")
 
-		File libswiftCore = new File(appDirectory, "Frameworks/libswiftCore.dylib")
-		FileUtils.writeStringToFile(libswiftCore, "dummy")
-
 
 		File dSymDirectory = new File(buildOutputDirectory, "Example.app.dSym")
 		dSymDirectory.mkdirs()
@@ -67,6 +64,36 @@ class XcodeBuildArchiveTaskTest {
 
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon.png"), "dummy")
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
+
+	}
+
+
+	void mockSwiftLibs() {
+		def swiftLibs = [
+						"libswiftCore.dylib",
+						"libswiftCoreGraphics.dylib",
+						"libswiftCoreImage.dylib",
+						"libswiftDarwin.dylib",
+						"libswiftDispatch.dylib",
+						"libswiftFoundation.dylib",
+						"libswiftObjectiveC.dylib",
+						"libswiftSecurity.dylib",
+						"libswiftUIKit.dylib"
+		]
+		swiftLibs.each { item ->
+			File lib = new File(appDirectory, "Frameworks/" + item)
+			FileUtils.writeStringToFile(lib, "foo")
+		}
+
+		project.xcodebuild.xcodePath = new File(projectDir, "xcode");
+
+		File swiftLibsDirectory = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+		swiftLibsDirectory.mkdirs();
+
+		swiftLibs.each { item ->
+			File lib = new File(swiftLibsDirectory, item)
+			FileUtils.write(lib, "bar")
+		}
 
 	}
 
@@ -218,13 +245,7 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void swiftFrameworkInApp() {
-		project.xcodebuild.xcodePath =  new File(projectDir, "xcode");
-
-		File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
-		swiftLibs.mkdirs();
-		File sourcelibSwift = new File(swiftLibs, "libswiftCore.dylib")
-		FileUtils.write(sourcelibSwift, "foobar")
-
+		mockSwiftLibs()
 		xcodeBuildArchiveTask.archive()
 
 		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
