@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunnerException
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 
@@ -50,7 +51,11 @@ class PackageTask extends AbstractDistributeTask {
 
 
 		File infoPlist = new File(appBundles.last(), "Info.plist");
-		setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
+		try {
+			setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
+		} catch (CommandRunnerException ex) {
+			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
+		}
 
 
 		for (File bundle : appBundles) {
@@ -93,6 +98,22 @@ class PackageTask extends AbstractDistributeTask {
 		return null
 	}
 
+
+	def addSwiftSupport(File payloadPath,  String applicationBundleName) {
+
+		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
+		if (!frameworksPath.exists()) {
+			return null
+		}
+
+		File swiftLibArchive = new File(getArchiveDirectory(), "SwiftSupport")
+
+		copy(swiftLibArchive, payloadPath.getParentFile())
+		return new File(payloadPath.getParentFile(), "SwiftSupport");;
+
+	}
+
+
 	private void createIpa(File payloadPath, String applicationBundleName) {
 
 		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
@@ -100,20 +121,22 @@ class PackageTask extends AbstractDistributeTask {
 			ipaBundle.parentFile.mkdirs()
 		}
 
-
+		File swiftSupportPath = addSwiftSupport(payloadPath, applicationBundleName)
+		if (swiftSupportPath != null) {
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
+		} else {
+			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
+		}
+		/*
 		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
 		if (frameworksPath.exists()) {
-
-			File swiftSupportPath = new File(payloadPath.getParentFile(), "SwiftSupport")
-			swiftSupportPath.mkdirs()
-			frameworksPath.listFiles().each() {
-				copy(it, swiftSupportPath)
-			}
+			File swiftSupportPath = addSwiftSupport(payloadPath.getParentFile(), frameworksPath.listFiles())
 
 			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
 		} else {
 			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
 		}
+		*/
 
 	}
 

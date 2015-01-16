@@ -147,10 +147,15 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 				swiftSupportDirectory.mkdirs()
 			}
 
+			def libNames = []
+			frameworksPath.eachFile() {
+				libNames.add(it.getName())
+			}
+
 			File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
 
-			swiftLibs.eachFile(FILES) {
-				if (it.name.endsWith('.dylib')) {
+			swiftLibs.eachFile() {
+				if (libNames.contains(it.name)) {
 					copy(it, swiftSupportDirectory)
 				}
 			}

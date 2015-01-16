@@ -1,6 +1,7 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -103,8 +104,12 @@ class PackageTaskTest {
 
 		if (withSwift) {
 
+
+
 			File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib")
 			FileUtils.writeStringToFile(libSwiftCore, "dummy")
+			File libSwiftCoreArchive = new File(archiveDirectory, "SwiftSupport/libswiftCore.dylib")
+			FileUtils.writeStringToFile(libSwiftCoreArchive, "dummy")
 
 			File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
 			FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")

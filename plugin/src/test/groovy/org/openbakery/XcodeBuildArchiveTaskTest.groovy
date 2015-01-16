@@ -80,7 +80,7 @@ class XcodeBuildArchiveTaskTest {
 						"libswiftSecurity.dylib",
 						"libswiftUIKit.dylib"
 		]
-		swiftLibs.each { item ->
+		swiftLibs[0..4].each { item ->
 			File lib = new File(appDirectory, "Frameworks/" + item)
 			FileUtils.writeStringToFile(lib, "foo")
 		}
@@ -255,7 +255,7 @@ class XcodeBuildArchiveTaskTest {
 
 		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/")
 
-		assert supportLibswiftDirectory.list().length == 9
+		assert supportLibswiftDirectory.list().length == 5
 
 		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
 
