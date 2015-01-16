@@ -253,11 +253,15 @@ class XcodeBuildArchiveTaskTest {
 		assert libswiftCore.exists(): "libswiftCore file does not exist: " + libswiftCore.absolutePath
 
 
-		File supportLibswiftCore = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/libswiftCore.dylib")
+		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/")
+
+		assert supportLibswiftDirectory.list().length == 9
+
+		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
 
 		assert supportLibswiftCore.exists(): "libswiftCore file does not exist: " + supportLibswiftCore.absolutePath
 
-		assert FileUtils.readFileToString(supportLibswiftCore).equals("foobar")
+		assert FileUtils.readFileToString(supportLibswiftCore).equals("bar")
 	}
 
 

@@ -37,9 +37,21 @@ class PackageTask extends AbstractDistributeTask {
 		def applicationName = getApplicationNameFromArchive()
 		copy(getApplicationBundleDirectory(), payloadPath)
 
+
 		def applicationBundleName = applicationName + ".app"
 
+
 		List<File> appBundles = getAppBundles(payloadPath, applicationBundleName)
+
+		File resourceRules = new File(payloadPath, applicationBundleName + "/ResourceRules.plist")
+		if (resourceRules.exists()) {
+			resourceRules.delete()
+		}
+
+
+		File infoPlist = new File(appBundles.last(), "Info.plist");
+		setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
+
 
 		for (File bundle : appBundles) {
 			embedProvisioningProfileToBundle(bundle)
@@ -106,19 +118,57 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void codesign(File bundle) {
-
 		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
+
+		codeSignSwiftLibs(bundle)
+
+		logger.lifecycle("Codesign {}", bundle)
+
 		def codesignCommand = [
 						"/usr/bin/codesign",
-		"--force",
-		"--preserve-metadata=identifier,entitlements",
-		"--sign",
-		project.xcodebuild.getSigning().getIdentity(),
-		bundle.absolutePath,
-		"--keychain",
-		project.xcodebuild.signing.keychainPathInternal.absolutePath,
+						"--force",
+						"--preserve-metadata=identifier,entitlements",
+						"--sign",
+						project.xcodebuild.getSigning().getIdentity(),
+						"--verbose",
+						bundle.absolutePath,
+						"--keychain",
+						project.xcodebuild.signing.keychainPathInternal.absolutePath,
 		]
 		commandRunner.run(codesignCommand)
+
+	}
+
+	private void codeSignSwiftLibs(File bundle) {
+
+		File frameworksDirectory = new File(bundle, "Frameworks");
+
+		if (frameworksDirectory.exists()) {
+
+			FilenameFilter dylibFilter = new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".dylib");
+				}
+			};
+
+
+			for (File file in frameworksDirectory.listFiles(dylibFilter)) {
+				logger.lifecycle("Codesign {}", file)
+				def codesignCommand = [
+								"/usr/bin/codesign",
+								"--force",
+								"--sign",
+								project.xcodebuild.getSigning().getIdentity(),
+								"--verbose",
+								file.absolutePath,
+								"--keychain",
+								project.xcodebuild.signing.keychainPathInternal.absolutePath,
+				]
+				commandRunner.run(codesignCommand)
+			}
+
+		}
+
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {

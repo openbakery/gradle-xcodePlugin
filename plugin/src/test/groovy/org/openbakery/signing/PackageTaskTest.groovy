@@ -77,19 +77,23 @@ class PackageTaskTest {
 		}
 
 		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
+		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy");
+		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
 
 		if (withPlugin) {
 			File widgetsDirectory = new File(applicationBundle, widgetPath)
 			FileUtils.writeStringToFile(new File(widgetsDirectory, "ExampleTodayWidget"), "dummy");
 		}
 
-		File infoPlist = new File(payloadAppDirectory, "Info.plist");
+		File infoPlist = new File(payloadAppDirectory, "Info.plist")
 		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 		if (withPlugin) {
 			File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
 			mockValueFromPlist(infoPlistWidget.absolutePath, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
 		}
+
+		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
 
 		mockCodesignCommand("Payload/Example.app")
 		if (withPlugin) {
@@ -99,11 +103,38 @@ class PackageTaskTest {
 
 		if (withSwift) {
 
-			File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib");
-			FileUtils.writeStringToFile(libSwiftCore, "dummy");
+			File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib")
+			FileUtils.writeStringToFile(libSwiftCore, "dummy")
+
+			File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
+			FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
+
+			mockCodesignSwiftCommand("Payload/Example.app/Frameworks/libswiftCore.dylib")
+			mockCodesignSwiftCommand("Payload/Example.app/Frameworks/libswiftCoreGraphics.dylib")
 
 
 		}
+
+	}
+
+
+
+	void mockCodesignSwiftCommand(String path) {
+		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
+
+		def commandList = [
+						"/usr/bin/codesign",
+						"--force",
+						"--sign",
+						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+						"--verbose",
+						payloadApp.absolutePath,
+						"--keychain",
+						"/var/tmp/gradle.keychain"
+
+		]
+		commandRunnerMock.run(commandList)
 
 	}
 
@@ -117,6 +148,7 @@ class PackageTaskTest {
 						"--preserve-metadata=identifier,entitlements",
 						"--sign",
 						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+						"--verbose",
 						payloadApp.absolutePath,
 						"--keychain",
 						"/var/tmp/gradle.keychain"
@@ -124,6 +156,13 @@ class PackageTaskTest {
 		]
 		commandRunnerMock.run(commandList)
 
+	}
+
+
+
+	void mockPlistCommmand(String infoplist, String command) {
+		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", command]
+		commandRunnerMock.run(commandList).atLeastOnce()
 	}
 
 
@@ -142,7 +181,9 @@ class PackageTaskTest {
 	void testCreatePayload() {
 		mockExampleApp(false, false)
 
-		packageTask.packageApplication()
+		mockControl.play {
+			packageTask.packageApplication()
+		}
 		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
 		assert payloadDirectory.exists()
 	}
@@ -152,10 +193,28 @@ class PackageTaskTest {
 
 		mockExampleApp(false, false)
 
-		packageTask.packageApplication()
+		mockControl.play {
+			packageTask.packageApplication()
+		}
 		assert payloadAppDirectory.exists()
 	}
 
+	@Test
+	void removeResourceRules() {
+
+		mockExampleApp(false, false)
+
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+
+		assert !(new File(payloadAppDirectory, "ResourceRules.plist")).exists()
+
+
+
+
+	}
 
 	@Test
 	void embedProvisioningProfile() {
@@ -226,7 +285,9 @@ class PackageTaskTest {
 	void testIpa() {
 		mockExampleApp(false, false)
 
-		packageTask.packageApplication()
+		mockControl.play {
+			packageTask.packageApplication()
+		}
 
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
@@ -268,7 +329,9 @@ class PackageTaskTest {
 
 		mockExampleApp(false, true)
 
-		packageTask.packageApplication()
+		mockControl.play {
+			packageTask.packageApplication()
+		}
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
 
@@ -286,7 +349,16 @@ class PackageTaskTest {
 	}
 
 
+	@Test
+	void swiftCodesignLibs() {
 
+		mockExampleApp(false, true)
+
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+	}
 
 
 }
