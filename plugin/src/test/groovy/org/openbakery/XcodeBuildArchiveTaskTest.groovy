@@ -24,6 +24,10 @@ class XcodeBuildArchiveTaskTest {
 
 	File projectDir
 	File buildOutputDirectory
+	File appDirectory
+
+	GMockController mockControl
+	CommandRunner commandRunnerMock
 
 	@BeforeMethod
 	void setup() {
@@ -40,10 +44,11 @@ class XcodeBuildArchiveTaskTest {
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 
+
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 		buildOutputDirectory.mkdirs()
 
-		File appDirectory = new File(buildOutputDirectory, "Example.app")
+		appDirectory = new File(buildOutputDirectory, "Example.app")
 		appDirectory.mkdirs()
 
 		File app = new File(appDirectory, "Example")
@@ -62,8 +67,6 @@ class XcodeBuildArchiveTaskTest {
 
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon.png"), "dummy")
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
-
-
 
 	}
 
@@ -215,6 +218,12 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void swiftFrameworkInApp() {
+		project.xcodebuild.xcodePath =  new File(projectDir, "xcode");
+
+		File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+		swiftLibs.mkdirs();
+		File sourcelibSwift = new File(swiftLibs, "libswiftCore.dylib")
+		FileUtils.write(sourcelibSwift, "foobar")
 
 		xcodeBuildArchiveTask.archive()
 
@@ -222,10 +231,44 @@ class XcodeBuildArchiveTaskTest {
 
 		assert libswiftCore.exists(): "libswiftCore file does not exist: " + libswiftCore.absolutePath
 
+
 		File supportLibswiftCore = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/libswiftCore.dylib")
 
 		assert supportLibswiftCore.exists(): "libswiftCore file does not exist: " + supportLibswiftCore.absolutePath
 
+		assert FileUtils.readFileToString(supportLibswiftCore).equals("foobar")
+	}
+
+
+	void mockGetPlistValues(File plist, String key, String value) {
+
+		def commandList = ["/usr/libexec/PlistBuddy", plist.absolutePath, "-c", "Print :" + key]
+		commandRunnerMock.runWithResult(commandList).returns(value);
+
+	}
+
+	@Test
+	void convertInfoPlistToBinary() {
+		mockControl = new GMockController()
+		commandRunnerMock = mockControl.mock(CommandRunner)
+		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
+
+		File infoPlist = new File(appDirectory, "Info.plist")
+		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");
+		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
+		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
+
+		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
+
+		List<String> commandList
+		commandList?.clear()
+		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
+		commandRunnerMock.run(commandList).times(1)
+
+
+		mockControl.play {
+			xcodeBuildArchiveTask.archive()
+		}
 
 	}
 

@@ -17,6 +17,7 @@ package org.openbakery
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import static groovy.io.FileType.FILES
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
@@ -146,9 +147,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 				swiftSupportDirectory.mkdirs()
 			}
 
-			frameworksPath.listFiles().each() {
-				copy(it, swiftSupportDirectory)
+			File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+
+			swiftLibs.eachFile(FILES) {
+				if (it.name.endsWith('.dylib')) {
+					copy(it, swiftSupportDirectory)
+				}
 			}
+
 
 		}
 
@@ -185,6 +191,11 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 			createFrameworks(project.xcodebuild.archiveDirectory)
 
+			File applicationFolder = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name )
+			convertInfoPlistToBinary(applicationFolder)
+
+			//removeResourceRules(applicationFolder)
+
 		} else {
 			logger.debug("Create zip archive")
 
@@ -202,6 +213,34 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("create archive done")
+
+	}
+
+	def convertInfoPlistToBinary(File archiveDirectory) {
+
+		archiveDirectory.eachFileRecurse(FILES) {
+		    if(it.name.endsWith('.plist')) {
+					logger.lifecycle("convert plist to binary {}", it)
+					def commandList = ["/usr/bin/plutil", "-convert", "binary1", it.absolutePath]
+					commandRunner.run(commandList)
+		    }
+		}
+
+	}
+
+
+	def removeResourceRules(File appDirectory) {
+
+
+		File resourceRules = new File(appDirectory, "ResourceRules.plist")
+		logger.lifecycle("delete {}", resourceRules)
+		if (resourceRules.exists()) {
+			resourceRules.delete()
+		}
+
+		logger.lifecycle("remove CFBundleResourceSpecification from {}", new File(appDirectory, "Info.plist"))
+
+		setValueForPlist(new File(appDirectory, "Info.plist"), "Delete: CFBundleResourceSpecification")
 
 	}
 }

@@ -11,7 +11,6 @@ Changes
 - distribution tasks uses the xcarchive as input now
 - Added new 'appstoreValidate' that validates the created ipa with the apple appstore
 - Added new 'appstoreUpload' target that submits the ipa to apple
-- Remove Testflight. Is Replaced by the appstoreUpload target
 
 
 ## 0.9.15 (November 25, 2014)
