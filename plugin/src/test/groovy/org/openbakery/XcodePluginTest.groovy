@@ -26,8 +26,6 @@ import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.testflight.TestFlightPluginExtension
-import org.openbakery.testflight.TestFlightUploadTask
 import org.openbakery.appstore.AppstoreUploadTask
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -76,11 +74,6 @@ class XcodePluginTest {
 	@Test
 	void contain_task_xcodebuild() {
 		assert project.tasks.findByName('xcodebuild') instanceof XcodeBuildTask
-	}
-
-	@Test
-	void contain_task_testflight() {
-		assert project.tasks.findByName('testflight') instanceof TestFlightUploadTask
 	}
 
 	@Test
@@ -145,11 +138,6 @@ class XcodePluginTest {
 	@Test
 	void contain_extension_hockeykit() {
 		assert project.extensions.findByName('hockeykit') instanceof HockeyKitPluginExtension
-	}
-
-	@Test
-	void contain_extension_testflight() {
-		assert project.extensions.findByName('testflight') instanceof TestFlightPluginExtension
 	}
 
 	@Test
