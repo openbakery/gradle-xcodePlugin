@@ -1,0 +1,15 @@
+Test Suite 'All tests' started at 2015-01-20 16:46:22 +0000
+Test Suite 'FooSwiftTestTests.xctest' started at 2015-01-20 16:46:22 +0000
+Test Suite 'FooSwiftTestTests' started at 2015-01-20 16:46:22 +0000
+Test Case '-[FooSwiftTestTests.FooSwiftTestTests testExample]' started.
+Test Case '-[FooSwiftTestTests.FooSwiftTestTests testExample]' passed (0.041 seconds).
+Test Case '-[FooSwiftTestTests.FooSwiftTestTests testPerformanceExample]' started.
+<unknown>:0: Test Case '-[FooSwiftTestTests.FooSwiftTestTests testPerformanceExample]' measured [Time, seconds] average: 0.000, relative standard deviation: 219.011%, values: [0.000018, 0.000001, 0.000001, 0.000001, 0.000001, 0.000001, 0.000001, 0.000001, 0.000001, 0.000001], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
+Test Case '-[FooSwiftTestTests.FooSwiftTestTests testPerformanceExample]' passed (0.254 seconds).
+Test Suite 'FooSwiftTestTests' passed at 2015-01-20 16:46:22 +0000.
+         Executed 2 tests, with 0 failures (0 unexpected) in 0.295 (0.296) seconds
+Test Suite 'FooSwiftTestTests.xctest' passed at 2015-01-20 16:46:22 +0000.
+         Executed 2 tests, with 0 failures (0 unexpected) in 0.295 (0.296) seconds
+Test Suite 'All tests' passed at 2015-01-20 16:46:22 +0000.
+         Executed 2 tests, with 0 failures (0 unexpected) in 0.295 (0.315) seconds
+** TEST SUCCEEDED **

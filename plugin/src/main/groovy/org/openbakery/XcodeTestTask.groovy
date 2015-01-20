@@ -76,7 +76,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
 
-	def TEST_CLASS_PATTERN = ~/^-\[(\w*)\s(\w*)\]/
+	def TEST_CLASS_PATTERN = ~/^-\[([^\s]*)\s(\w*)\]/
 
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
