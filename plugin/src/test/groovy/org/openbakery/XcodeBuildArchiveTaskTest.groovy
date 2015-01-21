@@ -92,7 +92,7 @@ class XcodeBuildArchiveTaskTest {
 
 		swiftLibs.each { item ->
 			File lib = new File(swiftLibsDirectory, item)
-			FileUtils.write(lib, "bar")
+			FileUtils.writeStringToFile(lib, "bar")
 		}
 
 	}

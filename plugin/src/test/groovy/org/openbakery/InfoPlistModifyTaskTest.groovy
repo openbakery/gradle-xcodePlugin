@@ -32,6 +32,8 @@ class InfoPlistModifyTaskTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 
+		projectDir.mkdirs()
+
 
 		project.xcodebuild.infoPlist = "App-Info.plist"
 
@@ -39,7 +41,7 @@ class InfoPlistModifyTaskTest {
 		task.setProperty("commandRunner", commandRunnerMock)
 
 		infoPlist = new File(task.project.projectDir, "App-Info.plist")
-		FileUtils.write(infoPlist, "dummy")
+		FileUtils.writeStringToFile(infoPlist, "dummy")
 
 
 	}
