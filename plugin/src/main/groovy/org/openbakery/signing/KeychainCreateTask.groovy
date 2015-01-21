@@ -26,7 +26,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		super()
 		this.description = "Create a keychain that is used for signing the app"
 
-		//dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		dependsOn(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
 
 		this.setOnlyIf {
 			return !project.xcodebuild.sdk.startsWith("iphonesimulator")
