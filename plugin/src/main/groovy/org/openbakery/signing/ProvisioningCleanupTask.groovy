@@ -26,32 +26,29 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def clean() {
-		if (!project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
-			logger.lifecycle("Provisioning cleanup skipped because the destination directory does not exit")
-			return
-		}
-
-		logger.debug("deleting {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
-		project.xcodebuild.signing.mobileProvisionDestinationRoot.deleteDir()
-
 		if (project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
-			logger.error("error deleting provisioning: {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
+			logger.debug("deleting {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
+			project.xcodebuild.signing.mobileProvisionDestinationRoot.deleteDir()
+
+			if (project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
+				logger.error("error deleting provisioning: {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
+			}
+		} else {
+			logger.debug("Provisioning destination cleanup skipped because the destination directory does not exit")
 		}
 
 		File mobileprovisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/")
 
-		if (!mobileprovisionPath.exists()) {
+		if (mobileprovisionPath.exists()) {
+			// find all the broken profile links that where created by this plugin
+			String profileLinksToDelete = commandRunner.runWithResult(["find", "-L", mobileprovisionPath.absolutePath, "-name", ProvisioningInstallTask.PROVISIONING_NAME_BASE +"*", "-type", "l"]);
+			String[] profiles = profileLinksToDelete.split("\n")
+			for (String profile : profiles) {
+				logger.debug("profile to delete {}", profile)
+				new File(profile).delete();
+			}
+		} else {
 			logger.debug("nothing to cleanup")
 		}
-
-		// find all the broken profile links that where created by this plugin
-		String profileLinksToDelete = commandRunner.runWithResult(["find", "-L", mobileprovisionPath.absolutePath, "-name", ProvisioningInstallTask.PROVISIONING_NAME_BASE+"*", "-type", "l"]);
-		String[] profiles = profileLinksToDelete.split("\n")
-		for (String profile : profiles) {
-			logger.debug("profile to delete {}", profile)
-			new File(profile).delete();
-		}
-
-
 	}
 }
