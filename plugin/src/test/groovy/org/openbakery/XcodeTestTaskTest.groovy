@@ -185,4 +185,11 @@ class XcodeTestTaskTest {
 
 	}
 
+	@Test
+	void parseSuccessResultForTestsWrittenInSwiftUsingXcode_6_1() {
+		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
+
+		assert xcodeTestTask.numberSuccess() == 2
+		assert xcodeTestTask.numberErrors() == 0
+	}
 }
