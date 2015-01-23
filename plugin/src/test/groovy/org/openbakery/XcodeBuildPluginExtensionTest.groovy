@@ -1,13 +1,13 @@
 package org.openbakery
-
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.AfterMethod
-import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+
+import static java.util.Arrays.asList
 
 /**
  * Created by rene on 24.07.14.
@@ -282,8 +282,7 @@ class XcodeBuildPluginExtensionTest {
 
 
 	@Test
-	void testDeviceListXcode5_mutibleSimualtors() {
-
+	void testDeviceListXcode5_multipleSimulators() {
 		mockXcodePath();
 		mockDisplayName();
 		mockNewerEquivalentDevice(null);
@@ -296,17 +295,8 @@ class XcodeBuildPluginExtensionTest {
 			extension.createXcode5DeviceList()
 		}
 
-		assert extension.destinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " + extension.destinations.size()
-
-		Destination destination =  extension.destinations[0];
-
-		assert destination.name.equals("iPad");
-		assert destination.platform.equals("iOS Simulator")
-		assert destination.os.equals("7.0")
-
-		assert extension.destinations[1].os.equals("7.1");
-		assert extension.destinations[2].os.equals("6.0");
-
+		assert extension.destinations.size() == 3 : "expected 3 elements in the availableSimulators list but was: " + extension.destinations.size()
+		assert extension.destinations.containsAll(asList(iPadOnSimulatorWith("7.0"), iPadOnSimulatorWith("7.1"), iPadOnSimulatorWith("6.0")))
 	}
 
 
@@ -426,6 +416,10 @@ class XcodeBuildPluginExtensionTest {
 		workspace.mkdirs()
 		assert extension.workspace == "Test.xcworkspace";
 
+	}
+
+	private static Destination iPadOnSimulatorWith(String osVersion) {
+		return new Destination("iOS Simulator", "iPad", osVersion)
 	}
 
 }

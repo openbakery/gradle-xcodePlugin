@@ -13,6 +13,14 @@ class Destination {
 	String id = null
 	String os = null
 
+	Destination() {
+	}
+
+	Destination(String platform, String name, String os) {
+		this.platform = platform
+		this.name = name
+		this.os = os
+	}
 
 	@Override
 	public java.lang.String toString() {
@@ -31,7 +39,7 @@ class Destination {
 
 		Destination otherDestination = (Destination) other
 
-		if (StringUtils.equals(id, otherDestination.id)) {
+		if (id != null && StringUtils.equals(id, otherDestination.id)) {
 			return true;
 		}
 
