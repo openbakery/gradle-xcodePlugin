@@ -109,6 +109,12 @@ class XcodeBuildOutputAppenderTest {
 					"\n" +
 					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
 
+	def codesignErrorData = "\n" +
+					"Check dependencies\n" +
+					"Code Sign error: No code signing identities found: No valid signing identities (i.e. certificate and private key pair) matching the team ID “Z7L2YBTH45” were found.\n" +
+					"CodeSign error: code signing is required for product type 'App Extension' in SDK 'iOS 8.1'\n" +
+					"\n" +
+					"** BUILD FAILED **"
 
 
 	@Test
@@ -167,6 +173,21 @@ class XcodeBuildOutputAppenderTest {
 		}
 
 		String expected = "   ERROR - Linking: build/DUMMY.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp\n"
+		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
+
+	}
+
+	@Test
+	void testCodesignError() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender = new XcodeBuildOutputAppender(output)
+
+		for (String line in codesignErrorData.split("\n")) {
+			appender.append(line)
+		}
+
+		String expected = "   ERROR - CodeSign\n"
 		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
 
 	}
