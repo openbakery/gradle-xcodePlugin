@@ -32,7 +32,7 @@ class XcodeConfigTaskTest {
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 
-		File projectDir = new File("../example/Example")
+		File projectDir = new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 

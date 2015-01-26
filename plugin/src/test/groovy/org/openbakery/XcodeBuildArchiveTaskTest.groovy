@@ -59,7 +59,7 @@ class XcodeBuildArchiveTaskTest {
 		dSymDirectory.mkdirs()
 
 
-		File infoPlist = new File("../example/Example/Example/Example-Info.plist")
+		File infoPlist = new File("../example/iOS/Example/Example/Example-Info.plist")
 		FileUtils.copyFile(infoPlist, new File(appDirectory, "Info.plist"))
 
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon.png"), "dummy")
