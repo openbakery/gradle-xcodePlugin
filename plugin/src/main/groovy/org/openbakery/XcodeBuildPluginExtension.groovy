@@ -484,14 +484,11 @@ class XcodeBuildPluginExtension {
 
 
 			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
-			if (xcodeBuildFile.exists()) {
+			String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
 
-				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
-
-				if (xcodeVersion.endsWith(version)) {
-					xcodePath = xcode
-					return
-				}
+			if (xcodeVersion.endsWith(version)) {
+				xcodePath = xcode
+				return
 			}
 		}
 
