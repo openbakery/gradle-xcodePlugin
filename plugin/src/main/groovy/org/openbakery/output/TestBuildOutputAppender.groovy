@@ -39,6 +39,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 		checkTestSuite(line);
 
+
+
 		def startedTest = checkTestStart(line)
 		if (currentTestCase == null) {
 			currentTestCase = startedTest;
