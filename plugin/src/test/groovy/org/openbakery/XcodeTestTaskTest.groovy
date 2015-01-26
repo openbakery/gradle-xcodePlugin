@@ -39,7 +39,7 @@ class XcodeTestTaskTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 
-		xcodeTestTask = project.tasks.findByName('test')
+		xcodeTestTask = project.tasks.findByName('test-xcode')
 
 		xcodeTestTask.setOutputDirectory(new File("build/test"));
 

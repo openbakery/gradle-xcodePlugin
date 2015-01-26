@@ -48,7 +48,7 @@ class XcodePluginTest {
 
 	@Test
 	void contain_task_archive() {
-		assert project.tasks.findByName('archive') instanceof XcodeBuildArchiveTask
+		assert project.tasks.findByName('archive-xcode') instanceof XcodeBuildArchiveTask
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class XcodePluginTest {
 
 	@Test
 	void contain_task_xcodebuild() {
-		assert project.tasks.findByName('build') instanceof XcodeBuildTask
+		assert project.tasks.findByName('build-xcode') instanceof XcodeBuildTask
 	}
 
 	/* TODO clarify if makes sense to exclude deploy tasks into another xcodeplugin?
