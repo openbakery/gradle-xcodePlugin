@@ -56,7 +56,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return getDestinationFile(outputDirectory, extension)
 	}
 
-	void copyBundleToDirectory(File outputDirectory, File bundle) {
+	File copyBundleToDirectory(File outputDirectory, File bundle) {
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
@@ -67,15 +67,16 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		FileUtils.copyFile(getIpaBundle()	, destinationBundle)
 
 		logger.lifecycle("Created bundle archive in {}", outputDirectory)
+
+		return destinationBundle
 	}
 
-	void copyIpaToDirectory(File outputDirectory) {
-		copyBundleToDirectory(outputDirectory, getIpaBundle())
+	File copyIpaToDirectory(File outputDirectory) {
+		return copyBundleToDirectory(outputDirectory, getIpaBundle())
 	}
 
-
-	void copyDsymToDirectory(File outputDirectory) {
-		copyBundleToDirectory(outputDirectory, getDSymBundle())
+	File copyDsymToDirectory(File outputDirectory) {
+		return copyBundleToDirectory(outputDirectory, getDSymBundle())
 	}
 
 	File getIpaBundle() {
