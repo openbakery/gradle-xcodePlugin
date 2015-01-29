@@ -12,6 +12,12 @@ Changes
 - Support for the new Apple Testflight: Issue #98
 	- Added new 'appstoreValidate' that validates the created ipa with the apple appstore:
 	- Added new 'appstoreUpload' target that submits the ipa to apple
+- Add custom keychain timeout: Issue #105 (Thanks to icecrystal23)
+- Environment variables passing support: Issue #88 (Thanks to liliomk)
+
+Bugfixes:
+- Fixed parsing of Swift unit test output: Issue #124 (Thanks to tanob)
+- Provision-cleanup should always remove bad links: Issue #123 (Thanks to icecrystal23)
 
 
 ## 0.9.15 (November 25, 2014)
