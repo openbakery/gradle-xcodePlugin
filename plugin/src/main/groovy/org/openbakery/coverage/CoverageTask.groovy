@@ -25,8 +25,6 @@ class CoverageTask extends AbstractXcodeTask {
 		}
 
 
-		def ant = new groovy.util.AntBuilder()
-
 		String version = "3.2"
 		def zipFilename = version + ".zip"
 		def zip = new File(project.coverage.outputDirectory, zipFilename)
@@ -51,16 +49,14 @@ class CoverageTask extends AbstractXcodeTask {
 		}
 
 		String outputFilename = "coverage.txt"
-		String outputParameter = project.coverage.getOutputParameter()
-		if (StringUtils.isNotEmpty(outputParameter)) {
-			commandList.add(outputParameter);
+		if (StringUtils.isNotEmpty(project.coverage.outputFormat)) {
+			commandList.addAll(project.coverage.getOutputParameter())
 			outputFilename = "coverage." + project.coverage.outputFormat.toLowerCase()
-
 		}
 
-		println(commandList)
+		commandList.add("-o")
+		commandList.add(new File(project.coverage.outputDirectory, outputFilename).absolutePath)
 
-		commandRunner.setOutputFile(new File(project.coverage.outputDirectory, outputFilename));
 		commandRunner.run(commandList)
 
 

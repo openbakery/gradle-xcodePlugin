@@ -440,5 +440,19 @@ class XcodeConfigTaskTest {
 	}
 
 
+	@Test
+	void testProductNameFromConfig() {
+
+		project.xcodebuild.productName = 'MyFancyProductName'
+		xcodeConfigTask.setProperty("commandRunner", new CommandRunner())
+
+		project.xcodebuild.target = "Example"
+
+		xcodeConfigTask.parseInfoFromProjectFile()
+
+		assert project.xcodebuild.productName.equals("MyFancyProductName")
+
+	}
+
 
 }
