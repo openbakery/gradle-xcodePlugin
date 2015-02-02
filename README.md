@@ -14,7 +14,7 @@ Here a brief overview of the features:
 * [Cocoapods](Cocoapods) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](/http://gcovr.com)
-* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [TestFlight](https://www.testflightapp.com) (new Apple Testflight is not supported yet, but on the todo list)
+* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [TestFlight Old](https://www.testflightapp.com)
 * [Sparkle](http://sparkle-project.org)
 
 

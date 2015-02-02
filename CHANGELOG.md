@@ -1,4 +1,4 @@
-## 0.10.0 (TBA)
+## 0.10.0 (Februar 2, 2015)
 
 Changes
 - Renamed all tasks with dashes in the name and removed the dash, e.g hockeykit-clean to hockeykitClean
