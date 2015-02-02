@@ -70,11 +70,6 @@ task appstore(dependsOn: 'package') {
 
 gradle.taskGraph.whenReady { taskGraph ->
 
-	if (taskGraph.hasTask(archive)) {
-		println xcodebuild.productName
-		println 'setting it to Foo'
-		xcodebuild.productName = 'Foo'
-	}
 	
 
 	// ------------------------------------------------------------------------------------------

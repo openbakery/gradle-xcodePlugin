@@ -63,11 +63,11 @@ xcodebuild {
 
 ## Example
 
-You find an example project in [example/Example/](example/Example/) with a working build.gradle file.
-After you have fetched the example go to the `example/Example` directory and you build the project different targets:
+You find example projects in [example/](example/) with a working build.gradle file.
+After you have fetched the example go to the `example/iOS/Example` directory and you build the project different targets:
 
-* Build  with `gradle build`
-* Run the unit tests with `gradle test` or `gradle continuous`
+* Build with `gradle xcodebuild`
+* Run the unit tests with `gradle test` or `gradle`
 * Perform a device build and upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
 
