@@ -408,16 +408,6 @@ class XcodeBuildPluginExtension {
 		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
-	/*
-	File getIpaBundle() {
-		return new File(project.getBuildDir(), "package/" + getConfiguration().toLowerCase() + "/" + getBundleName() + ".ipa")
-	}
-
-	File getDSymBundle()  {
-		return new File(getOutputPath(), getBundleName()  + "." + this.productType + ".dSYM")
-	}
-
-*/
 
 
 	File getArchiveDirectory() {
