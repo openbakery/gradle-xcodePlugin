@@ -347,6 +347,15 @@ class XcodeBuildPluginExtension {
 	}
 
 
+	String getXcodePath() {
+
+		if (xcodePath == null) {
+			String result = commandRunner.runWithResult("xcode-select", "-p")
+			xcodePath = result - "/Contents/Developer"
+		}
+		return xcodePath;
+
+	}
 
 
 	String getXcodebuildCommand() {

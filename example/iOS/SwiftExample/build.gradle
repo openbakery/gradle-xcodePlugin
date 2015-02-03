@@ -1,0 +1,160 @@
+/*
+
+If you what to create a for the device than you have to specify for sign sign settings.
+Create a gradle.properties and add the following values: 
+
+	hockeyappApiToken = ""
+	hockeyappAppId = ""
+
+	signingIdentity = iPhone Developer: ... 
+	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
+	signingCertificatePassword = password // password to unlock to p12
+	signingMobileProvisionURI = http://../Development.mobileprovision
+	
+	signingMobileProvisionURIWidget = http://../Development.mobileprovision // provisioning profil for the widget
+	exampleTodayWidgetBundleIdentifier = com.example.MyWidget
+	
+You can also scroll down and add the values directly (line 115ff).
+
+*/
+
+
+buildscript {
+	repositories {
+		maven {
+			//url('http://openbakery.org/repository/')
+			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.+'
+	}
+}
+
+apply plugin: 'xcode'
+
+
+xcodebuild {
+	//version = "6.1"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
+
+	scheme = 'SwiftExample'
+	target = 'SwiftExample'
+
+	configuration = 'Debug'
+	sdk = 'iphonesimulator'
+
+}
+
+
+task continuous(dependsOn:'test') {
+	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
+}
+
+
+task integration(dependsOn: ['package', 'hockeyapp']) {
+	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
+}
+
+tasks.hockeyapp.mustRunAfter tasks.package
+
+task release(dependsOn: 'package') {
+	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
+}
+
+task appstore(dependsOn: 'package') {
+	description = 'Build for the AppStore'
+}
+
+
+
+
+gradle.taskGraph.whenReady { taskGraph ->
+
+	
+
+	// ------------------------------------------------------------------------------------------
+
+	if (taskGraph.hasTask(continuous) || taskGraph.hasTask(test)) {
+		println "Configure device settings for the continuous and test build"
+
+		println "CONFIGURE INTEGRATION"
+		xcodebuild {
+		
+			destination {
+				platform = 'iOS Simulator'
+				name = 'iPad 2'
+				os='8.*'
+			}
+			destination {
+				platform = 'iOS Simulator'
+				name = 'iPhone 4s'
+				os='8.*'
+			}
+		
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------
+
+	if (taskGraph.hasTask(tasks.hockeyapp)) {
+		println ("using api token: " + hockeyappApiToken)
+		hockeyapp {
+			apiToken = hockeyappApiToken
+			appID = hockeyappAppId
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------
+
+	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
+		println "Configure sign settings for the integration and release build"
+		xcodebuild {
+			sdk = 'iphoneos'
+			signing {
+				identity = signingIdentity                       // e.g. 'iPhone Developer: ...
+				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = signingCertificatePassword // e.g. 'secret'
+				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+		
+		
+	}
+
+	// ------------------------------------------------------------------------------------------
+
+	if (taskGraph.hasTask(tasks.appstore)) {
+		println "Configure build settings for release or appstore"
+		xcodebuild {
+			configuration = 'Release'
+			sdk = 'iphoneos'
+
+			signing {
+				identity = appstoreSigningIdentity                        // e.g. 'iPhone Developer: ...'
+				certificateURI = appstoreSigningCertificateURI            // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = appstoreSigningCertificatePassword  // e.g. 'secret'
+				mobileProvisionURI = appstoreSigningMobileProvisionURI    // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+		infoplist {
+			bundleIdentifier = appstoreBundleIdentifier
+			version = '1.0.0'
+		}
+	}
+	
+	// ------------------------------------------------------------------------------------------
+	
+	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
+	
+		appstore.username = appstoreUsername
+		
+		if (appstore.password == null) {
+			def password = System.console().readPassword("\nPlease enter the appstore password for <" + appstore.username + ">: ")
+			appstore.password = new String(password)
+		}
+	
+	}
+}
+
+

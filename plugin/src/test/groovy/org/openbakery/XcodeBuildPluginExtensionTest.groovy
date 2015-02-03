@@ -266,5 +266,16 @@ class XcodeBuildPluginExtensionTest {
 		}
 	}
 
+	@Test
+	void testXcodePath_notSet() {
+
+		extension.xcodePath = null
+
+		commandRunnerMock.runWithResult("xcode-select", "-p").returns("/Applications/Xcode.app/Contents/Developer").times(1)
+
+		mockControl.play {
+			assert extension.xcodePath.equals("/Applications/Xcode.app")
+		}
+	}
 
 }
