@@ -139,13 +139,8 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	void createXcode5DeviceList() {
 
-		logger.debug("xcodePath is {}", project.xcodebuild.xcodePath);
-		String xcodeDeveloperPath;
-		if (project.xcodebuild.xcodePath != null) {
-			xcodeDeveloperPath = project.xcodebuild.xcodePath + "/Contents/Developer";
-		} else {
-			xcodeDeveloperPath = commandRunner.runWithResult(["xcode-select", "-p"])
-		}
+		//logger.debug("xcodePath is {}", project.xcodebuild.xcodePath);
+		String xcodeDeveloperPath = project.xcodebuild.xcodePath + "/Contents/Developer";
 
 
 		File sdksDirectory = new File(xcodeDeveloperPath, "Platforms/iPhoneSimulator.platform/Developer/SDKs")

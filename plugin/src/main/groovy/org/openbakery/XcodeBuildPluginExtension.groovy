@@ -346,7 +346,6 @@ class XcodeBuildPluginExtension {
 		throw new IllegalStateException("No Xcode found with build number " + version);
 	}
 
-
 	String getXcodePath() {
 
 		if (xcodePath == null) {
@@ -356,6 +355,7 @@ class XcodeBuildPluginExtension {
 		return xcodePath;
 
 	}
+
 
 
 	String getXcodebuildCommand() {
