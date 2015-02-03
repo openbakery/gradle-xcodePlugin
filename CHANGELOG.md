@@ -1,3 +1,8 @@
+## 0.10.1 (Februar 3, 2015)
+
+Bugfixes:
+- Fixed archive for Swift apps: #132
+
 ## 0.10.0 (Februar 2, 2015)
 
 Changes
