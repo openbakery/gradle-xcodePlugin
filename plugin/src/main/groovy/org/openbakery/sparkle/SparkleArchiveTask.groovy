@@ -34,7 +34,7 @@ class SparkleArchiveTask extends DefaultTask {
 		)
 		this.description = "Compresses app to ZIP when building Mac Apps with Sparkle"
 	}
-	
+
 	@TaskAction
 	def archiveApp() {
 
@@ -50,9 +50,9 @@ class SparkleArchiveTask extends DefaultTask {
 		ant.zip(destfile: project.sparkle.outputDirectory.path + "/" + project.sparkle.appName +  ".zip") {
 			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/", dir: project.sparkle.appDirectory.path, excludes : "MacOS/*", includes : "*/**");
 			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/MacOS", includes : "*", filemode : 755);
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/Frameworks/Sparkle.framework/Resources/finish_installation.app/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/Frameworks/Sparkle.framework/Resources/finish_installation.app/Contents/MacOS/", includes : "*", filemode : 755);
+			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/Frameworks/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/Frameworks/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/", includes : "*", filemode : 755);
 		}
-		
+
 		ant.move(file: "releasenotes.html",  todir: project.sparkle.outputDirectory, quiet: true)
 	}
 
