@@ -37,7 +37,7 @@ class ProvisioningInstallTaskTest {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		project.xcodebuild.sdk = "iphoneos"
+		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 

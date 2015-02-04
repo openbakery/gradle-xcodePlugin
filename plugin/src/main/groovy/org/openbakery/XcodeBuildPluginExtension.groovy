@@ -146,11 +146,11 @@ class XcodeBuildPluginExtension {
 
 
 	boolean isDeviceBuild() {
-		return this.sdk.startsWith("iphoneos")
+		return this.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)
 	}
 
 	boolean isSimulatorBuild() {
-		return this.sdk.startsWith("iphonesimulator")
+		return this.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)
 	}
 
 
@@ -401,6 +401,9 @@ class XcodeBuildPluginExtension {
 	}
 
 	File getOutputPath() {
+		if (getSdk().startsWith(XcodePlugin.SDK_MACOSX)) {
+			return new File(getSymRoot(), getConfiguration())
+		}
 		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
 	}
 

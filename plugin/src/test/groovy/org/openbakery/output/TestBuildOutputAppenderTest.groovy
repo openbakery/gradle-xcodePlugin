@@ -43,14 +43,14 @@ class TestBuildOutputAppenderTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		Destination destinationPad = new Destination()
-		destinationPad.platform = "iPhoneSimulator"
+		destinationPad.platform = XcodePlugin.SDK_IPHONESIMULATOR
 		destinationPad.name = "iPad"
 		destinationPad.arch = "i386"
 		destinationPad.id = "iPad Air"
 		destinationPad.os = "iOS"
 
 		Destination destinationPhone = new Destination()
-		destinationPhone.platform = "iPhoneSimulator"
+		destinationPhone.platform = XcodePlugin.SDK_IPHONESIMULATOR
 		destinationPhone.name = "iPhone"
 		destinationPhone.arch = "i386"
 		destinationPhone.id = "iPhone 4s"

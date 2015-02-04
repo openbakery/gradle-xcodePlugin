@@ -31,7 +31,7 @@ class XcodeTestTaskTest {
 
 	Destination createDestination(String name, String id) {
 		Destination destination = new Destination()
-		destination.platform = "iPhoneSimulator"
+		destination.platform = XcodePlugin.SDK_IPHONESIMULATOR
 		destination.name = name
 		destination.arch = "i386"
 		destination.id = id

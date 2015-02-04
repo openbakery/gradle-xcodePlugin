@@ -24,7 +24,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
+		if (!project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}

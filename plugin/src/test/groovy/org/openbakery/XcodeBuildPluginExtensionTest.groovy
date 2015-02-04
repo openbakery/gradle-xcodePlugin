@@ -142,7 +142,7 @@ class XcodeBuildPluginExtensionTest {
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.sdk = "iphoneos"
+		extension.sdk = XcodePlugin.SDK_IPHONEOS
 		extension.productName = "ExampleTodayWidget"
 		extension.productType = "appex"
 		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
@@ -159,7 +159,7 @@ class XcodeBuildPluginExtensionTest {
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = new CommandRunner()
 
-		extension.sdk = "iphoneos"
+		extension.sdk = XcodePlugin.SDK_IPHONEOS
 		extension.target = "Example"
 		extension.productName = "Example"
 		extension.infoPlist = "../../example/Example/Example/Example-Info.plist"
@@ -178,7 +178,7 @@ class XcodeBuildPluginExtensionTest {
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.sdk = "iphoneos"
+		extension.sdk = XcodePlugin.SDK_IPHONEOS
 		extension.productName = "ExampleTodayWidget"
 		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
 

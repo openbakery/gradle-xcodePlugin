@@ -48,7 +48,7 @@ class PackageTaskTest {
 		//project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = "iphoneos"
+		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)

@@ -58,7 +58,7 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 		def uncrushCommandList = [
 			project.xcodebuild.xcrunCommand,
 			"-sdk",
-			"iphoneos",
+			XcodePlugin.SDK_IPHONEOS,
 			"pngcrush",
 			"-revert-iphone-optimizations"
 		]
