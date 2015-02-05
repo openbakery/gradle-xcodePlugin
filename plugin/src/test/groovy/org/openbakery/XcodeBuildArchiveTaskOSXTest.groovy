@@ -51,19 +51,14 @@ class XcodeBuildArchiveTaskOSXTest {
 		appDirectory.mkdirs()
 
 		File infoPlist = new File("../example/OSX/ExampleOSX/ExampleOSX/Info.plist")
-		FileUtils.copyFile(infoPlist, new File(appDirectory, "Contents/Info.plist"))
-
-		//File app = new File(appDirectory, "Example")
-		//FileUtils.writeStringToFile(app, "dummy")
-
-
-
+		FileUtils.copyFile(infoPlist, new File(appDirectory, "" + "Contents/Info.plist"))
 	}
 
 
 	@AfterTest
 	def cleanAfterTest() {
-		projectDir.delete();
+
+        FileUtils.deleteDirectory(projectDir)
 	}
 
 
@@ -72,7 +67,7 @@ class XcodeBuildArchiveTaskOSXTest {
 
 		xcodeBuildArchiveTask.archive()
 
-		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Example")
+		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app")
 
 		assert appFile.exists(): "App file does not exist: " + appFile.absolutePath
 
