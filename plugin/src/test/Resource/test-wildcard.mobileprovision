@@ -38,7 +38,7 @@
 	<key>ExpirationDate</key>
 	<date>2079-07-04T08:57:51Z</date>
 	<key>Name</key>
-	<strPing>ad hoc</string>
+	<string>ad hoc</string>
 	<key>ProvisionedDevices</key>
 	<array>
 		<string>c93ef6ae326d4c6ab053bc5f07a442dcfasdffdd</string>
