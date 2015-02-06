@@ -198,7 +198,8 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
-		File infoPlist = getInfoPlistFile()
+        File infoPlist = new File(bundle, "Info.plist");
+
 		String bundleIdentifier = getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
 
 		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);

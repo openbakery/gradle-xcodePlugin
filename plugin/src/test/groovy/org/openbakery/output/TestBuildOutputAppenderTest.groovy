@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Destination
+import org.openbakery.XcodePlugin
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
@@ -92,7 +93,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad/iPhoneSimulator/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
+		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 
@@ -107,7 +108,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in errorTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad/iPhoneSimulator/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
+		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
 
@@ -154,10 +155,10 @@ class TestBuildOutputAppenderTest {
 		for (String line : simctlOutput.split("\n")) {
 			appender.append(line);
 		}
-		assert output.toString().contains("Perform unit tests for: iPad/iPhoneSimulator/iOS")
-		assert output.toString().contains("Tests finished: iPad/iPhoneSimulator/iOS")
-		assert output.toString().contains("Perform unit tests for: iPhone/iPhoneSimulator/iOS")
-		assert output.toString().contains("Tests finished: iPhone/iPhoneSimulator/iOS")
+		assert output.toString().contains("Perform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS")
+		assert output.toString().contains("Tests finished: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS")
+		assert output.toString().contains("Perform unit tests for: iPhone/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS")
+		assert output.toString().contains("Tests finished: iPhone/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS")
 	}
 
 }
