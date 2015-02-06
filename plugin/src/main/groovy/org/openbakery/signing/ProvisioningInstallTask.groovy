@@ -70,7 +70,18 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 			ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(mobileProvisionFile)
 
 			String uuid = provisioningProfileIdReader.getUUID()
-			String mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
+
+
+
+			String mobileProvisionName
+
+            if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+                mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
+            } else {
+                mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".provisionprofile"
+            }
+
+
 
 			File downloadedFile = new File(mobileProvisionFile)
 			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)

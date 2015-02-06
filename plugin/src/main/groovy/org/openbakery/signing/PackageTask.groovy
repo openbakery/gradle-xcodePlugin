@@ -16,6 +16,8 @@ class PackageTask extends AbstractDistributeTask {
 
 	public static final String PACKAGE_PATH = "package"
 
+    private List<File> appBundles
+
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
@@ -24,7 +26,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (!project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
@@ -42,7 +44,7 @@ class PackageTask extends AbstractDistributeTask {
 		def applicationBundleName = applicationName + ".app"
 
 
-		List<File> appBundles = getAppBundles(payloadPath, applicationBundleName)
+		appBundles = getAppBundles(payloadPath, applicationBundleName)
 
 		File resourceRules = new File(payloadPath, applicationBundleName + "/ResourceRules.plist")
 		if (resourceRules.exists()) {
@@ -50,8 +52,9 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 
-		File infoPlist = new File(appBundles.last(), "Info.plist");
-		try {
+        File infoPlist = getInfoPlistFile()
+
+        try {
 			setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
 		} catch (CommandRunnerException ex) {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
@@ -195,7 +198,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
-		File infoPlist = new File(bundle, "Info.plist");
+		File infoPlist = getInfoPlistFile()
 		String bundleIdentifier = getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
 
 		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
@@ -215,10 +218,20 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private File createPayload() throws IOException {
-		createSigningDestination("Payload")
+
+        if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		    createSigningDestination("Payload")
+        } else {
+            createSigningDestination("")
+        }
 	}
 
+    private File getInfoPlistFile() {
 
-
-
+        if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+            return new File(appBundles.last(), "Info.plist");
+        } else {
+            return new File(appBundles.last(), "/Contents/Info.plist");
+        }
+    }
 }

@@ -140,7 +140,6 @@ class XcodePlugin implements Plugin<Project> {
 		configureCoverage(project)
 		configureCocoapods(project)
 		configureInfo(project)
-
 		configureProperties(project)
 	}
 
