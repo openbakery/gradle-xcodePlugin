@@ -178,7 +178,7 @@ class XcodeConfigTaskTest {
 
 
 	@Test
-	void testDeviceListXcode5_mutibleSimualtors() {
+	void testDeviceListXcode5_multipleSimulators() {
 		mockConvertProjectFile()
 		mockXcode5Version()
 		mockXcodePath();

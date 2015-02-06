@@ -154,7 +154,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		def versions = [];
 		for (String sdk in sdksDirectory.list()) {
 			String basename = FilenameUtils.getBaseName(sdk)
-			versions << StringUtils.removeStart(basename, XcodePlugin.SDK_IPHONESIMULATOR)
+			versions << StringUtils.removeStartIgnoreCase(basename, XcodePlugin.SDK_IPHONESIMULATOR)
 		}
 
 
