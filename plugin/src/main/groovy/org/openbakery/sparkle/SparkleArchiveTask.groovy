@@ -29,7 +29,7 @@ class SparkleArchiveTask extends DefaultTask {
 	SparkleArchiveTask() {
 		super()
 		dependsOn(
-						XcodePlugin.XCODE_BUILD_TASK_NAME,
+						XcodePlugin.PACKAGE_TASK_NAME,
 						XcodePlugin.SPARKLE_NOTES_TASK_NAME
 		)
 		this.description = "Compresses app to ZIP when building Mac Apps with Sparkle"
