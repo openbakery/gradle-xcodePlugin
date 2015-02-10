@@ -62,7 +62,13 @@ class PackageTask extends AbstractDistributeTask {
 
 
 		for (File bundle : appBundles) {
-			embedProvisioningProfileToBundle(bundle)
+
+			if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+				embedProvisioningProfileToBundle(bundle)
+			}
+
+			logger.lifecycle("codesign path: {}", bundle);
+
 			codesign(bundle)
 		}
 
@@ -165,6 +171,29 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
+//	private void codesignFramwork(File framework) {
+//
+//
+//		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
+//
+//		codeSignSwiftLibs(framework)
+//
+//		logger.lifecycle("Codesign {}", framework)
+//
+//		def codesignCommand = [
+//				"/usr/bin/codesign",
+//				"--force",
+//				//"--preserve-metadata=identifier,entitlements",
+//				"--sign",
+//				project.xcodebuild.getSigning().getIdentity(),
+//				"--verbose",
+//				framework.absolutePath,
+//				"--keychain",
+//				project.xcodebuild.signing.keychainPathInternal.absolutePath,
+//		]
+//		commandRunner.run(codesignCommand)
+//	}
+
 	private void codeSignSwiftLibs(File bundle) {
 
 		File frameworksDirectory = new File(bundle, "Frameworks");
@@ -198,7 +227,13 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
-        File infoPlist = new File(bundle, "Info.plist");
+        File infoPlist
+
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			infoPlist = new File(bundle, "Info.plist");
+		} else {
+			infoPlist = new File(bundle, "Contents/Info.plist")
+		}
 
 		String bundleIdentifier = getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
 
@@ -221,10 +256,16 @@ class PackageTask extends AbstractDistributeTask {
 	private File createPayload() throws IOException {
 
         if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
-		    createSigningDestination("Payload")
+		    return createSigningDestination("Payload")
         } else {
-            createSigningDestination("")
-        }
+
+			// same folder as signing
+			File destination = new File(project.xcodebuild.signing.signingDestinationRoot, "");
+			if (!destination.exists()) {
+				destination.mkdirs();
+			}
+			return destination
+		}
 	}
 
     private File getInfoPlistFile() {

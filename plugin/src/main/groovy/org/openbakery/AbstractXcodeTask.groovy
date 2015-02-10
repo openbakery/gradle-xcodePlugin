@@ -227,12 +227,29 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File appBundle = new File(appPath, applicationBundleName)
 
-		File plugins = new File(appBundle, "PlugIns")
+
+		File plugins
+
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			plugins = new File(appBundle, "PlugIns")
+		} else {
+			plugins = new File(appBundle, "Contents/Frameworks")
+		}
+
+
 		if (plugins.exists()) {
 
 			for (File pluginBundle : plugins.listFiles()) {
+
 				if (pluginBundle.isDirectory()) {
-					bundles.add(pluginBundle)
+
+					if (pluginBundle.name.endsWith(".framework")) {
+
+						// Framworks have to be signed with this path
+						bundles.add(new File(pluginBundle, "/Versions/Current"))
+					} else {
+						bundles.add(pluginBundle)
+					}
 				}
 			}
 		}
