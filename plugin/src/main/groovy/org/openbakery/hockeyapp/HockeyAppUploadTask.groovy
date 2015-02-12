@@ -84,7 +84,15 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		logger.debug("status: {} ", project.hockeyapp.status)
 		logger.debug("notify: {} ", project.hockeyapp.notify)
 		logger.debug("notes_type: {} ", project.hockeyapp.notesType)
-
+		logger.debug("mandatory: {} ", project.hockeyapp.mandatory)
+		logger.debug("teams: {} ", project.hockeyapp.teams)
+		logger.debug("tags: {} ", project.hockeyapp.tags)
+		logger.debug("users: {} ", project.hockeyapp.users)
+		logger.debug("release_type: {} ", project.hockeyapp.releaseType)
+		logger.debug("private: {} ", project.hockeyapp.privatePage)
+		logger.debug("commit_sha: {} ", project.hockeyapp.commitSha)
+		logger.debug("build_server_url: {} ", project.hockeyapp.buildServerUrl)
+		logger.debug("repository_url: {} ", project.hockeyapp.repositoryUrl)
 
 		uploadIPAandDSYM(ipaFile, dSYMFile)
 		uploadProvisioningProfile()
@@ -98,16 +106,41 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		try {
 			HttpPost httpPost = new HttpPost(HOCKEY_APP_API_URL + project.hockeyapp.appID + "/app_versions/upload");
 
-			HttpEntity requestEntity = MultipartEntityBuilder.create()
+			MultipartEntityBuilder requestEntityBuilder = MultipartEntityBuilder.create()
 							.addPart("status", new StringBody(project.hockeyapp.status, contentType))
 							.addPart("notify",  new StringBody(project.hockeyapp.notify, contentType))
 							.addPart("notes",  new StringBody(project.hockeyapp.notes, contentType))
 							.addPart("notes_type",  new StringBody(project.hockeyapp.notesType, contentType))
-							.addBinaryBody("ipa", ipaFile)
-							.addBinaryBody("dsym", dSYMFile)
-							.build()
+							.addPart("mandatory",  new StringBody(project.hockeyapp.mandatory, contentType))
+							.addPart("private",  new StringBody(project.hockeyapp.privatePage, contentType))
 
-			httpPost.setEntity(requestEntity);
+			if (project.hockeyapp.teams != null) {
+				requestEntityBuilder.addPart("teams", new StringBody(project.hockeyapp.teams.join(","), contentType))
+			}
+			if (project.hockeyapp.tags != null) {
+				requestEntityBuilder.addPart("tags", new StringBody(project.hockeyapp.tags.join(","), contentType))
+			}
+			if (project.hockeyapp.users != null) {
+				requestEntityBuilder.addPart("users", new StringBody(project.hockeyapp.users.join(","), contentType))
+			}
+			if (project.hockeyapp.releaseType != null) {			
+				requestEntityBuilder.addPart("release_type", new StringBody(project.hockeyapp.releaseType, contentType))
+			}
+			if (project.hockeyapp.commitSha != null) {
+				requestEntityBuilder.addPart("commit_sha", new StringBody(project.hockeyapp.commitSha, contentType))
+			}
+			if (project.hockeyapp.buildServerUrl != null) {
+				requestEntityBuilder.addPart("build_server_url", new StringBody(project.hockeyapp.buildServerUrl, contentType))
+			}
+			if (project.hockeyapp.repositoryUrl != null) {
+				requestEntityBuilder.addPart("repository_url", new StringBody(project.hockeyapp.repositoryUrl, contentType))
+			}
+
+			HttpEntity requestEntity = requestEntityBuilder.addBinaryBody("ipa", ipaFile)
+						    .addBinaryBody("dsym", dSYMFile)
+						    .build()
+
+			httpPost.setEntity(requestEntity)
 
 			executePost(httpClient, httpPost)
 
