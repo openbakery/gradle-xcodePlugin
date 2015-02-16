@@ -40,6 +40,14 @@ class TestFlightUploadTask extends AbstractDistributeTask {
 		this.description = "Distributes the build to TestFlight"
 	}
 
+	def prepare() {
+		ipaFile =  copyIpaToDirectory(project.testflight.outputDirectory)
+
+		File dSymBundle = getDSymBundle();
+
+		dSYMFile = getDestinationFile(project.testflight.outputDirectory, ".app.dSYM.zip")
+		createZip(dSYMFile, dSymBundle.parentFile, dSymBundle);
+	}
 
 
 	@TaskAction
