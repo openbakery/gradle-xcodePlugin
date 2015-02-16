@@ -52,8 +52,5 @@ class SparkleArchiveTask extends DefaultTask {
 			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/MacOS", includes : "*", filemode : 755);
 			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/Frameworks/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/Frameworks/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/", includes : "*", filemode : 755);
 		}
-
-		ant.move(file: "releasenotes.html",  todir: project.sparkle.outputDirectory, quiet: true)
 	}
-
 }

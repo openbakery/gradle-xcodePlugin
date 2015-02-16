@@ -15,10 +15,12 @@
  */
 package org.openbakery.sparkle
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 	
 import org.pegdown.PegDownProcessor
+
 
 /**
  *
@@ -34,25 +36,24 @@ class SparkleReleaseNotesTask extends DefaultTask {
 	
 	@TaskAction
 	def createReleaseNotes() {
-		
-		def notes = "$System.env.CHANGELOG"
-		if (notes) {
-		
-			def matcher = notes =~ /^\s*"(.*)"$/
 
-			if (notes ==~ /^<\w+>.*<\/\w+>$/) {
-				notes = notes;
-			} else {
-				// convert markdown
-				PegDownProcessor pegDownProcessor = new PegDownProcessor();
-				notes = pegDownProcessor.markdownToHtml(notes)
+		File changeLogFile = new File("Changelog.md")
+
+		if (changeLogFile.exists()) {
+
+			if (!project.sparkle.outputDirectory.exists()) {
+				project.sparkle.outputDirectory.mkdirs();
 			}
-			String html = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Release Notes</title></head><body>" + notes + "</body></html>";
-			new File("releasenotes.html").write(html, "UTF-8");
+
+			String changelogString = FileUtils.readFileToString(changeLogFile)
+
+			PegDownProcessor pegDownProcessor = new PegDownProcessor();
+			String changelogHTML = pegDownProcessor.markdownToHtml(changelogString)
+
+			new File(project.sparkle.outputDirectory.path + "/releasenotes.html").write(changelogHTML, "UTF-8");
 
 		} else {
-			println "No notes found"
+			println "No changelog found!"
 		}
 	}
-	
 }
