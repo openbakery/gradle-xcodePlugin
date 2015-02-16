@@ -284,6 +284,27 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('hockeyapp.notesType')) {
 				project.hockeyapp.notesType = project['hockeyapp.notesType']
 			}
+			if (project.hasProperty('hockeyapp.teams')) {
+				project.hockeyapp.teams = project['hockeyapp.teams']
+			}
+			if (project.hasProperty('hockeyapp.tags')) {
+				project.hockeyapp.tags = project['hockeyapp.tags']
+			}
+			if (project.hasProperty('hockeyapp.releaseType')) {
+				project.hockeyapp.releaseType = project['hockeyapp.releaseType']
+			}
+			if (project.hasProperty('hockeyapp.privatePage')) {
+				project.hockeyapp.privatePage = project['hockeyapp.privatePage']
+			}
+			if (project.hasProperty('hockeyapp.commitSha')) {
+				project.hockeyapp.commitSha = project['hockeyapp.commitSha']
+			}
+			if (project.hasProperty('hockeyapp.buildServerUrl')) {
+				project.hockeyapp.buildServerUrl = project['hockeyapp.buildServerUrl']
+			}
+			if (project.hasProperty('hockeyapp.repositoryUrl')) {
+				project.hockeyapp.repositoryUrl = project['hockeyapp.repositoryUrl']
+			}		
 
 
 			if (project.hasProperty('testflight.outputDirectory')) {

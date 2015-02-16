@@ -279,6 +279,45 @@ Note: see also https://testflightapp.com/api/doc/
 
   default value: 1
 
+* _teams_ - Optional, corresponds to `teams` (http://support.hockeyapp.net/kb/api/api-apps)
+
+  default value: empty  
+  example value: `[1231, 123]`
+
+* _users_ - Optional, corresponds to `users` (http://support.hockeyapp.net/kb/api/api-apps)
+
+  default value: empty  
+  example value: `[1231, 123]`
+
+* _tags_ - Optional, corresponds to `tags` (http://support.hockeyapp.net/kb/api/api-apps)
+
+  default value: empty  
+  example value: `['earlytesters', 'mytag2']`
+
+* _mandatory_ - Optional, set 1 to make version as mandatory (http://support.hockeyapp.net/kb/api/api-apps)
+
+  default value: 0
+
+* _releaseType_ - Optional, set the release type as in `release_type` (http://support.hockeyapp.net/kb/api/api-apps)
+
+  default value: 1
+
+* _privatePage_ - Optional, set true for a private download page as in `private` (http://support.hockeyapp.net/kb/api/api-apps)
+  
+  default value: false
+
+* _commitSha_ - Optional, corresponds to `commit_sha` (http://support.hockeyapp.net/kb/api/api-apps)
+
+  default value: empty
+
+* _buildServerUrl_ - Optional, corresponds to `build_server_url`
+
+  default value: empty
+
+* _repositoryUrl_ - Optional, corresponds to `repository_url`
+
+  default value: empty
+
 
 ## DeployGate Parameters
 
