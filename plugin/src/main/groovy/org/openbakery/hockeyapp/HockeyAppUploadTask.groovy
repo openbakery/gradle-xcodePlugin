@@ -95,8 +95,11 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		logger.debug("repository_url: {} ", project.hockeyapp.repositoryUrl)
 
 		uploadIPAandDSYM(ipaFile, dSYMFile)
-		uploadProvisioningProfile()
-
+		
+		// Uploading the provisioning profiles only works for non-App Store builds
+		if (project.hockeyapp.releaseType != '1') {
+			uploadProvisioningProfile()
+		}
 	}
 
 	def void uploadIPAandDSYM(File ipaFile, File dSYMFile) {
