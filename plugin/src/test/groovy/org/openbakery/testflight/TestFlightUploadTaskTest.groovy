@@ -40,6 +40,7 @@ class TestFlightUploadTaskTest {
 
 		testFlightUploadTask.setProperty("commandRunner", commandRunnerMock)
 
+		assert testFlightUploadTask instanceof TestFlightUploadTask
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")

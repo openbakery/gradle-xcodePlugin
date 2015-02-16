@@ -34,6 +34,9 @@ import org.apache.http.conn.params.ConnRoutePNames
 
 class TestFlightUploadTask extends AbstractDistributeTask {
 
+	File ipaFile;
+	File dSYMFile;
+
 
 	TestFlightUploadTask() {
 		super()
