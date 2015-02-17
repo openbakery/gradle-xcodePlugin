@@ -28,6 +28,7 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 
 import java.util.regex.Pattern
+import java.nio.charset.Charset
 import org.apache.http.util.EntityUtils
 import org.apache.http.HttpHost
 import org.apache.http.conn.params.ConnRoutePNames
@@ -86,7 +87,7 @@ class DeployGateUploadTask extends AbstractDistributeTask {
 		logger.debug("file {}", ipaFile)
 
 		entity.addPart("token", new StringBody(project.deploygate.apiToken))
-		entity.addPart("message", new StringBody(project.deploygate.message))
+		entity.addPart("message", new StringBody(project.deploygate.message, Charset.forName("UTF-8")))
 		entity.addPart("file", new FileBody(ipaFile))
 
 		httpPost.setEntity(entity);
