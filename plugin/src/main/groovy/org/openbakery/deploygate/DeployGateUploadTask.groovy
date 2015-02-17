@@ -58,6 +58,7 @@ class DeployGateUploadTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("Cannot upload to DeployGate because User Name is missing")
 		}
 
+		prepare()
 
 		HttpClient httpClient = new DefaultHttpClient()
 
