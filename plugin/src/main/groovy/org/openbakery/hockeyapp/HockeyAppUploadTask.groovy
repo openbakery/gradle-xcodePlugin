@@ -75,6 +75,15 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		prepare();
 
 
+
+		uploadIPAandDSYM(ipaFile, dSYMFile)
+		uploadProvisioningProfile()
+
+	}
+
+	def void uploadIPAandDSYM(File ipaFile, File dSYMFile) {
+
+
 		logger.debug("ipaFile: {}", ipaFile.absolutePath)
 		logger.debug("dSYMFile: {}",  dSYMFile.absolutePath)
 		logger.debug("api_token: {}", project.hockeyapp.apiToken)
@@ -93,13 +102,6 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		logger.debug("commit_sha: {} ", project.hockeyapp.commitSha)
 		logger.debug("build_server_url: {} ", project.hockeyapp.buildServerUrl)
 		logger.debug("repository_url: {} ", project.hockeyapp.repositoryUrl)
-
-		uploadIPAandDSYM(ipaFile, dSYMFile)
-		uploadProvisioningProfile()
-
-	}
-
-	def void uploadIPAandDSYM(File ipaFile, File dSYMFile) {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 

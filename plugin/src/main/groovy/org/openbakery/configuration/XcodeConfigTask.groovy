@@ -11,6 +11,7 @@ import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
 import org.openbakery.Devices
+import org.openbakery.XcodeProjectFile
 import org.testng.annotations.AfterMethod
 
 /**
@@ -31,7 +32,13 @@ class XcodeConfigTask extends AbstractXcodeTask {
 	@TaskAction
 	void configuration() {
 
-		parseInfoFromProjectFile()
+
+		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
+		def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
+		def projectFile = new File(xcodeProjectDir, "project.pbxproj")
+
+		new XcodeProjectFile(project, projectFile)
+
 
 		if (isOSX) {
 			return;
@@ -52,89 +59,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	}
 
-
-	void parseInfoFromProjectFile() {
-		logger.debug("using target: {}", project.xcodebuild.target)
-		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
-		def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
-		def projectFile = new File(xcodeProjectDir, "project.pbxproj")
-
-		def buildRoot = project.buildDir
-		if (!buildRoot.exists()) {
-			buildRoot.mkdirs()
-		}
-
-		File projectPlistFile = new File(buildRoot, "project.plist")
-
-		if (projectPlistFile.exists()) {
-			projectPlistFile.delete()
-		}
-
-		// convert ascii plist to xml so that commons configuration can parse it!
-		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlistFile.absolutePath])
-
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(projectPlistFile)
-		def rootObjectKey = config.getString("rootObject")
-		logger.debug("rootObjectKey {}", rootObjectKey);
-
-		List<String> list = config.getList("objects." + rootObjectKey + ".targets")
-
-		for (target in list) {
-
-			def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
-			logger.debug("buildConfigurationList={}", buildConfigurationList)
-			def targetName = config.getString("objects." + target + ".name")
-			logger.debug("targetName: {}", targetName)
-
-
-			if (targetName.equals(project.xcodebuild.target)) {
-
-				if (StringUtils.isEmpty(project.xcodebuild.productName)) {
-					project.xcodebuild.productName = config.getString("objects." + target + ".productName")
-				}
-				String type = config.getString("objects." + target + ".productType")
-				if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
-					project.xcodebuild.productType = "appex"
-				}
-
-				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
-				for (buildConfigurationsItem in buildConfigurations) {
-					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
-
-					logger.debug("buildName: {} equals {}", buildName, project.xcodebuild.configuration)
-
-					if (buildName.equals(project.xcodebuild.configuration)) {
-						//String productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
-						String sdkRoot = config.getString("objects." + buildConfigurationsItem + ".buildSettings.SDKROOT")
-						if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
-							// is os x build
-							this.isOSX = true
-						} else {
-							String devicesString = config.getString("objects." + buildConfigurationsItem + ".buildSettings.TARGETED_DEVICE_FAMILY")
-
-							if (devicesString.equals("1")) {
-								project.xcodebuild.devices = Devices.PHONE;
-							} else if (devicesString.equals("2")) {
-								project.xcodebuild.devices = Devices.PAD;
-							}
-
-						}
-
-						if (project.xcodebuild.infoPlist == null) {
-							project.xcodebuild.infoPlist = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
-							logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
-						}
-
-						logger.info("devices: {}", project.xcodebuild.devices)
-						logger.info("isOSX: {}", this.isOSX)
-						return;
-					}
-				}
-			}
-
-		}
-		logger.lifecycle("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
-	}
 
 
 	void createXcode5DeviceList() {

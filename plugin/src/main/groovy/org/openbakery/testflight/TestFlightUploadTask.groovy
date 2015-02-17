@@ -26,6 +26,7 @@ import org.apache.http.HttpResponse
 import org.apache.http.HttpEntity
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
+import org.openbakery.http.HttpUpload
 
 import java.util.regex.Pattern
 import org.apache.http.util.EntityUtils
@@ -36,11 +37,12 @@ class TestFlightUploadTask extends AbstractDistributeTask {
 
 	File ipaFile;
 	File dSYMFile;
-
+	HttpUpload httpUpload = new HttpUpload("http://testflightapp.com/api/builds.json")
 
 	TestFlightUploadTask() {
 		super()
 		this.description = "Distributes the build to TestFlight"
+
 	}
 
 	def prepare() {
@@ -66,6 +68,29 @@ class TestFlightUploadTask extends AbstractDistributeTask {
 
 		prepare()
 
+		def parameters = new HashMap<String, Object>()
+
+		parameters.put("api_token",project.testflight.apiToken);
+		parameters.put("team_token",project.testflight.teamToken);
+		parameters.put("notes",project.testflight.notes);
+		parameters.put("file",ipaFile);
+		parameters.put("dsym",dSYMFile);
+
+		if (project.testflight.distributionLists != null){
+			parameters.put("distribution_lists", project.testflight.distributionLists)
+		}
+		if (project.testflight.notifyDistributionList) {
+			parameters.put("notify", "true")
+		}
+
+		if (project.testflight.replaceBuild) {
+			parameters.put("replace", "true");
+		}
+
+
+		httpUpload.postRequest(parameters)
+
+/*
 		HttpClient httpClient = new DefaultHttpClient()
 
 		// for testing only
@@ -74,16 +99,15 @@ class TestFlightUploadTask extends AbstractDistributeTask {
 
 		HttpPost httpPost = new HttpPost("http://testflightapp.com/api/builds.json")
 
-		/*
-		api_token - Required (Get your API token)
-		team_token - Required, token for the team being uploaded to. (Get your team token)
-		file - Required, file data for the build
-		notes - Required, release notes for the build
-		dsym - Optional, the zipped .dSYM corresponding to the build
-		distribution_lists - Optional, comma separated distribution list names which will receive access to the build
-		notify - Optional, notify permitted teammates to install the build (defaults to False)
-		replace - Optional, replace binary for an existing build if one is found with the same name/bundle version (defaults to False)
-*/
+
+		//api_token - Required (Get your API token)
+		//team_token - Required, token for the team being uploaded to. (Get your team token)
+		//file - Required, file data for the build
+		//notes - Required, release notes for the build
+		//dsym - Optional, the zipped .dSYM corresponding to the build
+		//distribution_lists - Optional, comma separated distribution list names which will receive access to the build
+		//notify - Optional, notify permitted teammates to install the build (defaults to False)
+		//replace - Optional, replace binary for an existing build if one is found with the same name/bundle version (defaults to False)
 
 		def ipaFile = copyIpaToDirectory(project.testflight.outputDirectory)
 		def dSYMFile = copyDsymToDirectory(project.testflight.outputDirectory)
@@ -130,6 +154,7 @@ class TestFlightUploadTask extends AbstractDistributeTask {
 			throw new IllegalStateException("upload failed: " + response.getStatusLine().getReasonPhrase());
 		}
 
+*/
 	}
 
 }

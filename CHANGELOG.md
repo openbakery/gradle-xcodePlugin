@@ -1,3 +1,8 @@
+## 0.10.2 (TBA)
+
+Bugfixes:
+- Fixed testflight target: #141
+
 ## 0.10.1 (Februar 3, 2015)
 
 Bugfixes:

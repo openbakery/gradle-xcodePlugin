@@ -395,8 +395,8 @@ class XcodeBuildPluginExtension {
 		bundleName = getValueFromInfoPlist("CFBundleName")
 
 
-		if (bundleName.equals('${PRODUCT_NAME}') || bundleName.equals('$(PRODUCT_NAME)') ) {
-			bundleName = this.productName
+		if (bundleName.equals('${PRODUCT_NAME}')) {
+				bundleName = this.productName
 		}
 
 		if (bundleName.equals('${EXECUTABLE_NAME}')) {
