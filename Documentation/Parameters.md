@@ -215,38 +215,6 @@
 
 	default value: empty
 	
-## TestFlight Parameters
-
-* _apiToken_ - The TestFlight API Token (https://testflightapp.com/account/#api-token)
-
-	default value: empty
-	
-* _teamToken_ - The TestFlight Team Token (https://testflightapp.com/dashboard/team/edit/?next=/api/doc/)
-
-  default value: empty
-  
-* _notes_ - Release notes for the build
-
-  default value: "This build was uploaded using the gradle xcodePlugin"
-
-* _outputDirectory_ - Output directory where the ipa an dSYM.zip is created
-
-  default value: "build/testflight"
-	
-* _distributionLists_ - Comma separated distribution list names which will receive access to the build
-
-	default value: empty
-
-* _notifyDistributionList_ - notify permitted teammates to install the build
-
-  default value: false
-
-* _replaceBuild_ - replace binary for an existing build if one is found with the same name/bundle version
-
-  default value: false
-	
-
-Note: see also https://testflightapp.com/api/doc/	
 	
 
 ## HockeyApp Parameters
