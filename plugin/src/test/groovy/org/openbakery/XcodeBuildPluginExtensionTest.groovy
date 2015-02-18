@@ -31,6 +31,7 @@ class XcodeBuildPluginExtensionTest {
 
 		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
 
 
 		extension = new XcodeBuildPluginExtension(project)

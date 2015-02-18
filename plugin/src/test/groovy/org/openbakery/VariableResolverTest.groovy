@@ -29,18 +29,55 @@ class VariableResolverTest {
 	@Test
 	void testProductName() {
 		project.xcodebuild.productName = 'Test'
+		assert "Test".equals(resolver.resolve('$(PRODUCT_NAME)'))
+
+		project.xcodebuild.productName = 'Example'
+		assert "Example".equals(resolver.resolve('$(PRODUCT_NAME)'))
+	}
+
+	@Test
+	void testProductNameCurlyBrackets() {
+		project.xcodebuild.productName = 'Test'
 		assert "Test".equals(resolver.resolve('${PRODUCT_NAME}'))
 
 		project.xcodebuild.productName = 'Example'
 		assert "Example".equals(resolver.resolve('${PRODUCT_NAME}'))
 	}
 
+	@Test
+	void testComplexCurlyBrackets() {
 
+		project.xcodebuild.productName = 'Example'
+		assert 'This$IsAComplexExample'.equals(resolver.resolve('This$IsAComplex${PRODUCT_NAME}'))
+
+
+		project.xcodebuild.productName = 'Example'
+		assert 'The Example is complex'.equals(resolver.resolve('The ${PRODUCT_NAME} is complex'))
+	}
 
 
 	@Test
+	void testComplex() {
+
+		project.xcodebuild.productName = 'Example'
+		assert 'This$IsAComplexExample'.equals(resolver.resolve('This$IsAComplex$(PRODUCT_NAME)'))
+
+
+		project.xcodebuild.productName = 'Example'
+		assert 'The Example is complex'.equals(resolver.resolve('The $(PRODUCT_NAME) is complex'))
+	}
+
+
+	@Test
+	void testBoth() {
+
+		project.xcodebuild.productName = 'Example'
+				assert "Example Example".equals(resolver.resolve('${PRODUCT_NAME} $(PRODUCT_NAME)'))
+	}
+
+	@Test
 	void testUnknownVariable() {
-		assert '${FOOBAR}'.equals(resolver.resolve('${FOOBAR}'))
+		assert '$(FOOBAR)'.equals(resolver.resolve('$(FOOBAR)'))
 	}
 
 }

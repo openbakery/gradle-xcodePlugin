@@ -66,6 +66,7 @@ class XcodeBuildPluginExtension {
 
 	String xcodePath = null
 	CommandRunner commandRunner
+	VariableResolver variableResolver;
 
 	/**
 	 * internal parameters
@@ -75,6 +76,7 @@ class XcodeBuildPluginExtension {
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
 		this.signing = new Signing(project)
+		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 
 
@@ -394,14 +396,7 @@ class XcodeBuildPluginExtension {
 		}
 		bundleName = getValueFromInfoPlist("CFBundleName")
 
-
-		if (bundleName.equals('${PRODUCT_NAME}')) {
-				bundleName = this.productName
-		}
-
-		if (bundleName.equals('${EXECUTABLE_NAME}')) {
-			bundleName = this.productName
-		}
+		bundleName = variableResolver.resolve(bundleName);
 
 		if (StringUtils.isEmpty(bundleName)) {
 			bundleName = this.productName

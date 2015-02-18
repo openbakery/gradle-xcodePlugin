@@ -74,20 +74,7 @@ class XcodeConfigTaskTest {
 		simulatorDirectory.mkdirs()
 	}
 
-	void mockConvertProjectFile() {
-		def commandList = [
-						"plutil",
-						"-convert",
-						"xml1",
-						new File(project.projectDir, "Example.xcodeproj/project.pbxproj").absolutePath,
-						"-o",
-						new File(project.buildDir, "project.plist").absolutePath
-		]
 
-		commandRunnerMock.run(commandList).times(1)
-
-
-	}
 
 	void mockXcodeVersion() {
 		def commandList = [
@@ -138,7 +125,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testCreateDeviceList_parseDevices() {
-		mockConvertProjectFile()
 		mockXcodeVersion()
 		mockFindSimctl()
 		mockSimctlList()
@@ -155,7 +141,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDeviceListXcode5() {
-		mockConvertProjectFile()
 		mockXcode5Version()
 		mockXcodePath();
 		mockDisplayName();
@@ -181,7 +166,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDeviceListXcode5_mutibleSimualtors() {
-		mockConvertProjectFile()
 		mockXcode5Version()
 		mockXcodePath();
 		mockDisplayName();
@@ -211,7 +195,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDeviceListXcode5_skipDevice() {
-		mockConvertProjectFile()
 		mockXcode5Version()
 
 		mockNewerEquivalentDevice("iPhone Retina (3.5-inch)");
@@ -232,7 +215,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDestinationFilter_PhoneAndPad() {
-		mockConvertProjectFile()
 		mockXcodeVersion()
 		mockFindSimctl()
 		mockSimctlList()
@@ -263,62 +245,12 @@ class XcodeConfigTaskTest {
 
 
 
-	@Test
-	void testProductName() {
 
-		xcodeConfigTask.setProperty("commandRunner", new CommandRunner())
-
-		project.xcodebuild.target = "ExampleTodayWidget"
-
-		xcodeConfigTask.parseInfoFromProjectFile()
-
-		assert project.xcodebuild.productName.equals("ExampleTodayWidget")
-
-	}
-
-	@Test
-	void testProductType() {
-		xcodeConfigTask.setProperty("commandRunner", new CommandRunner())
-
-		project.xcodebuild.target = "ExampleTodayWidget"
-
-		xcodeConfigTask.parseInfoFromProjectFile()
-
-		assert project.xcodebuild.productType.equals("appex")
-
-	}
-
-	@Test
-	void testBundleName() {
-		xcodeConfigTask.setProperty("commandRunner", new CommandRunner())
-
-		project.xcodebuild.target = "Example"
-
-		xcodeConfigTask.parseInfoFromProjectFile()
-
-		assert project.xcodebuild.bundleName.equals("Example")
-
-	}
-
-
-
-	@Test
-	void testBundleNameWidget() {
-		xcodeConfigTask.setProperty("commandRunner", new CommandRunner())
-
-		project.xcodebuild.target = "ExampleTodayWidget"
-
-		xcodeConfigTask.parseInfoFromProjectFile()
-
-		assert project.xcodebuild.bundleName.equals("ExampleTodayWidget")
-
-	}
 
 
 
 	@Test
 	void testDestinationFilterPhone() {
-		mockConvertProjectFile()
 		mockXcodeVersion()
 		mockFindSimctl()
 		mockSimctlList()
@@ -364,7 +296,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDestinationFilteriOS7() {
-		mockConvertProjectFile()
 		mockXcodeVersion()
 		mockFindSimctl()
 		mockSimctlList()
@@ -390,7 +321,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDestinationFilterPhoneWildcard() {
-		mockConvertProjectFile()
 		mockXcodeVersion()
 		mockFindSimctl()
 		mockSimctlList()
@@ -415,7 +345,6 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testDestinations_iPhoneOS_Build() {
-		mockConvertProjectFile()
 		mockXcodeVersion()
 		mockFindSimctl()
 		mockSimctlList()
@@ -441,20 +370,6 @@ class XcodeConfigTaskTest {
 
 	}
 
-
-	@Test
-	void testProductNameFromConfig() {
-
-		project.xcodebuild.productName = 'MyFancyProductName'
-		xcodeConfigTask.setProperty("commandRunner", new CommandRunner())
-
-		project.xcodebuild.target = "Example"
-
-		xcodeConfigTask.parseInfoFromProjectFile()
-
-		assert project.xcodebuild.productName.equals("MyFancyProductName")
-
-	}
 
 
 }

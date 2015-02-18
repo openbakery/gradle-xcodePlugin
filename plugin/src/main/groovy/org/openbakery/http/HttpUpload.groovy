@@ -2,8 +2,11 @@ package org.openbakery.http
 
 import org.apache.http.Consts
 import org.apache.http.HttpEntity
+import org.apache.http.HttpHost
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
@@ -23,10 +26,14 @@ class HttpUpload {
 
 	private static final ContentType contentType = ContentType.create("application/x-www-form-urlencoded", Consts.UTF_8)
 
-	private URL url;
+	private String url;
 
-	public HttpUpload(URL url) {
-		this.url = url;
+	public HttpUpload() {
+		this(null)
+	}
+
+	public HttpUpload(String url) {
+		this.url = url
 	}
 
 	void postRequest(Map<String, Object> parameters) {
@@ -34,35 +41,39 @@ class HttpUpload {
 	}
 
 	void postRequest(Map<String, String> headers, Map<String, Object> parameters) {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		try {
-			HttpPost httpPost = new HttpPost(url);
+		logger.debug("using URL {}", url)
+		logger.debug("http post headers {}", headers)
+		logger.debug("http post parameters {}", parameters)
 
-			MultipartEntityBuilder requestEntityBuilder = MultipartEntityBuilder.create()
+		HttpPost httpPost = new HttpPost(url);
 
-			parameters.each() { key, value ->
-				if (value instanceof String) {
-					requestEntityBuilder.addPart(key, new StringBody(value, contentType))
-				} else if (value instanceof File) {
-					requestEntityBuilder.addBinaryBody(key, value)
-				}
+		MultipartEntityBuilder requestEntityBuilder = MultipartEntityBuilder.create()
+
+		parameters.each() { key, value ->
+			if (value instanceof String) {
+				requestEntityBuilder.addPart(key, new StringBody(value, contentType))
+			} else if (value instanceof File) {
+				requestEntityBuilder.addBinaryBody(key, value)
 			}
-
-			httpPost.setEntity(requestEntityBuilder.build())
-
-			headers.each() { key, value ->
-				httpPost.addHeader(key, value)
-			}
-
-			execute(httpPost)
-		} finally {
-			httpClient.close();
 		}
+		HttpEntity entity = requestEntityBuilder.build();
+		logger.debug("entity {}", entity)
+
+		httpPost.setEntity(entity)
+
+		headers.each() { key, value ->
+			httpPost.addHeader(key, value)
+		}
+
+		execute(httpPost)
 	}
 
 
-	void execute(HttpUriRequest request) {
+	void execute(HttpRequestBase request) {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+
 		CloseableHttpResponse response = httpClient.execute(request);
 		try {
 			logger.debug("{}", response.getStatusLine());
@@ -79,6 +90,7 @@ class HttpUpload {
 				throw new IllegalStateException("Http request failed: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase() + ": " + responseString);
 			}
 		} finally {
+			httpClient.close();
 			response.close();
 		}
 	}

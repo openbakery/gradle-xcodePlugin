@@ -3,6 +3,8 @@ package org.openbakery
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * This class parses the xcodeproject file and sets the proper values to project.xcodebuild
@@ -13,14 +15,26 @@ import org.gradle.api.Project
  */
 class XcodeProjectFile {
 
+	private static Logger logger = LoggerFactory.getLogger(XcodeProjectFile.class)
+
+	CommandRunner commandRunner = new CommandRunner()
+
+	Project project
+	File projectFile
+
+	boolean isOSX = false;
 
 	XcodeProjectFile(Project project, File projectFile) {
-		parse(project, projectFile);
+		this.project = project
+		this.projectFile = projectFile
 	}
 
 
-	void parse(Project project, File projectFile) {
+	void parse() {
 
+		if (!this.projectFile.exists()) {
+			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
+		}
 
 		def buildRoot = project.buildDir
 		if (!buildRoot.exists()) {
@@ -96,7 +110,7 @@ class XcodeProjectFile {
 			}
 
 		}
-		logger.lifecycle("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
+		logger.warn("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
 	}
 
 

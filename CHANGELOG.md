@@ -1,11 +1,16 @@
 ## 0.10.2 (TBA)
 
-Bugfixes:
-- Fixed testflight target: #141
+Changes
+- Removed Testflight because it shut down on the Februar 26, 2015
+
+Bugfixes
+- Fixed Deploygate upload: Issue #143
+- Fixed Deploygate message with non Ascii charaters: iusse #144 (Thanks to katsutomu)
+
 
 ## 0.10.1 (Februar 3, 2015)
 
-Bugfixes:
+Bugfixes
 - Fixed archive for Swift apps: #132
 
 ## 0.10.0 (Februar 2, 2015)

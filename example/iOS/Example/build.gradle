@@ -5,6 +5,8 @@ Create a gradle.properties and add the following values:
 
 	hockeyappApiToken = ""
 	hockeyappAppId = ""
+	deploygateApiToken = ""
+	deploygateUserName = ""
 
 	signingIdentity = iPhone Developer: ... 
 	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
@@ -104,7 +106,15 @@ gradle.taskGraph.whenReady { taskGraph ->
 			appID = hockeyappAppId
 		}
 	}
-
+	
+	if (taskGraph.hasTask(tasks.deploygate)) {
+		println ("using api token: " + deploygateApiToken)
+		deploygate {
+			apiToken = deploygateApiToken
+			userName = deploygateUserName
+		}
+	}
+	
 	// ------------------------------------------------------------------------------------------
 
 	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {

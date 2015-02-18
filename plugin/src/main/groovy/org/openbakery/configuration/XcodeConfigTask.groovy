@@ -20,8 +20,8 @@ import org.testng.annotations.AfterMethod
  */
 class XcodeConfigTask extends AbstractXcodeTask {
 
-	boolean isOSX = false;
 
+	private XcodeProjectFile xcodeProjectFile;
 
 	XcodeConfigTask() {
 		super()
@@ -37,10 +37,11 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
 		def projectFile = new File(xcodeProjectDir, "project.pbxproj")
 
-		new XcodeProjectFile(project, projectFile)
+		xcodeProjectFile = new XcodeProjectFile(project, projectFile)
+		xcodeProjectFile.parse()
 
 
-		if (isOSX) {
+		if (xcodeProjectFile.isOSX) {
 			return;
 		}
 
