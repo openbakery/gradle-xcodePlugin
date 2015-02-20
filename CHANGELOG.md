@@ -1,4 +1,4 @@
-## 0.10.2 (TBA)
+## 0.10.2 (Februar 20, 2015)
 
 Changes
 - Removed Testflight because it shut down on the Februar 26, 2015

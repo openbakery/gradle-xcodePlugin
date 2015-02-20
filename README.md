@@ -14,7 +14,7 @@ Here a brief overview of the features:
 * [Cocoapods](Cocoapods) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) )
-* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [TestFlight Old](https://www.testflightapp.com)
+* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
 * [Sparkle](http://sparkle-project.org)
 
 
@@ -25,10 +25,13 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-**Current stable version is 0.10.1**
+### Current stable version is 0.10.2
 
 0.9.15 and 0.10.1 supports Xcode 5, Xcode 6 and Xcode 6.1
 
+**Note:**
+
+When you use gradle 1.x you you can use version 0.10.2-gradle1
 
 ## Documentation
 

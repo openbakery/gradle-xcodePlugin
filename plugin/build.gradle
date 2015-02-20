@@ -7,7 +7,7 @@ buildscript {
 }
 
 
-def versionNumber = '0.10.2-beta2'
+def versionNumber = '0.10.2'
 
 group = 'org.openbakery'
 version = versionNumber
