@@ -68,7 +68,7 @@ class SparklePluginExtension {
 
     File getAppDirectory() {
 
-        // build path for Contents in app bundle
-        return project.file(project.xcodebuild.symRoot.absolutePath + '/' + project.xcodebuild.configuration + '/' + getFullAppName() +  '/Contents')
+        // build path for Contents in signed app bundle
+        return project.file(project.getBuildDir().absolutePath + '/codesign/' + getFullAppName() + '/Contents')
     }
 }

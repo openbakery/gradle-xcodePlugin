@@ -39,7 +39,7 @@ class SparkleArchiveTask extends DefaultTask {
 	def archiveApp() {
 
 		if(!project.sparkle.appDirectory.exists()) {
-		 	throw new IllegalArgumentException("Invalid app name specified for Sparkle: " + project.sparkle.appName)
+		 	throw new IllegalArgumentException("Invalid app name specified for Sparkle: " + project.sparkle.appName + " Path: " + project.sparkle.appDirectory)
 	 	}
 
 		if (!project.sparkle.outputDirectory.exists()) {

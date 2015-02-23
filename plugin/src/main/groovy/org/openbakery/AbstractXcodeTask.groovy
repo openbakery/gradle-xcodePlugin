@@ -51,7 +51,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
 		ant.exec(failonerror: "true",
 						executable: '/bin/cp') {
-			arg(value: '-rp')
+			arg(value: '-R')
 			arg(value: source.absolutePath)
 			arg(value: destination.absolutePath)
 		}
