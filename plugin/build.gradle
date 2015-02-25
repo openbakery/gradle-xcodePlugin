@@ -1,15 +1,14 @@
-plugins {
-  id "com.sarhanm.versioner" version "1.0.65.master.5f817fb"
-}
-
-import org.gradle.api.publish.maven.MavenPublication
-
 buildscript {
     repositories {
         jcenter()
     }
 }
 
+plugins {
+  id "com.sarhanm.versioner" version "1.0.65.master.5f817fb"
+}
+
+import org.gradle.api.publish.maven.MavenPublication
 
 group = 'org.icecrystal23'
 
