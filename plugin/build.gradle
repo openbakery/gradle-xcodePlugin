@@ -2,10 +2,17 @@ plugins {
   id "com.sarhanm.versioner" version "1.0.65.master.5f817fb"
 }
 
-apply from: 'http://stash.zillow.local:7991/projects/EXTCONFIG/repos/jenkins-ci-devcompile-config/browse/config/templates/jenkins-setup.gradle?raw'
 import org.gradle.api.publish.maven.MavenPublication
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+
 group = 'org.icecrystal23'
+
 
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -13,37 +20,89 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
+
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
 
-dependencies {
-	compile gradleApi()
-	compile localGroovy()
-}
-
-repositories{
-        jcenter()
-}
 
 dependencies {
-	testCompile 'org.testng:testng:6.+'
-	testCompile 'org.gmock:gmock:0.8.+'
-	testCompile 'org.hamcrest:hamcrest-all:1.3'
-	compile 'commons-io:commons-io:2.+'
-	compile 'commons-configuration:commons-configuration:1.10+'
-	compile 'commons-collections:commons-collections:3.2.+'
-	compile 'org.apache.httpcomponents:httpclient:4.3+'
-	compile 'org.apache.httpcomponents:httpmime:4.3+'
-	compile 'org.pegdown:pegdown:1.4.+'
-	compile 'ch.qos.logback:logback-core:1.1.+'
+    compile gradleApi()
+    compile localGroovy()
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'org.testng:testng:6.+'
+    testCompile 'org.gmock:gmock:0.8.+'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    compile 'commons-io:commons-io:2.+'
+    compile 'commons-configuration:commons-configuration:1.10+'
+    compile 'commons-collections:commons-collections:3.2.+'
+    compile 'org.apache.httpcomponents:httpclient:4.3+'
+    compile 'org.apache.httpcomponents:httpmime:4.3+'
+    compile 'org.pegdown:pegdown:1.4.+'
+    compile 'ch.qos.logback:logback-core:1.1.+'
 
 }
 
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../../repository'))
+        }
+    }
+}
+
 test {
-	useTestNG()
+    useTestNG()
+}
+
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "icecrystal23"
+            name "Tracy Keeling"
+            email "tracer.eraser@gmail.com"
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A gradle plugin for building Xcode projects')
+                root.children().last() + pomConfig
+            }
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {
