@@ -1,11 +1,5 @@
 import org.gradle.api.publish.maven.MavenPublication
 
-buildscript {
-	repositories {
-		jcenter()
-	}
-}
-
 import com.sarhanm.versioner.VersionerOptions
 project.extensions.create('versioner', VersionerOptions)
 apply plugin: 'com.sarhanm.versioner'
