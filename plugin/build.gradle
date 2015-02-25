@@ -1,8 +1,8 @@
+plugins {
+  id "com.sarhanm.versioner" version "1.0.65.master.5f817fb"
+}
+  
 import org.gradle.api.publish.maven.MavenPublication
-
-import com.sarhanm.versioner.VersionerOptions
-project.extensions.create('versioner', VersionerOptions)
-apply plugin: 'com.sarhanm.versioner'
 
 group = 'org.icecrystal23'
 
@@ -18,6 +18,10 @@ targetCompatibility = "1.6"
 dependencies {
 	compile gradleApi()
 	compile localGroovy()
+}
+
+repositories{
+        jcenter()
 }
 
 dependencies {
@@ -39,4 +43,8 @@ sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
 test {
 	useTestNG()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
 }
