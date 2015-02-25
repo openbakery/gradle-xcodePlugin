@@ -1,3 +1,5 @@
+import org.gradle.api.publish.maven.MavenPublication
+
 buildscript {
     repositories {
         jcenter()
@@ -8,7 +10,6 @@ plugins {
   id "com.sarhanm.versioner" version "1.0.65.master.5f817fb"
 }
 
-import org.gradle.api.publish.maven.MavenPublication
 
 group = 'org.icecrystal23'
 
@@ -38,7 +39,7 @@ dependencies {
     testCompile 'org.testng:testng:6.+'
     testCompile 'org.gmock:gmock:0.8.+'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
-    compile 'commons-io:commons-io:2.+'
+    compile 'commons-io:commons-io:2.4+'
     compile 'commons-configuration:commons-configuration:1.10+'
     compile 'commons-collections:commons-collections:3.2.+'
     compile 'org.apache.httpcomponents:httpclient:4.3+'
@@ -51,55 +52,34 @@ dependencies {
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri('../../repository'))
-        }
-    }
-}
-
 test {
     useTestNG()
 }
-
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
 }
 
-
-
-def pomConfig = {
-    licenses {
-        license {
-            name "The Apache Software License, Version 2.0"
-            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            id "icecrystal23"
-            name "Tracy Keeling"
-            email "tracer.eraser@gmail.com"
-        }
-    }
-}
-
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'A gradle plugin for building Xcode projects')
-                root.children().last() + pomConfig
+    repositories {
+        maven {
+            credentials {
+                username 'deployment'
+                password 'deployment'
             }
+            if(project.version.endsWith('-SNAPSHOT')) {
+                url 'http://master-repo.zillow.local/content/repositories/libs-snapshots-local'
+                } else {
+                    //Rhino Repo
+                    //url 'http://repo-cache.zillow.local/release'
+                    url 'http://master-repo.zillow.local/content/repositories/libs-releases-local'
+                }
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
         }
     }
 }
