@@ -67,11 +67,51 @@ class PackageTaskOSXTest {
 
 		mockExampleApp(true, false)
 
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
 		mockControl.play {
 			packageTask.packageApplication()
 		}
 		//File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
 		//assert payloadDirectory.exists()
+	}
+
+
+	@Test
+	void embedProvisioningProfile() {
+
+		mockExampleApp(false, false)
+
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+
+		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app/Contents/embedded.provisionprofile")
+		assert embedProvisioningProfile.exists()
+
+		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(mobileprovision)
+	}
+
+	@Test
+	void embedProvisioningProfileWithFramework() {
+
+		mockExampleApp(true, false)
+
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+
+		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app/Contents/embedded.provisionprofile")
+		assert embedProvisioningProfile.exists()
+
+		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(mobileprovision)
 	}
 
 	void mockExampleApp(boolean withFramework, boolean withSwift) {
@@ -101,8 +141,14 @@ class PackageTaskOSXTest {
 
 		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
 
+
+		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+
 		mockCodesignCommand("Example.app")
-		mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+
+		if (withFramework) {
+			mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+		}
 
 		project.xcodebuild.outputPath.mkdirs()
 

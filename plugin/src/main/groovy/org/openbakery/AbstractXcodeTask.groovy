@@ -50,8 +50,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
 		ant.exec(failonerror: "true",
-						executable: '/bin/cp') {
-			arg(value: '-R')
+						executable: 'rsync') {
+			arg(value: '-avz')
 			arg(value: source.absolutePath)
 			arg(value: destination.absolutePath)
 		}
@@ -245,7 +245,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 					if (pluginBundle.name.endsWith(".framework")) {
 
-						// Framworks have to be signed with this path
+						// Frameworks have to be signed with this path
 						bundles.add(new File(pluginBundle, "/Versions/Current"))
 					} else {
 						bundles.add(pluginBundle)

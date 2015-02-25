@@ -1,6 +1,7 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.AbstractXcodeTask
@@ -63,7 +64,7 @@ class PackageTask extends AbstractDistributeTask {
 
 		for (File bundle : appBundles) {
 
-			if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			if (!bundle.absolutePath.endsWith(".framework/Versions/Current")) {
 				embedProvisioningProfileToBundle(bundle)
 			}
 
@@ -171,29 +172,6 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
-//	private void codesignFramwork(File framework) {
-//
-//
-//		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
-//
-//		codeSignSwiftLibs(framework)
-//
-//		logger.lifecycle("Codesign {}", framework)
-//
-//		def codesignCommand = [
-//				"/usr/bin/codesign",
-//				"--force",
-//				//"--preserve-metadata=identifier,entitlements",
-//				"--sign",
-//				project.xcodebuild.getSigning().getIdentity(),
-//				"--verbose",
-//				framework.absolutePath,
-//				"--keychain",
-//				project.xcodebuild.signing.keychainPathInternal.absolutePath,
-//		]
-//		commandRunner.run(codesignCommand)
-//	}
-
 	private void codeSignSwiftLibs(File bundle) {
 
 		File frameworksDirectory = new File(bundle, "Frameworks");
@@ -221,9 +199,7 @@ class PackageTask extends AbstractDistributeTask {
 				]
 				commandRunner.run(codesignCommand)
 			}
-
 		}
-
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
@@ -239,7 +215,13 @@ class PackageTask extends AbstractDistributeTask {
 
 		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
 		if (mobileProvisionFile != null) {
-			File embeddedProvisionFile = new File(bundle, "embedded.mobileprovision");
+			File embeddedProvisionFile
+
+			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
+			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
+
+			logger.lifecycle("provision profile - {}", embeddedProvisionFile);
+
 			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile);
 		}
 	}
@@ -269,11 +251,18 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
     private File getInfoPlistFile() {
-
-        if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
-            return new File(appBundles.last(), "Info.plist");
-        } else {
-            return new File(appBundles.last(), "/Contents/Info.plist");
-        }
+		return new File(getAppContentPath() + "Info.plist")
     }
+
+	private String getAppContentPath() {
+
+		return getAppContentPath(appBundles.last())
+	}
+
+	private String getAppContentPath(File bundle) {
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			return bundle.absolutePath + "/"
+		}
+		return bundle.absolutePath + "/Contents/"
+	}
 }

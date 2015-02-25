@@ -22,7 +22,9 @@ class SparklePluginExtension {
 	def String appName = null
 	def String fullAppName = null
 	def Object outputDirectory
+	//def Object appContentsDirectory
 	def Object appDirectory
+
 
     private final Project project
 
@@ -68,7 +70,6 @@ class SparklePluginExtension {
 
     File getAppDirectory() {
 
-        // build path for Contents in signed app bundle
-        return project.file(project.getBuildDir().absolutePath + '/codesign/' + getFullAppName() + '/Contents')
+		return project.file(project.getBuildDir().absolutePath + '/codesign/' + getFullAppName())
     }
 }

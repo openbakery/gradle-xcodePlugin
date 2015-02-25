@@ -46,11 +46,15 @@ class SparkleArchiveTask extends DefaultTask {
 			project.sparkle.outputDirectory.mkdirs();
 		}
 
-		def ant = new groovy.util.AntBuilder()
-		ant.zip(destfile: project.sparkle.outputDirectory.path + "/" + project.sparkle.appName +  ".zip") {
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/", dir: project.sparkle.appDirectory.path, excludes : "MacOS/*", includes : "*/**");
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/MacOS", includes : "*", filemode : 755);
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/Frameworks/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/Frameworks/Sparkle.framework/Resources/Autoupdate.app/Contents/MacOS/", includes : "*", filemode : 755);
+		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
+		ant.exec(failonerror: "true",
+				executable: 'ditto') {
+			arg(value: '-c')
+			arg(value: '-k')
+			arg(value: '--sequesterRsrc')
+			arg(value: '--keepParent')
+			arg(value: project.sparkle.appDirectory.path)
+			arg(value: project.sparkle.outputDirectory.path + "/" + project.sparkle.appName +  ".zip")
 		}
 	}
 }
