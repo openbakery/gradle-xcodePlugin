@@ -22,7 +22,6 @@ class SparklePluginExtension {
 	def String appName = null
 	def String fullAppName = null
 	def Object outputDirectory
-	//def Object appContentsDirectory
 	def Object appDirectory
 
 

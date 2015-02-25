@@ -1,13 +1,11 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildArchiveTask
-import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod

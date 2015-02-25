@@ -37,7 +37,11 @@ class SparkleReleaseNotesTask extends DefaultTask {
 	@TaskAction
 	def createReleaseNotes() {
 
-		File changeLogFile = new File("Changelog.md")
+		if (!project.sparkle.outputDirectory.exists()) {
+			project.sparkle.outputDirectory.mkdirs();
+		}
+
+		File changeLogFile = new File(project.projectDir.absolutePath + "/CHANGELOG.md")
 
 		if (changeLogFile.exists()) {
 

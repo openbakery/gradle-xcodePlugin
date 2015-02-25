@@ -46,7 +46,7 @@ class SparkleArchiveTask extends DefaultTask {
 			project.sparkle.outputDirectory.mkdirs();
 		}
 
-		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
+		// with using ditto here symlinks in frameworks are handled correctly
 		ant.exec(failonerror: "true",
 				executable: 'ditto') {
 			arg(value: '-c')
