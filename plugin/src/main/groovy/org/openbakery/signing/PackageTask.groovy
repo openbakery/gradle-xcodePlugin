@@ -90,7 +90,7 @@ class PackageTask extends AbstractDistributeTask {
 
 
 		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
-		if (frameworksPath.exists()) {
+		if (frameworksPath.exists() && frameworksPath.listFiles().length > 0) {
 
 			File swiftSupportPath = new File(payloadPath.getParentFile(), "SwiftSupport")
 			swiftSupportPath.mkdirs()
