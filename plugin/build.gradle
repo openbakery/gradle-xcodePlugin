@@ -1,7 +1,8 @@
 plugins {
   id "com.sarhanm.versioner" version "1.0.65.master.5f817fb"
 }
-  
+
+apply from: 'http://stash.zillow.local:7991/projects/EXTCONFIG/repos/jenkins-ci-devcompile-config/browse/config/templates/jenkins-setup.gradle?raw'
 import org.gradle.api.publish.maven.MavenPublication
 
 group = 'org.icecrystal23'
