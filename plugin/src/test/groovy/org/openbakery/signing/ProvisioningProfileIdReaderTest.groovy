@@ -9,7 +9,6 @@ import org.openbakery.XcodePlugin
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import org.openbakery.signing.ProvisioningProfileIdReader
 
 /**
  * Created by gugmaster on 05/02/15.
@@ -95,5 +94,4 @@ class ProvisioningProfileIdReaderTest {
         assert applcationIdentifier.equals("*")
 
     }
-
 }
