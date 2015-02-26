@@ -61,6 +61,53 @@ class PackageTaskOSXTest {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
+	@Test
+	void testCreatePayload() {
+		mockExampleApp(false, false)
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+
+		// has to be same folder as signing for MacOSX
+		assert project.xcodebuild.signing.signingDestinationRoot.exists()
+	}
+
+	@Test
+	void testCopyApp() {
+
+		mockExampleApp(false, false)
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+		assert payloadAppDirectory.exists()
+	}
+
+	@Test
+	void removeResourceRules() {
+
+		mockExampleApp(false, false)
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+
+		assert !(new File(payloadAppDirectory, "ResourceRules.plist")).exists()
+	}
+
+	@Test
+	void codesignMacAppOnly() {
+
+		mockExampleApp(false, false)
+
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+	}
 
 	@Test
 	void codesignMacAppWithFramework() {
@@ -73,8 +120,6 @@ class PackageTaskOSXTest {
 		mockControl.play {
 			packageTask.packageApplication()
 		}
-		//File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
-		//assert payloadDirectory.exists()
 	}
 
 
@@ -151,25 +196,6 @@ class PackageTaskOSXTest {
 		}
 
 		project.xcodebuild.outputPath.mkdirs()
-
-//		if (withSwift) {
-//
-//
-//
-//			File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib")
-//			FileUtils.writeStringToFile(libSwiftCore, "dummy")
-//			File libSwiftCoreArchive = new File(archiveDirectory, "SwiftSupport/libswiftCore.dylib")
-//			FileUtils.writeStringToFile(libSwiftCoreArchive, "dummy")
-//
-//			File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
-//			FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
-//
-//			mockCodesignSwiftCommand("Payload/Example.app/Frameworks/libswiftCore.dylib")
-//			mockCodesignSwiftCommand("Payload/Example.app/Frameworks/libswiftCoreGraphics.dylib")
-//
-//
-//		}
-
 	}
 
 	void mockCodesignSwiftCommand(String path) {
@@ -188,7 +214,6 @@ class PackageTaskOSXTest {
 
 		]
 		commandRunnerMock.run(commandList)
-
 	}
 
 	void mockCodesignCommand(String path) {

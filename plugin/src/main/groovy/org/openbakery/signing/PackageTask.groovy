@@ -4,9 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
-import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
-import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 
 /**
