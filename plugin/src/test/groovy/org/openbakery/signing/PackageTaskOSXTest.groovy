@@ -12,7 +12,7 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 /**
- * Created by Stefan on 10/02/15.
+ * Created by Stefan Gugarel on 10/02/15.
  */
 class PackageTaskOSXTest {
 

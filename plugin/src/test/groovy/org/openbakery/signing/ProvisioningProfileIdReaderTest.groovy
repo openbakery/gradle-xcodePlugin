@@ -11,7 +11,7 @@ import org.testng.annotations.Test
 
 
 /**
- * Created by gugmaster on 05/02/15.
+ * Created by Stefan Gugarel on 05/02/15.
  */
 class ProvisioningProfileIdReaderTest {
 

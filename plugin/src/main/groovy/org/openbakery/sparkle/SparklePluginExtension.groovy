@@ -17,7 +17,11 @@ package org.openbakery.sparkle
 
 import org.gradle.api.Project
 
-
+/**
+ *
+ * @author Stefan Gugarel
+ *
+ */
 class SparklePluginExtension {
 	def String appName = null
 	def String fullAppName = null
