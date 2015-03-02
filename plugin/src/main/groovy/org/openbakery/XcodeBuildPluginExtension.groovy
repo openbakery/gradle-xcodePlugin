@@ -58,7 +58,10 @@ class XcodeBuildPluginExtension {
 	String productName = null
 	String bundleName = null
 	String productType = "app"
-    def targetsBundleIdentifiersAndEntitlements = null
+    ArrayList<AppExtension> appExtensions = null
+    String entitlementsPath = null
+    def entitlementsConfig = null
+    def infoPlistConfig = null
 
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
@@ -435,4 +438,40 @@ class XcodeBuildPluginExtension {
 		return archiveDirectory
 	}
 
+    boolean hasAppExtensions() {
+        return this.appExtensions != null
+    }
+
+    void createAppExtensions(targetName,infoPlist,entitlements) {
+        AppExtension appExtension = new AppExtension(targetName,infoPlist,entitlements)
+        this.addAppExtensions(appExtension)
+    }
+
+    void addAppExtensions(AppExtension appExtension) {
+        if (this.appExtensions == null) {
+            this.appExtensions = new ArrayList<AppExtension>()
+        }
+        this.appExtensions.add(appExtension)
+    }
+
+    boolean doesAppExtensionNeedConfiguration(String targetName) {
+        boolean result = false
+        this.appExtensions.each { appExtension ->
+            if (appExtension.name.equalsIgnoreCase(targetName)) {
+                result = true
+                return result
+            }
+        }
+        return result
+    }
+
+    void updateAppExtensionWithFilePaths(name,infoPlistFilePath,entitlementsFilePath) {
+        this.appExtensions.each {appExtension->
+            if (appExtension.name.equalsIgnoreCase(name)) {
+                appExtension.infoPlistPath = infoPlistFilePath
+                appExtension.entitlementsPath = entitlementsFilePath
+                return
+            }
+        }
+    }
 }

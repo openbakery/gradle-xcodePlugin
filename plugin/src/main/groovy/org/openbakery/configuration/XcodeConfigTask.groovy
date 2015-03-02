@@ -13,6 +13,7 @@ import org.openbakery.Destination
 import org.openbakery.Devices
 import org.openbakery.ListSimulators
 import org.testng.annotations.AfterMethod
+import org.openbakery.AppExtension;
 
 /**
  * User: rene
@@ -93,13 +94,10 @@ class XcodeConfigTask extends AbstractXcodeTask {
 //				project.xcodebuild.productType = "appex"
 //			}
 
-            if (shouldUpdateBundleIdentifier(targetName)) {
-                def newIdentifier = project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName].bundleIdentifier
-                def newEntitlementsGroupIDs = project.xcodebuild.targetsBundleIdentifiersAndEntitlements[targetName].entitlementsGroupIDs
-                def didUpdate = updateBundleIdentifierAndEntitlements(newIdentifier,newEntitlementsGroupIDs,target,config)
-                if (didUpdate == false) {
-                    logger.info("Info plist was not updated with the new bundle identifier")
-                }
+            if (project.xcodebuild.doesAppExtensionNeedConfiguration(targetName)) {
+                def infoPlistFilePath = infoPlistFilePath(target,config)
+                def entitlementsFilePath = entitlementsFilePath(target,config)
+                project.xcodebuild.updateAppExtensionWithFilePaths(targetName,infoPlistFilePath,entitlementsFilePath)
             }
 
 			if (targetName.equals(project.xcodebuild.target)) {
@@ -130,6 +128,11 @@ class XcodeConfigTask extends AbstractXcodeTask {
 							project.xcodebuild.infoPlist = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
 							logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
 						}
+
+                        if (project.xcodebuild.entitlementsPath == null) {
+                            project.xcodebuild.entitlementsPath = config.getString("objects." + buildConfigurationsItem + ".buildSettings.CODE_SIGN_ENTITLEMENTS")
+                            logger.info("entitlements path: {}",project.xcodebuild.entitlementsPath)
+                        }
 
 						logger.info("devices: {}", project.xcodebuild.devices)
 						logger.info("isOSX: {}", this.isOSX)

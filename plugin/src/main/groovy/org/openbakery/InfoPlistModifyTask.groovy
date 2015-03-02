@@ -21,23 +21,12 @@ import org.gradle.api.tasks.TaskAction
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
-
-
-
-
 	public InfoPlistModifyTask() {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
-
-
-
-
 	@TaskAction
 	def prepare() {
-
-
 		def infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
-
 
 		logger.lifecycle("Updating {}", infoPlist)
 
@@ -74,6 +63,24 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		for(String command in project.infoplist.commands) {
 			setValueForPlist(infoPlist, command)
 		}
+
+        if (project.xcodebuild.infoPlistConfig) {
+                project.xcodebuild.infoPlistConfig.each { key,value ->
+                setValueForPlist(infoPlist,key,value)
+            }
+        }
+
+        if (project.xcodebuild.hasAppExtensions()) {
+            project.xcodebuild.appExtensions.each {appExtension->
+                if (appExtension.infoPlistPath) {
+                    def appExtensionInfoPlistFile = new File(appExtension.infoPlistPath)
+                    logger.lifecycle("Updating {}", appExtensionInfoPlistFile)
+                    appExtension.infoPlistConfig.each { key,value ->
+                        setValueForPlist(appExtensionInfoPlistFile,key,value)
+                    }
+                }
+            }
+        }
 
 	}
 
