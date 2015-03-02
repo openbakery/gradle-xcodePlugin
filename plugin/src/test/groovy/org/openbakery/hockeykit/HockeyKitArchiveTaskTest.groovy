@@ -1,13 +1,11 @@
 package org.openbakery.hockeykit
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildArchiveTask
-import org.openbakery.signing.PackageTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -42,6 +40,7 @@ class HockeyKitArchiveTaskTest {
 		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykitArchive')
 
 		hockeyKitArchiveTask.setProperty("commandRunner", commandRunnerMock)
+		//PlistHelper.commandRunner = commandRunnerMock
 
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
@@ -76,6 +75,7 @@ class HockeyKitArchiveTaskTest {
 			hockeyKitArchiveTask.archive()
 		}
 
+		hockeyKitArchiveTask.archive()
 
 		File expectedIpa = new File(project.buildDir, "hockeykit/com.example.test/123/Test.ipa")
 		assert expectedIpa.exists()

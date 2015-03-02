@@ -13,8 +13,8 @@ Here a brief overview of the features:
 * Support for multiple Xcodes (on one machine)
 * [Cocoapods](Cocoapods) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
-* Code coverage support (using [gcovr](/http://gcovr.com)
-* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [TestFlight](https://www.testflightapp.com) (new Apple Testflight is not supported yet, but on the todo list)
+* Code coverage support (using [gcovr](http://gcovr.com) )
+* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
 * [Sparkle](http://sparkle-project.org)
 
 
@@ -25,10 +25,13 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-**Current stable version is 0.10.0**
+### Current stable version is 0.10.2
 
-0.9.15 and 0.10.0 supports Xcode 5, Xcode 6 and Xcode 6.1
+0.9.15 and 0.10.1 supports Xcode 5, Xcode 6 and Xcode 6.1
 
+**Note:**
+
+When you use gradle 1.x you you can use version 0.10.2-gradle1
 
 ## Documentation
 
@@ -63,11 +66,11 @@ xcodebuild {
 
 ## Example
 
-You find an example project in [example/Example/](example/Example/) with a working build.gradle file.
-After you have fetched the example go to the `example/Example` directory and you build the project different targets:
+You find example projects in [example/](example/) with a working build.gradle file.
+After you have fetched the example go to the `example/iOS/Example` directory and you build the project different targets:
 
-* Build  with `gradle build`
-* Run the unit tests with `gradle test` or `gradle continuous`
+* Build with `gradle xcodebuild`
+* Run the unit tests with `gradle test` or `gradle`
 * Perform a device build and upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
 

@@ -54,7 +54,7 @@ class PackageTask extends AbstractDistributeTask {
         File infoPlist = getInfoPlistFile()
 
         try {
-			setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
+			plistHelper.setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification", commandRunner)
 		} catch (CommandRunnerException ex) {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
@@ -79,7 +79,7 @@ class PackageTask extends AbstractDistributeTask {
 		def mobileProvisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile)
+			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
 			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 
@@ -209,7 +209,7 @@ class PackageTask extends AbstractDistributeTask {
 			infoPlist = new File(bundle, "Contents/Info.plist")
 		}
 
-		String bundleIdentifier = getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", commandRunner)
 
 		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
 		if (mobileProvisionFile != null) {

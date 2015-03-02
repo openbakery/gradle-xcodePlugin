@@ -66,6 +66,7 @@ class XcodeBuildPluginExtension {
 
 	String xcodePath = null
 	CommandRunner commandRunner
+	VariableResolver variableResolver;
 
 	/**
 	 * internal parameters
@@ -75,6 +76,7 @@ class XcodeBuildPluginExtension {
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
 		this.signing = new Signing(project)
+		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 
 
@@ -346,6 +348,15 @@ class XcodeBuildPluginExtension {
 		throw new IllegalStateException("No Xcode found with build number " + version);
 	}
 
+	String getXcodePath() {
+
+		if (xcodePath == null) {
+			String result = commandRunner.runWithResult("xcode-select", "-p")
+			xcodePath = result - "/Contents/Developer"
+		}
+		return xcodePath;
+
+	}
 
 
 
@@ -385,14 +396,7 @@ class XcodeBuildPluginExtension {
 		}
 		bundleName = getValueFromInfoPlist("CFBundleName")
 
-
-		if (bundleName.equals('${PRODUCT_NAME}') || bundleName.equals('$(PRODUCT_NAME)') ) {
-			bundleName = this.productName
-		}
-
-		if (bundleName.equals('${EXECUTABLE_NAME}')) {
-			bundleName = this.productName
-		}
+		bundleName = variableResolver.resolve(bundleName);
 
 		if (StringUtils.isEmpty(bundleName)) {
 			bundleName = this.productName
@@ -411,16 +415,6 @@ class XcodeBuildPluginExtension {
 		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
-	/*
-	File getIpaBundle() {
-		return new File(project.getBuildDir(), "package/" + getConfiguration().toLowerCase() + "/" + getBundleName() + ".ipa")
-	}
-
-	File getDSymBundle()  {
-		return new File(getOutputPath(), getBundleName()  + "." + this.productType + ".dSYM")
-	}
-
-*/
 
 
 	File getArchiveDirectory() {

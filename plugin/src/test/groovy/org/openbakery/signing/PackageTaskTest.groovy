@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.testng.annotations.AfterMethod
@@ -25,7 +26,6 @@ class PackageTaskTest {
 
 	GMockController mockControl
 	CommandRunner commandRunnerMock
-	ProvisioningProfileIdReader provisioningProfileIdReader;
 
 	File provisionLibraryPath
 	File projectDir
@@ -52,6 +52,7 @@ class PackageTaskTest {
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
+
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")

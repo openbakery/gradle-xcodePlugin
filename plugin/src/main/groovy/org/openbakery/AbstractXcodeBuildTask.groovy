@@ -59,7 +59,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 			commandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
 			if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
-				ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(project.xcodebuild.signing.mobileProvisionFile.get(0))
+				ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
 				String uuid = provisioningProfileIdReader.getUUID()
 				commandList.add("PROVISIONING_PROFILE=" + uuid)
 			}

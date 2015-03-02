@@ -89,7 +89,7 @@ class HockeyKitImageTask extends AbstractHockeyKitTask {
 
 		ArrayList<String> iconList = new ArrayList<String>();
 		for (String key : iconKeys) {
-			def value = getValueFromPlist(infoplist, key);
+			def value = plistHelper.getValueFromPlist(infoplist, key, commandRunner);
 			if (value != null) {
 				iconList.addAll(value)
 			}

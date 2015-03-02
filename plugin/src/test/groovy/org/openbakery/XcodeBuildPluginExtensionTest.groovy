@@ -1,5 +1,4 @@
 package org.openbakery
-
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
@@ -8,6 +7,7 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import static java.util.Arrays.asList
 
 /**
  * Created by rene on 24.07.14.
@@ -31,6 +31,7 @@ class XcodeBuildPluginExtensionTest {
 
 		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
 
 
 		extension = new XcodeBuildPluginExtension(project)
@@ -263,6 +264,18 @@ class XcodeBuildPluginExtensionTest {
 
 		mockControl.play {
 			extension.version = '5.1.2';
+		}
+	}
+
+	@Test
+	void testXcodePath_notSet() {
+
+		extension.xcodePath = null
+
+		commandRunnerMock.runWithResult("xcode-select", "-p").returns("/Applications/Xcode.app/Contents/Developer").times(1)
+
+		mockControl.play {
+			assert extension.xcodePath.equals("/Applications/Xcode.app")
 		}
 	}
 

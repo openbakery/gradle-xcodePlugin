@@ -17,7 +17,7 @@ package org.openbakery.hockeykit
 
 import org.gradle.api.tasks.TaskAction
 import groovy.xml.MarkupBuilder
-import org.apache.commons.io.FilenameUtils
+import org.openbakery.PlistHelper
 import org.openbakery.XcodePlugin
 
 class HockeyKitManifestTask extends AbstractHockeyKitTask {
@@ -38,9 +38,9 @@ class HockeyKitManifestTask extends AbstractHockeyKitTask {
 
 		def infoPlist = getAppBundleInfoPlist()
 
-		def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
-		def bundleVersion = getValueFromPlist(infoPlist, "CFBundleVersion")
-		def bundleDisplayName = getValueFromPlist(infoPlist,"CFBundleDisplayName")
+		def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier", commandRunner)
+		def bundleVersion = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion", commandRunner)
+		def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist,"CFBundleDisplayName", commandRunner)
 
 		def manifestFilename = getDestinationFile(getOutputDirectory(), ".plist")
 
@@ -51,9 +51,9 @@ class HockeyKitManifestTask extends AbstractHockeyKitTask {
 			title = bundleDisplayName
 		}
 
-		def subtitle = getValueFromPlist(infoPlist, "CFBundleShortVersionString")
+		def subtitle = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString", commandRunner)
 		if (subtitle == null) {
-			subtitle = getValueFromPlist(infoPlist, "CFBundleVersion")
+			subtitle = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion", commandRunner)
 		}
 
 		def writer = new BufferedWriter(new FileWriter(manifestFilename))

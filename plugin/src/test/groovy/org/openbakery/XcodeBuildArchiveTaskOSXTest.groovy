@@ -5,15 +5,12 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.CommandRunner
-import org.openbakery.XcodeBuildArchiveTask
-import org.openbakery.XcodePlugin
-import org.testng.annotations.AfterTest
+import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 /**
- * Created by Stefan on 04/02/15.
+ * Created by Stefan Gugarel on 04/02/15.
  */
 class XcodeBuildArchiveTaskOSXTest {
 
@@ -25,8 +22,8 @@ class XcodeBuildArchiveTaskOSXTest {
 	File buildOutputDirectory
 	File appDirectory
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+//	GMockController mockControl
+//	CommandRunner commandRunnerMock
 
 	@BeforeMethod
 	void setup() {
@@ -55,7 +52,7 @@ class XcodeBuildArchiveTaskOSXTest {
 	}
 
 
-	@AfterTest
+	@AfterMethod
 	def cleanAfterTest() {
 
         FileUtils.deleteDirectory(projectDir)
@@ -104,7 +101,7 @@ class XcodeBuildArchiveTaskOSXTest {
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 
 		// add key CFBundleIconFile
-		xcodeBuildArchiveTask.setValueForPlist(infoPlistInAppFile, "CFBundleIconFile", "icon")
+		xcodeBuildArchiveTask.plistHelper.setValueForPlist(infoPlistInAppFile, "CFBundleIconFile", "icon", new CommandRunner())
 
 		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons(infoPlistInAppFile)
 

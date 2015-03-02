@@ -54,27 +54,27 @@ class ProvisioningProfileIdReaderTest {
 
     @Test
     void readUUIDFromFile() {
-        ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision");
+        ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision", project);
         assert reader.getUUID().equals("FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
     }
 
     @Test
     void readApplicationIdentifierPrefix() {
-        ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision");
+        ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision", project);
         assert reader.getApplicationIdentifierPrefix().equals("AAAAAAAAAAA")
     }
 
 
     @Test
     void readApplicationIdentifier() {
-        ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision");
+        ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader("src/test/Resource/test.mobileprovision", project);
         assert reader.getApplicationIdentifier().equals("org.openbakery.Example")
     }
 
 
     @Test(expectedExceptions = [IllegalArgumentException.class])
     void readProfileHasExpired() {
-        new ProvisioningProfileIdReader("src/test/Resource/expired.mobileprovision");
+        new ProvisioningProfileIdReader("src/test/Resource/expired.mobileprovision", project);
     }
 
 
@@ -87,11 +87,11 @@ class ProvisioningProfileIdReaderTest {
 
         assert wildcardMacProfile.exists()
 
-        ProvisioningProfileIdReader provisioningProfileReader = new ProvisioningProfileIdReader(wildcardMacProfile)
+        ProvisioningProfileIdReader provisioningProfileReader = new ProvisioningProfileIdReader(wildcardMacProfile, project)
 
-        def applcationIdentifier = provisioningProfileReader.getApplicationIdentifier()
+        def applicationIdentifier = provisioningProfileReader.getApplicationIdentifier()
 
-        assert applcationIdentifier.equals("*")
+        assert applicationIdentifier.equals("*")
 
     }
 }

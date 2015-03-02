@@ -11,6 +11,7 @@ import org.testng.annotations.Test
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
+
 /**
  * Created by rene on 01.12.14.
  */
@@ -27,6 +28,7 @@ class AbstractXcodeTaskTest {
 	@BeforeMethod
 	def setup() {
 		mockControl = new GMockController()
+
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -35,9 +37,6 @@ class AbstractXcodeTaskTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-
-		xcodeTask.setProperty("commandRunner", commandRunnerMock)
-
 	}
 
 
@@ -54,7 +53,7 @@ class AbstractXcodeTaskTest {
 
 		String result;
 		mockControl.play {
-			result = xcodeTask.getValueFromPlist("Info.plist", "CFBundleIdentifier")
+			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier", commandRunnerMock)
 		}
 
 		assert result.equals("com.example.Example");
@@ -74,7 +73,7 @@ class AbstractXcodeTaskTest {
 
 		def result;
 		mockControl.play {
-			result = xcodeTask.getValueFromPlist("Info.plist", "CFBundleIdentifier")
+			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier", commandRunnerMock)
 		}
 
 
@@ -91,7 +90,7 @@ class AbstractXcodeTaskTest {
 
 		def result;
 		mockControl.play {
-			result = xcodeTask.getValueFromPlist("Info.plist", "CFBundleIconFiles")
+			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIconFiles", commandRunnerMock)
 		}
 		assert result == null
 	}

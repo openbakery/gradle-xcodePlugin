@@ -26,6 +26,15 @@ class HockeyAppPluginExtension {
 	def String status = 2
 	def String notify = 1
 	def String notesType = 0
+	def String[] tags = null
+	def String[] teams = null
+	def String[] users = null
+	def String releaseType = null
+	def String mandatory = 0
+	def String privatePage = false
+	def String commitSha = null
+	def String buildServerUrl = null
+	def String repositoryUrl = null
 
 	private final Project project
 

@@ -1,11 +1,11 @@
 package org.openbakery.hockeykit
 
-import ch.qos.logback.core.util.FileUtil
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod

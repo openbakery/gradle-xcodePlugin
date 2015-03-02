@@ -70,7 +70,7 @@ class ProvisioningInstallTaskTest {
 		File testMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-		ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(testMobileprovision.absolutePath)
+		ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(testMobileprovision.absolutePath, project)
 		String uuid = provisioningProfileIdReader.getUUID()
 		String name =  "gradle-" + uuid + ".mobileprovision";
 
@@ -93,8 +93,8 @@ class ProvisioningInstallTaskTest {
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
 
-		String firstName = "gradle-" + new ProvisioningProfileIdReader(firstMobileprovision.absolutePath).getUUID() + ".mobileprovision";
-		String secondName = "gradle-" + new ProvisioningProfileIdReader(secondMobileprovision.absolutePath).getUUID() + ".mobileprovision";
+		String firstName = "gradle-" + new ProvisioningProfileIdReader(firstMobileprovision.absolutePath, project).getUUID() + ".mobileprovision";
+		String secondName = "gradle-" + new ProvisioningProfileIdReader(secondMobileprovision.absolutePath, project).getUUID() + ".mobileprovision";
 
 		mockLinking(firstName)
 		mockLinking(secondName)

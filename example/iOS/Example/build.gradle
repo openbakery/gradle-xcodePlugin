@@ -5,6 +5,8 @@ Create a gradle.properties and add the following values:
 
 	hockeyappApiToken = ""
 	hockeyappAppId = ""
+	deploygateApiToken = ""
+	deploygateUserName = ""
 
 	signingIdentity = iPhone Developer: ... 
 	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
@@ -22,12 +24,13 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://openbakery.org/repository/')
+			//url('http://openbakery.org/repository/')
+			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.+'
+		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.2-beta2'
 	}
 }
 
@@ -70,11 +73,6 @@ task appstore(dependsOn: 'package') {
 
 gradle.taskGraph.whenReady { taskGraph ->
 
-	if (taskGraph.hasTask(archive)) {
-		println xcodebuild.productName
-		println 'setting it to Foo'
-		xcodebuild.productName = 'Foo'
-	}
 	
 
 	// ------------------------------------------------------------------------------------------
@@ -108,7 +106,15 @@ gradle.taskGraph.whenReady { taskGraph ->
 			appID = hockeyappAppId
 		}
 	}
-
+	
+	if (taskGraph.hasTask(tasks.deploygate)) {
+		println ("using api token: " + deploygateApiToken)
+		deploygate {
+			apiToken = deploygateApiToken
+			userName = deploygateUserName
+		}
+	}
+	
 	// ------------------------------------------------------------------------------------------
 
 	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {

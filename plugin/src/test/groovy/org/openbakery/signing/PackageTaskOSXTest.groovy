@@ -27,6 +27,7 @@ class PackageTaskOSXTest {
 	File infoPlist
 	File payloadAppDirectory
 	File archiveDirectory
+	File provisionProfile
 
 
 
@@ -34,6 +35,8 @@ class PackageTaskOSXTest {
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
+
+
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -49,11 +52,17 @@ class PackageTaskOSXTest {
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
+		//PlistHelper.commandRunner = commandRunnerMock
+
+
+
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
 		payloadAppDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app");
+
+		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 	}
 
 	@AfterMethod
@@ -101,8 +110,8 @@ class PackageTaskOSXTest {
 
 		mockExampleApp(false, false)
 
-		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
 			packageTask.packageApplication()
@@ -114,8 +123,7 @@ class PackageTaskOSXTest {
 
 		mockExampleApp(true, false)
 
-		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
 			packageTask.packageApplication()
@@ -128,8 +136,7 @@ class PackageTaskOSXTest {
 
 		mockExampleApp(false, false)
 
-		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
 			packageTask.packageApplication()
@@ -138,7 +145,7 @@ class PackageTaskOSXTest {
 		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app/Contents/embedded.provisionprofile")
 		assert embedProvisioningProfile.exists()
 
-		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(mobileprovision)
+		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
 	}
 
 	@Test
@@ -146,8 +153,7 @@ class PackageTaskOSXTest {
 
 		mockExampleApp(true, false)
 
-		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
 			packageTask.packageApplication()
@@ -156,7 +162,7 @@ class PackageTaskOSXTest {
 		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app/Contents/embedded.provisionprofile")
 		assert embedProvisioningProfile.exists()
 
-		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(mobileprovision)
+		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
 	}
 
 	void mockExampleApp(boolean withFramework, boolean withSwift) {
@@ -185,7 +191,6 @@ class PackageTaskOSXTest {
 
 
 		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
-
 
 		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
@@ -235,8 +240,6 @@ class PackageTaskOSXTest {
 		commandRunnerMock.run(commandList)
 
 	}
-
-
 
 	void mockPlistCommmand(String infoplist, String command) {
 		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", command]

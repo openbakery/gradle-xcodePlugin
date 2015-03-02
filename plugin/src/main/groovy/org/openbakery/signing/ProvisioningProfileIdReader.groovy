@@ -17,8 +17,9 @@ package org.openbakery.signing
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
+import org.gradle.api.Project
 import org.openbakery.CommandRunner
-import org.openbakery.CommandRunnerException
+import org.openbakery.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -28,14 +29,18 @@ class ProvisioningProfileIdReader {
 
     protected CommandRunner commandRunner
 
+	private PlistHelper plistHelper
+
 
 	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileIdReader.class)
 
 	XMLPropertyListConfiguration config;
 
+	public Project project
+
     private File provisioningProfile
 
-	ProvisioningProfileIdReader(def provisioningProfile) {
+	ProvisioningProfileIdReader(def provisioningProfile, def project) {
 
         super()
 
@@ -46,6 +51,9 @@ class ProvisioningProfileIdReader {
 
         commandRunner = new CommandRunner()
 
+		plistHelper = new PlistHelper(project)
+
+		this.project = project
 
 		checkExpired();
 	}
@@ -122,13 +130,13 @@ class ProvisioningProfileIdReader {
                                                                     "-i",
                                                                     provisioningProfile.path]);
 
+			// read temporary plist file
+			File tempPlist = new File(project.buildDir.absolutePath + "/tmp/tmp.plist")
+
             // write temporary plist to disk
-            FileUtils.writeStringToFile(new File("build/tmp/tmp.plist"), extractedPlist)
+            FileUtils.writeStringToFile(tempPlist, extractedPlist)
 
-            // read temporary plist file
-            File tempPlist = new File("build/tmp/tmp.plist")
-
-            value = this.getValueFromPlist(tempPlist, "Entitlements:com.apple.application-identifier")
+			value = plistHelper.getValueFromPlist(tempPlist, "Entitlements:com.apple.application-identifier", commandRunner)
         }
 
 		String prefix = getApplicationIdentifierPrefix() + "."
@@ -138,42 +146,6 @@ class ProvisioningProfileIdReader {
 		return value;
 	}
 
-    /**
-     * Reads the value for the given key from the given plist
-     *
-     * @param plist
-     * @param key
-     * @return returns the value for the given key
-     */
-    def getValueFromPlist(plist, key) {
-        if (plist instanceof File) {
-            plist = plist.absolutePath
-        }
 
-        try {
-            String result = commandRunner.runWithResult([
-                    "/usr/libexec/PlistBuddy",
-                    plist,
-                    "-c",
-                    "Print :" + key])
-
-            if (result.startsWith("Array {")) {
-
-                ArrayList<String> resultArray = new ArrayList<String>();
-
-                String[] tokens = result.split("\n");
-
-                for (int i = 1; i < tokens.length - 1; i++) {
-                    resultArray.add(tokens[i].trim());
-                }
-                return resultArray;
-            }
-            return result;
-        } catch (IllegalStateException ex) {
-            return null
-        } catch (CommandRunnerException ex) {
-            return null
-        }
-    }
 
 }

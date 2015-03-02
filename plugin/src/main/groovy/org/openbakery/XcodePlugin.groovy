@@ -52,9 +52,6 @@ import org.openbakery.sparkle.SparkleArchiveTask
 import org.openbakery.sparkle.SparkleCleanTask
 import org.openbakery.sparkle.SparklePluginExtension
 import org.openbakery.sparkle.SparkleReleaseNotesTask
-import org.openbakery.testflight.TestFlightCleanTask
-import org.openbakery.testflight.TestFlightPluginExtension
-import org.openbakery.testflight.TestFlightUploadTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -66,7 +63,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
 	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
 	public static final String APPSTORE_GROUP_NAME = "AppStore"
-	public static final String TESTFLIGHT_GROUP_NAME = "TestFlight"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
@@ -91,8 +87,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_TASK_NAME = 'package'
-	public static final String TESTFLIGHT_TASK_NAME = 'testflight'
-	public static final String TESTFLIGHT_CLEAN_TASK_NAME = 'testflightClean'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
 	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyappClean'
@@ -131,7 +125,6 @@ class XcodePlugin implements Plugin<Project> {
 		configureInfoPlist(project)
 		configureProvisioning(project)
 		configureAppstore(project)
-		configureTestflight(project)
 		configureHockeyApp(project)
 		configureDeployGate(project)
 		configureCodesign(project)
@@ -287,30 +280,27 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('hockeyapp.notesType')) {
 				project.hockeyapp.notesType = project['hockeyapp.notesType']
 			}
-
-
-			if (project.hasProperty('testflight.outputDirectory')) {
-				project.testflight.outputDirectory = project['testflight.outputDirectory']
+			if (project.hasProperty('hockeyapp.teams')) {
+				project.hockeyapp.teams = project['hockeyapp.teams']
 			}
-
-			if (project.hasProperty('testflight.apiToken')) {
-				project.testflight.apiToken = project['testflight.apiToken']
+			if (project.hasProperty('hockeyapp.tags')) {
+				project.hockeyapp.tags = project['hockeyapp.tags']
 			}
-			if (project.hasProperty('testflight.teamToken')) {
-				project.testflight.teamToken = project['testflight.teamToken']
+			if (project.hasProperty('hockeyapp.releaseType')) {
+				project.hockeyapp.releaseType = project['hockeyapp.releaseType']
 			}
-			if (project.hasProperty('testflight.notes')) {
-				project.testflight.notes = project['testflight.notes']
+			if (project.hasProperty('hockeyapp.privatePage')) {
+				project.hockeyapp.privatePage = project['hockeyapp.privatePage']
 			}
-			if (project.hasProperty('testflight.distributionLists')) {
-				project.testflight.distributionLists = project['testflight.distributionLists']
+			if (project.hasProperty('hockeyapp.commitSha')) {
+				project.hockeyapp.commitSha = project['hockeyapp.commitSha']
 			}
-			if (project.hasProperty('testflight.notifyDistributionList')) {
-				project.testflight.notifyDistributionList = project['testflight.notifyDistributionList']
+			if (project.hasProperty('hockeyapp.buildServerUrl')) {
+				project.hockeyapp.buildServerUrl = project['hockeyapp.buildServerUrl']
 			}
-			if (project.hasProperty('testflight.replaceBuild')) {
-				project.testflight.replaceBuild = project['testflight.replaceBuild']
-			}
+			if (project.hasProperty('hockeyapp.repositoryUrl')) {
+				project.hockeyapp.repositoryUrl = project['hockeyapp.repositoryUrl']
+			}		
 
 			if (project.hasProperty('sparkle.outputDirectory')) {
 				project.sparkle.output = project['sparkle.outputDirectory']
@@ -356,7 +346,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
-		project.extensions.create("testflight", TestFlightPluginExtension, project)
 		project.extensions.create("appstore", AppstorePluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
@@ -441,11 +430,6 @@ class XcodePlugin implements Plugin<Project> {
 		packageTask.shouldRunAfter(xcodeBuildTask)
 
 
-	}
-
-	private configureTestflight(Project project) {
-		project.task(TESTFLIGHT_TASK_NAME, type: TestFlightUploadTask, group: TESTFLIGHT_GROUP_NAME)
-		project.task(TESTFLIGHT_CLEAN_TASK_NAME, type: TestFlightCleanTask, group: TESTFLIGHT_GROUP_NAME)
 	}
 
 	private configureAppstore(Project project) {
