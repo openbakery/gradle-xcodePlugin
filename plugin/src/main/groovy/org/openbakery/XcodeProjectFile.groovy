@@ -70,11 +70,17 @@ class XcodeProjectFile {
 					project.xcodebuild.productName = config.getString("objects." + target + ".productName")
 				}
 				String type = config.getString("objects." + target + ".productType")
-				if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
-					project.xcodebuild.productType = "appex"
-				}
+//				if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
+//					project.xcodebuild.productType = "appex"
+//				}
 
-				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
+                if (project.xcodebuild.doesAppExtensionNeedConfiguration(targetName)) {
+                    def infoPlistFilePath = infoPlistFilePath(target,config)
+                    def entitlementsFilePath = entitlementsFilePath(target,config)
+                    project.xcodebuild.updateAppExtensionWithFilePaths(targetName,infoPlistFilePath,entitlementsFilePath)
+                }
+
+                def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
 				for (buildConfigurationsItem in buildConfigurations) {
 					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
 
@@ -102,7 +108,12 @@ class XcodeProjectFile {
 							logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
 						}
 
-						logger.info("devices: {}", project.xcodebuild.devices)
+                        if (project.xcodebuild.entitlementsPath == null) {
+                            project.xcodebuild.entitlementsPath = config.getString("objects." + buildConfigurationsItem + ".buildSettings.CODE_SIGN_ENTITLEMENTS")
+                            logger.info("entitlements path: {}",project.xcodebuild.entitlementsPath)
+                        }
+
+                        logger.info("devices: {}", project.xcodebuild.devices)
 						logger.info("isOSX: {}", this.isOSX)
 						return;
 					}
@@ -112,6 +123,41 @@ class XcodeProjectFile {
 		}
 		logger.warn("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
 	}
+
+
+    private String infoPlistFilePath(String targetID,XMLPropertyListConfiguration config) {
+        def path = null
+        def buildConfigurationListID = config.getString("objects." + targetID + ".buildConfigurationList")
+        def buildConfigurationList = config.getList("objects." + buildConfigurationListID + ".buildConfigurations")
+        for(buildConfiguration in buildConfigurationList) {
+            def buildConfigurationType = config.getString("objects." + buildConfiguration + ".name")
+            if(buildConfigurationType.equals(project.xcodebuild.configuration)) {
+                path = config.getString("objects."+ buildConfiguration  +".buildSettings.INFOPLIST_FILE")
+            }
+        }
+
+        if (path != null) {
+            path = project.projectDir.toString() + "/" + path
+        }
+        path
+    }
+
+    private String entitlementsFilePath(String targetID,XMLPropertyListConfiguration config) {
+        def path = null
+        def buildConfigurationListID = config.getString("objects." + targetID + ".buildConfigurationList")
+        def buildConfigurationList = config.getList("objects." + buildConfigurationListID + ".buildConfigurations")
+        for(buildConfiguration in buildConfigurationList) {
+            def buildConfigurationType = config.getString("objects." + buildConfiguration + ".name")
+            if(buildConfigurationType.equals(project.xcodebuild.configuration)) {
+                path = config.getString("objects."+ buildConfiguration  +".buildSettings.CODE_SIGN_ENTITLEMENTS")
+            }
+        }
+
+        if (path != null) {
+            path = project.projectDir.toString() + "/" + path
+        }
+        path
+    }
 
 
 }

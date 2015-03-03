@@ -13,6 +13,8 @@ import org.openbakery.Destination
 import org.openbakery.Devices
 import org.openbakery.XcodeProjectFile
 import org.testng.annotations.AfterMethod
+import org.openbakery.AppExtension;
+
 
 /**
  * User: rene

@@ -98,8 +98,10 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkleNotes'
 	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkleClean'
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
+    public static final String ENTITLEMENTSMODIFY_TASK_NAME = 'entitlementsModify'
 
-	public static final String APPLEDOC_TASK_NAME = 'appledoc'
+
+    public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
 
 	public static final COVERAGE_TASK_NAME = 'coverage'
@@ -119,7 +121,8 @@ class XcodePlugin implements Plugin<Project> {
 		configureHockeyKit(project)
 		configureKeychain(project)
 		configureInfoPlist(project)
-		configureProvisioning(project)
+        configureEntitlements(project)
+        configureProvisioning(project)
 		configureAppstore(project)
 		configureHockeyApp(project)
 		configureDeployGate(project)
@@ -476,7 +479,12 @@ class XcodePlugin implements Plugin<Project> {
 		}
 	}
 
-	private void addDependencyToBuild(Project project, Task task) {
+    private void configureEntitlements(Project project) {
+        project.task(ENTITLEMENTSMODIFY_TASK_NAME, type: EntitlementsModifyTask, group: XCODE_GROUP_NAME)
+    }
+
+
+    private void addDependencyToBuild(Project project, Task task) {
 		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		buildTask.dependsOn(task)
 

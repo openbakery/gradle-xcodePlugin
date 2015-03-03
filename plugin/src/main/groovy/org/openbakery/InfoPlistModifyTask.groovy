@@ -21,25 +21,15 @@ import org.gradle.api.tasks.TaskAction
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
-
-
-
-
-	public InfoPlistModifyTask() {
+    public InfoPlistModifyTask() {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
-
-
-
-	@TaskAction
+    @TaskAction
 	def prepare() {
 
-
-		def infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
-
-
-		logger.lifecycle("Updating {}", infoPlist)
+        def infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
+        logger.lifecycle("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
 			setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier)
@@ -75,15 +65,33 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			setValueForPlist(infoPlist, command)
 		}
 
-	}
+        if (project.xcodebuild.infoPlistConfig) {
+            project.xcodebuild.infoPlistConfig.each { key,value ->
+                setValueForPlist(infoPlist,key,value)
+            }
+        }
+
+        if (project.xcodebuild.hasAppExtensions()) {
+            project.xcodebuild.appExtensions.each {appExtension->
+                if (appExtension.infoPlistPath) {
+                    def appExtensionInfoPlistFile = new File(appExtension.infoPlistPath)
+                    logger.lifecycle("Updating {}", appExtensionInfoPlistFile)
+                    appExtension.infoPlistConfig.each { key,value ->
+                        setValueForPlist(appExtensionInfoPlistFile,key,value)
+                    }
+                }
+            }
+        }
+
+
+    }
 
 	private void modifyVersion(File infoPlist) {
 		if (project.infoplist.version == null && project.infoplist.versionSuffix == null && project.infoplist.versionPrefix == null) {
 			return
 		}
 
-
-		def version;
+        def version;
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
 		} else {
