@@ -4,3 +4,4 @@ xcodePlugin.iws
 build
 .gradle
 out
+gradle.properties
