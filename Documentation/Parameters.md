@@ -192,6 +192,17 @@
 	]
 ```
 
+## Appstore Parameters:
+
+* _username_ - Your Apple ID
+
+	default value: empty
+	
+* _passoword_ - The password for your Apple ID
+
+	default value: empty
+
+
 ## HockeyKit Parameters:
 
 
