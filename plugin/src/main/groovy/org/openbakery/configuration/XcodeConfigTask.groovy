@@ -21,7 +21,7 @@ import org.testng.annotations.AfterMethod
 class XcodeConfigTask extends AbstractXcodeTask {
 
 
-	private XcodeProjectFile xcodeProjectFile;
+	XcodeProjectFile xcodeProjectFile;
 
 	XcodeConfigTask() {
 		super()

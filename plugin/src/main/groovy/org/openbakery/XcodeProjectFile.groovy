@@ -22,6 +22,9 @@ class XcodeProjectFile {
 	Project project
 	File projectFile
 
+	private String rootObjectKey;
+	private XMLPropertyListConfiguration config
+
 	boolean isOSX = false;
 
 	XcodeProjectFile(Project project, File projectFile) {
@@ -31,7 +34,7 @@ class XcodeProjectFile {
 
 
 	void parse() {
-
+		this.project.logger.lifecycle("Parse project file: " + projectFile.absolutePath)
 		if (!this.projectFile.exists()) {
 			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
 		}
@@ -50,68 +53,110 @@ class XcodeProjectFile {
 		// convert ascii plist to xml so that commons configuration can parse it!
 		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlistFile.absolutePath])
 
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(projectPlistFile)
-		def rootObjectKey = config.getString("rootObject")
+		config = new XMLPropertyListConfiguration(projectPlistFile)
+		rootObjectKey = getString("rootObject")
+
+
 		logger.debug("rootObjectKey {}", rootObjectKey);
 
-		List<String> list = config.getList("objects." + rootObjectKey + ".targets")
+		List<String> list = getList("objects." + rootObjectKey + ".targets")
 
-		for (target in list) {
-
-			def buildConfigurationList = config.getString("objects." + target + ".buildConfigurationList")
-			logger.debug("buildConfigurationList={}", buildConfigurationList)
-			def targetName = config.getString("objects." + target + ".name")
-			logger.debug("targetName: {}", targetName)
+		if (StringUtils.isEmpty(project.xcodebuild.productName)) {
+			project.xcodebuild.productName = getValueFromTarget(".productName")
+		}
 
 
-			if (targetName.equals(project.xcodebuild.target)) {
+		String type = getValueFromTarget(".productType")
+		if ("com.apple.product-type.app-extension".equalsIgnoreCase(type)) {
+			project.xcodebuild.productType = "appex"
+		}
 
-				if (StringUtils.isEmpty(project.xcodebuild.productName)) {
-					project.xcodebuild.productName = config.getString("objects." + target + ".productName")
-				}
-				String type = config.getString("objects." + target + ".productType")
-				if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
-					project.xcodebuild.productType = "appex"
-				}
 
-				def buildConfigurations = config.getList("objects." + buildConfigurationList + ".buildConfigurations")
-				for (buildConfigurationsItem in buildConfigurations) {
-					def buildName = config.getString("objects." + buildConfigurationsItem + ".name")
+		String buildConfiguration = getBuildConfiguration()
+		String rootBuildConfigurationsItem = getRootBuildConfigurationsItem()
 
-					logger.debug("buildName: {} equals {}", buildName, project.xcodebuild.configuration)
+		String sdkRoot = getString("objects.{buildConfiguration}.buildSettings.SDKROOT")
+		if (sdkRoot == null) {
+			sdkRoot = getString("objects." + rootBuildConfigurationsItem + ".buildSettings.SDKROOT")
+		}
 
-					if (buildName.equals(project.xcodebuild.configuration)) {
-						//String productName = config.getString("objects." + buildConfigurationsItem + ".buildSettings.PRODUCT_NAME")
-						String sdkRoot = config.getString("objects." + buildConfigurationsItem + ".buildSettings.SDKROOT")
-						if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
-							// is os x build
-							this.isOSX = true
-						} else {
-							String devicesString = config.getString("objects." + buildConfigurationsItem + ".buildSettings.TARGETED_DEVICE_FAMILY")
+		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
+			this.isOSX = true
+		} else {
 
-							if (devicesString.equals("1")) {
-								project.xcodebuild.devices = Devices.PHONE;
-							} else if (devicesString.equals("2")) {
-								project.xcodebuild.devices = Devices.PAD;
-							}
+			String devicesString = getString("objects.{buildConfiguration}.buildSettings.TARGETED_DEVICE_FAMILY")
 
-						}
-
-						if (project.xcodebuild.infoPlist == null) {
-							project.xcodebuild.infoPlist = config.getString("objects." + buildConfigurationsItem + ".buildSettings.INFOPLIST_FILE")
-							logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
-						}
-
-						logger.info("devices: {}", project.xcodebuild.devices)
-						logger.info("isOSX: {}", this.isOSX)
-						return;
-					}
-				}
+			if (devicesString.equals("1")) {
+				project.xcodebuild.devices = Devices.PHONE;
+			} else if (devicesString.equals("2")) {
+				project.xcodebuild.devices = Devices.PAD;
 			}
 
 		}
-		logger.warn("WARNING: given target '" + project.xcodebuild.target + "' in the xcode project file")
+
+		if (project.xcodebuild.infoPlist == null) {
+			String key = "objects." + buildConfiguration + ".buildSettings.INFOPLIST_FILE"
+			project.xcodebuild.infoPlist = getString(key)
+			logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
+		}
 	}
 
 
+	String getValueFromTarget(String key) {
+		String forTargetName = project.xcodebuild.target
+		List<String> list = getList("objects." + rootObjectKey + ".targets")
+		for (target in list) {
+			def targetName = getString("objects." + target + ".name")
+			if (targetName.equals(forTargetName)) {
+				return getString("objects." + target + key)
+			}
+		}
+
+	}
+
+
+	String getBuildConfiguration(String key) {
+		String forBuildName = project.xcodebuild.configuration
+
+		String buildConfigurationList = getString("objects." + key + ".buildConfigurationList")
+		def buildConfigurations = getList("objects." + buildConfigurationList + ".buildConfigurations")
+		for (buildConfigurationsItem in buildConfigurations) {
+			def buildName = getString("objects." + buildConfigurationsItem + ".name")
+
+			if (buildName.equals(forBuildName)) {
+				return buildConfigurationsItem
+			}
+		}
+	}
+
+	String getBuildConfiguration() {
+		String forTargetName = project.xcodebuild.target
+
+		List<String> list = getList("objects." + rootObjectKey + ".targets")
+		for (target in list) {
+			def targetName = getString("objects." + target + ".name")
+			if (targetName.equals(forTargetName)) {
+				return getBuildConfiguration(target)
+			}
+		}
+		return null
+	}
+
+
+	String getRootBuildConfigurationsItem() {
+		return getBuildConfiguration(rootObjectKey)
+	}
+
+
+	private List getList(String key) {
+		List result = config.getList(key)
+		logger.debug("List {}={}", key, result)
+		return result
+	}
+
+	private String getString(String key) {
+		String result = config.getString(key)
+		logger.debug("String {}={}", key, result)
+		return result
+	}
 }
