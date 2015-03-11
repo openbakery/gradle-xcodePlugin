@@ -17,7 +17,7 @@ import org.openbakery.XcodeProjectFile
 class XcodeConfigTask extends AbstractXcodeTask {
 
 
-	private XcodeProjectFile xcodeProjectFile;
+	XcodeProjectFile xcodeProjectFile;
 
 	XcodeConfigTask() {
 		super()

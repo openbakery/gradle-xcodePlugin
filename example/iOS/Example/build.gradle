@@ -24,8 +24,8 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			//url('http://openbakery.org/repository/')
-			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			url('http://openbakery.org/repository/')
+			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
 	}
@@ -150,6 +150,21 @@ gradle.taskGraph.whenReady { taskGraph ->
 		infoplist {
 			bundleIdentifier = 'org.openbakery.Example'
 		}
+	}
+	
+	
+	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
+	
+		if (appstore.username == null) {
+			def username = System.console().readLine("\nPlease enter your Apple-ID that you use for iTunesConnect: ")
+			appstore.username = new String(username)
+		}
+		
+		if (appstore.password == null) {
+			def password = System.console().readPassword("\nPlease enter the password for <" + appstore.username + ">: ")
+			appstore.password = new String(password)
+		}
+	
 	}
 }
 
