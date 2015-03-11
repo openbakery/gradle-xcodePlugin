@@ -7,7 +7,9 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.signing.PackageTask
 import org.testng.annotations.AfterMethod
+import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
 import java.util.zip.ZipEntry
@@ -39,7 +41,7 @@ class XcodeBuildArchiveTaskTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = "iphoneos"
+		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
@@ -66,7 +68,6 @@ class XcodeBuildArchiveTaskTest {
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
 
 	}
-
 
 	void mockSwiftLibs() {
 		def swiftLibs = [
@@ -213,7 +214,7 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void testZipForSimulatorBuild() {
-		project.xcodebuild.sdk = "iphonesimulator"
+		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONESIMULATOR
 		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
 		buildOutputDirectory.mkdirs()
 
@@ -294,7 +295,5 @@ class XcodeBuildArchiveTaskTest {
 		mockControl.play {
 			xcodeBuildArchiveTask.archive()
 		}
-
 	}
-
 }

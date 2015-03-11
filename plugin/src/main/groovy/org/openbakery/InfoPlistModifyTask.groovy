@@ -15,14 +15,10 @@
  */
 package org.openbakery
 
-import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
-
-
-
 
 
 	public InfoPlistModifyTask() {
@@ -42,26 +38,26 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		logger.lifecycle("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
-			setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier, commandRunner)
 		}
 
 		// add suffix to bundleIdentifier
 		if (project.infoplist.bundleIdentifierSuffix != null) {
-			def bundleIdentifier = getValueFromPlist(infoPlist, "CFBundleIdentifier")
+			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier", commandRunner)
 
-			setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix, commandRunner)
 
 		}
 
 		// Modify bundle bundleDisplayName
 		if (project.infoplist.bundleDisplayName != null) {
-			setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName, commandRunner)
 		}
 
 		// add suffix to bundleDisplayName
 		if (project.infoplist.bundleDisplayNameSuffix != null) {
-			def bundleDisplayName = getValueFromPlist(infoPlist, "CFBundleDisplayName")
-			setValueForPlist(infoPlist, "CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix)
+			def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist, "CFBundleDisplayName", commandRunner)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix, commandRunner)
 
 		}
 
@@ -72,7 +68,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 		for(String command in project.infoplist.commands) {
-			setValueForPlist(infoPlist, command)
+			plistHelper.setValueForPlist(infoPlist, command, commandRunner)
 		}
 
 	}
@@ -87,7 +83,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
 		} else {
-			version = getValueFromPlist(infoPlist, "CFBundleVersion")
+			version = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion", commandRunner)
 		}
 
 		if (project.infoplist.versionSuffix) {
@@ -99,7 +95,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		}
 
 		logger.debug("Modify CFBundleVersion to {}", version)
-		setValueForPlist(infoPlist, "CFBundleVersion", version)
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", version, commandRunner)
 	}
 
 
@@ -110,7 +106,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		def shortVersionString
 		try {
-			shortVersionString = getValueFromPlist(infoPlist, "CFBundleShortVersionString")
+			shortVersionString = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString", commandRunner)
 		} catch (IllegalStateException ex) {
 			// no CFBundleShortVersionString exists so noting can be modified!
 			return
@@ -128,7 +124,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		}
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
-		setValueForPlist(infoPlist, "CFBundleShortVersionString", shortVersionString)
+		plistHelper.setValueForPlist.setValueForPlist(infoPlist, "CFBundleShortVersionString", shortVersionString, commandRunner)
 
 	}
 

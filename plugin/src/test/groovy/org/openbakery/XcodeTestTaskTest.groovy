@@ -38,7 +38,7 @@ class XcodeTestTaskTest {
 
 	Destination createDestination(String name, String id) {
 		Destination destination = new Destination()
-		destination.platform = "iPhoneSimulator"
+		destination.platform = XcodePlugin.SDK_IPHONESIMULATOR
 		destination.name = name
 		destination.arch = "i386"
 		destination.id = id
@@ -239,7 +239,7 @@ class XcodeTestTaskTest {
 		addExpectedScheme()
 
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add("macosx")
+		expectedCommandList.add(XcodePlugin.SDK_MACOSX)
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -275,9 +275,9 @@ class XcodeTestTaskTest {
 		addExpectedDefaultDirs()
 
 		expectedCommandList.add('-destination')
-		expectedCommandList.add('platform=iPhoneSimulator,id=iPad Air')
+		expectedCommandList.add('platform=' + XcodePlugin.SDK_IPHONESIMULATOR + ',id=iPad Air')
 		expectedCommandList.add('-destination')
-		expectedCommandList.add('platform=iPhoneSimulator,id=iPhone 4s')
+		expectedCommandList.add('platform=' + XcodePlugin.SDK_IPHONESIMULATOR + ',id=iPhone 4s')
 
 		expectedCommandList.add("test")
 

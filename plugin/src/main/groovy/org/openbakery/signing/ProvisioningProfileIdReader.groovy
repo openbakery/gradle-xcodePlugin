@@ -16,39 +16,66 @@
 package org.openbakery.signing
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.lang.time.DateUtils
+import org.apache.commons.io.FileUtils
+import org.gradle.api.Project
+import org.openbakery.CommandRunner
+import org.openbakery.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import java.text.DateFormat
-import java.text.SimpleDateFormat
-
 
 class ProvisioningProfileIdReader {
+
+    protected CommandRunner commandRunner
+
+	private PlistHelper plistHelper
+
 
 	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileIdReader.class)
 
 	XMLPropertyListConfiguration config;
 
-	ProvisioningProfileIdReader(def provisioningProfile) {
+	public Project project
+
+    private File provisioningProfile
+
+	ProvisioningProfileIdReader(def provisioningProfile, def project) {
+
+        super()
+
 		String text = load(provisioningProfile)
 		config = new XMLPropertyListConfiguration()
+
 		config.load(new StringReader(text))
+
+        commandRunner = new CommandRunner()
+
+		plistHelper = new PlistHelper(project)
+
+		this.project = project
+
 		checkExpired();
 	}
 
 	String load(def provisioningProfile) {
 		if (!(provisioningProfile instanceof File)) {
-			provisioningProfile = new File(provisioningProfile.toString())
+			this.provisioningProfile = new File(provisioningProfile.toString())
+		} else {
+            this.provisioningProfile = provisioningProfile
+        }
+
+
+		if (!this.provisioningProfile.exists()) {
+			return null;
 		}
-		if (!provisioningProfile.exists()) {
-			return nil;
-		}
+
+
 
 		StringBuffer result = new StringBuffer();
 
 		boolean append = false;
-		for (String line : provisioningProfile.text.split("\n")) {
+		for (String line : this.provisioningProfile.text.split("\n")) {
 			if (line.startsWith("<!DOCTYPE plist PUBLIC")) {
 				append = true;
 			}
@@ -89,11 +116,36 @@ class ProvisioningProfileIdReader {
 	}
 
 	String getApplicationIdentifier() {
-		String value = config.getString("Entitlements.application-identifier")
+
+        String value
+
+        if (this.provisioningProfile.path.endsWith(".mobileprovision")) {
+            value = config.getProperty("Entitlements.application-identifier")
+        } else {
+
+            // unpack provisioning profile to plain plist
+            String extractedPlist = commandRunner.runWithResult([   "security",
+                                                                    "cms" ,
+                                                                    "-D",
+                                                                    "-i",
+                                                                    provisioningProfile.path]);
+
+			// read temporary plist file
+			File tempPlist = new File(project.buildDir.absolutePath + "/tmp/tmp.plist")
+
+            // write temporary plist to disk
+            FileUtils.writeStringToFile(tempPlist, extractedPlist)
+
+			value = plistHelper.getValueFromPlist(tempPlist, "Entitlements:com.apple.application-identifier", commandRunner)
+        }
+
 		String prefix = getApplicationIdentifierPrefix() + "."
 		if (value.startsWith(prefix)) {
 			return value.substring(prefix.length())
 		}
 		return value;
 	}
+
+
+
 }

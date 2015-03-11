@@ -1,18 +1,14 @@
 package org.openbakery.configuration
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
-import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
-import org.openbakery.Devices
+import org.openbakery.XcodePlugin
 import org.openbakery.XcodeProjectFile
-import org.testng.annotations.AfterMethod
 
 /**
  * User: rene
@@ -60,8 +56,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	}
 
-
-
 	void createXcode5DeviceList() {
 
 		//logger.debug("xcodePath is {}", project.xcodebuild.xcodePath);
@@ -73,7 +67,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		def versions = [];
 		for (String sdk in sdksDirectory.list()) {
 			String basename = FilenameUtils.getBaseName(sdk)
-			versions << StringUtils.removeStart(basename, "iPhoneSimulator")
+			versions << StringUtils.removeStartIgnoreCase(basename, XcodePlugin.SDK_IPHONESIMULATOR)
 		}
 
 
@@ -108,7 +102,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 
 	void createDeviceList() {
-		String simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", "iphoneos", "-find", "simctl"]);
+		String simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]);
 		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
 
 		String iOSVersion = null

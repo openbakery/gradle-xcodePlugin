@@ -21,8 +21,8 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def universalLibrary() {
-		def deviceLibrary = new File(libraryPathForTarget("iphoneos"))
-		def simulatorLibrary = new File(libraryPathForTarget("iphonesimulator"))
+		def deviceLibrary = new File(libraryPathForTarget(XcodePlugin.SDK_IPHONEOS))
+		def simulatorLibrary = new File(libraryPathForTarget(XcodePlugin.SDK_IPHONESIMULATOR))
 
 		if (!deviceLibrary.exists()) {
 			logger.lifecycle "Library for device does not exist in:" + deviceLibrary.path
@@ -50,20 +50,20 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 
     @TaskAction
     def universalLibrary() {
-        def iosLib = new File(libPathForTarget("iphoneos"))
-        def simLib = new File(libPathForTarget("iphonesimulator")) 
+        def iosLib = new File(libXcodePlugin.SDK_IPHONEOSget("iphoneos"))
+        def simLib = new File(libXcodePlugin.SDK_IPHONESIMULATORhonesimulator"))
 
         if(iosLib.exists() && simLib.exists()) {
             try {
                 def uniLib = new File(project.xcodebuild.symRoot.path + "/" + project.xcodebuild.configuration + "-universal")
                 uniLib.exists() ? uniLib.deleteDir() : uniLib.mkdirs()
 
-                def iosHeaders = new File(configurationPathForTarget("iphoneos") + "/include")
+                def iosHeaders = new FileXcodePlugin.SDK_IPHONEOStionPathForTarget("iphoneos") + "/include")
                 def uniHeaders = new File(uniLib.path + "/include")
 
                 FileUtils.copyDirectory(iosHeaders, uniHeaders)
 
-                runCommand(["xcrun", "-sdk", "iphoneos",
+   XcodePlugin.SDK_IPHONEOS   runCommand(["xcrun", "-sdk", "iphoneos",
                         "lipo", "-create", iosLib.path, simLib.path, "-output", uniLib.path + "/lib" + project.xcodebuild.target + ".a"])
             } catch (Exception e) {
                 println "----- RUN COMMAND FAIL:" + e.printStackTrace()

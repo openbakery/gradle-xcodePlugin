@@ -17,12 +17,17 @@ package org.openbakery.sparkle
 
 import org.gradle.api.Project
 
-
+/**
+ *
+ * @author Stefan Gugarel
+ *
+ */
 class SparklePluginExtension {
 	def String appName = null
 	def String fullAppName = null
 	def Object outputDirectory
 	def Object appDirectory
+
 
     private final Project project
 
@@ -68,7 +73,6 @@ class SparklePluginExtension {
 
     File getAppDirectory() {
 
-        // build path for Contents in app bundle
-        return project.file(project.xcodebuild.symRoot.absolutePath + '/' + project.xcodebuild.configuration + '/' + getFullAppName() +  '/Contents')
+		return project.file(project.getBuildDir().absolutePath + '/codesign/' + getFullAppName())
     }
 }

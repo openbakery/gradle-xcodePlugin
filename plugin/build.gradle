@@ -43,7 +43,7 @@ dependencies {
 	compile 'commons-collections:commons-collections:3.2.+'
 	compile 'org.apache.httpcomponents:httpclient:4.3+'
 	compile 'org.apache.httpcomponents:httpmime:4.3+'
-	compile 'org.pegdown:pegdown:1.4.+'
+	compile 'org.pegdown:pegdown:1.5.+'
 	compile 'ch.qos.logback:logback-core:1.1.+'
 
 }

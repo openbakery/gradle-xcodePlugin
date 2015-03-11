@@ -104,9 +104,13 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final COVERAGE_TASK_NAME = 'coverage'
 	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
+	public static final String SDK_MACOSX = "macosx"
+	public static final String SDK_IPHONEOS = "iphoneos"
+	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
 
-	void apply(Project project) {
+
+    void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class);
 
 		System.setProperty("java.awt.headless", "true");
@@ -129,7 +133,6 @@ class XcodePlugin implements Plugin<Project> {
 		configureCoverage(project)
 		configureCocoapods(project)
 		configureInfo(project)
-
 		configureProperties(project)
 	}
 

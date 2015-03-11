@@ -30,7 +30,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
 		this.description = "Installs the given provisioning profile"
 		this.setOnlyIf {
-			return !project.xcodebuild.sdk.startsWith("iphonesimulator")
+			return !project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)
 		}
 	}
 
@@ -54,7 +54,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 	@TaskAction
 	def install() {
 
-		if (project.xcodebuild.sdk.startsWith("iphonesimulator")) {
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("The simulator build does not need a provisioning profile")
 			return
 		}
@@ -67,10 +67,21 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
 			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
-			ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(mobileProvisionFile)
+			ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
 
 			String uuid = provisioningProfileIdReader.getUUID()
-			String mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
+
+
+
+			String mobileProvisionName
+
+            if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+                mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
+            } else {
+                mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".provisionprofile"
+            }
+
+
 
 			File downloadedFile = new File(mobileProvisionFile)
 			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)

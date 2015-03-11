@@ -16,10 +16,7 @@
 package org.openbakery
 
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.gradle.api.DefaultTask
 
 import java.text.SimpleDateFormat
@@ -32,10 +29,14 @@ import java.text.SimpleDateFormat
 abstract class AbstractXcodeTask extends DefaultTask {
 
 
-	protected CommandRunner commandRunner
+	public CommandRunner commandRunner
+
+	public PlistHelper plistHelper
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
+
+		plistHelper = new PlistHelper(project)
 	}
 
 
@@ -50,13 +51,11 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
 		ant.exec(failonerror: "true",
-						executable: '/bin/cp') {
-			arg(value: '-rp')
+						executable: 'rsync') {
+			arg(value: '-avz')
 			arg(value: source.absolutePath)
 			arg(value: destination.absolutePath)
 		}
-
-		//FileUtils.copyFile(source, destination)
 	}
 
 	/**
@@ -76,72 +75,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		File destinationFile = new File(toDirectory, FilenameUtils.getName(address))
 		return destinationFile.absolutePath
 	}
-
-
-	/**
-	 * Reads the value for the given key from the given plist
-	 *
-	 * @param plist
-	 * @param key
-	 * @return returns the value for the given key
-	 */
-	def getValueFromPlist(plist, key) {
-		if (plist instanceof File) {
-			plist = plist.absolutePath
-		}
-
-		try {
-			String result = commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							plist,
-							"-c",
-							"Print :" + key])
-
-			if (result.startsWith("Array {")) {
-
-				ArrayList<String> resultArray = new ArrayList<String>();
-
-				String[] tokens = result.split("\n");
-
-				for (int i = 1; i < tokens.length - 1; i++) {
-					resultArray.add(tokens[i].trim());
-				}
-				return resultArray;
-			}
-			return result;
-		} catch (IllegalStateException ex) {
-			return null
-		} catch (CommandRunnerException ex) {
-			return null
-		}
-	}
-
-
-	String setValueForPlist(def plist, String key, String value) {
-		setValueForPlist(plist, "Set :" + key + " " + value)
-	}
-
-
-	String setValueForPlist(def plist, String command) {
-		File infoPlistFile;
-		if (plist instanceof File) {
-			infoPlistFile = plist
-		} else {
-			infoPlistFile = new File(project.projectDir, plist)
-		}
-		if (!infoPlistFile.exists()) {
-			throw new IllegalStateException("Info Plist does not exist: " + infoPlistFile.absolutePath);
-		}
-
-		logger.quiet("Set Info Plist Value: {}", command)
-		commandRunner.run([
-						"/usr/libexec/PlistBuddy",
-						infoPlistFile.absolutePath,
-						"-c",
-						command
-		])
-	}
-
 
 	def getOSVersion() {
 		Version result = new Version()
@@ -227,12 +160,29 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File appBundle = new File(appPath, applicationBundleName)
 
-		File plugins = new File(appBundle, "PlugIns")
+
+		File plugins
+
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			plugins = new File(appBundle, "PlugIns")
+		} else {
+			plugins = new File(appBundle, "Contents/Frameworks")
+		}
+
+
 		if (plugins.exists()) {
 
 			for (File pluginBundle : plugins.listFiles()) {
+
 				if (pluginBundle.isDirectory()) {
-					bundles.add(pluginBundle)
+
+					if (pluginBundle.name.endsWith(".framework")) {
+
+						// Frameworks have to be signed with this path
+						bundles.add(new File(pluginBundle, "/Versions/Current"))
+					} else {
+						bundles.add(pluginBundle)
+					}
 				}
 			}
 		}

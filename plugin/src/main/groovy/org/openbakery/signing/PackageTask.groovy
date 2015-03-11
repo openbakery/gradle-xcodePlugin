@@ -1,11 +1,10 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
-import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
-import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 
 /**
@@ -16,6 +15,8 @@ class PackageTask extends AbstractDistributeTask {
 
 	public static final String PACKAGE_PATH = "package"
 
+    private List<File> appBundles
+
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
@@ -24,7 +25,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (!project.xcodebuild.sdk.startsWith("iphoneos")) {
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
@@ -42,7 +43,7 @@ class PackageTask extends AbstractDistributeTask {
 		def applicationBundleName = applicationName + ".app"
 
 
-		List<File> appBundles = getAppBundles(payloadPath, applicationBundleName)
+		appBundles = getAppBundles(payloadPath, applicationBundleName)
 
 		File resourceRules = new File(payloadPath, applicationBundleName + "/ResourceRules.plist")
 		if (resourceRules.exists()) {
@@ -50,16 +51,23 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 
-		File infoPlist = new File(appBundles.last(), "Info.plist");
-		try {
-			setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
+        File infoPlist = getInfoPlistFile()
+
+        try {
+			plistHelper.setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification", commandRunner)
 		} catch (CommandRunnerException ex) {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
 
 
 		for (File bundle : appBundles) {
-			embedProvisioningProfileToBundle(bundle)
+
+			if (!bundle.absolutePath.endsWith(".framework/Versions/Current")) {
+				embedProvisioningProfileToBundle(bundle)
+			}
+
+			logger.lifecycle("codesign path: {}", bundle);
+
 			codesign(bundle)
 		}
 
@@ -71,7 +79,7 @@ class PackageTask extends AbstractDistributeTask {
 		def mobileProvisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile)
+			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
 			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 
@@ -189,18 +197,29 @@ class PackageTask extends AbstractDistributeTask {
 				]
 				commandRunner.run(codesignCommand)
 			}
-
 		}
-
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
-		File infoPlist = new File(bundle, "Info.plist");
-		String bundleIdentifier = getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
+        File infoPlist
+
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			infoPlist = new File(bundle, "Info.plist");
+		} else {
+			infoPlist = new File(bundle, "Contents/Info.plist")
+		}
+
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", commandRunner)
 
 		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
 		if (mobileProvisionFile != null) {
-			File embeddedProvisionFile = new File(bundle, "embedded.mobileprovision");
+			File embeddedProvisionFile
+
+			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
+			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
+
+			logger.lifecycle("provision profile - {}", embeddedProvisionFile);
+
 			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile);
 		}
 	}
@@ -215,10 +234,33 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private File createPayload() throws IOException {
-		createSigningDestination("Payload")
+
+        if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		    return createSigningDestination("Payload")
+        } else {
+
+			// same folder as signing
+			File destination = new File(project.xcodebuild.signing.signingDestinationRoot, "");
+			if (!destination.exists()) {
+				destination.mkdirs();
+			}
+			return destination
+		}
 	}
 
+    private File getInfoPlistFile() {
+		return new File(getAppContentPath() + "Info.plist")
+    }
 
+	private String getAppContentPath() {
 
+		return getAppContentPath(appBundles.last())
+	}
 
+	private String getAppContentPath(File bundle) {
+		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+			return bundle.absolutePath + "/"
+		}
+		return bundle.absolutePath + "/Contents/"
+	}
 }

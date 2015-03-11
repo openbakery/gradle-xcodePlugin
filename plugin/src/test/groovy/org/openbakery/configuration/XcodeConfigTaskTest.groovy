@@ -53,7 +53,7 @@ class XcodeConfigTaskTest {
 
 
 	void mockFindSimctl() {
-		def commandList = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
+		def commandList = ["xcrun", "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]
 		commandRunnerMock.runWithResult(commandList).returns("/Applications/Xcode.app/Contents/Developer/usr/bin/simctl").times(1)
 	}
 
@@ -165,7 +165,8 @@ class XcodeConfigTaskTest {
 
 
 	@Test
-	void testDeviceListXcode5_mutibleSimualtors() {
+	void testDeviceListXcode5_multipleSimulators() {
+
 		mockXcode5Version()
 		mockXcodePath();
 		mockDisplayName();

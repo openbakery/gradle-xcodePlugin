@@ -133,7 +133,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add("iphonesimulator")
+		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
 
 		def target = 'mytarget'
 		project.xcodebuild.target = target
@@ -261,7 +261,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add("iphonesimulator")
+		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
 
 		def target = 'mytarget'
 		project.xcodebuild.target = target
@@ -285,7 +285,7 @@ class XcodeBuildTaskTest {
 		addExpectedScheme()
 
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add("iphonesimulator")
+		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -304,7 +304,7 @@ class XcodeBuildTaskTest {
 		addExpectedScheme()
 
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add("iphonesimulator")
+		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
 
 		project.xcodebuild.arch = ['i368'];
 
@@ -345,7 +345,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add("iphonesimulator")
+		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
 
 		def target = 'mytarget'
 		project.xcodebuild.target = target

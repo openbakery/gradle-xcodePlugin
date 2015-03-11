@@ -29,31 +29,32 @@ class SparkleArchiveTask extends DefaultTask {
 	SparkleArchiveTask() {
 		super()
 		dependsOn(
-						XcodePlugin.XCODE_BUILD_TASK_NAME,
+						XcodePlugin.PACKAGE_TASK_NAME,
 						XcodePlugin.SPARKLE_NOTES_TASK_NAME
 		)
 		this.description = "Compresses app to ZIP when building Mac Apps with Sparkle"
 	}
-	
+
 	@TaskAction
 	def archiveApp() {
 
 		if(!project.sparkle.appDirectory.exists()) {
-		 	throw new IllegalArgumentException("Invalid app name specified for Sparkle: " + project.sparkle.appName)
+		 	throw new IllegalArgumentException("Invalid app name specified for Sparkle: " + project.sparkle.appName + " Path: " + project.sparkle.appDirectory)
 	 	}
 
 		if (!project.sparkle.outputDirectory.exists()) {
 			project.sparkle.outputDirectory.mkdirs();
 		}
 
-		def ant = new groovy.util.AntBuilder()
-		ant.zip(destfile: project.sparkle.outputDirectory.path + "/" + project.sparkle.appName +  ".zip") {
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/", dir: project.sparkle.appDirectory.path, excludes : "MacOS/*", includes : "*/**");
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/MacOS", includes : "*", filemode : 755);
-			zipfileset ( prefix:project.sparkle.fullAppName + "/Contents/Frameworks/Sparkle.framework/Resources/finish_installation.app/Contents/MacOS", dir: project.sparkle.appDirectory.path + "/Frameworks/Sparkle.framework/Resources/finish_installation.app/Contents/MacOS/", includes : "*", filemode : 755);
+		// with using ditto here symlinks in frameworks are handled correctly
+		ant.exec(failonerror: "true",
+				executable: 'ditto') {
+			arg(value: '-c')
+			arg(value: '-k')
+			arg(value: '--sequesterRsrc')
+			arg(value: '--keepParent')
+			arg(value: project.sparkle.appDirectory.path)
+			arg(value: project.sparkle.outputDirectory.path + "/" + project.sparkle.appName +  ".zip")
 		}
-		
-		ant.move(file: "releasenotes.html",  todir: project.sparkle.outputDirectory, quiet: true)
 	}
-
 }

@@ -1,7 +1,5 @@
 package org.openbakery
 
-import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.AfterMethod
