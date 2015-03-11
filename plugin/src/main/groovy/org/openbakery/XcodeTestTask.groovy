@@ -118,6 +118,36 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		// (Otherwise stderr can corrupt the stdout output)
 		commandList = ["script", "-q", "/dev/null"] + commandList
 
+		addIOSSimulatorTargets(commandList)
+
+
+		commandList.add('test');
+
+		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
+		commandRunner.setOutputFile(outputFile);
+
+		try {
+			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project)
+			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
+		} catch (CommandRunnerException ex) {
+			throw new Exception("Error attempting to run the unit tests!", ex);
+		} finally {
+			if (!parseResult(outputFile)) {
+				logger.lifecycle("Tests Failed!")
+				logger.lifecycle(getFailureFromLog(outputFile));
+				throw new Exception("Not all unit tests are successful!")
+			} 
+			logger.lifecycle("Done")
+		}
+	}
+
+
+	void addIOSSimulatorTargets(ArrayList commandList) {
+		if (project.xcodebuild.sdk.startsWith("macosx")) {
+			return
+		}
+
 		for (Destination destination in project.xcodebuild.availableDestinations) {
 
 			def destinationParameters = []
@@ -145,29 +175,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 		}
-
-
-		commandList.add('test');
-
-		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
-		commandRunner.setOutputFile(outputFile);
-
-		try {
-			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project)
-			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
-		} catch (CommandRunnerException ex) {
-			throw new Exception("Error attempting to run the unit tests!", ex);
-		} finally {
-			if (!parseResult(outputFile)) {
-				logger.lifecycle("Tests Failed!")
-				logger.lifecycle(getFailureFromLog(outputFile));
-				throw new Exception("Not all unit tests are successful!")
-			} 
-			logger.lifecycle("Done")
-		}
 	}
-
 
 	String getFailureFromLog(File outputFile) {
 

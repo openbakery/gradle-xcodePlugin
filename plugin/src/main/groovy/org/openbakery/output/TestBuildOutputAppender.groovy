@@ -64,6 +64,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void checkTestSuite(String line) {
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
+			if (!testsRunning) {
+				output.append("\nStart unit tests\n\n")
+			}
 			testsRunning = true
 			startDestination()
 		}

@@ -1,10 +1,12 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.testfixtures.ProjectBuilder
+import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
@@ -12,6 +14,7 @@ import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
 
+import static org.hamcrest.Matchers.anything
 import static org.hamcrest.core.IsAnything.anything
 
 /**
@@ -28,6 +31,10 @@ class XcodeTestTaskTest {
 
 	Destination destinationPad
 	Destination destinationPhone
+
+	List<String> expectedCommandList
+
+	File outputDirectory
 
 	Destination createDestination(String name, String id) {
 		Destination destination = new Destination()
@@ -51,7 +58,6 @@ class XcodeTestTaskTest {
 		xcodeTestTask = project.tasks.findByName('test');
 		xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
 
-		xcodeTestTask.setOutputDirectory(new File("build/test"));
 
 		destinationPad = createDestination("iPad", "iPad Air")
 		destinationPhone = createDestination("iPhone", "iPhone 4s")
@@ -68,14 +74,45 @@ class XcodeTestTaskTest {
 		}
 
 
-		File outputDirectory = new File("build/test");
+		outputDirectory = new File("build/test");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs();
 		}
+		xcodeTestTask.setOutputDirectory(outputDirectory);
+		File xcodebuildOutput = new File(outputDirectory, 'xcodebuild-output.txt')
+		commandRunnerMock.setOutputFile(xcodebuildOutput.absoluteFile)
+		FileUtils.writeStringToFile(xcodebuildOutput, "dummy")
+
+		expectedCommandList?.clear()
+		expectedCommandList = ['script', '-q', '/dev/null', "xcodebuild"]
+
 
 	}
 
-	
+	@AfterMethod
+	def cleanup() {
+		FileUtils.deleteDirectory(outputDirectory)
+	}
+
+	def void addExpectedScheme() {
+		project.xcodebuild.scheme = 'myscheme'
+		expectedCommandList.add("-scheme")
+		expectedCommandList.add(project.xcodebuild.scheme)
+
+		project.xcodebuild.workspace = 'myworkspace'
+		expectedCommandList.add("-workspace")
+		expectedCommandList.add(project.xcodebuild.workspace)
+
+	}
+
+	def void addExpectedDefaultDirs() {
+		String currentDir = new File('').getAbsolutePath()
+		expectedCommandList.add("DSTROOT=" + currentDir + "${File.separator}build${File.separator}dst")
+		expectedCommandList.add("OBJROOT=" + currentDir + "${File.separator}build${File.separator}obj")
+		expectedCommandList.add("SYMROOT=" + currentDir + "${File.separator}build${File.separator}sym")
+		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + currentDir + "${File.separator}build${File.separator}shared")
+	}
+
 
 	TestResult testResult(String name, boolean success) {
 		TestResult testResult = new TestResult()
@@ -87,7 +124,6 @@ class XcodeTestTaskTest {
 
 	@Test
 	void createXMLOuput() {
-
 
 		TestClass testClass = new TestClass();
 		testClass.name = "HelloWorldTest"
@@ -191,5 +227,65 @@ class XcodeTestTaskTest {
 
 		assert xcodeTestTask.numberSuccess() == 2
 		assert xcodeTestTask.numberErrors() == 0
+	}
+
+
+	@Test
+	void testCommandWithoutSimulator() {
+
+		project.xcodebuild.sdk = 'macosx'
+		project.xcodebuild.target = 'Test';
+
+		addExpectedScheme()
+
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add("macosx")
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+		addExpectedDefaultDirs()
+
+		expectedCommandList.add("test")
+
+		commandRunnerMock.run(project.projectDir.absolutePath, expectedCommandList, null, anything()).times(1)
+
+		mockControl.play {
+			xcodeTestTask.test()
+		}
+
+	}
+
+
+
+	@Test
+	void testCommandForIOS() {
+
+		project.xcodebuild.sdk = 'iphonesimulator'
+		project.xcodebuild.target = 'Test';
+
+		addExpectedScheme()
+
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add("iphonesimulator")
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+		addExpectedDefaultDirs()
+
+		expectedCommandList.add('-destination')
+		expectedCommandList.add('platform=iPhoneSimulator,id=iPad Air')
+		expectedCommandList.add('-destination')
+		expectedCommandList.add('platform=iPhoneSimulator,id=iPhone 4s')
+
+		expectedCommandList.add("test")
+
+		commandRunnerMock.run(project.projectDir.absolutePath, expectedCommandList, null, anything()).times(1)
+
+		mockControl.play {
+			xcodeTestTask.test()
+		}
+
 	}
 }

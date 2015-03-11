@@ -263,7 +263,7 @@ class XcodeBuildPluginExtension {
 						break;
 				}
 			}
-		} else {
+		} else if (this.destinations != null) {
 			// on the device build add the given destinations
 			availableDestinations.addAll(this.destinations)
 

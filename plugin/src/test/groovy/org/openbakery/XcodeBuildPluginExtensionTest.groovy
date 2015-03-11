@@ -279,4 +279,13 @@ class XcodeBuildPluginExtensionTest {
 		}
 	}
 
+
+
+	@Test
+	void testAvailableDestinations() {
+
+		extension.sdk = "macosx"
+
+		assert extension.getAvailableDestinations().isEmpty()
+	}
 }
