@@ -34,6 +34,10 @@ class PackageTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
 		}
 
+		if (project.xcodebuild.signing.identity == null) {
+					throw new IllegalArgumentException("cannot signed with unknown signing identity");
+				}
+
 		File payloadPath = createPayload();
 
 		def applicationName = getApplicationNameFromArchive()

@@ -365,4 +365,15 @@ class PackageTaskTest {
 	}
 
 
+	@Test(expectedExceptions = IllegalArgumentException)
+	void hasNoSigning() {
+		project.xcodebuild.signing = null
+		packageTask.packageApplication()
+	}
+
+	@Test(expectedExceptions = IllegalArgumentException)
+	void hasNoSigningIdentity() {
+		project.xcodebuild.signing.identity = null
+		packageTask.packageApplication()
+	}
 }

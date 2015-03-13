@@ -194,7 +194,7 @@ class XcodeBuildTaskTest {
 		def signIdentity = ""
 		project.xcodebuild.signing.identity = ""
 
-		addExpectedNoSigning()
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)

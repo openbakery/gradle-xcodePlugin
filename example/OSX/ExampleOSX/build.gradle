@@ -2,8 +2,8 @@ buildscript {
 
 	repositories {
 		maven {
-			//url('http://repository.openbakery.org/')
-			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			url('http://repository.openbakery.org/')
+			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
