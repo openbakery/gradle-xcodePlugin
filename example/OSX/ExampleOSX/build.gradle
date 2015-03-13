@@ -2,8 +2,8 @@ buildscript {
 
 	repositories {
 		maven {
-			url('http://repository.openbakery.org/')
-			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			//url('http://repository.openbakery.org/')
+			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -20,5 +20,10 @@ xcodebuild {
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	sdk = 'macosx'
+  additionalParameters = [
+    'CODE_SIGNING_REQUIRED=NO',
+    'CODE_SIGN_IDENTITY='
+  ]
+  
 }
 

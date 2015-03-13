@@ -70,7 +70,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -98,11 +98,16 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + currentDir + "${File.separator}build${File.separator}shared")
 	}
 
+	void addExpectNoSigning() {
+		expectedCommandList.add("CODE_SIGN_IDENTITY=")
+		expectedCommandList.add("CODE_SIGNING_REQUIRED=NO")
+	}
+
 	@Test
 	void run_command_with_expected_scheme_and_expected_dirs() {
 		addExpectedScheme()
 
-		project.xcodebuild.sdk = 'iphoneos';
+		project.xcodebuild.sdk = 'iphoneSimulator';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
 
@@ -176,6 +181,30 @@ class XcodeBuildTaskTest {
 	}
 
 	@Test
+	public void run_command_without_signIdentity() {
+		addExpectedScheme()
+		project.xcodebuild.sdk = 'iphoneos';
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add(project.xcodebuild.sdk)
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+
+		def signIdentity = ""
+		project.xcodebuild.signing.identity = ""
+
+		addExpectedNoSigning()
+		addExpectedDefaultDirs()
+
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
+
+		mockControl.play {
+			xcodeBuildTask.xcodebuild()
+		}
+	}
+
+	@Test
 	public void run_command_with_arch() {
 		addExpectedScheme()
 
@@ -185,6 +214,8 @@ class XcodeBuildTaskTest {
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
+
+		addExpectNoSigning()
 
 		project.xcodebuild.arch = ['myarch']
 
@@ -212,6 +243,8 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
+		addExpectNoSigning()
+
 		project.xcodebuild.arch = ['armv', 'armv7s']
 
 		expectedCommandList.add("ARCHS=armv armv7s")
@@ -237,7 +270,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-workspace")
 		expectedCommandList.add("myworkspace")
 
-		project.xcodebuild.sdk = 'iphoneos';
+		project.xcodebuild.sdk = 'iphoneSimulator';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add(project.xcodebuild.sdk)
 
