@@ -24,6 +24,13 @@ xcodebuild {
     'CODE_SIGNING_REQUIRED=NO',
     'CODE_SIGN_IDENTITY='
   ]
+
+	signing {
+		identity = signingIdentity                       // e.g. 'Mac Developer: ...
+		certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
+		certificatePassword = signingCertificatePassword // e.g. 'secret'
+		mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+	}
   
 }
 
