@@ -27,35 +27,35 @@
   
 * _signing_ - signing configuration that should be used when building for the device
 
-  * identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)'
-	
-		default value: empty
+* identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)'
 
-	* _mobileProvisionURI_ - URI where the mobile provision profile is located that should be used when signing the app
+	default value: empty
 
-		default value: empty
+* _mobileProvisionURI_ - URI where the mobile provision profile is located that should be used when signing the app
 
-	* _certificateURI_ - Uri to the certificate that should be used to sign the app
+	default value: empty
 
-		default value: empty
+* _certificateURI_ - Uri to the certificate that should be used to sign the app
 
-	* _certificatePassword_ - Password for the certificate file
+	default value: empty
 
-		default value: empty
+* _certificatePassword_ - Password for the certificate file
 
-	* _keychainPassword_ - Password for the chain that is created
+	default value: empty
 
-		default value: "This_is_the_default_keychain_password"
+* _keychainPassword_ - Password for the chain that is created
 
-	* _keychain_ - Parameter to specify an existing keychain. If this parameters is set _no_ keychain is created and also the certificate is _not_ imported.
+	default value: "This_is_the_default_keychain_password"
 
-		default value: empty
+* _keychain_ - Parameter to specify an existing keychain. If this parameters is set _no_ keychain is created and also the certificate is _not_ imported.
 
-		Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
+	default value: empty
 
-	* _timeout_ - A custom timeout in seconds before the keychain automatically locks. If your build take longer than 5 minutes then set this value so that the keychain remains accessible for signing.
+	Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
-		default value: empty (= 300 seconds)
+* _timeout_ - A custom timeout in seconds before the keychain automatically locks. If your build take longer than 5 minutes then set this value so that the keychain remains accessible for signing.
+
+	default value: empty (= 300 seconds)
 
 ### Unit Test Settings
 

@@ -135,7 +135,7 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 			return;
 		}
 
-		if (project.hockeyapp.releaseType != '1') {
+		if (project.hockeyapp.releaseType == '1') {
 			logger.debug("releaseType is appstore so do not upload the provisioning profile");
 			return;
 		}
