@@ -144,7 +144,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	void addIOSSimulatorTargets(ArrayList commandList) {
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_MACOSX)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
 			return
 		}
 

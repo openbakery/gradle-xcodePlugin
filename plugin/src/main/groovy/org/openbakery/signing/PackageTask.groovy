@@ -25,7 +25,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
@@ -207,7 +207,7 @@ class PackageTask extends AbstractDistributeTask {
 	private void embedProvisioningProfileToBundle(File bundle) {
         File infoPlist
 
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -239,7 +239,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createPayload() throws IOException {
 
-        if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+        if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 		    return createSigningDestination("Payload")
         } else {
 
@@ -262,7 +262,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private String getAppContentPath(File bundle) {
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			return bundle.absolutePath + "/"
 		}
 		return bundle.absolutePath + "/Contents/"

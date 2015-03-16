@@ -56,7 +56,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.target)
 		}
 
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		if (!project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
 
 			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
 				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
@@ -90,7 +90,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + project.xcodebuild.signing.keychainPathInternal.path);
 		}
 

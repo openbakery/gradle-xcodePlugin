@@ -2,8 +2,8 @@ buildscript {
 
 	repositories {
 		maven {
-			url('http://repository.openbakery.org/')
-			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			//url('http://repository.openbakery.org/')
+			url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -20,17 +20,28 @@ xcodebuild {
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	sdk = 'macosx'
-  additionalParameters = [
-    'CODE_SIGNING_REQUIRED=NO',
-    'CODE_SIGN_IDENTITY='
-  ]
-
-	signing {
-		identity = signingIdentity                       // e.g. 'Mac Developer: ...
-		certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
-		certificatePassword = signingCertificatePassword // e.g. 'secret'
-		mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-	}
   
+}
+
+task me << {
+	println xcodebuild.signing
+}
+
+task release(dependsOn: 'package') {
+	description = 'Performs a release build and signed the created app using the provided sign settings'
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+
+	if (taskGraph.hasTask(release)) {
+		xcodebuild {
+			signing {
+				identity = signingIdentity                       // e.g. 'Mac Developer: ...
+				certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
+				certificatePassword = signingCertificatePassword // e.g. 'secret'
+				mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+	} 
 }
 

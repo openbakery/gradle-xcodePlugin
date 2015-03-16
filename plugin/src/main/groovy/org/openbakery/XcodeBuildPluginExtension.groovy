@@ -148,11 +148,11 @@ class XcodeBuildPluginExtension {
 
 
 	boolean isDeviceBuild() {
-		return this.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)
+		return this.isSDK(XcodePlugin.SDK_IPHONEOS)
 	}
 
 	boolean isSimulatorBuild() {
-		return this.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)
+		return this.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
 	}
 
 
@@ -431,4 +431,8 @@ class XcodeBuildPluginExtension {
 		return archiveDirectory
 	}
 
+
+	boolean isSDK(String expectedSDK) {
+		return sdk.toLowerCase().startsWith(expectedSDK)
+	}
 }

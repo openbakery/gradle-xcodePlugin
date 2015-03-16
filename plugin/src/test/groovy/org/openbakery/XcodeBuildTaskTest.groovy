@@ -204,6 +204,31 @@ class XcodeBuildTaskTest {
 		}
 	}
 
+
+	@Test
+	public void run_command_without_signIdentity_osx() {
+		addExpectedScheme()
+		project.xcodebuild.sdk = 'macosx';
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add(project.xcodebuild.sdk)
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+
+		def signIdentity = ""
+		project.xcodebuild.signing.identity = ""
+
+		addExpectNoSigning()
+		addExpectedDefaultDirs()
+
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
+
+		mockControl.play {
+			xcodeBuildTask.xcodebuild()
+		}
+	}
+
 	@Test
 	public void run_command_with_arch() {
 		addExpectedScheme()

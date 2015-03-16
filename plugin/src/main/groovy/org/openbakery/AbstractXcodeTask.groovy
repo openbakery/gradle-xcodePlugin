@@ -163,7 +163,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File plugins
 
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			plugins = new File(appBundle, "PlugIns")
 		} else {
 			plugins = new File(appBundle, "Contents/Frameworks")

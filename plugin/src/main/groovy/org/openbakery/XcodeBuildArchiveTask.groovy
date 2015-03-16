@@ -81,7 +81,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 		File appInfoPlist
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_MACOSX)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
 			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Contents/Info.plist")
 		} else {
 			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
@@ -101,7 +101,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		List icons = new ArrayList<String>()
 
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			icons = getiOSIcons()
 		} else {
 			icons = getMacOSXIcons(appInfoPlist)
@@ -197,7 +197,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	@TaskAction
 	def archive() {
 
-		if (project.xcodebuild.sdk.startsWith(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.debug("Create zip archive")
 
 			// create zip archive
