@@ -62,7 +62,7 @@ class PackageTaskTest {
 		//infoPlist = new File(project.buildDir, project.xcodebuild.infoPlist)
 		//FileUtils.writeStringToFile(infoPlist, "dummy")
 
-		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
+		File payloadDirectory = new File(packageTask.outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 	}
 
@@ -127,7 +127,7 @@ class PackageTaskTest {
 
 	void mockCodesignSwiftCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
+		File payloadApp = new File(packageTask.outputPath, path)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -146,7 +146,7 @@ class PackageTaskTest {
 
 	void mockCodesignCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
+		File payloadApp = new File(packageTask.outputPath, path)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -190,7 +190,7 @@ class PackageTaskTest {
 		mockControl.play {
 			packageTask.packageApplication()
 		}
-		File payloadDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload")
+		File payloadDirectory = new File(packageTask.outputPath, "Payload")
 		assert payloadDirectory.exists()
 	}
 
@@ -234,7 +234,7 @@ class PackageTaskTest {
 			packageTask.packageApplication()
 		}
 
-		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload/Example.app/embedded.mobileprovision")
+		File embedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision")
 		assert embedProvisioningProfile.exists()
 
 		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(mobileprovision)
@@ -254,12 +254,12 @@ class PackageTaskTest {
 			packageTask.packageApplication()
 		}
 
-		File firstEmbedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload/Example.app/embedded.mobileprovision")
+		File firstEmbedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision")
 		assert firstEmbedProvisioningProfile.exists()
 
 		assert FileUtils.checksumCRC32(firstEmbedProvisioningProfile) == FileUtils.checksumCRC32(firstMobileprovision)
 
-		File secondEmbedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Payload/Example.app/PlugIns/ExampleTodayWidget.appex/embedded.mobileprovision")
+		File secondEmbedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/PlugIns/ExampleTodayWidget.appex/embedded.mobileprovision")
 		assert secondEmbedProvisioningProfile.exists()
 
 		assert FileUtils.checksumCRC32(secondEmbedProvisioningProfile) == FileUtils.checksumCRC32(secondMobileprovision)

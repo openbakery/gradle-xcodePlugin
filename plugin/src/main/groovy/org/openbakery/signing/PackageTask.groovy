@@ -14,6 +14,8 @@ class PackageTask extends AbstractDistributeTask {
 
 
 	public static final String PACKAGE_PATH = "package"
+	File outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
+
 
 	private List<File> appBundles
 
@@ -35,29 +37,29 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		if (project.xcodebuild.signing.identity == null) {
-					throw new IllegalArgumentException("cannot signed with unknown signing identity");
-				}
+			throw new IllegalArgumentException("cannot signed with unknown signing identity");
+		}
 
-		File payloadPath = createPayload();
+		File applicationFolder = createApplicationFolder();
 
 		def applicationName = getApplicationNameFromArchive()
-		copy(getApplicationBundleDirectory(), payloadPath)
+		copy(getApplicationBundleDirectory(), applicationFolder)
 
 
 		def applicationBundleName = applicationName + ".app"
 
 
-		appBundles = getAppBundles(payloadPath, applicationBundleName)
+		appBundles = getAppBundles(applicationFolder, applicationBundleName)
 
-		File resourceRules = new File(payloadPath, applicationBundleName + "/ResourceRules.plist")
+		File resourceRules = new File(applicationFolder, applicationBundleName + "/ResourceRules.plist")
 		if (resourceRules.exists()) {
 			resourceRules.delete()
 		}
 
 
-        File infoPlist = getInfoPlistFile()
+		File infoPlist = getInfoPlistFile()
 
-        try {
+		try {
 			plistHelper.setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
 		} catch (CommandRunnerException ex) {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
@@ -75,7 +77,7 @@ class PackageTask extends AbstractDistributeTask {
 			codesign(bundle)
 		}
 
-		createIpa(payloadPath, applicationBundleName);
+		createIpa(applicationFolder, applicationBundleName);
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -128,7 +130,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private void createIpa(File payloadPath, String applicationBundleName) {
 
-		File ipaBundle = new File(project.getBuildDir(), PACKAGE_PATH + "/" + getApplicationNameFromArchive() + ".ipa")
+		File ipaBundle = new File(outputPath, getApplicationNameFromArchive() + ".ipa")
 		if (!ipaBundle.parentFile.exists()) {
 			ipaBundle.parentFile.mkdirs()
 		}
@@ -229,7 +231,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private File createSigningDestination(String name) throws IOException {
-		File destination = new File(project.xcodebuild.signing.signingDestinationRoot, name);
+		File destination = new File(outputPath, name);
 		if (destination.exists()) {
 			FileUtils.deleteDirectory(destination);
 		}
@@ -237,17 +239,16 @@ class PackageTask extends AbstractDistributeTask {
 		return destination;
 	}
 
-	private File createPayload() throws IOException {
+	private File createApplicationFolder() throws IOException {
 
 		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			return createSigningDestination("Payload")
 		} else {
 			// same folder as signing
-			File destination = new File(project.xcodebuild.signing.signingDestinationRoot, "");
-			if (!destination.exists()) {
-				destination.mkdirs();
+			if (!outputPath.exists()) {
+				outputPath.mkdirs()
 			}
-			return destination
+			return outputPath
 		}
 	}
 

@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -31,18 +32,18 @@ class AppstoreValidateTaskTest {
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
-
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		project.xcodebuild.xcodePath = "/Application/Xcode.app"
 
-		task = project.tasks.findByName('appstoreValidate')
+		task = project.getTasks().getByPath(XcodePlugin.APPSTORE_VALIDATE_TASK_NAME)
+
 		task.setProperty("commandRunner", commandRunnerMock)
 
 
-		ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
+		ipaBundle = new File(project.buildDir, "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")
 
 	}

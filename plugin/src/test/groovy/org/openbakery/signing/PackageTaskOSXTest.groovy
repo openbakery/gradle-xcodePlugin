@@ -26,7 +26,7 @@ class PackageTaskOSXTest {
 	File provisionLibraryPath
 	File projectDir
 	File infoPlist
-	File payloadAppDirectory
+	File appDirectory
 	File archiveDirectory
 	File provisionProfile
 
@@ -40,7 +40,6 @@ class PackageTaskOSXTest {
 
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
-
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
@@ -60,7 +59,7 @@ class PackageTaskOSXTest {
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
-		payloadAppDirectory = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app");
+		appDirectory = new File(packageTask.outputPath, "Example.app");
 
 		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 	}
@@ -79,7 +78,7 @@ class PackageTaskOSXTest {
 		}
 
 		// has to be same folder as signing for MacOSX
-		assert project.xcodebuild.signing.signingDestinationRoot.exists()
+		assert packageTask.outputPath.exists()
 	}
 
 	@Test
@@ -90,7 +89,7 @@ class PackageTaskOSXTest {
 		mockControl.play {
 			packageTask.packageApplication()
 		}
-		assert payloadAppDirectory.exists()
+		assert appDirectory.exists()
 	}
 
 	@Test
@@ -102,7 +101,7 @@ class PackageTaskOSXTest {
 			packageTask.packageApplication()
 		}
 
-		assert !(new File(payloadAppDirectory, "ResourceRules.plist")).exists()
+		assert !(new File(appDirectory, "ResourceRules.plist")).exists()
 	}
 
 	@Test
@@ -142,7 +141,7 @@ class PackageTaskOSXTest {
 			packageTask.packageApplication()
 		}
 
-		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app/Contents/embedded.provisionprofile")
+		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
 		assert embedProvisioningProfile.exists()
 
 		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
@@ -159,7 +158,7 @@ class PackageTaskOSXTest {
 			packageTask.packageApplication()
 		}
 
-		File embedProvisioningProfile = new File(project.xcodebuild.signing.signingDestinationRoot, "Example.app/Contents/embedded.provisionprofile")
+		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
 		assert embedProvisioningProfile.exists()
 
 		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
@@ -187,7 +186,7 @@ class PackageTaskOSXTest {
 			framworkFile.mkdirs()
 		}
 
-		File infoPlist = new File(payloadAppDirectory, "Contents/Info.plist")
+		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
 
 
 		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
@@ -223,7 +222,7 @@ class PackageTaskOSXTest {
 
 	void mockCodesignCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
+		File payloadApp = new File(packageTask.outputPath, path)
 
 		def commandList = [
 				"/usr/bin/codesign",
