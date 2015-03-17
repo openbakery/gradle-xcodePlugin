@@ -39,6 +39,7 @@ class InfoPlistModifyTaskTest {
 
 		task = project.tasks.findByName('infoplistModify')
 		task.setProperty("commandRunner", commandRunnerMock)
+		task.plistHelper = new PlistHelper(project, commandRunnerMock)
 
 		infoPlist = new File(task.project.projectDir, "App-Info.plist")
 		FileUtils.writeStringToFile(infoPlist, "dummy")
@@ -52,15 +53,27 @@ class InfoPlistModifyTaskTest {
 	}
 
 
+	void mockCommand(String command) {
+
+		List<String> commandList
+		commandList?.clear()
+		commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", command]
+		commandRunnerMock.run(commandList).times(1)
+
+	}
+
+	void mockGetValue(String value, String result) {
+
+		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :" + value]
+		commandRunnerMock.runWithResult(commandList).returns(result)
+	}
+
+
 	@Test
 	void testModifyBundleIdentifier() {
 		project.infoplist.bundleIdentifier = 'org.openbakery.Example'
 
-		List<String> commandList
-		commandList?.clear()
-		commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Set :CFBundleIdentifier " + project.infoplist.bundleIdentifier]
-		commandRunnerMock.run(commandList).times(1)
-
+		mockCommand("Set :CFBundleIdentifier " + project.infoplist.bundleIdentifier)
 
 		mockControl.play {
 			task.prepare()
@@ -111,6 +124,21 @@ class InfoPlistModifyTaskTest {
 		commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Set :CFBundleVersion 1.0.0"]
 		commandRunnerMock.run(commandList).times(1)
 
+
+		mockControl.play {
+			task.prepare()
+		}
+
+	}
+
+
+	@Test
+	void testModifyShortVersion() {
+		project.infoplist.shortVersionString = '1.2.3'
+
+		mockGetValue("CFBundleShortVersionString", "1.0.0")
+
+		mockCommand("Set :CFBundleShortVersionString 1.2.3")
 
 		mockControl.play {
 			task.prepare()

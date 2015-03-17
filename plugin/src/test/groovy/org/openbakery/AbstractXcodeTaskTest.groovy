@@ -37,6 +37,8 @@ class AbstractXcodeTaskTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+
+		xcodeTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 	}
 
 
@@ -53,7 +55,7 @@ class AbstractXcodeTaskTest {
 
 		String result;
 		mockControl.play {
-			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier", commandRunnerMock)
+			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
 		}
 
 		assert result.equals("com.example.Example");
@@ -73,7 +75,7 @@ class AbstractXcodeTaskTest {
 
 		def result;
 		mockControl.play {
-			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier", commandRunnerMock)
+			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
 		}
 
 
@@ -90,7 +92,7 @@ class AbstractXcodeTaskTest {
 
 		def result;
 		mockControl.play {
-			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIconFiles", commandRunnerMock)
+			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIconFiles")
 		}
 		assert result == null
 	}

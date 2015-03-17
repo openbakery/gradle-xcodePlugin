@@ -288,4 +288,19 @@ class XcodeBuildPluginExtensionTest {
 
 		assert extension.getAvailableDestinations().isEmpty()
 	}
+
+	@Test
+	void testIsSDK() {
+
+		extension.sdk = XcodePlugin.SDK_MACOSX
+		assert extension.isSDK(XcodePlugin.SDK_MACOSX)
+
+		extension.sdk = "iphoneos8.1"
+		assert extension.isSDK(XcodePlugin.SDK_IPHONEOS)
+
+
+		extension.sdk = "iphonesimulator"
+		assert extension.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+
+	}
 }

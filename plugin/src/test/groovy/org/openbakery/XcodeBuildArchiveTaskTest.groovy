@@ -33,6 +33,8 @@ class XcodeBuildArchiveTaskTest {
 
 	@BeforeMethod
 	void setup() {
+		mockControl = new GMockController()
+		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -45,6 +47,8 @@ class XcodeBuildArchiveTaskTest {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
 
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
@@ -182,6 +186,8 @@ class XcodeBuildArchiveTaskTest {
 	@Test
 	void createInfoPlist() {
 
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, new CommandRunner())
+
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
 		xcodeBuildArchiveTask.archive()
@@ -275,9 +281,6 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void convertInfoPlistToBinary() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
-		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
 
 		File infoPlist = new File(appDirectory, "Info.plist")
 		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");

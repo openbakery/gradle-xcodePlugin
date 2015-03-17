@@ -38,27 +38,26 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		logger.lifecycle("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
-			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier, commandRunner)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier)
 		}
 
 		// add suffix to bundleIdentifier
 		if (project.infoplist.bundleIdentifierSuffix != null) {
-			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier", commandRunner)
+			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 
-			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix, commandRunner)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
 
 		}
 
 		// Modify bundle bundleDisplayName
 		if (project.infoplist.bundleDisplayName != null) {
-			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName, commandRunner)
+			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName)
 		}
 
 		// add suffix to bundleDisplayName
 		if (project.infoplist.bundleDisplayNameSuffix != null) {
-			def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist, "CFBundleDisplayName", commandRunner)
-			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix, commandRunner)
-
+			def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist, "CFBundleDisplayName")
+			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix)
 		}
 
 		logger.debug("project.infoplist.version: {}", project.infoplist.version)
@@ -68,7 +67,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 		for(String command in project.infoplist.commands) {
-			plistHelper.setValueForPlist(infoPlist, command, commandRunner)
+			plistHelper.setValueForPlist(infoPlist, command)
 		}
 
 	}
@@ -83,7 +82,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		if (project.infoplist.version != null) {
 			version = project.infoplist.version
 		} else {
-			version = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion", commandRunner)
+			version = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion")
 		}
 
 		if (project.infoplist.versionSuffix) {
@@ -95,7 +94,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		}
 
 		logger.debug("Modify CFBundleVersion to {}", version)
-		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", version, commandRunner)
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", version)
 	}
 
 
@@ -106,7 +105,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		def shortVersionString
 		try {
-			shortVersionString = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString", commandRunner)
+			shortVersionString = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString")
 		} catch (IllegalStateException ex) {
 			// no CFBundleShortVersionString exists so noting can be modified!
 			return
@@ -124,7 +123,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		}
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
-		plistHelper.setValueForPlist.setValueForPlist(infoPlist, "CFBundleShortVersionString", shortVersionString, commandRunner)
+		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", shortVersionString)
 
 	}
 

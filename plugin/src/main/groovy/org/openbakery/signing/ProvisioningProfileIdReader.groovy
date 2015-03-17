@@ -27,8 +27,7 @@ import java.text.DateFormat
 
 class ProvisioningProfileIdReader {
 
-    protected CommandRunner commandRunner
-
+	protected CommandRunner commandRunner
 	private PlistHelper plistHelper
 
 
@@ -38,20 +37,18 @@ class ProvisioningProfileIdReader {
 
 	public Project project
 
-    private File provisioningProfile
+	private File provisioningProfile
 
 	ProvisioningProfileIdReader(def provisioningProfile, def project) {
-
-        super()
+		super()
 
 		String text = load(provisioningProfile)
 		config = new XMLPropertyListConfiguration()
-
 		config.load(new StringReader(text))
 
-        commandRunner = new CommandRunner()
+		commandRunner = new CommandRunner()
 
-		plistHelper = new PlistHelper(project)
+		plistHelper = new PlistHelper(project, commandRunner)
 
 		this.project = project
 
@@ -62,8 +59,8 @@ class ProvisioningProfileIdReader {
 		if (!(provisioningProfile instanceof File)) {
 			this.provisioningProfile = new File(provisioningProfile.toString())
 		} else {
-            this.provisioningProfile = provisioningProfile
-        }
+			this.provisioningProfile = provisioningProfile
+		}
 
 
 		if (!this.provisioningProfile.exists()) {
@@ -117,27 +114,27 @@ class ProvisioningProfileIdReader {
 
 	String getApplicationIdentifier() {
 
-        String value
+		String value
 
-        if (this.provisioningProfile.path.endsWith(".mobileprovision")) {
-            value = config.getProperty("Entitlements.application-identifier")
-        } else {
+		if (this.provisioningProfile.path.endsWith(".mobileprovision")) {
+			value = config.getProperty("Entitlements.application-identifier")
+		} else {
 
-            // unpack provisioning profile to plain plist
-            String extractedPlist = commandRunner.runWithResult([   "security",
-                                                                    "cms" ,
-                                                                    "-D",
-                                                                    "-i",
-                                                                    provisioningProfile.path]);
+			// unpack provisioning profile to plain plist
+			String extractedPlist = commandRunner.runWithResult(["security",
+																													 "cms",
+																													 "-D",
+																													 "-i",
+																													 provisioningProfile.path]);
 
 			// read temporary plist file
 			File tempPlist = new File(project.buildDir.absolutePath + "/tmp/tmp.plist")
 
-            // write temporary plist to disk
-            FileUtils.writeStringToFile(tempPlist, extractedPlist)
+			// write temporary plist to disk
+			FileUtils.writeStringToFile(tempPlist, extractedPlist)
 
-			value = plistHelper.getValueFromPlist(tempPlist, "Entitlements:com.apple.application-identifier", commandRunner)
-        }
+			value = plistHelper.getValueFromPlist(tempPlist, "Entitlements:com.apple.application-identifier")
+		}
 
 		String prefix = getApplicationIdentifierPrefix() + "."
 		if (value.startsWith(prefix)) {
@@ -145,7 +142,6 @@ class ProvisioningProfileIdReader {
 		}
 		return value;
 	}
-
 
 
 }

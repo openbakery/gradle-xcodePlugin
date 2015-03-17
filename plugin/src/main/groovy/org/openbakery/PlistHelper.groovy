@@ -12,9 +12,11 @@ class PlistHelper {
 	private static Logger logger = LoggerFactory.getLogger(PlistHelper.class)
 
 	private Project project
+	private CommandRunner commandRunner
 
-	PlistHelper(Project project) {
+	PlistHelper(Project project, CommandRunner commandRunner) {
 		this.project = project
+		this.commandRunner = commandRunner
 	}
 /**
 	 * Reads the value for the given key from the given plist
@@ -25,7 +27,7 @@ class PlistHelper {
  	 *
 	 * @return returns the value for the given key
 	 */
-	def getValueFromPlist(plist, key, commandRunner) {
+	def getValueFromPlist(plist, key) {
 		if (plist instanceof File) {
 			plist = plist.absolutePath
 		}
@@ -56,12 +58,12 @@ class PlistHelper {
 		}
 	}
 
-	String setValueForPlist(def plist, String key, String value, CommandRunner commandRunner) {
-		setValueForPlist(plist, "Set :" + key + " " + value, commandRunner)
+	String setValueForPlist(def plist, String key, String value) {
+		setValueForPlist(plist, "Set :" + key + " " + value)
 	}
 
 
-	String setValueForPlist(def plist, String command, CommandRunner commandRunner) {
+	String setValueForPlist(def plist, String command) {
 		File infoPlistFile;
 		if (plist instanceof File) {
 			infoPlistFile = plist

@@ -15,7 +15,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	public static final String PACKAGE_PATH = "package"
 
-    private List<File> appBundles
+	private List<File> appBundles
 
 	PackageTask() {
 		super();
@@ -58,7 +58,7 @@ class PackageTask extends AbstractDistributeTask {
         File infoPlist = getInfoPlistFile()
 
         try {
-			plistHelper.setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification", commandRunner)
+			plistHelper.setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
 		} catch (CommandRunnerException ex) {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
@@ -213,7 +213,7 @@ class PackageTask extends AbstractDistributeTask {
 			infoPlist = new File(bundle, "Contents/Info.plist")
 		}
 
-		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", commandRunner)
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
 
 		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
 		if (mobileProvisionFile != null) {
@@ -239,10 +239,9 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createPayload() throws IOException {
 
-        if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
-		    return createSigningDestination("Payload")
-        } else {
-
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			return createSigningDestination("Payload")
+		} else {
 			// same folder as signing
 			File destination = new File(project.xcodebuild.signing.signingDestinationRoot, "");
 			if (!destination.exists()) {

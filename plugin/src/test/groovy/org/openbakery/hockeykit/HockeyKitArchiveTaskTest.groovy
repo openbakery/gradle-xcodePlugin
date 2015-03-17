@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
@@ -38,7 +39,7 @@ class HockeyKitArchiveTaskTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 
 		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykitArchive')
-
+		hockeyKitArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 		hockeyKitArchiveTask.setProperty("commandRunner", commandRunnerMock)
 		//PlistHelper.commandRunner = commandRunnerMock
 

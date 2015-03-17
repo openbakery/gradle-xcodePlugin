@@ -40,7 +40,6 @@ class XcodeBuildArchiveTaskOSXTest {
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 
-
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration)
 		buildOutputDirectory.mkdirs()
 
@@ -101,7 +100,7 @@ class XcodeBuildArchiveTaskOSXTest {
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 
 		// add key CFBundleIconFile
-		xcodeBuildArchiveTask.plistHelper.setValueForPlist(infoPlistInAppFile, "CFBundleIconFile", "icon", new CommandRunner())
+		xcodeBuildArchiveTask.plistHelper.setValueForPlist(infoPlistInAppFile, "CFBundleIconFile", "icon")
 
 		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons(infoPlistInAppFile)
 

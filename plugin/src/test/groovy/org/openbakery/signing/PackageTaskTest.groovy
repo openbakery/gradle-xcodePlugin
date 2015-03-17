@@ -49,7 +49,9 @@ class PackageTaskTest {
 		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
+
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
 

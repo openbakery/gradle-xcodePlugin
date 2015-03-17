@@ -38,9 +38,9 @@ class HockeyKitManifestTask extends AbstractHockeyKitTask {
 
 		def infoPlist = getAppBundleInfoPlist()
 
-		def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier", commandRunner)
-		def bundleVersion = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion", commandRunner)
-		def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist,"CFBundleDisplayName", commandRunner)
+		def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
+		def bundleVersion = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion")
+		def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist,"CFBundleDisplayName")
 
 		def manifestFilename = getDestinationFile(getOutputDirectory(), ".plist")
 
@@ -51,9 +51,9 @@ class HockeyKitManifestTask extends AbstractHockeyKitTask {
 			title = bundleDisplayName
 		}
 
-		def subtitle = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString", commandRunner)
+		def subtitle = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString")
 		if (subtitle == null) {
-			subtitle = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion", commandRunner)
+			subtitle = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion")
 		}
 
 		def writer = new BufferedWriter(new FileWriter(manifestFilename))

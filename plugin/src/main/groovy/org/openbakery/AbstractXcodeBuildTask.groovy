@@ -108,7 +108,5 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		return commandList;
 	}
 
-	String escapePath(String path) {
-		return path.replaceAll(" ", "\\\\\\\\\\\\ ");
-	}
+
 }

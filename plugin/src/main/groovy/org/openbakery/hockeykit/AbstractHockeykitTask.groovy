@@ -32,7 +32,7 @@ abstract class AbstractHockeyKitTask extends AbstractDistributeTask {
 	 */
 	def getOutputDirectory() {
 		def infoplist = getAppBundleInfoPlist()
-		def bundleIdentifier = plistHelper.getValueFromPlist(infoplist, "CFBundleIdentifier", commandRunner)
+		def bundleIdentifier = plistHelper.getValueFromPlist(infoplist, "CFBundleIdentifier")
 		File outputDirectory = new File(project.hockeykit.outputDirectory, bundleIdentifier + "/" + project.hockeykit.versionDirectoryName)
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()

@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.testng.annotations.AfterMethod
@@ -50,10 +51,9 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
-		//PlistHelper.commandRunner = commandRunnerMock
-
 
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");

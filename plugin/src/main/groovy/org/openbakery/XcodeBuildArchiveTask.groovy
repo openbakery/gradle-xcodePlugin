@@ -62,7 +62,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		ArrayList<String> icons = new ArrayList<>();
 
-		def icnsFileName = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIconFile", commandRunner)
+		def icnsFileName = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIconFile")
 
 		if (icnsFileName == null || icnsFileName == "") {
 			return icons
@@ -91,13 +91,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		def name = project.xcodebuild.bundleName
 		def schemeName = name
 		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
-		def bundleIdentifier = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIdentifier", commandRunner)
+		def bundleIdentifier = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIdentifier")
 		int time = System.currentTimeMillis() / 1000;
 
 		def creationDate = formatDate(new Date());
 
-		def shortBundleVersion = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleShortVersionString", commandRunner)
-		def bundleVersion = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleVersion", commandRunner)
+		def shortBundleVersion = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleShortVersionString")
+		def bundleVersion = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleVersion")
 
 		List icons = new ArrayList<String>()
 

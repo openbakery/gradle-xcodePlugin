@@ -36,7 +36,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
 
-		plistHelper = new PlistHelper(project)
+		plistHelper = new PlistHelper(project, commandRunner)
 	}
 
 
