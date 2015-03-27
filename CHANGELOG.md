@@ -3,6 +3,7 @@
 
 Bugfixes
 - Fixed method call on null object: Issue #164
+- Fixed logic error: Issue #156
 
 
 ## 0.10.2 (Februar 20, 2015)
