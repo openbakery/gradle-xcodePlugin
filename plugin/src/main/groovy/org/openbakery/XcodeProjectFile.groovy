@@ -70,7 +70,7 @@ class XcodeProjectFile {
 					project.xcodebuild.productName = config.getString("objects." + target + ".productName")
 				}
 				String type = config.getString("objects." + target + ".productType")
-				if (type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
+				if (StringUtils.isNotEmpty(type) &&  type.equalsIgnoreCase("com.apple.product-type.app-extension")) {
 					project.xcodebuild.productType = "appex"
 				}
 
