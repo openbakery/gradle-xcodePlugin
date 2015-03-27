@@ -25,7 +25,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.10.2
+### Current stable version is 0.10.2.1
 
 0.9.15 and 0.10.1 supports Xcode 5, Xcode 6 and Xcode 6.1
 
