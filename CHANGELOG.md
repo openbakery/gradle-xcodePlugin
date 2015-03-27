@@ -1,3 +1,10 @@
+## 0.10.2.1 (March 27, 2015)
+
+
+Bugfixes
+- Fixed method call on null object: Issue #164
+
+
 ## 0.10.2 (Februar 20, 2015)
 
 Changes
