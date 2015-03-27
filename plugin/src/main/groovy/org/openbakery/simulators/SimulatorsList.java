@@ -1,7 +1,10 @@
-package org.openbakery;
+package org.openbakery.simulators;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+import org.openbakery.Destination;
+import org.openbakery.XcodeBuildPluginExtension;
+import org.openbakery.XcodePlugin;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,7 +13,7 @@ import java.util.List;
 /**
  * Created by rene on 13.08.14.
  */
-public class ListSimulators extends DefaultTask {
+public class SimulatorsList extends DefaultTask {
 
 
 	int compareTo(String first, String second) {
@@ -29,12 +32,10 @@ public class ListSimulators extends DefaultTask {
 
 	}
 
-	public ListSimulators() {
+	public SimulatorsList() {
 
 		setDescription("List all available iOS Simulators");
-		dependsOn(
-						XcodePlugin.XCODE_CONFIG_TASK_NAME
-		);
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME);
 
 	}
 

@@ -48,6 +48,7 @@ import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.PackageTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.simulators.SimulatorsList
 import org.openbakery.sparkle.SparkleArchiveTask
 import org.openbakery.sparkle.SparkleCleanTask
 import org.openbakery.sparkle.SparklePluginExtension
@@ -68,10 +69,12 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
+	public static final String SIMULATORS_GROUP_NAME = "Simulators"
+
 
 	public static final String TEST_TASK_NAME = "test"
 	public static final String ARCHIVE_TASK_NAME = "archive"
-	public static final String LIST_SIMULATORS_TASK_NAME = "listSimulators"
+	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
 	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
@@ -132,7 +135,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureAppledoc(project)
 		configureCoverage(project)
 		configureCocoapods(project)
-		configureInfo(project)
+		configureSimulatorTasks(project)
 		configureProperties(project)
 	}
 
@@ -378,9 +381,9 @@ class XcodePlugin implements Plugin<Project> {
 		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
 	}
 
-	private void configureInfo(Project project) {
-		ListSimulators  listSimulators = project.getTasks().create(LIST_SIMULATORS_TASK_NAME, ListSimulators.class);
-		listSimulators.setGroup(XCODE_GROUP_NAME);
+	private void configureSimulatorTasks(Project project) {
+		SimulatorsList  listSimulators = project.getTasks().create(SIMULATORS_LIST_TASK_NAME, SimulatorsList.class);
+		listSimulators.setGroup(SIMULATORS_LIST_TASK_NAME);
 	}
 
 	private void configureHockeyKit(Project project) {

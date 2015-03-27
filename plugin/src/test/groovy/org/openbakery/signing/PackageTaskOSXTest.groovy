@@ -12,6 +12,9 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+
 /**
  * Created by Stefan Gugarel on 10/02/15.
  */
@@ -69,8 +72,95 @@ class PackageTaskOSXTest {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
+	void mockCodesignSwiftCommand(String path) {
+		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
+
+		def commandList = [
+				"/usr/bin/codesign",
+				"--force",
+				"--sign",
+				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+				"--verbose",
+				payloadApp.absolutePath,
+				"--keychain",
+				"/var/tmp/gradle.keychain"
+
+		]
+		commandRunnerMock.run(commandList)
+	}
+
+	void mockCodesignCommand(String path) {
+		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+		File payloadApp = new File(packageTask.outputPath, path)
+
+		def commandList = [
+				"/usr/bin/codesign",
+				"--force",
+				"--preserve-metadata=identifier,entitlements",
+				"--sign",
+				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+				"--verbose",
+				payloadApp.absolutePath,
+				"--keychain",
+				"/var/tmp/gradle.keychain"
+
+		]
+		commandRunnerMock.run(commandList)
+
+	}
+
+	void mockPlistCommmand(String infoplist, String command) {
+		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", command]
+		commandRunnerMock.run(commandList).atLeastOnce()
+	}
+
+
+	void mockValueFromPlist(String infoplist, String key, String value) {
+		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
+		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
+	}
+
+	void mockExampleApp(boolean withFramework, boolean withSwift) {
+		String frameworkPath = "Contents/Frameworks/Sparkle.framework"
+		// create dummy app
+
+
+		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
+
+		File appDirectory = applicationBundle
+		if (!appDirectory.exists()) {
+			appDirectory.mkdirs();
+		}
+
+		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
+		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy");
+		FileUtils.writeStringToFile(new File(appDirectory, "Contents/Info.plist"), "dummy");
+
+		if (withFramework) {
+			File framworkFile = new File(appDirectory, frameworkPath)
+
+			framworkFile.mkdirs()
+		}
+
+		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
+
+
+		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
+
+		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+
+		mockCodesignCommand("Example.app")
+
+		if (withFramework) {
+			mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+		}
+
+		project.xcodebuild.outputPath.mkdirs()
+	}
+
 	@Test
-	void testCreatePayload() {
+	void testCreatePackagePath() {
 		mockExampleApp(false, false)
 
 		mockControl.play {
@@ -164,90 +254,33 @@ class PackageTaskOSXTest {
 		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
 	}
 
-	void mockExampleApp(boolean withFramework, boolean withSwift) {
-		String frameworkPath = "Contents/Frameworks/Sparkle.framework"
-		// create dummy app
 
+	List<String> getZipEntries(File file) {
+		ZipFile zipFile = new ZipFile(file);
 
-		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
+		List<String> entries = new ArrayList<String>()
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+		return entries;
+	}
 
-		File appDirectory = applicationBundle
-		if (!appDirectory.exists()) {
-			appDirectory.mkdirs();
+	@Test
+	void outputFile() {
+		mockExampleApp(true, false)
+
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+
+		mockControl.play {
+			packageTask.packageApplication()
 		}
 
-		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
-		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy");
-		FileUtils.writeStringToFile(new File(appDirectory, "Contents/Info.plist"), "dummy");
+		File outputFile = new File(packageTask.outputPath, "Example.zip")
+		assert outputFile.exists();
 
-		if (withFramework) {
-			File framworkFile = new File(appDirectory, frameworkPath)
+		List<String> zipEntries = getZipEntries(outputFile);
 
-			framworkFile.mkdirs()
-		}
+		assert zipEntries.contains("Example.app/Example")
 
-		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
-
-
-		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
-
-		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
-
-		mockCodesignCommand("Example.app")
-
-		if (withFramework) {
-			mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
-		}
-
-		project.xcodebuild.outputPath.mkdirs()
-	}
-
-	void mockCodesignSwiftCommand(String path) {
-		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
-
-		def commandList = [
-				"/usr/bin/codesign",
-				"--force",
-				"--sign",
-				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-				"--verbose",
-				payloadApp.absolutePath,
-				"--keychain",
-				"/var/tmp/gradle.keychain"
-
-		]
-		commandRunnerMock.run(commandList)
-	}
-
-	void mockCodesignCommand(String path) {
-		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(packageTask.outputPath, path)
-
-		def commandList = [
-				"/usr/bin/codesign",
-				"--force",
-				"--preserve-metadata=identifier,entitlements",
-				"--sign",
-				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-				"--verbose",
-				payloadApp.absolutePath,
-				"--keychain",
-				"/var/tmp/gradle.keychain"
-
-		]
-		commandRunnerMock.run(commandList)
-
-	}
-
-	void mockPlistCommmand(String infoplist, String command) {
-		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", command]
-		commandRunnerMock.run(commandList).atLeastOnce()
-	}
-
-
-	void mockValueFromPlist(String infoplist, String key, String value) {
-		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
-		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
 	}
 }

@@ -19,6 +19,8 @@ class PackageTask extends AbstractDistributeTask {
 
 	private List<File> appBundles
 
+	String applicationBundleName
+
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
@@ -46,7 +48,7 @@ class PackageTask extends AbstractDistributeTask {
 		copy(getApplicationBundleDirectory(), applicationFolder)
 
 
-		def applicationBundleName = applicationName + ".app"
+		applicationBundleName = applicationName + ".app"
 
 
 		appBundles = getAppBundles(applicationFolder, applicationBundleName)
@@ -77,7 +79,12 @@ class PackageTask extends AbstractDistributeTask {
 			codesign(bundle)
 		}
 
-		createIpa(applicationFolder, applicationBundleName);
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			createIpa(applicationFolder);
+		} else {
+			createPackage(appBundles.last());
+		}
+
 	}
 
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
@@ -128,30 +135,27 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 
-	private void createIpa(File payloadPath, String applicationBundleName) {
-
-		File ipaBundle = new File(outputPath, getApplicationNameFromArchive() + ".ipa")
-		if (!ipaBundle.parentFile.exists()) {
-			ipaBundle.parentFile.mkdirs()
+	private void createZipPackage(File packagePath, String extension) {
+		File packageBundle = new File(outputPath, getApplicationNameFromArchive() + "." + extension)
+		if (!packageBundle.parentFile.exists()) {
+			packageBundle.parentFile.mkdirs()
 		}
 
-		File swiftSupportPath = addSwiftSupport(payloadPath, applicationBundleName)
+		File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
 		if (swiftSupportPath != null) {
-			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
+			createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath)
 		} else {
-			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
+			createZip(packageBundle, packagePath.getParentFile(), packagePath)
 		}
-		/*
-		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
-		if (frameworksPath.exists()) {
-			File swiftSupportPath = addSwiftSupport(payloadPath.getParentFile(), frameworksPath.listFiles())
+	}
 
-			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath, swiftSupportPath)
-		} else {
-			createZip(ipaBundle, payloadPath.getParentFile(), payloadPath)
-		}
-		*/
+	private void createIpa(File payloadPath) {
+		createZipPackage(payloadPath, "ipa")
+	}
 
+	private void createPackage(File packagePath) {
+
+		createZipPackage(packagePath, "zip")
 	}
 
 	private void codesign(File bundle) {
