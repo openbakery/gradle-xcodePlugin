@@ -112,7 +112,12 @@ class XcodeConfigTask extends AbstractXcodeTask {
 			if (line.startsWith("--")) {
 				String[] tokens = line.split(" ");
 				if (tokens.length > 2) {
-					iOSVersion = tokens[2];
+					if (tokens[1].equalsIgnoreCase("iOS")) {
+						iOSVersion = tokens[2]
+					} else {
+						iOSVersion = null
+					}
+
 				}
 			} else if (iOSVersion != null) {
 				// now we are in the devices section

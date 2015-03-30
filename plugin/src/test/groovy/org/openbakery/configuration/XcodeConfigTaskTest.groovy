@@ -58,9 +58,13 @@ class XcodeConfigTaskTest {
 	}
 
 	void mockSimctlList() {
+		mockSimctlList("src/test/Resource/simctl-output.txt")
+	}
+
+	void mockSimctlList(String filePath) {
 		def commandList = ["/Applications/Xcode.app/Contents/Developer/usr/bin/simctl", "list"]
 
-		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/simctl-output.txt"))
+		String simctlOutput = FileUtils.readFileToString(new File(filePath))
 
 		commandRunnerMock.runWithResult(commandList).returns(simctlOutput).times(1)
 	}
@@ -137,6 +141,19 @@ class XcodeConfigTaskTest {
 
 	}
 
+	@Test
+	void testCreateDeviceList_parseDevices_withUnavilableDevices() {
+		mockXcodeVersion()
+		mockFindSimctl()
+		mockSimctlList("src/test/Resource/simctl-unavailable-output.txt")
+
+		mockControl.play {
+			xcodeConfigTask.configuration()
+		}
+
+		assert project.xcodebuild.availableSimulators.size() == 16 : "expected 16 elements in the availableSimulators list but was: " +  project.xcodebuild.availableSimulators.size()
+
+	}
 
 
 	@Test
