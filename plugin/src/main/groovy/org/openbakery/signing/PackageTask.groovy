@@ -70,8 +70,13 @@ class PackageTask extends AbstractDistributeTask {
 
 		for (File bundle : appBundles) {
 
-			if (!bundle.absolutePath.endsWith(".framework/Versions/Current")) {
+			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 				embedProvisioningProfileToBundle(bundle)
+			}
+
+			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+				File embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded.provisionprofile")
+				embeddedProvisionFile.delete()
 			}
 
 			logger.lifecycle("codesign path: {}", bundle);

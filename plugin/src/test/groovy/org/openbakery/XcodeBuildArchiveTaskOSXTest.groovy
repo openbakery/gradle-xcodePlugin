@@ -22,11 +22,13 @@ class XcodeBuildArchiveTaskOSXTest {
 	File buildOutputDirectory
 	File appDirectory
 
-//	GMockController mockControl
-//	CommandRunner commandRunnerMock
+	GMockController mockControl
+	CommandRunner commandRunnerMock
 
 	@BeforeMethod
 	void setup() {
+		mockControl = new GMockController()
+		commandRunnerMock = mockControl.mock(CommandRunner)
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -117,5 +119,37 @@ class XcodeBuildArchiveTaskOSXTest {
 		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons(infoPlistInAppFile)
 
 		assert macOSXIcons.size() == 0
+	}
+
+	void mockGetPlistValues(File plist, String key, String value) {
+
+		def commandList = ["/usr/libexec/PlistBuddy", plist.absolutePath, "-c", "Print :" + key]
+		commandRunnerMock.runWithResult(commandList).returns(value);
+
+	}
+
+	@Test
+	void doNotConvertInfoPlistToBinary() {
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
+
+
+		File infoPlist = new File(appDirectory, "Contents/Info.plist")
+		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");
+		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
+		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
+		mockGetPlistValues(infoPlist, "CFBundleIconFile", "");
+
+		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
+
+		List<String> commandList
+		commandList?.clear()
+		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
+		commandRunnerMock.run(commandList).times(0)
+
+
+		mockControl.play {
+			xcodeBuildArchiveTask.archive()
+		}
 	}
 }

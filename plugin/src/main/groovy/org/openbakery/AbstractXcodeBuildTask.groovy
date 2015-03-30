@@ -56,8 +56,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.target)
 		}
 
-		if (!project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
-
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
 				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 				commandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
@@ -70,7 +69,14 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				commandList.add("CODE_SIGN_IDENTITY=")
 				commandList.add("CODE_SIGNING_REQUIRED=NO")
 			}
+		} else if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+			// disable signing during xcodebuild for os x, maybe this should be also default for iOS?
+			commandList.add("CODE_SIGN_IDENTITY=")
+			commandList.add("CODE_SIGNING_REQUIRED=NO")
+
 		}
+
+
 
 		if (project.xcodebuild.arch != null) {
 			StringBuilder archs = new StringBuilder("ARCHS=");

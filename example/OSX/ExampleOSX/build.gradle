@@ -20,24 +20,18 @@ xcodebuild {
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	sdk = 'macosx'
+	
+	xcodebuild {
+		signing {
+			identity = signingIdentity                       // e.g. 'Mac Developer: ...
+			certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
+			certificatePassword = signingCertificatePassword // e.g. 'secret'
+			mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+		}
+	}
   
 }
 
 task release(dependsOn: 'package') {
 	description = 'Performs a release build and signed the created app using the provided sign settings'
 }
-
-gradle.taskGraph.whenReady { taskGraph ->
-
-	if (taskGraph.hasTask(release) || taskGraph.hasTask(package)) {
-		xcodebuild {
-			signing {
-				identity = signingIdentity                       // e.g. 'Mac Developer: ...
-				certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
-				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-			}
-		}
-	} 
-}
-

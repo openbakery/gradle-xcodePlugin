@@ -240,8 +240,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		createFrameworks(project.xcodebuild.archiveDirectory)
 
-		File applicationFolder = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
-		convertInfoPlistToBinary(applicationFolder)
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			File applicationFolder = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+			convertInfoPlistToBinary(applicationFolder)
+		}
 
 
 		logger.debug("create archive done")

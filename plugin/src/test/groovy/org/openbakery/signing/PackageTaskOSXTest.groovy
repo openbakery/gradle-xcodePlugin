@@ -148,8 +148,6 @@ class PackageTaskOSXTest {
 
 		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
 
-		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
-
 		mockCodesignCommand("Example.app")
 
 		if (withFramework) {
@@ -232,9 +230,8 @@ class PackageTaskOSXTest {
 		}
 
 		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
-		assert embedProvisioningProfile.exists()
+		assert !embedProvisioningProfile.exists()
 
-		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
 	}
 
 	@Test
@@ -249,9 +246,8 @@ class PackageTaskOSXTest {
 		}
 
 		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
-		assert embedProvisioningProfile.exists()
+		assert !embedProvisioningProfile.exists()
 
-		assert FileUtils.checksumCRC32(embedProvisioningProfile) == FileUtils.checksumCRC32(provisionProfile)
 	}
 
 
