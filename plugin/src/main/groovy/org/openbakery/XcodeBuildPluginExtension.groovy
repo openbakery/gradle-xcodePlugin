@@ -15,8 +15,6 @@
  */
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
@@ -320,29 +318,26 @@ class XcodeBuildPluginExtension {
 
 
 			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
-			if (xcodeBuildFile.exists()) {
+			String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
 
-				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
+			def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
+			def matcher = VERSION_PATTERN.matcher(xcodeVersion)
+			if (matcher.matches()) {
+				String versionString = matcher[0][1]
+				String buildNumberString = matcher[0][2]
 
-				def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
-				def matcher = VERSION_PATTERN.matcher(xcodeVersion)
-				if (matcher.matches()) {
-					String versionString = matcher[0][1]
-					String buildNumberString = matcher[0][2]
-
-					if (versionString.startsWith(version)) {
-						xcodePath = xcode
-						return
-					}
-
-					if (buildNumberString.equals(version)) {
-						xcodePath = xcode
-						return
-					}
+				if (versionString.startsWith(version)) {
+					xcodePath = xcode
+					return
 				}
 
-
+				if (buildNumberString.equals(version)) {
+					xcodePath = xcode
+					return
+				}
 			}
+
+
 		}
 
 		throw new IllegalStateException("No Xcode found with build number " + version);
