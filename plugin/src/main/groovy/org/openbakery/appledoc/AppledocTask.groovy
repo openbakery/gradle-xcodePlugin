@@ -32,8 +32,6 @@ class AppledocTask extends AbstractXcodeTask {
 
 		def appledocCommand = new File(documentationDirectory, 'appledoc')
 
-		def ant = new groovy.util.AntBuilder()
-
 		def zip = new File(documentationDirectory, 'appledoc.zip')
 		ant.get(src: 'https://github.com/tomaz/appledoc/releases/download/v2.2-963/appledoc.zip', dest: documentationDirectory, verbose:true)
 		ant.unzip(src: zip,  dest:documentationDirectory)
@@ -43,7 +41,7 @@ class AppledocTask extends AbstractXcodeTask {
 
 		commandRunner.setOutputFile(appledocOutput)
 		try {
-			commandRunner.run([appledocCommand.absolutePath, "--print-settings", "--output", documentationDirectory.absolutePath, '--ignore', project.getBuildDir().absolutePath, "."])
+			commandRunner.run([appledocCommand.absolutePath, "--print-settings", "--output", documentationDirectory.absolutePath, "."])
 		} catch (CommandRunnerException ex) {
 			logger.error(FileUtils.readFileToString(appledocOutput))
 			throw ex

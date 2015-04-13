@@ -1,3 +1,5 @@
 *.xcodeproj/project.xcworkspace/
 *.xcodeproj/xcuserdata/
-gradle.properties
+*.properties
+build
+.DS_Store

@@ -3,7 +3,6 @@ buildscript {
 	repositories {
 		maven {
 			url('http://repository.openbakery.org/')
-			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -17,21 +16,47 @@ buildscript {
 apply plugin: 'xcode'
 
 xcodebuild {
+	workspace = 'ExampleOSX.xcworkspace'
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	sdk = 'macosx'
-	
-	xcodebuild {
-		signing {
-			identity = signingIdentity                       // e.g. 'Mac Developer: ...
-			certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
-			certificatePassword = signingCertificatePassword // e.g. 'secret'
-			mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-		}
-	}
-  
 }
 
 task release(dependsOn: 'package') {
 	description = 'Performs a release build and signed the created app using the provided sign settings'
+}
+
+
+gradle.taskGraph.whenReady { taskGraph ->
+
+	if (taskGraph.hasTask(package) || taskGraph.hasTask(release)) {
+
+		if (!project.hasProperty("signingIdentity")) {
+			def signingIdentity = System.console().readLine("\nPlease enter the signing identity: ")
+			
+		}
+
+		if (!project.hasProperty("signingCertificateURI")) {
+			signingCertificateURI = System.console().readLine("\nPlease enter the certificate URI: ")
+		}
+
+		if (!project.hasProperty("signingCertificatePassword")) {
+			signingCertificatePassword = System.console().readPassword("\nPlease enter the certificate password: ")
+		}
+
+		if (!project.hasProperty("signingProvisionURI")) {
+			signingProvisionURI = System.console().readLine("\nPlease enter the mobile provision URI: ")
+		}
+
+	
+		xcodebuild {
+			signing {
+				identity = signingIdentity                       // e.g. 'Mac Developer: ...
+				certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
+				certificatePassword = signingCertificatePassword // e.g. 'secret'
+				mobileProvisionURI = [ signingProvisionURI ]     // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+		
+	}
 }
