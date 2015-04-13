@@ -25,13 +25,13 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.10.2.1
+### Current stable version is 0.10.3
 
-0.9.15 and 0.10.1 supports Xcode 5, Xcode 6 and Xcode 6.1
+0.9.x and 0.10.x supports Xcode 5, Xcode 6 and Xcode 6.1
 
 **Note:**
 
-When you use gradle 1.x you you can use version 0.10.2-gradle1
+When you use gradle 1.x you you can use version 0.10.3-gradle1
 
 ## Documentation
 
@@ -48,7 +48,7 @@ Here the minimal content you need in your build.gradle file:
 buildscript {
   repositories {
     maven {
-      url('http://openbakery.org/repository/')
+      url('http://repository.openbakery.org/')
     }
     mavenCentral()
   }

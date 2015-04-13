@@ -1,3 +1,13 @@
+## 0.10.3 (March 31, 2015)
+
+Changes
+- OS X support:
+  - 'archive' task creates an xcarchive
+	- You can now create a signed app with the 'package' task
+	
+Bugfixes
+- Tests on unavailable device: #161
+
 ## 0.10.2.1 (March 27, 2015)
 
 

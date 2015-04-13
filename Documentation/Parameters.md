@@ -321,6 +321,20 @@
 Note: see also https://deploygate.com/docs/api	
 	
 
+## Crashlytics Parameters
+
+* _apiKey_ - The Crashlytics API Key (https://www.crashlytics.com/settings/organizations)
+
+  default value: empty
+
+* _buildSecret_ - The Crashlytics Build Secret (https://www.crashlytics.com/settings/organizations)
+
+  default value: empty
+
+* _submitPath_ - Path to the crashlytics submit command (relative to the project dir)
+
+  default value: "Crashlytics.framework/submit"
+
 
 ## Sparkle Parameters
 
