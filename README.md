@@ -48,15 +48,15 @@ Here the minimal content you need in your build.gradle file:
 buildscript {
   repositories {
     maven {
-      url('http://repository.openbakery.org/')
+      url "https://plugins.gradle.org/m2/"
     }
-    mavenCentral()
   }
   dependencies {
-    classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.+'
+    classpath "gradle.plugin.org.openbakery:xcodePlugin:0.10.+"
   }
 }
-apply plugin: 'xcode'
+
+apply plugin: "org.openbakery.xcodeplugin"
 
 xcodebuild {
   target = 'MY-TARGET'

@@ -22,19 +22,17 @@ You can also scroll down and add the values directly (line 115ff).
 
 
 buildscript {
-	repositories {
-		maven {
-			url('http://repository.openbakery.org/')
-			//url uri('/Users/rene/workspace/openbakery/xcodePlugin/repository')
-		}
-		mavenCentral()
-	}
-	dependencies {
-		classpath group: 'org.openbakery', name: 'xcodePlugin', version: '0.10.2-beta2'
-	}
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.org.openbakery:xcodePlugin:0.10.+"
+  }
 }
 
-apply plugin: 'xcode'
+apply plugin: "org.openbakery.xcodeplugin"
 
 
 xcodebuild {
