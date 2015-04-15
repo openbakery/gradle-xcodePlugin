@@ -3,3 +3,5 @@
 *.properties
 build
 .DS_Store
+Pods
+ExampleOSX.xcworkspace

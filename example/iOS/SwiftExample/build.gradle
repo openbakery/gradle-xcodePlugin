@@ -18,19 +18,9 @@ You can also scroll down and add the values directly (line 115ff).
 
 */
 
-
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "gradle.plugin.org.openbakery:xcodePlugin:0.10.+"
-  }
+plugins {
+  id "org.openbakery.xcodeplugin" version "0.10.3"
 }
-
-apply plugin: "org.openbakery.xcodeplugin"
 
 xcodebuild {
 	//version = "6.1"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine

@@ -45,18 +45,9 @@ Create a build.gradle file and place it in the same directory where xcodeproj fi
 Here the minimal content you need in your build.gradle file:
 
 ```
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "gradle.plugin.org.openbakery:xcodePlugin:0.10.+"
-  }
+plugins {
+  id "org.openbakery.xcodeplugin" version "0.10.3"
 }
-
-apply plugin: "org.openbakery.xcodeplugin"
 
 xcodebuild {
   target = 'MY-TARGET'
