@@ -1,11 +1,13 @@
-import org.gradle.api.publish.maven.MavenPublication
-
 buildscript {
-	repositories {
-		jcenter()
-	}
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
+  }
 }
-
 
 def versionNumber = '0.10.3-test2'
 
@@ -18,7 +20,11 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
+apply plugin: "com.gradle.plugin-publish"
 
+repositories {
+  jcenter()
+}
 
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
@@ -70,7 +76,6 @@ task sourcesJar(type: Jar) {
 }
 
 
-
 def pomConfig = {
 	licenses {
 		license {
@@ -101,4 +106,21 @@ publishing {
 			}
 		}
 	}
+}
+
+
+
+pluginBundle {
+  website = 'http://openbakery.org/gradle.php'
+  vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
+  description = 'A gradle plugin for building Xcode projects!'
+  tags = ['xcode', 'iOS', 'OS X']
+
+  plugins {
+    xcodePlugin {
+      id = 'org.openbakery.xcodeplugin'
+      displayName = 'Gradle Xcode plugin'
+			version = versionNumber
+    }
+  }
 }
