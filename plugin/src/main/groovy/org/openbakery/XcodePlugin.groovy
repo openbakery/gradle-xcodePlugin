@@ -31,6 +31,8 @@ import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
+import org.openbakery.crashlytics.CrashlyticsPluginExtension
+import org.openbakery.crashlytics.CrashlyticsUploadTask
 import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
@@ -65,6 +67,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
 	public static final String APPSTORE_GROUP_NAME = "AppStore"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
+	public static final String CRASHLYTICS_GROUP_NAME = "Crashlytics"
 	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
@@ -96,6 +99,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
+	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
 	public static final String SPARKLE_TASK_NAME = 'sparkle'
 	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkleArchive'
 	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkleNotes'
@@ -130,6 +134,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureAppstore(project)
 		configureHockeyApp(project)
 		configureDeployGate(project)
+		configureCrashlytics(project)
 		configureCodesign(project)
 		configureSparkle(project)
 		configureAppledoc(project)
@@ -326,6 +331,28 @@ class XcodePlugin implements Plugin<Project> {
 				project.deploygate.message = project['deploygate.message']
 			}
 
+			if (project.hasProperty('crashlytics.submitCommand')) {
+				project.crashlytics.submitCommand = project['crashlytics.submitCommand']
+			}
+			if (project.hasProperty('crashlytics.apiKey')) {
+				project.crashlytics.apiKey = project['crashlytics.apiKey']
+			}
+			if (project.hasProperty('crashlytics.buildSecret')) {
+				project.crashlytics.buildSecret = project['crashlytics.buildSecret']
+			}
+			if (project.hasProperty('crashlytics.emails')) {
+				project.crashlytics.emails = project['crashlytics.emails']
+			}
+			if (project.hasProperty('crashlytics.groupAliases')) {
+				project.crashlytics.groupAliases = project['crashlytics.groupAliases']
+			}
+			if (project.hasProperty('crashlytics.notesPath')) {
+				project.crashlytics.notesPath = project['crashlytics.notesPath']
+			}
+			if (project.hasProperty('crashlytics.notifications')) {
+				project.crashlytics.notifications = project['crashlytics.notifications']
+			}
+
 			if (project.hasProperty('coverage.outputFormat')) {
 				project.coverage.outputFormat = project['coverage.outputFormat']
 			}
@@ -352,6 +379,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("appstore", AppstorePluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
+		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
 		project.extensions.create("sparkle", SparklePluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 	}
@@ -471,6 +499,10 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureDeployGate(Project project) {
 		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
 		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
+	}
+
+	private void configureCrashlytics(Project project) {
+		project.task(CRASHLYTICS_TASK_NAME, type: CrashlyticsUploadTask, group: CRASHLYTICS_GROUP_NAME)
 	}
 
 	private void configureCocoapods(Project project) {
