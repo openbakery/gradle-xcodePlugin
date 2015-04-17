@@ -20,6 +20,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.testing.Test
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
@@ -75,7 +77,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
 
 
-	public static final String TEST_TASK_NAME = "test"
+	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
 	public static final String ARCHIVE_TASK_NAME = "archive"
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
@@ -368,6 +370,12 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
+			Task testTask = (Test) project.getTasks().findByPath(JavaPlugin.TEST_TASK_NAME)
+			if (testTask == null) {
+				testTask = project.getTasks().create(JavaPlugin.TEST_TASK_NAME)
+			}
+			testTask.dependsOn(XCODE_TEST_TASK_NAME)
+
 		}
 
 	}
@@ -431,7 +439,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureTest(Project project) {
-		project.task(TEST_TASK_NAME, type: XcodeTestTask, group: XCODE_GROUP_NAME)
+		project.task(XCODE_TEST_TASK_NAME, type: XcodeTestTask, group: XCODE_GROUP_NAME)
 
 	}
 
@@ -518,7 +526,7 @@ class XcodePlugin implements Plugin<Project> {
 		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		buildTask.dependsOn(task)
 
-		XcodeTestTask testTask = project.getTasks().getByName(TEST_TASK_NAME)
+		XcodeTestTask testTask = project.getTasks().getByName(XCODE_TEST_TASK_NAME)
 		testTask.dependsOn(task)
 	}
 }
