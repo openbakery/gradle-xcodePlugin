@@ -9,7 +9,7 @@ buildscript {
   }
 }
 
-def versionNumber = '0.10.3-test2'
+def versionNumber = '0.10.3.3'
 
 group = 'org.openbakery'
 version = versionNumber
@@ -117,7 +117,7 @@ pluginBundle {
   tags = ['xcode', 'iOS', 'OS X']
 
   plugins {
-    xcodePlugin {
+    xcodeplugin {
       id = 'org.openbakery.xcodeplugin'
       displayName = 'Gradle Xcode plugin'
 			version = versionNumber

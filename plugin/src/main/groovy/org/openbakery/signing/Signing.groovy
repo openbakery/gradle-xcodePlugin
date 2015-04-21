@@ -1,6 +1,7 @@
 package org.openbakery.signing
 
 import org.gradle.api.Project
+import org.openbakery.CommandRunner
 
 /**
  *
@@ -29,6 +30,7 @@ class Signing {
 	Object keychainPathInternal
 	final Project project
 	final String keychainName =  KEYCHAIN_NAME_BASE + System.currentTimeMillis() +  ".keychain"
+	CommandRunner commandRunner
 
 
 	Object mobileProvisionDestinationRoot
@@ -39,6 +41,7 @@ class Signing {
 
 	public Signing(Project project) {
 		this.project = project;
+		this.commandRunner = new CommandRunner()
 
 		this.signingDestinationRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("codesign")
@@ -106,6 +109,32 @@ class Signing {
 		}
 		mobileProvisionFile.add(fileToAdd)
 	}
+
+
+	String getIdentity() {
+
+		def IDENTITY_PATTERN = ~/\s*\d+\)\s*(\w+)\s*\"(.*)\"/
+
+		if (this.identity == null) {
+			String identities = commandRunner.runWithResult(["security", "find-identity", "-v", "-p", "codesigning", getKeychainPathInternal().absolutePath])
+
+			def matcher = IDENTITY_PATTERN.matcher(identities)
+			String identity = null
+			if (matcher.find()) {
+				identity = matcher[0][2]
+			}
+
+			if (!matcher.find()) {
+				// only use the identify if only one was found!!!
+				// otherwise leave it to the default value null
+				this.identity = identity
+			}
+
+
+		}
+		return this.identity
+	}
+
 
 
 	@Override

@@ -23,7 +23,7 @@ class DeployGatePluginExtension {
 	def Object outputDirectory
 	def String apiToken = null
 	def String userName = null
-	def String message = "This build was uploaded using the gradle xcodePlugin"
+	def String message = "This build was uploaded using the gradle xcodeplugin"
 	private final Project project
 
 	public DeployGatePluginExtension(Project project) {

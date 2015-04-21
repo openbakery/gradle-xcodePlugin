@@ -3,7 +3,7 @@ plugins {
 }
 
 xcodebuild {
-	workspace = 'ExampleOSX.xcworkspace'
+	//workspace = 'ExampleOSX.xcworkspace'
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	sdk = 'macosx'

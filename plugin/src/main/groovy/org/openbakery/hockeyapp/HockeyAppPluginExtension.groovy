@@ -22,7 +22,7 @@ class HockeyAppPluginExtension {
 	def Object outputDirectory
 	def String apiToken = null
 	def String appID = null
-	def String notes = "This build was uploaded using the gradle xcodePlugin"
+	def String notes = "This build was uploaded using the gradle xcodeplugin"
 	def String status = 2
 	def String notify = 1
 	def String notesType = 0

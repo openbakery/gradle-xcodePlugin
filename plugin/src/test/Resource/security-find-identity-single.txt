@@ -1,0 +1,2 @@
+  1) 1111222233334444555566667777888899990000 "Developer ID Application: MyCompany"
+     1 valid identities found
