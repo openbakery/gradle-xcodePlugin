@@ -55,7 +55,7 @@ class XcodeTestTaskTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		xcodeTestTask = project.tasks.findByName('test');
+		xcodeTestTask = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME);
 		xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
 
 

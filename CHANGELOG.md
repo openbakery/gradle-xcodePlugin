@@ -1,3 +1,9 @@
+## 0.10.4
+
+Changes
+- Signing identity is now optional, because it is read from the keychain
+- Crashlytics support: Thanks to @achretien
+
 ## 0.10.3 (March 31, 2015)
 
 Changes
