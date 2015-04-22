@@ -98,7 +98,9 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		createZip(zipFile, zipFile.parentFile, fileToZip);
 	}
 
-
+	def createZip(File zipFile, File fileToZip) {
+		createZip(zipFile, fileToZip.parentFile, fileToZip)
+	}
 
 	def createZip(File zipFile, File baseDirectory, File... filesToZip) {
 		// we want to preserve the permissions, so use the zip command line tool

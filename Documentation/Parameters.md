@@ -10,7 +10,7 @@
 * _workspace_ - the workspace file that should be used for the build.
 
 	default value: '*.xcworkspace' that was found in the project directory or empty if not found
-	
+
 * _configuration_ - the build configuration name that should be used (e.g. 'Debug', 'Release')
 
   default value: 'Debug'
@@ -23,8 +23,8 @@
 
   default value: empty
 
-### Sign Settings 
-  
+### Sign Settings
+
 * _signing_ - signing configuration that should be used when building for the device
 
 * identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)'. This parameter is **optional** and only needed if you have more then one identity in the keychain. This is only the case if the _keychain_ parameter is set, and the keychain is not created during the build process.
@@ -62,44 +62,44 @@
 * _destination_ * - destination configuration, that is used for the unit test execution
 
 	default value: empty (When empty alls available simulators are used for the unit tests)
-	
+
 	Note when building using the iPhoneSimulator: The destinations are verified if they already exists. If not then the destination is ignored for the unit test. If no valid destination is specified, then all available simulator destinations are used for the unit tests.
 	Therefor you can specify destinations to limit on which simulator destinations the unit tests are performed.
 	You also can specify a regular expression for the value and all available simulator devices are included that match these value: e.g. name = 'iPhone.*'
-	
+
 	* _platform_ - Platform, e.g. 'iOS' or 'OS X'
-	
+
 	default value: empty
-	
-	* _name_ - Name of the destination device. 
-	
+
+	* _name_ - Name of the destination device.
+
 	default value: empty
-	
+
 	* _arch_ - Architecture of the destination target
-	
+
 	The arch can a single value e.g. 'i386' or a list of values e.g. [ 'armv7', 'armv7s' ]
-	
+
 	default value: empty
 
 ### Other Settings
 
-* _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions: 
+* _additionalParameters_ - additional parameters for the xcodebuild. Here you can for example pass preprocessor definitions:
   `additionalParameters = "GCC_PREPROCESSOR_DEFINITIONS='TIME=" + System.currentTimeMillis() + "'"`.
 
 	Also an array of parameters is excepted e.g. _["-xcconfig", "/path/to/the/xconfig" ]_
 
   default value: empty
-    
-* _bundleNameSuffix_ - String that should be appended to the generated app bundle. 
+
+* _bundleNameSuffix_ - String that should be appended to the generated app bundle.
   e.g. the default app bundle name is 'Demo.App'. When you set `bundleNameSuffix=-1.0.0` than the generated bundle is 'Demo-1.0.0.app'
-  
+
   default value: empty
-  
+
 * _arch_ - Use the architecture specified by architecture when building each target.
-  e.g. 'i386', 'armv6', 'armv7' 
-	
+  e.g. 'i386', 'armv6', 'armv7'
+
 	Also an array of parameters is possible e.g. ['armv7', 'arm64']
-  
+
   default value: empty
 
 * _buildRoot_ - build root directory for the build output
@@ -109,11 +109,11 @@
 * _dstRoot_ - the distribution root directory
 
   default value: 'build/dst'
-  
+
 * _objRoot_ - the object root directory
 
   default value: 'build/obj'
-  
+
 * _symRoot_ - the sym directory. Here is where the app and ipa is generated
 
   default value: 'build/sym'
@@ -125,13 +125,13 @@
 * _infoPlist_ - override the Info.plist file that is configured in the xcode project file
 
   default value: empty
-	
+
 * _version_ - set the xcode version that should be used if multiple versions of Xcode are installed. Here you can set the version with '6.1' that selects 6.1 or 6.1.x if present. Or you can use the build number e.g. '5B1008' for Xcode 5.1.1.
 	If this value is empty then the default version is used that is selected using 'xcode-select'
 
   defaul value: empty
 
-* _environment_ - pass environment variable to xcodebuild    
+* _environment_ - pass environment variable to xcodebuild
 
 
 ## Info plist Parameters:
@@ -139,7 +139,7 @@
 * _bundleIdentifier_ - If set it override the bundle identifier in the Info.plist (CFBundleIdentifier)
 
 	default value: empty
-	
+
 * _bundleIdentifierSuffix_ - If set it adds a suffix to the bundle identifier in the Info.plist (CFBundleIdentifier)
 
 	default value: empty
@@ -151,7 +151,7 @@
 * _bundleDisplayName_ - If set it override the bundle display name in the Info.plist (CFBundleDisplayName)
 
 	default value: empty
-	
+
 * _bundleDisplayNameSuffix_ - If set it adds a suffix to the bundle display name in the Info.plist (CFBundleDisplayName)
 
 	default value: empty
@@ -184,9 +184,9 @@
 * _commands_ - adds commands to modify the info plist that are excuted with the plistbuddy tool (see also 'man PlistBuddy' )
 
 	default value: empty
-	
+
 	Example: This commands modify the URL scheme.
-	
+
 ```
 	commands = [
 		'Delete CFBundleURLTypes:0:CFBundleURLSchemes',
@@ -200,7 +200,7 @@
 * _username_ - Your Apple ID
 
 	default value: empty
-	
+
 * _passoword_ - The password for your Apple ID
 
 	default value: empty
@@ -209,11 +209,11 @@
 ## HockeyKit Parameters:
 
 
-* _displayName_ - Title that should be used that is shown on the hockeykit site for the app. 
+* _displayName_ - Title that should be used that is shown on the hockeykit site for the app.
   If the value is not set then the bundle identifier is used
 
 	default value: the CFBundleDisplayName from the Info.plist file is used
-  
+
 
 * _versionDirectoryName_ - subdirectory that should be used for the app.
 
@@ -223,13 +223,13 @@
 * _outputDirectory_ - directory where to store the files that are generated for the hockeykit distribution
 
 	default value "build/hockeykit";
-	
+
 
 * _notes_ - Release notes as HTML or Markdown for the build that is stored in a releasenotes.html.
 
 	default value: empty
-	
-	
+
+
 
 ## HockeyApp Parameters
 
@@ -248,7 +248,7 @@
 * _notes_ - Release notes for the build
 
   default value: "This build was uploaded using the gradle xcodePlugin"
-    
+
 * _status_ - Optional, download status (can only be set with full-access tokens):
 
   default value: 2
@@ -285,7 +285,7 @@
   default value: 1
 
 * _privatePage_ - Optional, set true for a private download page as in `private` (http://support.hockeyapp.net/kb/api/api-apps)
-  
+
   default value: false
 
 * _commitSha_ - Optional, corresponds to `commit_sha` (http://support.hockeyapp.net/kb/api/api-apps)
@@ -310,7 +310,7 @@
 * _userName_ - The DeployGate User Name (https://deploygate.com/settings)
 
   default value: empty
-  
+
 * _message_ - Release notes for the build
 
   default value: "This build was uploaded using the gradle xcodePlugin"
@@ -318,11 +318,11 @@
 * _outputDirectory_ - Output directory where the ipa
 
   default value: "build/deploygate"
-	
-	
 
-Note: see also https://deploygate.com/docs/api	
-	
+
+
+Note: see also https://deploygate.com/docs/api
+
 
 ## Crashlytics Parameters
 
@@ -337,32 +337,3 @@ Note: see also https://deploygate.com/docs/api
 * _submitPath_ - Path to the crashlytics submit command (relative to the project dir)
 
   default value: "Crashlytics.framework/submit"
-
-
-## Sparkle Parameters
-
-* _appName_ - You should specify this parameter when your appname does not match your target name. Default appname in XCode is $(TARGET_NAME). Do not specify .app here because it will be added automatically. If a different file ending than .app will be needed in future we will add a new parameter.
-
-  default value: empty
-  
-* _outputDirectory_ - The directory to output a ZIP file and release notes of the app.
-
-  default value: empty
-
-# Coverage Parameters
-
-Note: For coverage the the "Generate Test Coverage Files" in the project for the executed target must be set to Yes
-
-* _exclude_ - Exclude data files that match this regular expression. e.g. '.*h$|.*UnitTests.*m$' excludes all headers and all *.m files from the UnitTests directory
-
-	default value: empty
-
-
-* _outputFormat_ -  Format of the generated output. Possible values are, xml or html. If not specified text file is generated
-
-	default value: empty
-
-
-* _outputDirectory_ - Output directory for the results
-
-  default value: "build/coverage"

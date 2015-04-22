@@ -1,4 +1,4 @@
-package org.openbakery.signing
+package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
@@ -6,6 +6,7 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
+import org.openbakery.signing.ProvisioningProfileIdReader
 
 /**
  * Created by rene on 14.11.14.

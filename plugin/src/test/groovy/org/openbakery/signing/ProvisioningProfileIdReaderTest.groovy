@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
+import org.openbakery.packaging.PackageTask
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
