@@ -1,4 +1,4 @@
-package org.openbakery.signing
+package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
@@ -8,6 +8,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
+import org.openbakery.packaging.PackageTask
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test

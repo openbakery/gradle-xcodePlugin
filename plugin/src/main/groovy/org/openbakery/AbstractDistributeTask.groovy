@@ -1,9 +1,9 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
-import org.gradle.api.DefaultTask
-import org.openbakery.signing.PackageTask
+import org.openbakery.packaging.PackageTask
+
+import java.util.regex.Pattern
 
 /**
  * User: rene
@@ -56,6 +56,11 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return getDestinationFile(outputDirectory, extension)
 	}
 
+	@Override
+	def createZip(File fileToZip) {
+		return super.createZip(fileToZip)
+	}
+
 	File copyBundleToDirectory(File outputDirectory, File bundle) {
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
@@ -79,15 +84,16 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return copyBundleToDirectory(outputDirectory, getDSymBundle())
 	}
 
-	File getIpaBundle() {
+	File getBundle(String extension) {
 		File packageDirectory = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
 
 		if (!packageDirectory.exists()) {
 			throw new IllegalStateException("package does not exist: " + packageDirectory)
 		}
 
+		Pattern pattern = Pattern.compile(".*" + extension)
 		def fileList = packageDirectory.list(
-						[accept: { d, f -> f ==~ /.*ipa/ }] as FilenameFilter
+						[accept: { d, f -> f ==~ pattern }] as FilenameFilter
 		).toList()
 
 
@@ -98,6 +104,14 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return new File(packageDirectory, fileList.get(0))
 	}
 
+	File getIpaBundle() {
+		return getBundle("ipa")
+	}
+
+
+	File getAppBundle() {
+		return getBundle("app")
+	}
 
 
 	File getDSymBundle() {

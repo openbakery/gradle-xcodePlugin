@@ -47,16 +47,13 @@ import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
+import org.openbakery.packaging.ReleaseNotesTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
-import org.openbakery.signing.PackageTask
+import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.simulators.SimulatorsList
-import org.openbakery.sparkle.SparkleArchiveTask
-import org.openbakery.sparkle.SparkleCleanTask
-import org.openbakery.sparkle.SparklePluginExtension
-import org.openbakery.sparkle.SparkleReleaseNotesTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -70,7 +67,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPSTORE_GROUP_NAME = "AppStore"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String CRASHLYTICS_GROUP_NAME = "Crashlytics"
-	public static final String SPARKLE_GROUP_NAME = "sparkle"
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
@@ -95,6 +91,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_TASK_NAME = 'package'
+	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
 	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyappClean'
@@ -102,10 +99,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
-	public static final String SPARKLE_TASK_NAME = 'sparkle'
-	public static final String SPARKLE_ARCHIVE_TASK_NAME = 'sparkleArchive'
-	public static final String SPARKLE_NOTES_TASK_NAME = 'sparkleNotes'
-	public static final String SPARKLE_CLEAN_TASK_NAME = 'sparkleClean'
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
@@ -137,8 +130,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureHockeyApp(project)
 		configureDeployGate(project)
 		configureCrashlytics(project)
-		configureCodesign(project)
-		configureSparkle(project)
+		configurePackage(project)
 		configureAppledoc(project)
 		configureCoverage(project)
 		configureCocoapods(project)
@@ -310,13 +302,6 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('hockeyapp.repositoryUrl')) {
 				project.hockeyapp.repositoryUrl = project['hockeyapp.repositoryUrl']
-			}		
-
-			if (project.hasProperty('sparkle.outputDirectory')) {
-				project.sparkle.output = project['sparkle.outputDirectory']
-			}
-			if (project.hasProperty('sparkle.appName')) {
-				project.sparkle.appname = project['sparkle.appName']
 			}
 
 			if (project.hasProperty('deploygate.outputDirectory')) {
@@ -388,7 +373,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
-		project.extensions.create("sparkle", SparklePluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 	}
 
@@ -452,12 +436,15 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(PROVISIONING_CLEAN_TASK_NAME, type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 	}
 
-	private configureCodesign(Project project) {
+	private configurePackage(Project project) {
 		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
 
-		ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
 
-		KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
+		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME, type: ReleaseNotesTask, group: XCODE_GROUP_NAME)
+
+		//ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
+
+		//KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
 
 /*  // disabled clean because of #115
 		packageTask.doLast {
@@ -467,8 +454,6 @@ class XcodePlugin implements Plugin<Project> {
 */
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		packageTask.shouldRunAfter(xcodeBuildTask)
-
-
 	}
 
 	private configureAppstore(Project project) {
@@ -480,15 +465,6 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureHockeyApp(Project project) {
 		project.task(HOCKEYAPP_CLEAN_TASK_NAME, type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
 		project.task(HOCKEYAPP_TASK_NAME, type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
-	}
-	
-	private void configureSparkle(Project project) {
-		project.task(SPARKLE_ARCHIVE_TASK_NAME, type: SparkleArchiveTask, group: SPARKLE_GROUP_NAME)
-		project.task(SPARKLE_NOTES_TASK_NAME, type: SparkleReleaseNotesTask, group: SPARKLE_GROUP_NAME)
-		project.task(SPARKLE_CLEAN_TASK_NAME, type: SparkleCleanTask, group: SPARKLE_GROUP_NAME)
-			
-		DefaultTask sparkleTask = project.task(SPARKLE_TASK_NAME, type: DefaultTask, description: "Creates a build that is compressed to ZIP including Sparkle framework", group: SPARKLE_GROUP_NAME);
-		sparkleTask.dependsOn(SPARKLE_ARCHIVE_TASK_NAME)
 	}
 
 	private void configureAppledoc(Project project) {
