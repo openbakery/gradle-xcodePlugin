@@ -144,6 +144,9 @@
 
 	default value: empty
 
+* _bundleName_ - If set it override the bundle name in the Info.plist (CFBundleName)
+
+	default value: empty
 
 * _bundleDisplayName_ - If set it override the bundle display name in the Info.plist (CFBundleDisplayName)
 

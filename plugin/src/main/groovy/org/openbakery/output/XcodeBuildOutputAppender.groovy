@@ -75,7 +75,13 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			if (tokens.length > 1) {
 				currentSourceFile = tokens[1];
 			}
-		} else if (currentSourceFile != null && line.equals("")) {
+		} else if (line.startsWith("Code Sign error:")) {
+			command = "CodeSign"
+			error = true
+			hasOutput = true
+			outputText.append("\n")
+			outputText.append(line)
+		} else if ((currentSourceFile != null || command != null) && line.equals("")) {
 			// end of command
 			if (error) {
 				output.withStyle(StyledTextOutput.Style.Failure).text("   ERROR")
@@ -86,8 +92,10 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			}
 			output.text(" - ");
 			output.text(command)
-			output.text(": ")
-			output.text(currentSourceFile);
+			if (currentSourceFile != null) {
+				output.text(": ")
+				output.text(currentSourceFile);
+			}
 			output.println();
 			if (hasOutput) {
 				output.println(outputText.toString())
@@ -96,7 +104,7 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			reset()
 		} else if (line.endsWith("errors generated.") || line.endsWith("error generated.") || line.startsWith("clang: error:")) {
 			error = true
-		}	else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
+		} else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
 			warning = true
 		} else if (!hasOutput && currentSourceFile != null && line.contains(currentSourceFile) && !line.startsWith(" ")) {
 			hasOutput = true
