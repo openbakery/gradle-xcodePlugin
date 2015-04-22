@@ -27,9 +27,9 @@ import org.pegdown.PegDownProcessor
  * @author Stefan Gugarel
  *
  */
-class ReleaseNotesTask extends PackageTask {
+class ReleaseNotesTask extends DefaultTask {
 
-	File outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
+	File outputPath = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
 
 
 	ReleaseNotesTask() {

@@ -15,7 +15,6 @@ Here a brief overview of the features:
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) )
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
-* [Sparkle](http://sparkle-project.org)
 
 
 ## Requirements
@@ -64,4 +63,3 @@ After you have fetched the example go to the `example/iOS/Example` directory and
 * Run the unit tests with `gradle test` or `gradle`
 * Perform a device build and upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
-
