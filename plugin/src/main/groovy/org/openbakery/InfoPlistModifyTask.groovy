@@ -49,6 +49,11 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		}
 
+		// Modify bundle bundleName
+		if (project.infoplist.bundleName != null) {
+			plistHelper.setValueForPlist(infoPlist, "CFBundleName", project.infoplist.bundleName)
+		}
+
 		// Modify bundle bundleDisplayName
 		if (project.infoplist.bundleDisplayName != null) {
 			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName)
