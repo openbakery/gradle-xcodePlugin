@@ -61,6 +61,9 @@ class Signing {
 	}
 
 	void setKeychain(Object keychain) {
+		if (keychain instanceof String && keychain.matches("^~/.*")) {
+			keychain = keychain.replaceFirst("~", System.getProperty('user.home'))
+		}
 		this.keychain = project.file(keychain)
 	}
 
