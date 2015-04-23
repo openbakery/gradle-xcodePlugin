@@ -12,9 +12,21 @@ buildscript {
 
 
 def versionNumber = '0.10.3'
+def publishURL
+def publishUser
+def publishPassword
 
+if (project.hasProperty("publishURL")) {
+	publishURL = project.publishURL
+}
+if (project.hasProperty("publishUser")) {
+	publishUser = project.publishUser
+}
+if (project.hasProperty("publishPassword")) {
+	publishPassword = project.publishPassword
+}
 if (project.hasProperty("buildNumber")) {
-	versionNumber += "." + buildNumber 
+	versionNumber += "." + project.buildNumber 
 }
 
 
