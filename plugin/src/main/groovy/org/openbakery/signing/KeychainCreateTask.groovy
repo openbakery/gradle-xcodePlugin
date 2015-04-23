@@ -43,6 +43,9 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		}
 
 		if (project.xcodebuild.signing.keychain) {
+			if (!project.xcodebuild.signing.keychain.exists()) {
+				throw new IllegalStateException("Keychain not found: " + project.xcodebuild.signing.keychain.absolutePath)
+			}
 			logger.debug("Using keychain {}", project.xcodebuild.signing.keychain)
 			logger.debug("Internal keychain {}", project.xcodebuild.signing.keychainPathInternal)
 			return
