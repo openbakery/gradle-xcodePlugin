@@ -39,6 +39,12 @@ class XcodeProjectFile {
 			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
 		}
 
+		if (project.xcodebuild.target == null) {
+			throw new IllegalArgumentException("'xcodebuild.target' is null");
+		}
+
+
+
 		def buildRoot = project.buildDir
 		if (!buildRoot.exists()) {
 			buildRoot.mkdirs()
@@ -58,8 +64,6 @@ class XcodeProjectFile {
 
 
 		logger.debug("rootObjectKey {}", rootObjectKey);
-
-		List<String> list = getList("objects." + rootObjectKey + ".targets")
 
 		if (StringUtils.isEmpty(project.xcodebuild.productName)) {
 			project.xcodebuild.productName = getValueFromTarget(".productName")
@@ -139,7 +143,7 @@ class XcodeProjectFile {
 				return getBuildConfiguration(target)
 			}
 		}
-		return null
+		throw new IllegalArgumentException("No Build configration for for target: " + forTargetName)
 	}
 
 
