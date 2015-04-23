@@ -9,7 +9,14 @@ buildscript {
   }
 }
 
-def versionNumber = '0.10.3.3'
+
+
+def versionNumber = '0.10.3'
+
+if (project.hasProperty("buildNumber")) {
+	versionNumber += "." + buildNumber 
+}
+
 
 group = 'org.openbakery'
 version = versionNumber
@@ -18,32 +25,26 @@ version = versionNumber
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
 apply plugin: 'maven'
 apply plugin: "com.gradle.plugin-publish"
 
-repositories {
-  jcenter()
-}
 
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
 
 
-dependencies {
-	compile gradleApi()
-	compile localGroovy()
+configurations {
+    deployerJars
 }
-
 
 repositories {
 	mavenCentral()
 }
 
+
 dependencies {
-	testCompile 'org.testng:testng:6.+'
-	testCompile 'org.gmock:gmock:0.8.+'
-	testCompile 'org.hamcrest:hamcrest-all:1.3'
+	compile gradleApi()
+	compile localGroovy()
 	compile 'commons-io:commons-io:2.4+'
 	compile 'commons-configuration:commons-configuration:1.10+'
 	compile 'commons-collections:commons-collections:3.2.+'
@@ -51,16 +52,44 @@ dependencies {
 	compile 'org.apache.httpcomponents:httpmime:4.3+'
 	compile 'org.pegdown:pegdown:1.5.+'
 	compile 'ch.qos.logback:logback-core:1.1.+'
+	testCompile 'org.testng:testng:6.+'
+	testCompile 'org.gmock:gmock:0.8.+'
+	testCompile 'org.hamcrest:hamcrest-all:1.3'
+	
+  deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
+	
 }
 
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
 
+
 uploadArchives {
 	repositories {
 		mavenDeployer {
-			repository(url: uri('../../repository'))
+      configuration = configurations.deployerJars
+			
+			repository(url: publishURL) {
+				authentication(userName: publishUser, password: publishPassword)
+			}
+			
+			pom.project {
+				licenses {
+					license {
+						name 'The Apache Software License, Version 2.0'
+						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+						distribution 'repo'
+					}
+				}
+				developers {
+			  	developer {
+						id "renep"
+			      name "René Pirringer"
+			      email "rene@openbakery.org"
+					}
+				}
+			}
 		}
 	}
 }
@@ -73,39 +102,6 @@ test {
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
-}
-
-
-def pomConfig = {
-	licenses {
-		license {
-    	name "The Apache Software License, Version 2.0"
-      url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-      distribution "repo"
-		}
-	}
-	developers {
-  	developer {
-			id "renep"
-      name "René Pirringer"
-      email "rene@openbakery.org"
-		}
-	}
-}
-
-publishing {
-	publications {
-  	mavenJava(MavenPublication) {
-    	from components.java
-      artifact sourcesJar
-
-      pom.withXml {
-      	def root = asNode()
-        	root.appendNode('description', 'A gradle plugin for building Xcode projects')
-          root.children().last() + pomConfig
-			}
-		}
-	}
 }
 
 
