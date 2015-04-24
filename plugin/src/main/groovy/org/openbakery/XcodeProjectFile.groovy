@@ -65,6 +65,8 @@ class XcodeProjectFile {
 
 		logger.debug("rootObjectKey {}", rootObjectKey);
 
+		verifyTarget()
+
 		if (StringUtils.isEmpty(project.xcodebuild.productName)) {
 			project.xcodebuild.productName = getValueFromTarget(".productName")
 		}
@@ -105,6 +107,17 @@ class XcodeProjectFile {
 		}
 	}
 
+	void verifyTarget() {
+		String forTargetName = project.xcodebuild.target
+		List<String> list = getList("objects." + rootObjectKey + ".targets")
+		for (target in list) {
+			def targetName = getString("objects." + target + ".name")
+			if (targetName.equals(forTargetName)) {
+				return;
+			}
+		}
+		throw new IllegalArgumentException("Target '" + project.xcodebuild.target + "' not found in project")
+	}
 
 	String getValueFromTarget(String key) {
 		String forTargetName = project.xcodebuild.target
@@ -143,7 +156,7 @@ class XcodeProjectFile {
 				return getBuildConfiguration(target)
 			}
 		}
-		throw new IllegalArgumentException("No Build configration for for target: " + forTargetName)
+		throw new IllegalArgumentException("No Build configuration for for target: " + forTargetName)
 	}
 
 

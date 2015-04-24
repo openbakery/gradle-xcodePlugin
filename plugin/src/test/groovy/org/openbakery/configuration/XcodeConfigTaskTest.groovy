@@ -41,7 +41,7 @@ class XcodeConfigTaskTest {
 		xcodeConfigTask = project.getTasks().getByName(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		xcodeConfigTask.setProperty("commandRunner", commandRunnerMock)
 
-		project.xcodebuild.target = "test"
+		project.xcodebuild.target = "Example"
 
 	}
 
@@ -388,6 +388,19 @@ class XcodeConfigTaskTest {
 
 	}
 
+	@Test
+	void testNonExistingTarget () {
 
+		project.xcodebuild.target = "test"
 
+		mockControl.play {
+			try {
+				xcodeConfigTask.configuration()
+				fail("Expected IllegalArgumentException was not thrown")
+			} catch (IllegalArgumentException ex) {
+				assert ex.getMessage().equals("Target 'test' not found in project")
+			}
+		}
+
+	}
 }
