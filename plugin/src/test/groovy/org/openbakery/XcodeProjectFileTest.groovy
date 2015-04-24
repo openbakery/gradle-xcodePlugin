@@ -42,7 +42,7 @@ class XcodeProjectFileTest {
 
 		xcodeProjectFile.parse()
 
-		assert project.xcodebuild.bundleName.equals("ExampleProductName")
+		assert project.xcodebuild.bundleName.equals("Example")
 	}
 
 
@@ -60,7 +60,7 @@ class XcodeProjectFileTest {
 	void testProductName() {
 		project.xcodebuild.target = "Example"
 		xcodeProjectFile.parse()
-		assert project.xcodebuild.productName.equals("ExampleProductName")
+		assert project.xcodebuild.productName.equals("Example")
 	}
 
 	@Test
