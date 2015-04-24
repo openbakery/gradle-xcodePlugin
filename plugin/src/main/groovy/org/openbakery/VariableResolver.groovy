@@ -55,7 +55,8 @@ class VariableResolver {
 	def binding() {
 		return [
 						"PRODUCT_NAME": project.xcodebuild.productName,
-						"SRC_ROOT"    : project.projectDir.absolutePath
+						"SRC_ROOT"    : project.projectDir.absolutePath,
+						"TARGET_NAME" : project.xcodebuild.target
 		];
 	}
 }

@@ -70,9 +70,16 @@ class VariableResolverTest {
 
 	@Test
 	void testBoth() {
-
 		project.xcodebuild.productName = 'Example'
-				assert "Example Example".equals(resolver.resolve('${PRODUCT_NAME} $(PRODUCT_NAME)'))
+		assert "Example Example".equals(resolver.resolve('${PRODUCT_NAME} $(PRODUCT_NAME)'))
+	}
+
+
+	@Test
+	void testTargetName() {
+		project.xcodebuild.target = 'MyTarget'
+		assert "MyTarget".equals(resolver.resolve('$(TARGET_NAME)'))
+
 	}
 
 	@Test

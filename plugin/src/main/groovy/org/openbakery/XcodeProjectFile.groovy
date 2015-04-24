@@ -67,10 +67,6 @@ class XcodeProjectFile {
 
 		verifyTarget()
 
-		if (StringUtils.isEmpty(project.xcodebuild.productName)) {
-			project.xcodebuild.productName = getValueFromTarget(".productName")
-		}
-
 
 		String type = getValueFromTarget(".productType")
 		if ("com.apple.product-type.app-extension".equalsIgnoreCase(type)) {
@@ -79,6 +75,13 @@ class XcodeProjectFile {
 
 
 		String buildConfiguration = getBuildConfiguration()
+
+		if (StringUtils.isEmpty(project.xcodebuild.productName)) {
+			String key = "objects." + buildConfiguration + ".buildSettings.PRODUCT_NAME"
+			VariableResolver resolver = new VariableResolver(project);
+			project.xcodebuild.productName = resolver.resolve(getString(key))
+		}
+
 		String rootBuildConfigurationsItem = getRootBuildConfigurationsItem()
 
 		String sdkRoot = getString("objects.{buildConfiguration}.buildSettings.SDKROOT")

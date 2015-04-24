@@ -62,7 +62,7 @@
 
 /* Begin PBXFileReference section */
 		39EDF9662C7F0A282AC769B9 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		A7148CC818A397560010B761 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7148CC818A397560010B761 /* ExampleProductName.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleProductName.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7148CCB18A397560010B761 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A7148CCD18A397560010B761 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A7148CCF18A397560010B761 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -150,7 +150,7 @@
 		A7148CC918A397560010B761 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A7148CC818A397560010B761 /* Example.app */,
+				A7148CC818A397560010B761 /* ExampleProductName.app */,
 				A7148CEF18A397560010B761 /* ExampleTests.xctest */,
 				D99F95451A0EBB11007BB79F /* ExampleTodayWidget.appex */,
 			);
@@ -254,7 +254,7 @@
 			);
 			name = Example;
 			productName = Example;
-			productReference = A7148CC818A397560010B761 /* Example.app */;
+			productReference = A7148CC818A397560010B761 /* ExampleProductName.app */;
 			productType = "com.apple.product-type.application";
 		};
 		A7148CEE18A397560010B761 /* ExampleTests */ = {
@@ -521,7 +521,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Example;
+				PRODUCT_NAME = ExampleProductName;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -537,7 +537,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = Example;
+				PRODUCT_NAME = ExampleProductName;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
