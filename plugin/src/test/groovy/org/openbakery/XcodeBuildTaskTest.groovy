@@ -168,9 +168,8 @@ class XcodeBuildTaskTest {
 
 		def signIdentity = 'mysign'
 		project.xcodebuild.signing.identity = signIdentity
-		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
-		expectedCommandList.add("CODE_SIGN_RESOURCE_RULES_PATH=\$(SDKROOT)/ResourceRules.plist")
-		expectedCommandList.add("PROVISIONING_PROFILE=FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
+		expectedCommandList.add("CODE_SIGN_IDENTITY=")
+		expectedCommandList.add("CODE_SIGNING_REQUIRED=NO")
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -428,8 +427,6 @@ class XcodeBuildTaskTest {
 		def dependsOn  = xcodeBuildTask.getDependsOn()
 
 		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
-		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 

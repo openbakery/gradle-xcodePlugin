@@ -11,7 +11,7 @@ buildscript {
 
 
 
-def versionNumber = '0.10.3'
+def versionNumber = '0.11.0-test1'
 def publishURL
 def publishUser
 def publishPassword
@@ -126,7 +126,7 @@ pluginBundle {
 
   plugins {
     xcodeplugin {
-      id = 'org.openbakery.xcodeplugin'
+      id = 'org.openbakery.xcode-plugin'
       displayName = 'Gradle Xcode plugin'
 			version = versionNumber
     }
