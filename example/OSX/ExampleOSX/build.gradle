@@ -1,6 +1,19 @@
-plugins {
-  id "org.openbakery.xcodeplugin" version "0.10.3"
+buildscript {
+	repositories {
+		maven {
+			url('http://repository.openbakery.org/')
+		}
+		mavenCentral()
+  }
+
+	dependencies {
+	    classpath "org.openbakery:xcode-plugin:0.10.99.+"
+	}
+		
 }
+
+apply plugin: 'org.openbakery.xcode-plugin'
+
 
 xcodebuild {
 	//workspace = 'ExampleOSX.xcworkspace'
