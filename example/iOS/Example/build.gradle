@@ -21,10 +21,21 @@ You can also scroll down and add the values directly (line 115ff).
 */
 
 
-plugins {
-  id "org.openbakery.xcodeplugin" version "0.10.3"
+buildscript {
+	repositories {
+		maven {
+			url('http://repository.openbakery.org/')
+		}
+		mavenCentral()
+  }
+
+	dependencies {
+		classpath group: 'org.openbakery', name: 'xcode-plugin', version: '0.10.99.+'
+	}
+		
 }
 
+apply plugin: 'xcode-plugin'
 
 
 xcodebuild {

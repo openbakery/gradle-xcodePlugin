@@ -125,7 +125,7 @@ pluginBundle {
   tags = ['xcode', 'iOS', 'OS X']
 
   plugins {
-    xcodeplugin {
+    xcodePlugin {
       id = 'org.openbakery.xcode-plugin'
       displayName = 'Gradle Xcode plugin'
 			version = versionNumber
