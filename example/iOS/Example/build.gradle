@@ -30,12 +30,12 @@ buildscript {
   }
 
 	dependencies {
-		classpath group: 'org.openbakery', name: 'xcode-plugin', version: '0.10.99.+'
+	    classpath "org.openbakery:xcode-plugin:0.10.99.+"
 	}
 		
 }
 
-apply plugin: 'xcode-plugin'
+apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {

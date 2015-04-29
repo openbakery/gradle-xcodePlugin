@@ -111,8 +111,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
 
-
-    void apply(Project project) {
+	void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class);
 
 		System.setProperty("java.awt.headless", "true");
