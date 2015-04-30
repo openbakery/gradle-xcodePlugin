@@ -9,8 +9,14 @@ Changes
 * Crashlytics support: Thanks to @achretien
 * Added new simulator commands:
  * simulatorsCreate: All simulators can be recreated. Here all simulators are deleted and created again
- * simulatorsClean: Content and of all simulators can be erased
-	
+ * simulatorsClean: Content and settings of all simulators can be erased
+* Disabled codesiging at xcodebuild, is done at the package task only
+ * Keychain and Provisioning tasks dependencies moved from xcodebuild task to the package task
+
+Bugfixes
+
+* Keychain path only works with absolute path: Issue #150
+
 
 ## 0.10.3 (March 31, 2015)
 
