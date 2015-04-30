@@ -140,12 +140,16 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project)
 			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
 		} catch (CommandRunnerException ex) {
-			throw new Exception("Error attempting to run the unit tests!", ex);
+            if(project.xcodebuild.testFailureThrowsException) {
+                throw new Exception("Error attempting to run the unit tests!", ex);
+            }
 		} finally {
 			if (!parseResult(outputFile)) {
 				logger.lifecycle("Tests Failed!")
 				logger.lifecycle(getFailureFromLog(outputFile));
-				throw new Exception("Not all unit tests are successful!")
+                if(project.xcodebuild.testFailureThrowsException) {
+                    throw new Exception("Not all unit tests are successful!")
+                }
 			} 
 			logger.lifecycle("Done")
 		}
