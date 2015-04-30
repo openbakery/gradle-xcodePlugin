@@ -53,7 +53,9 @@ import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.simulators.SimulatorsList
+import org.openbakery.simulators.SimulatorsCleanTask
+import org.openbakery.simulators.SimulatorsCreateTask
+import org.openbakery.simulators.SimulatorsListTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -76,6 +78,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
 	public static final String ARCHIVE_TASK_NAME = "archive"
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
+	public static final String SIMULATORS_CREATE_TASK_NAME = "simulatorsCreate"
+	public static final String SIMULATORS_CLEAN_TASK_NAME = "simulatorsClean"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
 	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
@@ -109,6 +113,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SDK_MACOSX = "macosx"
 	public static final String SDK_IPHONEOS = "iphoneos"
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
+
+
 
 
 	void apply(Project project) {
@@ -401,8 +407,9 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureSimulatorTasks(Project project) {
-		SimulatorsList  listSimulators = project.getTasks().create(SIMULATORS_LIST_TASK_NAME, SimulatorsList.class);
-		listSimulators.setGroup(SIMULATORS_LIST_TASK_NAME);
+		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_CREATE_TASK_NAME, type: SimulatorsCreateTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_CLEAN_TASK_NAME, type: SimulatorsCleanTask, group: SIMULATORS_LIST_TASK_NAME)
 	}
 
 	private void configureHockeyKit(Project project) {

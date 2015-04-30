@@ -1,0 +1,182 @@
+package org.openbakery.simulators
+
+import org.gradle.api.Project
+import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+/**
+ * Created by rene on 30.04.15.
+ */
+class SimulatorControl {
+
+
+	enum Section {
+		DEVICE_TYPE("== Device Types =="),
+		RUNTIMES("== Runtimes =="),
+		DEVICES("== Devices ==")
+
+		private final String identifier
+		Section(String identifier) {
+			this.identifier = identifier
+		}
+
+
+		public static Section isSection(String line) {
+			for (Section section : Section.values()) {
+				if (section.identifier.equals(line)) {
+					return section;
+				}
+			}
+			return null
+		}
+
+	}
+
+
+	private static Logger logger = LoggerFactory.getLogger(SimulatorControl.class)
+
+	CommandRunner commandRunner = new CommandRunner()
+
+	String simctlCommand
+
+	ArrayList<SimulatorDeviceType> deviceTypes
+	ArrayList<SimulatorRuntime> runtimes
+	HashMap<SimulatorRuntime, List<SimulatorDevice>>devices;
+
+	Project project
+
+	public SimulatorControl(Project project) {
+		this.project = project
+	}
+
+	void parse() {
+		runtimes = new ArrayList<>()
+		devices = new HashMap<>()
+		deviceTypes = new ArrayList<>()
+
+		Section section = null;
+		String simctlList = simctl("list")
+
+		ArrayList<SimulatorDevice> simulatorDevices = null
+		for (String line in simctlList.split("\n")) {
+
+			Section isSection = Section.isSection(line);
+			if (isSection != null) {
+				section = isSection
+				continue
+			}
+
+			switch (section) {
+				case Section.DEVICE_TYPE:
+					deviceTypes.add(new SimulatorDeviceType(line))
+					break
+				case Section.RUNTIMES:
+					SimulatorRuntime runtime = new SimulatorRuntime(line)
+					runtimes.add(runtime)
+					break
+				case Section.DEVICES:
+
+					SimulatorRuntime isRuntime = parseDevicesRuntime(line)
+					if (isRuntime != null) {
+						simulatorDevices = new ArrayList<>()
+						devices.put(isRuntime, simulatorDevices)
+						continue
+					}
+					if (line.startsWith("--")) {
+						// unknown runtime, so we are done
+						simulatorDevices = null
+					}
+
+					if (simulatorDevices != null) {
+						SimulatorDevice device = new SimulatorDevice(line)
+						simulatorDevices.add(device)
+					}
+
+					break
+
+
+			}
+		}
+	}
+
+	SimulatorRuntime parseDevicesRuntime(String line) {
+		for (SimulatorRuntime runtime in runtimes) {
+			if (line.equals("-- " + runtime.name + " --")) {
+				return runtime
+			}
+		}
+		return null
+	}
+
+
+
+	List<SimulatorRuntime> getRuntimes() {
+		if (runtimes == null) {
+			parse()
+		}
+		return runtimes
+	}
+
+	List <SimulatorDevice> getDevices(SimulatorRuntime runtime) {
+		return getDevices().get(runtime)
+	}
+
+	HashMap<SimulatorRuntime, List<SimulatorDevice>> getDevices() {
+		if (devices == null) {
+			parse()
+		}
+		return devices;
+	}
+
+	List<SimulatorDeviceType> getDeviceTypes() {
+		if (deviceTypes == null) {
+			parse()
+		}
+		return deviceTypes
+	}
+
+
+	String simctl(String... commands) {
+		if (simctlCommand == null) {
+			simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]);
+		}
+
+		ArrayList<String>parameters = new ArrayList<>()
+		parameters.add(simctlCommand)
+		parameters.addAll(commands)
+		return commandRunner.runWithResult(parameters);
+	}
+
+
+
+
+	void deleteAll() {
+
+		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
+			for (SimulatorDevice device in entry.getValue()) {
+				simctl("delete", device.identifier)
+			}
+		}
+	}
+
+
+	void createAll() {
+
+		for (SimulatorRuntime runtime in getRuntimes()) {
+			for (SimulatorDeviceType deviceType in getDeviceTypes()) {
+				logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
+				simctl("create", deviceType.name, deviceType.identifier, runtime.identifier)
+			}
+		}
+	}
+
+	void eraseAll() {
+		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
+			for (SimulatorDevice device in entry.getValue()) {
+				simctl("erase", device.identifier)
+			}
+		}
+	}
+}

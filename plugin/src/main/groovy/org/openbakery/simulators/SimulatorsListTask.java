@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by rene on 13.08.14.
  */
-public class SimulatorsList extends DefaultTask {
+public class SimulatorsListTask extends DefaultTask {
 
 
 	int compareTo(String first, String second) {
@@ -32,7 +32,7 @@ public class SimulatorsList extends DefaultTask {
 
 	}
 
-	public SimulatorsList() {
+	public SimulatorsListTask() {
 
 		setDescription("List all available iOS Simulators");
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME);

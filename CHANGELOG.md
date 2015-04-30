@@ -1,8 +1,12 @@
-## 0.10.4
+
+## 0.11.0
 
 Changes
 - Signing identity is now optional, because it is read from the keychain
 - Crashlytics support: Thanks to @achretien
+- Added new simulator commands:
+  - All simulators can be created 
+	- Content and of all simulators can be erased
 
 ## 0.10.3 (March 31, 2015)
 
