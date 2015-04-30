@@ -1,5 +1,5 @@
 
-## 0.11.0
+## 0.11.0 (April 30, 2015)
 
 Changes
 - Renamed plugin id to org.openbakery.xcode-plugin
@@ -7,8 +7,8 @@ Changes
 - Signing identity is now optional, because it is read from the keychain
 - Crashlytics support: Thanks to @achretien
 - Added new simulator commands:
-  - All simulators can be created 
-	- Content and of all simulators can be erased
+  - simulatorsCreate: All simulators can be recreated. Here all simulators are deleted and created again
+	- simulatorsClean: Content and of all simulators can be erased
 	
 
 ## 0.10.3 (March 31, 2015)

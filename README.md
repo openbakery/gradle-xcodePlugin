@@ -17,6 +17,10 @@ Here a brief overview of the features:
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
 
 
+## Note
+
+**With version 0.11 the identifier of the plugin has changed to org.openbakery.xcode-plugin see: https://plugins.gradle.org/plugin/org.openbakery.xcode-plugin**
+
 ## Requirements
 
 * Xcode 5 or greater
@@ -24,9 +28,9 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.10.3
+### Current stable version is 0.11.0
 
-0.9.x and 0.10.x supports Xcode 5, Xcode 6 and Xcode 6.1
+0.9.x up to 0.11.x supports Xcode 5, Xcode 6 and Xcode 6.1
 
 **Note:**
 
@@ -45,7 +49,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcodeplugin" version "0.10.3"
+  id "org.openbakery.xcode-plugin" version "0.11.0"
 }
 
 xcodebuild {
