@@ -158,7 +158,7 @@ class SimulatorControl {
 		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
 			for (SimulatorDevice device in entry.getValue()) {
 				simctl("delete", device.identifier)
-				println "Delete simulator: " + device.name
+				println "Delete simulator: '" + device.name + "' " + device.identifier
 			}
 		}
 	}
@@ -172,7 +172,7 @@ class SimulatorControl {
 					simctl("create", deviceType.name, deviceType.identifier, runtime.identifier)
 					println "Create simulator: " + deviceType.name + "for " + runtime.version
 				} catch (CommandRunnerException ex) {
-					println "Unable to create simulator: " + deviceType.name + "for " + runtime.version
+					println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
 				}
 			}
 		}
@@ -182,7 +182,7 @@ class SimulatorControl {
 		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
 			for (SimulatorDevice device in entry.getValue()) {
 				simctl("erase", device.identifier)
-				println "Erase simulator: " + device.name
+				println "Erase simulator: '" + device.name + "' " + device.identifier
 			}
 		}
 	}
