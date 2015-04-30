@@ -2,11 +2,14 @@
 ## 0.11.0
 
 Changes
+- Renamed plugin id to org.openbakery.xcode-plugin
+  - plugin is now on https://plugins.gradle.org
 - Signing identity is now optional, because it is read from the keychain
 - Crashlytics support: Thanks to @achretien
 - Added new simulator commands:
   - All simulators can be created 
 	- Content and of all simulators can be erased
+	
 
 ## 0.10.3 (March 31, 2015)
 

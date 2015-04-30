@@ -295,4 +295,41 @@ class XcodeTestTaskTest {
 		}
 
 	}
+
+
+	@Test
+	void testCommandForIOS_killFailed() {
+
+		commandRunnerMock.run("killall", "iOS Simulator").raises(new CommandRunnerException("failed"))
+
+		project.xcodebuild.sdk = 'iphonesimulator'
+		project.xcodebuild.target = 'Test';
+
+		addExpectedScheme()
+
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add("iphonesimulator")
+
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Debug")
+
+		expectedCommandList.add("CODE_SIGN_IDENTITY=")
+		expectedCommandList.add("CODE_SIGNING_REQUIRED=NO")
+		addExpectedDefaultDirs()
+
+		expectedCommandList.add('-destination')
+		expectedCommandList.add('platform=' + XcodePlugin.SDK_IPHONESIMULATOR + ',id=iPad Air')
+		expectedCommandList.add('-destination')
+		expectedCommandList.add('platform=' + XcodePlugin.SDK_IPHONESIMULATOR + ',id=iPhone 4s')
+
+		expectedCommandList.add("test")
+
+		commandRunnerMock.run(project.projectDir.absolutePath, expectedCommandList, null, anything()).times(1)
+
+		mockControl.play {
+			xcodeTestTask.test()
+		}
+
+	}
+
 }

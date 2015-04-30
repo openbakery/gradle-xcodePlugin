@@ -114,7 +114,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			// kill a running simulator
-			commandRunner.run("killall", "iOS Simulator")
+			try {
+				commandRunner.run("killall", "iOS Simulator")
+			} catch (CommandRunnerException ex) {
+				// ignore, this exception means that no simulator was running
+			}
 		}
 
 		def commandList = createCommandList()
