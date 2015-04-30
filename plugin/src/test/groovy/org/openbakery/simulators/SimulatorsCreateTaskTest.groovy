@@ -35,6 +35,11 @@ class SimulatorsCreateTaskTest {
 		assert task.simulatorControl instanceof SimulatorControl
 	}
 
+	@Test
+	void dependsOn() {
+		def dependsOn  = task.getDependsOn()
+		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+	}
 
 	@Test
 	void run() {

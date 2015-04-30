@@ -170,7 +170,7 @@ class SimulatorControl {
 				logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
 				try {
 					simctl("create", deviceType.name, deviceType.identifier, runtime.identifier)
-					println "Create simulator: " + deviceType.name + "for " + runtime.version
+					println "Create simulator: '" + deviceType.name + "' for " + runtime.version
 				} catch (CommandRunnerException ex) {
 					println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
 				}

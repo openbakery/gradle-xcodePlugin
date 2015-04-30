@@ -36,6 +36,12 @@ class SimulatorsCleanTaskTest {
 
 
 	@Test
+	void dependsOn() {
+		def dependsOn  = task.getDependsOn()
+		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+	}
+
+	@Test
 	void run() {
 
 		def mock = new MockFor(SimulatorControl)
