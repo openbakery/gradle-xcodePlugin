@@ -275,6 +275,8 @@ class XcodeTestTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
+		expectedCommandList.add("CODE_SIGN_IDENTITY=")
+		expectedCommandList.add("CODE_SIGNING_REQUIRED=NO")
 		addExpectedDefaultDirs()
 
 		expectedCommandList.add('-destination')

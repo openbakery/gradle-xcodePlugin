@@ -114,6 +114,8 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
+		addExpectNoSigning()
+
 
 		project.xcodebuild.dstRoot = new File(currentDir + "${File.separator}mydst")
 		project.xcodebuild.objRoot = new File(currentDir + "${File.separator}myobj")
@@ -145,6 +147,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-target")
 		expectedCommandList.add(target)
 
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -301,7 +304,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -326,6 +329,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-target")
 		expectedCommandList.add(target)
 
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -347,6 +351,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -370,9 +375,9 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
+		addExpectNoSigning()
+
 		expectedCommandList.add("ARCHS=i368");
-
-
 
 
 		addExpectedDefaultDirs()
@@ -409,6 +414,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-target")
 		expectedCommandList.add(target)
 
+		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
