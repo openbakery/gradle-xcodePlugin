@@ -1,3 +1,8 @@
+## 0.11.1 (TBA)
+
+Bugfixes
+
+* Reverted: Disabled codesiging at xcodebuild. Reason is that the entitlements are not added, therfor the signed app cannot be uploaded to itunes connect
 
 ## 0.11.0 (April 30, 2015)
 

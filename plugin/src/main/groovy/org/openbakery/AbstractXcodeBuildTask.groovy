@@ -56,9 +56,25 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.target)
 		}
 
-			// disable signing during xcodebuild, signing is done later at the package task
-		commandList.add("CODE_SIGN_IDENTITY=")
-		commandList.add("CODE_SIGNING_REQUIRED=NO")
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
+				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
+				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
+					ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
+					String uuid = provisioningProfileIdReader.getUUID()
+					commandList.add("PROVISIONING_PROFILE=" + uuid)
+				}
+			} else {
+				commandList.add("CODE_SIGN_IDENTITY=")
+				commandList.add("CODE_SIGNING_REQUIRED=NO")
+			}
+		} else if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+			// disable signing during xcodebuild for os x, maybe this should be also default for iOS?
+			commandList.add("CODE_SIGN_IDENTITY=")
+			commandList.add("CODE_SIGNING_REQUIRED=NO")
+
+		}
+
 
 
 		if (project.xcodebuild.arch != null) {
@@ -77,6 +93,11 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
 		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
+
+
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
+			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + project.xcodebuild.signing.keychainPathInternal.path);
+		}
 
 
 		if (project.xcodebuild.additionalParameters instanceof List) {

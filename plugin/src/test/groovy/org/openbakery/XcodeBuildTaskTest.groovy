@@ -114,8 +114,6 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-		addExpectNoSigning()
-
 
 		project.xcodebuild.dstRoot = new File(currentDir + "${File.separator}mydst")
 		project.xcodebuild.objRoot = new File(currentDir + "${File.separator}myobj")
@@ -147,7 +145,6 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-target")
 		expectedCommandList.add(target)
 
-		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -171,8 +168,8 @@ class XcodeBuildTaskTest {
 
 		def signIdentity = 'mysign'
 		project.xcodebuild.signing.identity = signIdentity
-		expectedCommandList.add("CODE_SIGN_IDENTITY=")
-		expectedCommandList.add("CODE_SIGNING_REQUIRED=NO")
+		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
+		expectedCommandList.add("PROVISIONING_PROFILE=FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -304,7 +301,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-		addExpectNoSigning()
+
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -329,7 +326,6 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-target")
 		expectedCommandList.add(target)
 
-		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -351,7 +347,6 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -374,8 +369,6 @@ class XcodeBuildTaskTest {
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
-
-		addExpectNoSigning()
 
 		expectedCommandList.add("ARCHS=i368");
 
@@ -414,7 +407,6 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("-target")
 		expectedCommandList.add(target)
 
-		addExpectNoSigning()
 		addExpectedDefaultDirs()
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
@@ -433,6 +425,8 @@ class XcodeBuildTaskTest {
 		def dependsOn  = xcodeBuildTask.getDependsOn()
 
 		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
