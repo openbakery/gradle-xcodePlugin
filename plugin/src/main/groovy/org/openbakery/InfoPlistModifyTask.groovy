@@ -20,6 +20,8 @@ import org.gradle.api.tasks.TaskAction
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
+	File infoPlist
+	Boolean modfied = false
 
 	public InfoPlistModifyTask() {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
@@ -35,37 +37,37 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("No Info.plist was found! Check you xcode project settings if the specified target has a Info.plist set.")
 		}
 
-		def infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
+		infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
 
 
 		logger.lifecycle("Updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
-			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", project.infoplist.bundleIdentifier)
+			setValueForPlist("CFBundleIdentifier", project.infoplist.bundleIdentifier)
 		}
 
 		// add suffix to bundleIdentifier
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 
-			plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
+			setValueForPlist("CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
 
 		}
 
 		// Modify bundle bundleName
 		if (project.infoplist.bundleName != null) {
-			plistHelper.setValueForPlist(infoPlist, "CFBundleName", project.infoplist.bundleName)
+			setValueForPlist("CFBundleName", project.infoplist.bundleName)
 		}
 
 		// Modify bundle bundleDisplayName
 		if (project.infoplist.bundleDisplayName != null) {
-			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", project.infoplist.bundleDisplayName)
+			setValueForPlist("CFBundleDisplayName", project.infoplist.bundleDisplayName)
 		}
 
 		// add suffix to bundleDisplayName
 		if (project.infoplist.bundleDisplayNameSuffix != null) {
 			def bundleDisplayName = plistHelper.getValueFromPlist(infoPlist, "CFBundleDisplayName")
-			plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix)
+			setValueForPlist("CFBundleDisplayName", bundleDisplayName + project.infoplist.bundleDisplayNameSuffix)
 		}
 
 		logger.debug("project.infoplist.version: {}", project.infoplist.version)
@@ -75,9 +77,12 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 		for(String command in project.infoplist.commands) {
-			plistHelper.setValueForPlist(infoPlist, command)
+			setValueForPlist(command)
 		}
 
+		if (!modfied) {
+			logger.lifecycle("Nothing was modifed!")
+		}
 	}
 
 	private void modifyVersion(File infoPlist) {
@@ -102,7 +107,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		}
 
 		logger.debug("Modify CFBundleVersion to {}", version)
-		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", version)
+		setValueForPlist("CFBundleVersion", version)
 	}
 
 
@@ -131,8 +136,23 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		}
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
-		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", shortVersionString)
+		setValueForPlist("CFBundleShortVersionString", shortVersionString)
 
 	}
 
+
+	void setValueForPlist(String key, String value) {
+		modfied = true
+		logger.lifecycle("Set {} to {}", key, value)
+		plistHelper.setValueForPlist(infoPlist, key, value)
+
+	}
+
+
+	void setValueForPlist(String command) {
+		modfied = true
+		logger.lifecycle("Set {}", command)
+		plistHelper.setValueForPlist(infoPlist, command)
+
+	}
 }
