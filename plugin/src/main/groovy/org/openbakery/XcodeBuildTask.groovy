@@ -50,11 +50,11 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			project.getBuildDir().mkdirs()
 		}
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
-		commandRunner.setOutputFile(outputFile;
+		commandRunner.setOutputFile(outputFile)
 		try {
 			commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(output))
 		} finally {
-			logger.lifecycle(getFailureFromLog(outputFile));
+			logger.lifecycle(getFailureFromLog(outputFile))
 		}
 
 		logger.lifecycle("Done")

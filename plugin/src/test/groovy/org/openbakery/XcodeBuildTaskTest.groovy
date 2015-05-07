@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -40,10 +41,15 @@ class XcodeBuildTaskTest {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
-		commandRunnerMock.setOutputFile(new File('build/xcodebuild-output.txt').absoluteFile)
+
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
+
+		File outputFile = new File(project.buildDir, "xcodebuild-output.txt" )
+		FileUtils.writeStringToFile(outputFile, "dummy")
+		commandRunnerMock.setOutputFile(outputFile)
+
 		projectDir = project.projectDir.absolutePath
 		project.apply plugin: org.openbakery.XcodePlugin
 

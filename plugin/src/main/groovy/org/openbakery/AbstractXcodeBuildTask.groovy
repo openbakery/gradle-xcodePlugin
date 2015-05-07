@@ -124,6 +124,11 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		for (int i=0; i<100; i++) {
 			String line = reversedLinesFileReader.readLine()
 
+			if (line == null) {
+				// no more input so we are done;
+				break;
+			}
+
 			result.add(line);
 
 			if (line.startsWith("Testing failed:")) {
