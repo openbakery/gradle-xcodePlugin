@@ -186,34 +186,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 	}
 
-	String getFailureFromLog(File outputFile) {
-
-		ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(outputFile);
-
-		ArrayList<String> result = new ArrayList<>(100);
-
-		for (int i=0; i<100; i++) {
-			String line = reversedLinesFileReader.readLine()
-
-			result.add(line);
-
-			if (line.startsWith("Testing failed:")) {
-				break
-			}
-
-		}
-
-		Collections.reverse(result)
-		StringBuilder builder = new StringBuilder()
-		for (String line : result) {
-		  builder.append(line)
-			builder.append("\n")
-		}
-
-		return builder.toString()
-	}
-
-
 
 	boolean parseResult(File outputFile) {
 		if (!outputFile.exists()) {

@@ -18,6 +18,7 @@ package org.openbakery
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.slf4j.Logger
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import static org.hamcrest.Matchers.anything as anything;

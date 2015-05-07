@@ -31,7 +31,7 @@
 
 	default value: empty
 
-* _mobileProvisionURI_ - URI where the mobile provision profile is located that should be used when signing the app
+* _mobileProvisionURI_ - URI where the mobile provision profile is located that should be used when signing the app. You can also specify multiple provisining profiles as array when you have an app exenstion e.g. `[ 'file:///first.mobileprovision', 'file:///second.mobileprovision']`
 
 	default value: empty
 
