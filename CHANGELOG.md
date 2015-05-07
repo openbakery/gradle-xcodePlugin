@@ -1,8 +1,9 @@
-## 0.11.1 (TBA)
+## 0.11.1 (May 7, 2015)
 
 Bugfixes
 
 * Reverted: Disabled codesiging at xcodebuild. Reason is that the entitlements are not added, therfor the signed app cannot be uploaded to itunes connect
+* Fixed that the conversion to binary does not fail if the plist is readonly: issue #179
 
 ## 0.11.0 (April 30, 2015)
 
