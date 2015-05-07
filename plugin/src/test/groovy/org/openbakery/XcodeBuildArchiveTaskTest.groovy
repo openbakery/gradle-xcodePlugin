@@ -296,4 +296,27 @@ class XcodeBuildArchiveTaskTest {
 			xcodeBuildArchiveTask.archive()
 		}
 	}
+
+
+	@Test
+	void convertInfoPlistToBinaryError() {
+
+		File infoPlist = new File(appDirectory, "Info.plist")
+		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");
+		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
+		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
+
+		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
+
+		List<String> commandList
+		commandList?.clear()
+		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
+		commandRunnerMock.run(commandList).raises(new CommandRunnerException("Permission Denied!"))
+
+
+		mockControl.play {
+			// should not fail!!!
+			xcodeBuildArchiveTask.archive()
+		}
+	}
 }

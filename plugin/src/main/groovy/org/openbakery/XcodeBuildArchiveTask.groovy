@@ -253,18 +253,21 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	def convertInfoPlistToBinary(File archiveDirectory) {
 
 		archiveDirectory.eachFileRecurse(FILES) {
-		    if(it.name.endsWith('.plist')) {
-					logger.lifecycle("convert plist to binary {}", it)
-					def commandList = ["/usr/bin/plutil", "-convert", "binary1", it.absolutePath]
+			if (it.name.endsWith('.plist')) {
+				logger.lifecycle("convert plist to binary {}", it)
+				def commandList = ["/usr/bin/plutil", "-convert", "binary1", it.absolutePath]
+				try {
 					commandRunner.run(commandList)
-		    }
+				} catch (CommandRunnerException ex) {
+					logger.lifecycle("Unable to convert!")
+				}
+			}
 		}
 
 	}
 
 
 	def removeResourceRules(File appDirectory) {
-
 
 		File resourceRules = new File(appDirectory, "ResourceRules.plist")
 		logger.lifecycle("delete {}", resourceRules)
