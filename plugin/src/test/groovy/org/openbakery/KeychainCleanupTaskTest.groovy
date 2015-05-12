@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -75,7 +76,7 @@ class KeychainCleanupTaskTest {
 										"    \"/Library/Keychains/System.keychain\"";
 
 		expectKeychainListCommand(result)
-		expectKeychainDeleteCommand()
+		commandRunnerMock.run(["security", "list-keychains", "-s", userHome + "/Library/Keychains/login.keychain"])
 
 		mockControl.play {
 			keychainCleanupTask.clean()
@@ -98,5 +99,17 @@ class KeychainCleanupTaskTest {
 		mockControl.play {
 			keychainCleanupTask.clean()
 		}
+	}
+
+
+	@Test
+	void keychainListUpdate() {
+		String securityList = FileUtils.readFileToString(new File("src/test/Resource/security-list.txt"))
+		commandRunnerMock.runWithResult(["security", "list-keychains"]).returns(securityList)
+		commandRunnerMock.run(["security", "list-keychains", "-s", "/Users/me/Library/Keychains/login.keychain"])
+		mockControl.play {
+			keychainCleanupTask.removeGradleKeychainsFromSearchList()
+		}
+
 	}
 }

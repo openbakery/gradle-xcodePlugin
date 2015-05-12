@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -101,7 +102,6 @@ class KeychainCreateTaskTest {
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 
-
 		expectKeychainCreateCommand()
 		expectKeychainImportCommand()
 
@@ -122,37 +122,13 @@ class KeychainCreateTaskTest {
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 
-		String userHome = System.getProperty("user.home")
-		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"";
-		expectKeychainListCommand(result)
-		expectKeychainListSetCommand()
-
 		mockControl.play {
 			keychainCreateTask.create()
 		}
 	}
 
 
-	@Test
-	void create_with_os_x_10_9_missing_keychain() {
-		System.setProperty("os.version", "10.9.0");
-		project.xcodebuild.sdk = 'iphoneos'
-		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
-		project.xcodebuild.signing.certificatePassword = "password"
 
-		project.xcodebuild.signing.keychainPathInternal.createNewFile()
-		expectKeychainImportCommand()
-		String userHome = System.getProperty("user.home")
-		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"\n" +
-						"    \"/MISSING_PATH/Keychains/MISSING\"";
-		expectKeychainListCommand(result)
-		expectKeychainListSetCommand()
-
-
-		mockControl.play {
-			keychainCreateTask.create()
-		}
-	}
 
 
 }

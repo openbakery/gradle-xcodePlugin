@@ -1,3 +1,9 @@
+## 0.11.2 (TBA)
+
+Bugfixes
+
+* Change that the gradle keychains are not added to the search list, to avoid that a wrong keychain is taken during codesign. Issue #181
+
 ## 0.11.1 (May 7, 2015)
 
 Bugfixes

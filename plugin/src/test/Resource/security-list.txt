@@ -1,0 +1,5 @@
+    "/Users/me/Library/Keychains/login.keychain"
+    "/Users/me/Go/pipelines/Build-Appstore/build/codesign/gradle-1431356246879.keychain"
+    "/Users/me/Go/pipelines/Build-Test/build/codesign/gradle-1431356877451.keychain"
+    "/Users/me/Go/pipelines/Build-Continuous/build/codesign/gradle-1431419900260.keychain"
+    "/Library/Keychains/System.keychain"

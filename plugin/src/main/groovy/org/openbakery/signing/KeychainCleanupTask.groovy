@@ -25,31 +25,19 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 		this.description = "Cleanup the keychain"
 	}
 
-	def deleteKeychain() {
-		for (String keychain : getKeychainList()) {
-			File keychainFile = new File(keychain)
-			if (!keychainFile.exists()) {
-				if (keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
-					logger.lifecycle("Deleting keychain: {}", keychainFile)
-					try {
-						commandRunner.run(["security", "delete-keychain", keychainFile.absolutePath])
-					} catch (IllegalStateException ex) {
-						// ignore because delete-keychain results in an error because the file does not exists
-						// but the entry is deleted properly
-					}
-				} else {
-					logger.debug("keychain was not created by this plugin so leave it: {}", keychainFile)
-				}
-
-			} else if (keychainFile.name.equals("gradle.keychain")) {
-				// gradle.keychain is the xcodelugin version 0.7 keychain that also needs to be cleaned
-				logger.debug("deleting old 0.7 xcodeplugin keychain file")
-				commandRunner.run(["security", "delete-keychain", keychainFile.absolutePath])
-			} else {
-				logger.debug("keychain exists so leave it: {}", keychainFile)
+	/**
+	 * remove all gradle keychains from the keychain search list
+	 * @return
+	 */
+	def removeGradleKeychainsFromSearchList() {
+		List<String> keychainFiles = new ArrayList<>();
+		getKeychainList().each {
+			File keychainFile = new File(it)
+			if (!keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
+				keychainFiles.add(it)
 			}
-
 		}
+		setKeychainList(keychainFiles)
 	}
 
 	@TaskAction
@@ -61,11 +49,8 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 
 		project.xcodebuild.signing.signingDestinationRoot.deleteDir()
 
-		if (getOSVersion().minor >= 9) {
-			setKeychainList(getKeychainList())
-		} else {
-			deleteKeychain()
-		}
+		removeGradleKeychainsFromSearchList()
+
 
 	}
 

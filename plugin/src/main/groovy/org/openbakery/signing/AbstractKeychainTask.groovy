@@ -1,6 +1,8 @@
 package org.openbakery.signing
 
+import org.apache.commons.lang.StringUtils
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.XcodeBuildPluginExtension
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,11 +35,10 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 						"-s"
 		]
 		for (String keychain in keychainList) {
-			if (new File(keychain).exists()) {
-				commandList.add(keychain);
-			}
+			commandList.add(keychain);
 		}
 		commandRunner.run(commandList)
 	}
+
 
 }
