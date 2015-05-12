@@ -463,7 +463,7 @@ class XcodeBuildTaskTest {
 
 		addExpectedDefaultDirs()
 
-		expectedCommandList.add("OTHER_CODE_SIGN_FLAGS=--keychain=" + projectDir + "/path\\ with\\ spaces/test.keychain")
+		expectedCommandList.add("OTHER_CODE_SIGN_FLAGS=--keychain=" + projectDir + "/path with spaces/test.keychain")
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 

@@ -115,7 +115,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 	}
 
 	String escapeSpacesInPath(String path) {
-		return path.replaceAll("\\s", "\\\\ ")
+		return path.replaceAll(" ", "\\ ")
 	}
 
 
