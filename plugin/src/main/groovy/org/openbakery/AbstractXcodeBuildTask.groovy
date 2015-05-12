@@ -97,7 +97,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 
 		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + project.xcodebuild.signing.keychainPathInternal.path);
+			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + escapeSpacesInPath(project.xcodebuild.signing.keychainPathInternal.path))
 		}
 
 
@@ -112,6 +112,10 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		return commandList;
+	}
+
+	String escapeSpacesInPath(String path) {
+		return path.replaceAll("\\s", "\\\\ ")
 	}
 
 

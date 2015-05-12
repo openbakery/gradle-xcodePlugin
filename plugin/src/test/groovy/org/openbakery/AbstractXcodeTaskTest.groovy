@@ -167,6 +167,5 @@ class AbstractXcodeTaskTest {
 		assert zipEntries.contains("first.txt")
 		assert zipEntries.contains("second.txt")
 
-
 	}
 }
