@@ -25,20 +25,7 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 		this.description = "Cleanup the keychain"
 	}
 
-	/**
-	 * remove all gradle keychains from the keychain search list
-	 * @return
-	 */
-	def removeGradleKeychainsFromSearchList() {
-		List<String> keychainFiles = new ArrayList<>();
-		getKeychainList().each {
-			File keychainFile = new File(it)
-			if (!keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
-				keychainFiles.add(it)
-			}
-		}
-		setKeychainList(keychainFiles)
-	}
+
 
 	@TaskAction
 	def clean() {

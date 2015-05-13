@@ -73,6 +73,12 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
 
 
+		if (getOSVersion().minor >= 9) {
+
+			def keychainList = getKeychainList()
+			keychainList.add(keychainPath)
+			setKeychainList(keychainList)
+		}
 
 		// Set a custom timeout on the keychain if requested
 		if (project.xcodebuild.signing.timeout != null) {

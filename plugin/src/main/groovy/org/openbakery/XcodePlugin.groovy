@@ -51,6 +51,7 @@ import org.openbakery.packaging.ReleaseNotesTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.packaging.PackageTask
+import org.openbakery.signing.KeychainRemoveFromSearchListTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.simulators.SimulatorsCleanTask
@@ -91,6 +92,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
 	public static final String KEYCHAIN_CREATE_TASK_NAME = "keychainCreate"
 	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
+	public static final String KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME = "keychainRemove"
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
@@ -426,6 +428,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureKeychain(Project project) {
 		project.task(KEYCHAIN_CREATE_TASK_NAME, type: KeychainCreateTask, group: XCODE_GROUP_NAME)
 		project.task(KEYCHAIN_CLEAN_TASK_NAME, type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
+		project.task(KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME, type: KeychainRemoveFromSearchListTask, group: XCODE_GROUP_NAME)
 	}
 
 	private void configureTest(Project project) {

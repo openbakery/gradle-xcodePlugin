@@ -1,9 +1,11 @@
-package org.openbakery
+package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.CommandRunner
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.signing.KeychainCleanupTask
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -109,6 +111,16 @@ class KeychainCleanupTaskTest {
 		commandRunnerMock.run(["security", "list-keychains", "-s", "/Users/me/Library/Keychains/login.keychain"])
 		mockControl.play {
 			keychainCleanupTask.removeGradleKeychainsFromSearchList()
+		}
+	}
+
+	@Test
+	void testGetKeychainList() {
+		String securityList = FileUtils.readFileToString(new File("src/test/Resource/security-list.txt"))
+		commandRunnerMock.runWithResult(["security", "list-keychains"]).returns(securityList)
+		mockControl.play {
+			List<String> keychainList = keychainCleanupTask.getKeychainList()
+			assert keychainList.size == 1
 		}
 
 	}

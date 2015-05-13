@@ -1,9 +1,11 @@
-package org.openbakery
+package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.CommandRunner
+import org.openbakery.Version
 import org.openbakery.signing.KeychainCreateTask
 import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
@@ -122,13 +124,15 @@ class KeychainCreateTaskTest {
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 
+		String userHome = System.getProperty("user.home")
+		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"";
+		expectKeychainListCommand(result)
+		expectKeychainListSetCommand()
+
 		mockControl.play {
 			keychainCreateTask.create()
 		}
 	}
-
-
-
 
 
 }

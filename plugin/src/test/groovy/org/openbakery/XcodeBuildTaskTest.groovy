@@ -439,6 +439,12 @@ class XcodeBuildTaskTest {
 
 
 	@Test
+	void finalized() {
+		def finalized = xcodeBuildTask.finalizedBy.values
+		assert finalized.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+	}
+
+	@Test
 	public void run_command_with_keychain_path_escaped() {
 		addExpectedScheme()
 

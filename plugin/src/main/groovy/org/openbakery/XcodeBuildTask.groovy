@@ -32,6 +32,9 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
 						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
+		finalizedBy(
+						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
+		)
 		this.description = "Builds the Xcode project"
 	}
 

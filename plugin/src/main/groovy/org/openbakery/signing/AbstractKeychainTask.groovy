@@ -14,15 +14,18 @@ import org.openbakery.XcodeBuildPluginExtension
 abstract class AbstractKeychainTask extends AbstractXcodeTask {
 
 
-	def getKeychainList() {
+	List<String> getKeychainList() {
 		String keychainList = commandRunner.runWithResult(["security", "list-keychains"])
 
-		def result = []
+		List<String> result = []
 
 		for (String keychain in keychainList.split("\n")) {
 			String trimmedKeychain = keychain.replaceAll(/^\s*\"|\"$/, "")
 			if (!trimmedKeychain.equals("/Library/Keychains/System.keychain")) {
-				result.add(trimmedKeychain);
+				File keychainFile = new File(trimmedKeychain)
+				if (!keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
+					result.add(trimmedKeychain);
+				}
 			}
 		}
 		return result;
@@ -40,5 +43,11 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 		commandRunner.run(commandList)
 	}
 
-
+	/**
+	 * remove all gradle keychains from the keychain search list
+	 * @return
+	 */
+	def removeGradleKeychainsFromSearchList() {
+		setKeychainList(getKeychainList())
+	}
 }
