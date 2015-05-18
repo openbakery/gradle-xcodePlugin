@@ -112,10 +112,9 @@ gradle.taskGraph.whenReady { taskGraph ->
 		xcodebuild {
 			sdk = 'iphoneos'
 			signing {
-				identity = signingIdentity                       // e.g. 'iPhone Developer: ...
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+				mobileProvisionURI = [ signingMobileProvisionURI ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
 		
@@ -131,7 +130,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 			sdk = 'iphoneos'
 
 			signing {
-				identity = appstoreSigningIdentity                        // e.g. 'iPhone Developer: ...'
 				certificateURI = appstoreSigningCertificateURI            // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = appstoreSigningCertificatePassword  // e.g. 'secret'
 				mobileProvisionURI = appstoreSigningMobileProvisionURI    // e.g 'http://example.com/Provisioning/Development.mobileprovision'
