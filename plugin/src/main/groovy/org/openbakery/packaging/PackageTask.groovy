@@ -169,7 +169,7 @@ class PackageTask extends AbstractDistributeTask {
 	private void codesign(File bundle) {
 		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
 
-		codeSignSwiftLibs(bundle)
+		codeSignFrameworks(bundle)
 
 		logger.lifecycle("Codesign {}", bundle)
 
@@ -188,20 +188,20 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
-	private void codeSignSwiftLibs(File bundle) {
+	private void codeSignFrameworks(File bundle) {
 
 		File frameworksDirectory = new File(bundle, "Frameworks");
 
 		if (frameworksDirectory.exists()) {
 
-			FilenameFilter dylibFilter = new FilenameFilter() {
+			FilenameFilter filter = new FilenameFilter() {
 				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".dylib");
+					return name.toLowerCase().endsWith(".dylib") || name.toLowerCase().endsWith(".framework");
 				}
 			};
 
 
-			for (File file in frameworksDirectory.listFiles(dylibFilter)) {
+			for (File file in frameworksDirectory.listFiles(filter)) {
 				logger.lifecycle("Codesign {}", file)
 				def codesignCommand = [
 								"/usr/bin/codesign",

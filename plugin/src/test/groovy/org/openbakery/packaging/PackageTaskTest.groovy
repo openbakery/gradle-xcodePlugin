@@ -68,6 +68,10 @@ class PackageTaskTest {
 	}
 
 	void mockExampleApp(boolean withPlugin, boolean withSwift) {
+		mockExampleApp(withPlugin, withSwift, false)
+	}
+
+	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework) {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
 
@@ -116,9 +120,19 @@ class PackageTaskTest {
 			File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
 			FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
 
-			mockCodesignSwiftCommand("Payload/Example.app/Frameworks/libswiftCore.dylib")
-			mockCodesignSwiftCommand("Payload/Example.app/Frameworks/libswiftCoreGraphics.dylib")
+			mockCodesignLibCommand("Payload/Example.app/Frameworks/libswiftCore.dylib")
+			mockCodesignLibCommand("Payload/Example.app/Frameworks/libswiftCoreGraphics.dylib")
 
+
+		}
+
+		if (withFramework) {
+			File framework = new File(applicationBundle, "Frameworks/My.framework")
+			framework.mkdirs()
+			File frameworkFile = new File(applicationBundle, "Frameworks/My.framework/My")
+			FileUtils.writeStringToFile(frameworkFile, "dummy")
+
+			mockCodesignLibCommand("Payload/Example.app/Frameworks/My.framework")
 
 		}
 
@@ -126,7 +140,7 @@ class PackageTaskTest {
 
 
 
-	void mockCodesignSwiftCommand(String path) {
+	void mockCodesignLibCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		File payloadApp = new File(packageTask.outputPath, path)
 
@@ -367,6 +381,15 @@ class PackageTaskTest {
 		}
 	}
 
+
+	@Test
+	void codesignFramework() {
+		mockExampleApp(false, true, true)
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+	}
 
 	@Test(expectedExceptions = IllegalArgumentException)
 	void hasNoSigning() {
