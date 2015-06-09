@@ -106,6 +106,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		// we want to preserve the permissions, so use the zip command line tool
 		// maybe this can be replaced by Apache Commons Compress
 
+		filesToZip = filesToZip.findAll { it != null }
 
 		if (!zipFile.parentFile.exists()) {
 			zipFile.parentFile.mkdirs()
@@ -183,6 +184,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 						// Frameworks have to be signed with this path
 						bundles.add(new File(pluginBundle, "/Versions/Current"))
 					} else {
+						// Make sure the inner app (WatchKitApp) is signed
+						// This must happen before its containing bundle is signed, so add it first
+						for (File innerApp : pluginBundle.listFiles()) {
+							if (innerApp.getName().endsWith(".app")) {
+								bundles.add(innerApp);
+							}
+						}
 						bundles.add(pluginBundle)
 					}
 				}

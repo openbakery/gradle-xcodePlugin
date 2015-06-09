@@ -25,6 +25,8 @@ import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.util.regex.Matcher
+
 enum Devices {
 	UNIVERSAL,
 	PHONE,
@@ -58,6 +60,11 @@ class XcodeBuildPluginExtension {
 	String productName = null
 	String bundleName = null
 	String productType = "app"
+	List<AppExtension> appExtensions = null
+	String entitlementsPath = null
+	def entitlementsConfig = null
+	def appProvisioningProfilePath = null
+	boolean hasWatchKitExtension = false
 
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
@@ -434,5 +441,47 @@ class XcodeBuildPluginExtension {
 
 	boolean isSDK(String expectedSDK) {
 		return sdk.toLowerCase().startsWith(expectedSDK)
+	}
+
+	boolean hasAppExtensions() {
+		return this.appExtensions != null
+	}
+
+	void updateAppExtensionWithFilePaths(name,infoPlistFilePath,entitlementsFilePath) {
+		this.appExtensions.each {appExtension->
+			if (appExtension.name.equalsIgnoreCase(name)) {
+				appExtension.infoPlistPath = infoPlistFilePath
+				appExtension.entitlementsPath = entitlementsFilePath
+			}
+		}
+	}
+
+	String getAppProvisioningProfileID() {
+		if (appProvisioningProfilePath) {
+			return getProvisioningProfileID(this.appProvisioningProfilePath)
+		}
+		return null
+	}
+
+	String getExtensionProvisioningProfileID(name) {
+		def appExtension = this.appExtensions.find {  it.name.equalsIgnoreCase(name) }
+		if (null == appExtension) {
+			// Couldn't find an extension with that name
+			throw new IllegalStateException("Couldn't find extension with name: ${name}")
+		}
+		if (appExtension.provisioningProfilePath) {
+			return getProvisioningProfileID(appExtension.provisioningProfilePath)
+		}
+		return null
+	}
+
+	def getProvisioningProfileID(profile) {
+		def cmd = "security cms -D -i ${profile}"
+		def profileText = commandRunner.runWithResult(cmd.tokenize())
+		Matcher matcher = profileText =~ /(?m)<key>UUID<\/key>\s*\n\s*<string>([^<]*)<\/string>/
+		if (matcher.find()) {
+			return matcher[0][1]
+		}
+		throw new IllegalStateException("Couldn't parse out the profile ID for ${profile}")
 	}
 }

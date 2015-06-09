@@ -136,10 +136,23 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		File swiftLibArchive = new File(getArchiveDirectory(), "SwiftSupport")
+		if (swiftLibArchive.exists()) {
+			copy(swiftLibArchive, payloadPath.getParentFile())
+			return new File(payloadPath.getParentFile(), "SwiftSupport");
+		}
 
-		copy(swiftLibArchive, payloadPath.getParentFile())
-		return new File(payloadPath.getParentFile(), "SwiftSupport");;
-
+		return null
+	}
+	
+	def addWatchKitSupport(File payloadPath) {
+		File watchKitSupport = null
+		if (project.xcodebuild.hasWatchKitExtension) {
+			watchKitSupport = new File(payloadPath.getParentFile(), "WatchKitSupport");
+			watchKitSupport.mkdirs();
+			File wkFile = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit/WK");
+			copy(wkFile, new File(watchKitSupport, "WK"));
+		}
+		return watchKitSupport
 	}
 
 
@@ -150,11 +163,8 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
-		if (swiftSupportPath != null) {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath)
-		} else {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath)
-		}
+		File watchKitSupportPath = addWatchKitSupport(packagePath)
+		createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath, watchKitSupportPath)
 	}
 
 	private void createIpa(File payloadPath) {

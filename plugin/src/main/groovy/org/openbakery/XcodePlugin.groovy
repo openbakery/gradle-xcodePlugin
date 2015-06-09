@@ -106,6 +106,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
+	public static final String ENTITLEMENTSMODIFY_TASK_NAME = 'entitlementsModify'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -132,6 +133,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureHockeyKit(project)
 		configureKeychain(project)
 		configureInfoPlist(project)
+		configureEntitlements(project)
 		configureProvisioning(project)
 		configureAppstore(project)
 		configureHockeyApp(project)
@@ -255,6 +257,9 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('xcodebuild.version')) {
 				project.xcodebuild.version = project['xcodebuild.version']
+			}
+			if (project.hasProperty('xcodebuild.appExtensions')) {
+				project.xcodebuild.appExtensions = project['xcodebuild.appExtensions']
 			}
 
 			if (project.hasProperty('hockeykit.displayName')) {
@@ -505,6 +510,10 @@ class XcodePlugin implements Plugin<Project> {
 		if (task.hasPodfile()) {
 			addDependencyToBuild(project, task);
 		}
+	}
+
+	private void configureEntitlements(Project project) {
+		project.task(ENTITLEMENTSMODIFY_TASK_NAME, type: EntitlementsModifyTask, group: XCODE_GROUP_NAME)
 	}
 
 	private void addDependencyToBuild(Project project, Task task) {

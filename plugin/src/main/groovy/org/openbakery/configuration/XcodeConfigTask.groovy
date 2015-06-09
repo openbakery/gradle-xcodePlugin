@@ -7,8 +7,10 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.openbakery.XcodeProjectFile
+import org.openbakery.AppExtension;
 
 /**
  * User: rene
@@ -21,6 +23,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	XcodeConfigTask() {
 		super()
+		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME);
 		this.description = "Parses the xcodeproj file and setups the configuration for the build"
 	}
 
@@ -41,6 +44,14 @@ class XcodeConfigTask extends AbstractXcodeTask {
 			return;
 		}
 
+		setAppProvisioningProfileId()
+
+		if (project.xcodebuild.hasAppExtensions()) {
+			project.xcodebuild.appExtensions.each { appExtension ->
+				configureAppExtension(appExtension.name)
+			}
+		}
+
 		String version = commandRunner.runWithResult([project.xcodebuild.xcodebuildCommand, "-version"])
 		boolean isXcode5 = version.startsWith("Xcode 5");
 		logger.debug("isXcode5 {}", isXcode5);
@@ -54,6 +65,29 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 		logger.debug("availableSimulators: {}", project.xcodebuild.availableSimulators)
 
+	}
+
+	def setAppProvisioningProfileId() {
+		def value = project.xcodebuild.getAppProvisioningProfileID()
+		if (value) {
+			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(project.xcodebuild.target)
+			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
+		}
+	}
+
+	def configureAppExtension(String targetName) {
+		def infoPlistFilePath = xcodeProjectFile.getInfoPlistPathForTarget(targetName)
+		def entitlementsFilePath = xcodeProjectFile.getEntitlementsFilePathForTarget(targetName)
+		project.xcodebuild.updateAppExtensionWithFilePaths(targetName,infoPlistFilePath,entitlementsFilePath)
+		setProvisioningProfileIdForExtension(targetName)
+	}
+
+	def setProvisioningProfileIdForExtension(String targetName) {
+		def value = project.xcodebuild.getExtensionProvisioningProfileID(targetName)
+		if (value) {
+			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(targetName)
+			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
+		}
 	}
 
 	void createXcode5DeviceList() {
