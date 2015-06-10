@@ -70,7 +70,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 	}
 
 	def setAppProvisioningProfileId() {
-		def value = project.xcodebuild.getAppProvisioningProfileID()
+		def value = getAppProvisioningProfileID()
 		if (value) {
 			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(project.xcodebuild.target)
 			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
