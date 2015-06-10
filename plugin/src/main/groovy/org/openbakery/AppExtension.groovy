@@ -14,14 +14,12 @@ class AppExtension {
 	// The configurations should be specified by the user as needed
 	def infoPlistConfig
 	def entitlementsConfig
-	def provisioningProfilePath
 	String name
 
-	public AppExtension(name,infoPlistConfig = null, entitlementsConfig = null, provisioningProfilePath = null) {
+	public AppExtension(name,infoPlistConfig = null, entitlementsConfig = null) {
 		super()
 		this.infoPlistConfig = infoPlistConfig
 		this.entitlementsConfig = entitlementsConfig
 		this.name = name
-		this.provisioningProfilePath = provisioningProfilePath
 	}
 }

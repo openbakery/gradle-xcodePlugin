@@ -15,17 +15,14 @@
  */
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
+import org.openbakery.signing.ProvisioningProfileIdReader
 import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import java.util.regex.Matcher
 
 enum Devices {
 	UNIVERSAL,
@@ -63,7 +60,6 @@ class XcodeBuildPluginExtension {
 	List<AppExtension> appExtensions = null
 	String entitlementsPath = null
 	def entitlementsConfig = null
-	def appProvisioningProfilePath = null
 	boolean hasWatchKitExtension = false
 
 	Devices devices = Devices.UNIVERSAL;
@@ -443,6 +439,38 @@ class XcodeBuildPluginExtension {
 		return sdk.toLowerCase().startsWith(expectedSDK)
 	}
 
+	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
+
+		def mobileProvisionFileMap = [:]
+
+		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
+			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
+			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+		}
+
+		for ( entry in mobileProvisionFileMap ) {
+			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
+				return entry.value
+			}
+		}
+
+		// match wildcard
+		for ( entry in mobileProvisionFileMap ) {
+			if (entry.key.equals("*")) {
+				return entry.value
+			}
+
+			if (entry.key.endsWith("*")) {
+				String key = entry.key[0..-2]
+				if (bundleIdentifier.toLowerCase().startsWith(key)) {
+					return entry.value
+				}
+			}
+		}
+
+		return null
+	}
+
 	boolean hasAppExtensions() {
 		return this.appExtensions != null
 	}
@@ -454,34 +482,5 @@ class XcodeBuildPluginExtension {
 				appExtension.entitlementsPath = entitlementsFilePath
 			}
 		}
-	}
-
-	String getAppProvisioningProfileID() {
-		if (appProvisioningProfilePath) {
-			return getProvisioningProfileID(this.appProvisioningProfilePath)
-		}
-		return null
-	}
-
-	String getExtensionProvisioningProfileID(name) {
-		def appExtension = this.appExtensions.find {  it.name.equalsIgnoreCase(name) }
-		if (null == appExtension) {
-			// Couldn't find an extension with that name
-			throw new IllegalStateException("Couldn't find extension with name: ${name}")
-		}
-		if (appExtension.provisioningProfilePath) {
-			return getProvisioningProfileID(appExtension.provisioningProfilePath)
-		}
-		return null
-	}
-
-	def getProvisioningProfileID(profile) {
-		def cmd = "security cms -D -i ${profile}"
-		def profileText = commandRunner.runWithResult(cmd.tokenize())
-		Matcher matcher = profileText =~ /(?m)<key>UUID<\/key>\s*\n\s*<string>([^<]*)<\/string>/
-		if (matcher.find()) {
-			return matcher[0][1]
-		}
-		throw new IllegalStateException("Couldn't parse out the profile ID for ${profile}")
 	}
 }
