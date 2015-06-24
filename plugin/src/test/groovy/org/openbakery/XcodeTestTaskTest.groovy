@@ -53,7 +53,7 @@ class XcodeTestTaskTest {
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: 'org.openbakery.xcode-plugin'
 
 		xcodeTestTask = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME);
 		xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
@@ -174,8 +174,6 @@ class XcodeTestTaskTest {
 
 		assert xcodeTestTask.numberSuccess() == 2
 		assert xcodeTestTask.numberErrors() == 0
-
-
 	}
 
 	@Test
@@ -186,7 +184,14 @@ class XcodeTestTaskTest {
 		assert xcodeTestTask.numberErrors() == 2
 	}
 
+	@Test
+	void parseFailureResultWithPartialSuite() {
+		assert !xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
+		assert xcodeTestTask.numberSuccess() == 0
+		assert xcodeTestTask.numberErrors() == 2
+	}
+	
 	@Test
 	void parseSuccessResult_6_1() {
 		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
