@@ -200,11 +200,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		List<String> testSuites = null;
 
 		int testRun = 0;
+		boolean endOfDestination = false;
 
 		StringBuilder output = new StringBuilder()
 
-		outputFile.eachLine{
-		  String line =  it
+		outputFile.eachLine { line ->
 
 
 			def matcher = TEST_CASE_PATTERN.matcher(line)
@@ -282,6 +282,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 			if (testSuccessMatcher.matches() || testFailedMatcher.matches()) {
 				testRun ++;
+				endOfDestination = true
 			}
 
 			if (testFailedMatcher.matches()) {
@@ -289,7 +290,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 
 
-			if (testSuites != null && testSuites.isEmpty()) {
+			if( endOfDestination ) {
 				Destination destination = project.xcodebuild.availableDestinations[testRun]
 
 				if (this.allResults.containsKey(destination)) {
@@ -301,6 +302,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 				resultList = []
 				testSuites = null
+				endOfDestination = false
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {
