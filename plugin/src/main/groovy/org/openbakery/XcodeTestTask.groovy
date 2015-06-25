@@ -82,9 +82,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
-	def TEST_SUITE_PATTERN = ~/.*Test Suite '(.*)'(.*)/
-
-
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
@@ -197,8 +194,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def resultList = []
 
-		List<String> testSuites = null;
-
 		int testRun = 0;
 		boolean endOfDestination = false;
 
@@ -258,25 +253,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 
-			def testSuiteMatcher = TEST_SUITE_PATTERN.matcher(line)
-			if (testSuiteMatcher.matches()) {
-
-				String testSuiteName = testSuiteMatcher[0][1].trim();
-				def testSuiteAction = testSuiteMatcher[0][2].trim();
-
-
-				if (testSuiteAction.startsWith('started')) {
-					if (testSuites == null) {
-						testSuites = new ArrayList<String>();
-					}
-					testSuites.add(testSuiteName);
-				} else if (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed')) {
-					testSuites.remove(testSuiteName);
-				}
-
-
-			}
-
 			def testSuccessMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
 			def testFailedMatcher = TEST_FAILED_PATTERN.matcher(line)
 
@@ -301,7 +277,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 
 				resultList = []
-				testSuites = null
 				endOfDestination = false
 			} else {
 				if (output != null) {
