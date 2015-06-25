@@ -267,7 +267,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 			if( endOfDestination ) {
-				Destination destination = project.xcodebuild.availableDestinations[testRun]
+				Destination destination = project.xcodebuild.availableDestinations[(testRun - 1)]
 
 				if (this.allResults.containsKey(destination)) {
 					def destinationResultList = this.allResults.get(destination)
@@ -301,18 +301,15 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def store() {
 
-
-
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)
 
 		xmlBuilder.testsuites() {
-			for (Destination destination in project.xcodebuild.availableDestinations) {
-				String name = destination.toPrettyString()
+			for (e in this.allResults) {
+				String name = e.key.toPrettyString()
 
-				def resultList = this.allResults[destination]
-
+				def resultList = e.value
 				int success = 0;
 				int errors = 0;
 				if (resultList != null) {
