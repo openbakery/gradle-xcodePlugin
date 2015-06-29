@@ -1,5 +1,6 @@
 package org.openbakery.output
 
+import org.gradle.logging.ProgressLogger
 import org.gradle.logging.StyledTextOutput
 
 import java.util.regex.Matcher
@@ -20,12 +21,20 @@ class XcodeBuildOutputAppender implements OutputAppender {
 	boolean hasOutput = false
 	boolean warning = false
 	boolean error = false
+	boolean fullProgress = false;
+	ProgressLogger progressLogger
 
 	StyledTextOutput output
 
-	XcodeBuildOutputAppender(StyledTextOutput output) {
+	XcodeBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output) {
 		this.output = output
+		this.progressLogger = progressLogger
 		reset()
+	}
+
+	XcodeBuildOutputAppender(StyledTextOutput output) {
+		this(null, output);
+		fullProgress = true
 	}
 
 	void reset() {
@@ -67,6 +76,9 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			int sourceFileStartIndex = line.indexOf(" ")+1
 			if (sourceFileStartIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, line.length())
+				if (progressLogger != null) {
+					progressLogger.progress("compile: " + currentSourceFile)
+				}
 				command = "Compile"
 			}
 		} else if (line.startsWith("Ld")) {
@@ -82,25 +94,7 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			outputText.append("\n")
 			outputText.append(line)
 		} else if ((currentSourceFile != null || command != null) && line.equals("")) {
-			// end of command
-			if (error) {
-				output.withStyle(StyledTextOutput.Style.Failure).text("   ERROR")
-			} else if (warning) {
-				output.withStyle(StyledTextOutput.Style.Identifier).text("WARNINGS")
-			} else {
-				output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
-			}
-			output.text(" - ");
-			output.text(command)
-			if (currentSourceFile != null) {
-				output.text(": ")
-				output.text(currentSourceFile);
-			}
-			output.println();
-			if (hasOutput) {
-				output.println(outputText.toString())
-			}
-
+			printOutput()
 			reset()
 		} else if (line.endsWith("errors generated.") || line.endsWith("error generated.") || line.startsWith("clang: error:")) {
 			error = true
@@ -110,5 +104,29 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			hasOutput = true
 		}
 
+	}
+
+	private void printOutput() {
+	// end of command
+		if (error) {
+			output.withStyle(StyledTextOutput.Style.Failure).text("   ERROR")
+		} else if (warning) {
+			output.withStyle(StyledTextOutput.Style.Identifier).text("WARNINGS")
+		} else {
+			if (!fullProgress) {
+				return;
+			}
+			output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
+		}
+		output.text(" - ");
+		output.text(command)
+		if (currentSourceFile != null) {
+			output.text(": ")
+			output.text(currentSourceFile);
+		}
+		output.println();
+		if (hasOutput) {
+			output.println(outputText.toString())
+		}
 	}
 }

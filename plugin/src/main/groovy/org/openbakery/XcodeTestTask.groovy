@@ -6,6 +6,8 @@ import groovy.xml.XmlUtil
 import org.apache.commons.io.input.ReversedLinesFileReader
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.ProgressLogger
+import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
@@ -135,9 +137,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
 
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeTestTask.class).start("XcodeTestTask", "XcodeTestTask");
+
+
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project)
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, project)
 			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);

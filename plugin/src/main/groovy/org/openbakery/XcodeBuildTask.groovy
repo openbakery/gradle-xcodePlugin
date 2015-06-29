@@ -17,6 +17,8 @@ package org.openbakery
 
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.ProgressLogger
+import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.output.XcodeBuildOutputAppender
@@ -55,7 +57,11 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
 		try {
-			commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(output))
+
+			ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+			ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
+
+			commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
 		} finally {
 			logger.lifecycle(getFailureFromLog(outputFile))
 		}

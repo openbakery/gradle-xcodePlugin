@@ -1,6 +1,7 @@
 package org.openbakery.output
 
 import org.gradle.api.Project
+import org.gradle.logging.ProgressLogger
 import org.gradle.logging.StyledTextOutput
 import org.openbakery.Destination
 
@@ -29,9 +30,13 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	Project project
 	String currentTestCase = null;
 
-	TestBuildOutputAppender(StyledTextOutput output, Project project) {
-		super(output)
+	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, Project project) {
+		super(progressLogger, output)
 		this.project = project
+	}
+
+	TestBuildOutputAppender(StyledTextOutput output, Project project) {
+		this(null, output, project)
 	}
 
 	@Override
@@ -107,7 +112,11 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		if (startMatcher.matches()) {
 			testsRunning = true
 			startDestination()
-			return startMatcher[0][1].trim()
+			String testCase =  startMatcher[0][1].trim()
+			if (progressLogger != null) {
+				progressLogger.progress("test: " + testCase)
+			}
+			return testCase;
 		}
 		return null;
 	}
@@ -140,6 +149,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	void printTestResult(String testCase, boolean failed, String duration) {
 		if (!failed) {
+			if (!fullProgress) {
+				return;
+			}
 			output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
 		} else {
 			output.withStyle(StyledTextOutput.Style.Failure).text("  FAILED")

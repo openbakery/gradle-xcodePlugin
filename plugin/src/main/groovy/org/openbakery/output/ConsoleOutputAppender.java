@@ -1,5 +1,7 @@
 package org.openbakery.output;
 
+import org.gradle.api.plugins.jetty.AbstractJettyRunTask;
+import org.gradle.logging.ProgressLogger;
 import org.gradle.logging.StyledTextOutput;
 
 /**
@@ -11,6 +13,7 @@ public class ConsoleOutputAppender implements OutputAppender {
 	private StyledTextOutput output;
 
 	public ConsoleOutputAppender(StyledTextOutput output) {
+
 		this.output = output;
 	}
 

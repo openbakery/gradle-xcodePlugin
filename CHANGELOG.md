@@ -1,3 +1,9 @@
+## 0.11.3
+
+Bugfixes
+
+* Handle case where a test suite doesn't state that it has completed (Thanks to jaleksynas)
+
 ## 0.11.2 (Mai 19, 2015)
 
 Bugfixes
