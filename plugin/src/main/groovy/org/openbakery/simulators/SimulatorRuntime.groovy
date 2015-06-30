@@ -8,6 +8,7 @@ class SimulatorRuntime {
 	String version
 	String buildNumber
 	String identifier
+	String shortIdentifier
 
 
 	public SimulatorRuntime(String line) {
@@ -21,6 +22,7 @@ class SimulatorRuntime {
 			version = matcher[0][2]
 			buildNumber = matcher[0][3]
 			identifier = matcher[0][4]
+			shortIdentifier = identifier - "com.apple.CoreSimulator.SimRuntime."
 		}
 	}
 
@@ -42,6 +44,7 @@ class SimulatorRuntime {
 		if (identifier != that.identifier) return false
 		return true
 	}
+
 
 	int hashCode() {
 		return identifier.hashCode()

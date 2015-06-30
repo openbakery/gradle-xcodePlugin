@@ -11,13 +11,20 @@ class SimulatorDevice {
 
 	public SimulatorDevice(String line) {
 		//   iPhone 4s (73C126C8-FD53-44EA-80A3-84F5F19508C0) (Shutdown)
-		def PATTERN = ~/^(.*)?\s\((.*)?\)\s\((.*)?\)/
+		def tokenizer = new StringTokenizer(line, "()");
+		if (tokenizer.hasMoreTokens()) {
+			name = tokenizer.nextToken().trim();
+		}
 
-		def matcher = PATTERN.matcher(line)
-		if (matcher.find()) {
-			name = matcher[0][1].trim()
-			identifier = matcher[0][2]
-			state = matcher[0][3]
+		if (tokenizer.hasMoreTokens()) {
+			identifier = tokenizer.nextToken().trim();
+		}
+
+		if (tokenizer.hasMoreTokens()) {
+			tokenizer.nextToken(); // is space
+		}
+		if (tokenizer.hasMoreTokens()) {
+			state = tokenizer.nextToken().trim();
 		}
 
 	}
