@@ -1,6 +1,7 @@
 package org.openbakery.output
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Destination
@@ -148,6 +149,12 @@ class TestBuildOutputAppenderTest {
 		assertThat(progress.progress, hasItem("1 tests completed, running 'TestGoogleWebStreetViewProvider'"))
 		assertThat(progress.progress, hasItem("4 tests completed, running 'TestGoogleWebStreetViewProvider'"))
 		assertThat(progress.progress, hasItem("5 tests completed, running 'TestMapFeatureProviderUtil'"))
+		assertThat(progress.progress, hasItem("Tests finished: iPad/iphonesimulator/iOS"))
+
+		assertThat(output.toString(), containsString("30 tests completed"))
+		int matches = StringUtils.countMatches(output.toString(), "30 tests completed");
+		assertThat(matches, is(2))
+
 
 	}
 

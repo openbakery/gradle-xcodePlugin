@@ -62,7 +62,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
 
 			commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
-		} finally {
+		} catch (CommandRunnerException ex) {
 			logger.lifecycle(getFailureFromLog(outputFile))
 		}
 

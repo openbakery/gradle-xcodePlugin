@@ -123,10 +123,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				int endIndex = testCase.indexOf(' ')
 				int startIndex = testCase.indexOf('[')
 				if (startIndex > 0 && endIndex > 0) {
-					String message = testsCompleted + " tests completed, "
-					if (testsFailed) {
-						message += testsFailed + " failed "
-					}
+					String message = getTestInfoMessage()
 					message += "running '" + testCase.substring(startIndex+1, endIndex) + "'"
 					progressLogger.progress(message)
 				}
@@ -135,6 +132,14 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			return testCase;
 		}
 		return null;
+	}
+
+	private String getTestInfoMessage() {
+		String message = testsCompleted + " tests completed, "
+		if (testsFailed) {
+			message += testsFailed + " failed "
+		}
+		return message
 	}
 
 	void startDestination() {
@@ -153,13 +158,13 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void finishDestination() {
 		Destination destination = project.xcodebuild.availableDestinations[testRun]
 		if (destination != null) {
-			output.println();
-			output.append("\n")
-			output.append("Tests finished: ")
-			output.append(destination.toPrettyString());
-			output.println();
-			output.println();
+			if (progressLogger != null) {
+				progressLogger.progress("Tests finished: " + 	destination.toPrettyString())
+			}
+			output.append(getTestInfoMessage())
 			testRun++;
+			testsFailed = 0;
+			testsCompleted = 0;
 		}
 	}
 
