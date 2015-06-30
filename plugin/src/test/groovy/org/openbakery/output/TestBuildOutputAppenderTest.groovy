@@ -5,8 +5,11 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Destination
 import org.openbakery.XcodePlugin
+import org.openbakery.stubs.ProgressLoggerStub
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -84,7 +87,6 @@ class TestBuildOutputAppenderTest {
 
 	@Test
 	void testSuccess() {
-
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
 		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
@@ -93,9 +95,77 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
+		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n"
+		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
+	}
+
+
+
+	@Test
+	void testSuccess_fullProgress() {
+
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
+		appender.fullProgress = true;
+		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
+
+		for (String line in successTestOutput.split("\n")) {
+				appender.append(line)
+		}
 		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
 		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 	}
+
+	@Test
+	void testSuccess_Progress() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, project)
+		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
+
+		for (String line in successTestOutput.split("\n")) {
+				appender.append(line)
+		}
+
+		assertThat(progress.progress, hasItem("0 tests completed, running 'DTActionPanelTest_iPhone'"))
+
+	}
+
+	@Test
+	void testSuccess_progress_complex() {
+		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, project)
+		for (String line : xcodebuildOutput.split("\n")) {
+			appender.append(line);
+		}
+
+		assertThat(progress.progress, hasItem("0 tests completed, running 'TestGoogleWebStreetViewProvider'"))
+		assertThat(progress.progress, hasItem("1 tests completed, running 'TestGoogleWebStreetViewProvider'"))
+		assertThat(progress.progress, hasItem("4 tests completed, running 'TestGoogleWebStreetViewProvider'"))
+		assertThat(progress.progress, hasItem("5 tests completed, running 'TestMapFeatureProviderUtil'"))
+
+	}
+
+	@Test
+	void testSuccess_progress_with_failed() {
+		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, project)
+		for (String line : xcodebuildOutput.split("\n")) {
+			appender.append(line);
+		}
+
+		assertThat(progress.progress, hasItem("0 tests completed, running 'ExampleTests'"))
+		assertThat(progress.progress, hasItem("1 tests completed, 1 failed running 'ExampleTests'"))
+	}
+
+
 
 	@Test
 	void testFailed() {

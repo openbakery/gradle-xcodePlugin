@@ -5,8 +5,6 @@ import org.gradle.logging.ProgressLogger
 import org.gradle.logging.StyledTextOutput
 import org.openbakery.Destination
 
-import java.util.regex.Pattern
-
 /**
  * Created with IntelliJ IDEA.
  * User: rene
@@ -23,6 +21,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
+	int testsCompleted = 0
+	int testsFailed = 0
 	boolean testsRunning = false
 	boolean outputLine = false
 	int testRun = 0
@@ -102,8 +102,12 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			String result = finishMatcher[0][2].trim()
 			String duration = finishMatcher[0][3].trim()
 			boolean failed = result.equals("failed");
+			if (failed) {
+				testsFailed++
+			}
 			printTestResult(currentTestCase, failed, duration);
 			currentTestCase = null;
+			testsCompleted++;
 		}
 	}
 
@@ -114,7 +118,19 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			startDestination()
 			String testCase =  startMatcher[0][1].trim()
 			if (progressLogger != null) {
-				progressLogger.progress("test: " + testCase)
+
+				//0 tests completed, Test Suite 'DTActionPanelTest_iPhone'
+				int endIndex = testCase.indexOf(' ')
+				int startIndex = testCase.indexOf('[')
+				if (startIndex > 0 && endIndex > 0) {
+					String message = testsCompleted + " tests completed, "
+					if (testsFailed) {
+						message += testsFailed + " failed "
+					}
+					message += "running '" + testCase.substring(startIndex+1, endIndex) + "'"
+					progressLogger.progress(message)
+				}
+
 			}
 			return testCase;
 		}
