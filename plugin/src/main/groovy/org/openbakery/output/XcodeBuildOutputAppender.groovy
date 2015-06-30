@@ -71,14 +71,13 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			if (sourceFileStartIndex < sourceFileEndIndex && sourceFileEndIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, sourceFileEndIndex)
 				command = "Compile"
+
+
 			}
 		} else if (line.startsWith("CompileStoryboard") || line.startsWith("CompileXIB")) {
 			int sourceFileStartIndex = line.indexOf(" ")+1
 			if (sourceFileStartIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, line.length())
-				if (progressLogger != null) {
-					progressLogger.progress("compile: " + currentSourceFile)
-				}
 				command = "Compile"
 			}
 		} else if (line.startsWith("Ld")) {
@@ -103,7 +102,9 @@ class XcodeBuildOutputAppender implements OutputAppender {
 		} else if (!hasOutput && currentSourceFile != null && line.contains(currentSourceFile) && !line.startsWith(" ")) {
 			hasOutput = true
 		}
-
+		if (progressLogger != null && command != null && currentSourceFile != null) {
+			progressLogger.progress(command + " " +  currentSourceFile)
+		}
 	}
 
 	private void printOutput() {
