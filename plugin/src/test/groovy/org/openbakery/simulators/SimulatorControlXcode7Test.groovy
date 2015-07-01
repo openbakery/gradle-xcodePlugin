@@ -162,13 +162,7 @@ class SimulatorControlXcode7Test {
 		void deleteAll() {
 			mockSimCtlList()
 
-			ArrayList<String> deviceIds = new ArrayList<>(["DF327EC0-EBBE-479E-9408-7AC308C6E929",
-																										 "7961E96B-F178-4BE4-80E6-D02578D0F783",
-																										 "0713BDFF-B8F3-4F83-8C16-F1E408D8F566",
-																										 "6A75A226-97B8-450C-AFF4-ED01439DE7D2",
-																										 "4EBD66FD-7F16-4737-8645-ADA3E588FAA6",
-																										 "24603DEF-F46A-4833-9A62-291161720EBD",
-																										 "A0DDD8A1-8807-4B65-BFF6-AA4798CC65CD",
+			ArrayList<String> deviceIds = new ArrayList<>(["A0DDD8A1-8807-4B65-BFF6-AA4798CC65CD",
 																										 "D5048D12-E255-42EB-93D9-52E8C1F0FDCA",
 																										 "8E417F90-8FB8-4F6A-91F4-D86E1CBE97F0",
 																										 "B619BA1B-1AC1-46C6-9828-6A8D457007A0",
@@ -202,16 +196,6 @@ class SimulatorControlXcode7Test {
 
 
 			ArrayList<String> expectedParameters = new ArrayList<>([
-							[SIMCTL, "create", "iPhone 4s", "com.apple.CoreSimulator.SimDeviceType.iPhone-4s", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-							[SIMCTL, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-7-1"],
-
 
 							[SIMCTL, "create", "iPhone 4s", "com.apple.CoreSimulator.SimDeviceType.iPhone-4s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"],
 							[SIMCTL, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"],
@@ -250,13 +234,7 @@ class SimulatorControlXcode7Test {
 		void eraseAll() {
 			mockSimCtlList()
 
-			ArrayList<String> expectedParameters = new ArrayList<>([[SIMCTL, "erase", "DF327EC0-EBBE-479E-9408-7AC308C6E929"],
-																															[SIMCTL, "erase", "7961E96B-F178-4BE4-80E6-D02578D0F783"],
-																															[SIMCTL, "erase", "0713BDFF-B8F3-4F83-8C16-F1E408D8F566"],
-																															[SIMCTL, "erase", "6A75A226-97B8-450C-AFF4-ED01439DE7D2"],
-																															[SIMCTL, "erase", "4EBD66FD-7F16-4737-8645-ADA3E588FAA6"],
-																															[SIMCTL, "erase", "24603DEF-F46A-4833-9A62-291161720EBD"],
-																															[SIMCTL, "erase", "A0DDD8A1-8807-4B65-BFF6-AA4798CC65CD"],
+			ArrayList<String> expectedParameters = new ArrayList<>([[SIMCTL, "erase", "A0DDD8A1-8807-4B65-BFF6-AA4798CC65CD"],
 																															[SIMCTL, "erase", "D5048D12-E255-42EB-93D9-52E8C1F0FDCA"],
 																															[SIMCTL, "erase", "8E417F90-8FB8-4F6A-91F4-D86E1CBE97F0"],
 																															[SIMCTL, "erase", "B619BA1B-1AC1-46C6-9828-6A8D457007A0"],

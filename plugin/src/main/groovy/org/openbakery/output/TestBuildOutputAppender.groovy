@@ -124,7 +124,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				int startIndex = testCase.indexOf('[')
 				if (startIndex > 0 && endIndex > 0) {
 					String message = getTestInfoMessage()
-					message += "running '" + testCase.substring(startIndex+1, endIndex) + "'"
+					message += ", running '" + testCase.substring(startIndex+1, endIndex) + "'"
 					progressLogger.progress(message)
 				}
 
@@ -135,9 +135,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	private String getTestInfoMessage() {
-		String message = testsCompleted + " tests completed, "
+		String message = testsCompleted + " tests completed"
 		if (testsFailed) {
-			message += testsFailed + " failed "
+			message += ", " + testsFailed + " failed "
 		}
 		return message
 	}
