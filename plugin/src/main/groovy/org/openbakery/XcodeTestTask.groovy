@@ -118,6 +118,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			// kill a running simulator
 			try {
 				commandRunner.run("killall", "iOS Simulator")
+				commandRunner.run("killall", "Simulator") // for xcode 7
 			} catch (CommandRunnerException ex) {
 				// ignore, this exception means that no simulator was running
 			}
