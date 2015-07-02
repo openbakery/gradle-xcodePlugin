@@ -96,8 +96,8 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n"
-		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
+		String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n"
+		assertThat(output.toString(), is(equalTo(expected)))
 	}
 
 
@@ -114,8 +114,10 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)\n"
-		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
+		String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n\n"
+		String outputString = output.toString()
+		assertThat(outputString, containsString("Run tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
+		assertThat(outputString, containsString("      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)"))
 	}
 
 	@Test
@@ -185,8 +187,13 @@ class TestBuildOutputAppenderTest {
 		for (String line in errorTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nPerform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
-		assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
+		//String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n  FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)\n"
+		//assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
+		String outputString = output.toString()
+
+		assertThat(outputString, containsString("Run tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
+		assertThat(outputString, containsString("FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)"))
+		assertThat(outputString, containsString("/Users/dummy/poject/UnitTests/iPhone/DTPopoverController/DTActionPanelTest_iPhone.m:85: error: -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] : Expected 2 matching invocations, but received 0\n"))
 	}
 
 
@@ -207,7 +214,6 @@ class TestBuildOutputAppenderTest {
 		assert output.toString().contains("Tests finished:")
 
 	}
-*/
 
 	@Test
 	void testFinishedFailed() {
@@ -224,6 +230,7 @@ class TestBuildOutputAppenderTest {
 		assert output.toString().contains("TESTS FAILED")
 
 	}
+*/
 
 	@Test
 	void testComplexOutput() {
@@ -233,8 +240,11 @@ class TestBuildOutputAppenderTest {
 		for (String line : simctlOutput.split("\n")) {
 			appender.append(line);
 		}
-		assert output.toString().contains("Perform unit tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS")
-		assert output.toString().contains("Perform unit tests for: iPhone/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS")
+		assertThat(output.toString(), containsString("Run tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
+		assertThat(output.toString(), containsString("Run tests for: iPhone/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
 	}
+
+
+
 
 }

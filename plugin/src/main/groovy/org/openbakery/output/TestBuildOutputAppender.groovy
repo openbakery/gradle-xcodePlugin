@@ -30,6 +30,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	Project project
 	String currentTestCase = null;
 
+	StringBuilder currentTestOutput = new StringBuilder();
+
 	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, Project project) {
 		super(progressLogger, output)
 		this.project = project
@@ -47,15 +49,23 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 
 		def startedTest = checkTestStart(line)
-		if (currentTestCase == null) {
+
+		if (startedTest != null) {
+			// test have started
+			if (currentTestCase != null) {
+				// current test case was not properly finished, so some other error occurred, so fail it
+				printTestResult(currentTestCase, true, "(unknown)");
+			}
 			currentTestCase = startedTest;
-		} else if (startedTest != null) {
-			// current test case was not properly finished, so some other error occurred, so fail it
-			printTestResult(currentTestCase, true, "(unknown)");
-			currentTestCase = startedTest
+			currentTestOutput = new StringBuilder()
 		} else {
-			checkTestFinished(line);
+			boolean finished = checkTestFinished(line);
+			if (!finished) {
+				currentTestOutput.append(line)
+			}
 		}
+
+
 		checkAllTestsFinished(line);
 
 		if (outputLine) {
@@ -89,14 +99,14 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			if (failingTestsMatcher.matches()) {
 				testsRunning = false
 				outputLine = true
-				output.println();
-				output.append("TESTS FAILED");
-				output.println();
+				//output.println();
+				//output.append("TESTS FAILED");
+				//output.println();
 			}
 		}
 	}
 
-	void checkTestFinished(String line) {
+	boolean checkTestFinished(String line) {
 		def finishMatcher = TEST_CASE_FINISH_PATTERN.matcher(line)
 		if (finishMatcher.matches()) {
 			String result = finishMatcher[0][2].trim()
@@ -108,7 +118,9 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			printTestResult(currentTestCase, failed, duration);
 			currentTestCase = null;
 			testsCompleted++;
+			return true
 		}
+		return false
 	}
 
 	String checkTestStart(String line) {
@@ -147,7 +159,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			Destination destination = project.xcodebuild.availableDestinations[testRun]
 			if (destination) {
 				startedDestination = testRun
-				output.append("\nPerform unit tests for: ")
+				output.append("\nRun tests for: ")
 				output.append(destination.toPrettyString());
 				output.println();
 				output.println();
@@ -183,6 +195,10 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		output.append(" - (")
 		output.append(duration)
 		output.append(" seconds)")
+		output.println();
+		output.println();
+		output.withStyle(StyledTextOutput.Style.Identifier).text(currentTestOutput.toString())
+		output.println();
 		output.println();
 	}
 }
