@@ -270,6 +270,7 @@ class XcodeTestTaskTest {
 	void testCommandForIOS() {
 
 		commandRunnerMock.run("killall", "iOS Simulator")
+		commandRunnerMock.run("killall", "Simulator")
 
 		project.xcodebuild.sdk = 'iphonesimulator'
 		project.xcodebuild.target = 'Test';
