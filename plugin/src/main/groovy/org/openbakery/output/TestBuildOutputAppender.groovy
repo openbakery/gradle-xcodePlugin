@@ -169,7 +169,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			if (progressLogger != null) {
 				progressLogger.progress("Tests finished: " + 	destination.toPrettyString())
 			}
-			output.append("\n")
 			output.append(getTestInfoMessage())
 			output.append("\n")
 			testRun++;
