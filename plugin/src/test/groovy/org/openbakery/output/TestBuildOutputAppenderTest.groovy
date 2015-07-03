@@ -96,7 +96,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n"
+		String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n"
 		assertThat(output.toString(), is(equalTo(expected)))
 	}
 

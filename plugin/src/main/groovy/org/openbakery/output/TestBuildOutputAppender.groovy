@@ -79,9 +79,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void checkTestSuite(String line) {
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			if (!testsRunning) {
-				output.append("\nStart unit tests\n\n")
-			}
 			testsRunning = true
 			startDestination()
 		}
@@ -162,7 +159,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				output.append("\nRun tests for: ")
 				output.append(destination.toPrettyString());
 				output.println();
-				output.println();
 			}
 		}
 	}
@@ -175,6 +171,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			}
 			output.append("\n")
 			output.append(getTestInfoMessage())
+			output.append("\n")
 			testRun++;
 			testsFailed = 0;
 			testsCompleted = 0;
