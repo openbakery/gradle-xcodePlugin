@@ -62,6 +62,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			boolean finished = checkTestFinished(line);
 			if (!finished) {
 				currentTestOutput.append(line)
+				currentTestOutput.append("\n")
 			}
 		}
 
