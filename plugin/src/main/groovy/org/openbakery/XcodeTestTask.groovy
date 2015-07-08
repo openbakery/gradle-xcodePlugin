@@ -149,6 +149,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
+			parseResult(outputFile)
 			/*
 			if (!parseResult(outputFile)) {
 				logger.lifecycle("Tests Failed!")
