@@ -198,6 +198,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	boolean parseResult(File outputFile) {
+		logger.debug("parse result from: {}", outputFile)
 		if (!outputFile.exists()) {
 			logger.lifecycle("No xcodebuild output file found!");
 			return false;
@@ -335,9 +336,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	def store() {
-
-
-
+		logger.debug("store to test-result.xml")
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)
