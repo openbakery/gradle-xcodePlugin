@@ -117,16 +117,19 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	private void printFailureOutput() {
 		project.getLogger().debug("printFailureOutput")
 		def failureOutput = []
+		def startFound = false;
 		currentOutput.toString().split("\n").reverse().any {
 			failureOutput << it
 
 			if (it.startsWith("Testing failed:")) {
-				return true
+				startFound = true
 			}
-			return false
+			return startFound
 		}
-		output.withStyle(StyledTextOutput.Style.Identifier).text(failureOutput.reverse().join("\n"))
-		output.withStyle(StyledTextOutput.Style.Normal).println()
+		if (startFound) {
+			output.withStyle(StyledTextOutput.Style.Identifier).text(failureOutput.reverse().join("\n"))
+			output.withStyle(StyledTextOutput.Style.Normal).println()
+		}
 	}
 
 	boolean checkTestFinished(String line) {

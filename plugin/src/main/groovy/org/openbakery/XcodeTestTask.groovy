@@ -116,8 +116,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			// kill a running simulator
+			logger.info("Killing old simulators")
 			try {
 				commandRunner.run("killall", "iOS Simulator")
+			} catch (CommandRunnerException ex) {
+				// ignore, this exception means that no simulator was running
+			}
+			try {
 				commandRunner.run("killall", "Simulator") // for xcode 7
 			} catch (CommandRunnerException ex) {
 				// ignore, this exception means that no simulator was running
