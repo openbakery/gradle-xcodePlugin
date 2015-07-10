@@ -255,7 +255,7 @@ class TestBuildOutputAppenderTest {
 		}
 
 		assertThat(output.toString(), startsWith("Testing failed:"))
-		assertThat(output.toString(), endsWith("** TEST FAILED **\n0 tests completed"))
+		assertThat(output.toString(), endsWith("** TEST FAILED **\n0 tests completed\n"))
 
 
 
