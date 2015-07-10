@@ -47,7 +47,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		checkTestSuite(line);
 
 
-
 		def startedTest = checkTestStart(line)
 
 		if (startedTest != null) {
@@ -141,6 +140,12 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	String checkTestStart(String line) {
+
+		if (line.startsWith("Touch") && line.endsWith("xctest")) {
+			progressLogger.progress("Starting Tests")
+		}
+
+
 		def startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
 			testsRunning = true

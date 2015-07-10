@@ -86,7 +86,10 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			if (tokens.length > 1) {
 				currentSourceFile = tokens[1];
 			}
+		} else if (line.startsWith("CreateUniversalBinary")) {
+			progressLogger.progress("Create Binary")
 		} else if (line.startsWith("Code Sign error:")) {
+
 			command = "CodeSign"
 			error = true
 			hasOutput = true

@@ -257,9 +257,20 @@ class TestBuildOutputAppenderTest {
 		assertThat(output.toString(), startsWith("Testing failed:"))
 		assertThat(output.toString(), endsWith("** TEST FAILED **\n0 tests completed\n"))
 
+	}
 
 
 
+	@Test
+	void testCompile_startingTests() {
+		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-createbinary.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		TestBuildOutputAppender appender =  new TestBuildOutputAppender(progress, output, project)
+		for (String line : xcodebuildOutput.split("\n")) {
+			appender.append(line);
+		}
+		assertThat(progress.progress, hasItem("Starting Tests"))
 	}
 
 

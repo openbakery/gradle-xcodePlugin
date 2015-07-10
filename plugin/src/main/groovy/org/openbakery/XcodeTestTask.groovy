@@ -154,7 +154,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				//logger.lifecycle(getFailureFromLog(outputFile));
 				throw new Exception("Not all unit tests are successful!")
 			}
-			logger.lifecycle("Done")
+			//logger.lifecycle("Done")
 		}
 	}
 

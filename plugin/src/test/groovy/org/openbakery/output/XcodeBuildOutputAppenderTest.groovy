@@ -213,6 +213,18 @@ class XcodeBuildOutputAppenderTest {
 
 	}
 
+	@Test
+	void testCompile_createBinary() {
+		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-createbinary.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(progress, output)
+		for (String line : xcodebuildOutput.split("\n")) {
+			appender.append(line);
+		}
+		assertThat(progress.progress, hasItem("Create Binary"))
+	}
+
 
 
 }
