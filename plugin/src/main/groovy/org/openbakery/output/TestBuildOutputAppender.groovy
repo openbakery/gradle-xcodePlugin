@@ -88,6 +88,11 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void checkAllTestsFinished(String line) {
 		def successMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
 		def failedMatcher = TEST_FAILED_PATTERN.matcher(line)
+
+		if (failedMatcher.matches()) {
+			printFailureOutput()
+		}
+
 		if (successMatcher.matches() || failedMatcher.matches()) {
 			finishDestination()
 			testsRunning = false
@@ -102,6 +107,20 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				//output.println();
 			}
 		}
+	}
+
+	private void printFailureOutput() {
+		def failureOutput = []
+		currentTestOutput.toString().split("\n").reverse().any {
+			failureOutput << it
+
+			if (it.startsWith("Testing failed:")) {
+				return true
+			}
+			return false
+		}
+
+		output.println(failureOutput.reverse().join("\n"))
 	}
 
 	boolean checkTestFinished(String line) {

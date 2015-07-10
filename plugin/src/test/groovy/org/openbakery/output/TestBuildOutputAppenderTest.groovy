@@ -245,6 +245,22 @@ class TestBuildOutputAppenderTest {
 	}
 
 
+	@Test
+	void testFailureOutput() {
+		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-compile-error.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
+		for (String line : simctlOutput.split("\n")) {
+			appender.append(line);
+		}
+
+		assertThat(output.toString(), startsWith("Testing failed:"))
+		assertThat(output.toString(), endsWith("** TEST FAILED **\n0 tests completed"))
+
+
+
+
+	}
 
 
 }
