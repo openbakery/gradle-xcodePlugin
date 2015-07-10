@@ -305,6 +305,8 @@ class XcodeTestTaskTest {
 	void testCommandForIOS_killFailed() {
 
 		commandRunnerMock.run("killall", "iOS Simulator").raises(new CommandRunnerException("failed"))
+		commandRunnerMock.run("killall", "Simulator")
+
 
 		project.xcodebuild.sdk = 'iphonesimulator'
 		project.xcodebuild.target = 'Test';
