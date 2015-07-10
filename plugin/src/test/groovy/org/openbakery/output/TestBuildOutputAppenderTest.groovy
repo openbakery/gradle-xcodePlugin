@@ -255,7 +255,8 @@ class TestBuildOutputAppenderTest {
 		}
 
 		assertThat(output.toString(), startsWith("Testing failed:"))
-		assertThat(output.toString(), endsWith("** TEST FAILED **\n0 tests completed\n"))
+		assertThat(output.toString(), containsString("No visible @interface for 'DTPanelView' declares the selector 'moveToNewPositionWithDuration:bounce:completion:'"))
+		assertThat(output.toString(), endsWith("\n0 tests completed\n"))
 
 	}
 
