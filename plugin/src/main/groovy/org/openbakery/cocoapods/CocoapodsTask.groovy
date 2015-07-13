@@ -62,7 +62,7 @@ public class CocoapodsTask extends AbstractXcodeTask {
             }
         }
 
-        if (manifestFile.text == podLock.text) {
+        if (manifestFile.exists() && podLock.exists() && manifestFile.text == podLock.text) {
             logger.lifecycle "Skipping installing pods, because <anifest.lock and Podfile.lock are identical"
             return
         }
