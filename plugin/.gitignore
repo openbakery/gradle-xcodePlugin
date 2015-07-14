@@ -1,4 +1,7 @@
-xcodePlugin.iml
-xcodePlugin.ipr
-xcodePlugin.iws
+*.iml
+*.ipr
+*.iws
+
 build
+
+.idea
