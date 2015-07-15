@@ -298,4 +298,18 @@ class TestBuildOutputAppenderTest {
 	}
 
 
+
+	@Test
+	void testCompile_progress() {
+		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		TestBuildOutputAppender appender =  new TestBuildOutputAppender(progress, output, project)
+		for (String line : xcodebuildOutput.split("\n")) {
+			appender.append(line);
+		}
+		assertThat(progress.progress, hasItem("Compile Example/AppDelegate.m"))
+	}
+
+
 }

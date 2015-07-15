@@ -38,6 +38,7 @@ class CocoapodsTaskTest {
 		cocoapodsTask = project.getTasks().getByPath('cocoapods')
 
 		cocoapodsTask.setProperty("commandRunner", commandRunnerMock)
+
 	}
 
 
@@ -49,11 +50,9 @@ class CocoapodsTaskTest {
 	@Test
 	void testInstallPods() {
 
-		def gemInstallCommandList = ["gem", "install", "-N", "--user-install", "cocoapods"];
-		commandRunnerMock.run(gemInstallCommandList).times(1)
+		commandRunnerMock.run("gem", "install", "-N", "--user-install", "cocoapods").times(1)
 
-		def installDirectoryCommand = ["ruby", "-rubygems", "-e", "puts Gem.user_dir"];
-		commandRunnerMock.runWithResult(installDirectoryCommand).returns("/tmp/gems").times(1)
+		commandRunnerMock.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir").returns("/tmp/gems").times(1)
 
 
 		def podSetupCommandList = ["/tmp/gems/bin/pod", "setup"];
@@ -73,11 +72,13 @@ class CocoapodsTaskTest {
 
 	@Test
 	void testSkipInstall() {
-		File podsDirectory = new File(project.projectDir , "Pods")
-		podsDirectory.mkdirs()
+		File podfileLock = new File(project.projectDir , "Podfile.lock")
+		FileUtils.writeStringToFile(podfileLock, "Dummy")
 
-		def gemInstallCommandList = ["gem", "install", "-N", "--user-install", "cocoapods"];
-		commandRunnerMock.run(gemInstallCommandList).never()
+		File manifest = new File(project.projectDir , "Pods/Manifest.lock")
+		FileUtils.writeStringToFile(manifest, "Dummy")
+
+		commandRunnerMock.run("gem", "install", "-N", "--user-install", "cocoapods").never()
 
 		mockControl.play {
 			cocoapodsTask.install()
@@ -88,8 +89,23 @@ class CocoapodsTaskTest {
 
 	@Test
 	void testReinstallPods() {
-		File podsDirectory = new File(project.projectDir , "Pods")
-		podsDirectory.mkdirs()
+		File podfileLock = new File(project.projectDir , "Podfile.lock")
+		FileUtils.writeStringToFile(podfileLock, "Dummy")
+
+		File manifest = new File(project.projectDir , "Pods/Manifest.lock")
+		FileUtils.writeStringToFile(manifest, "Foo")
+
+		testInstallPods()
+
+	}
+
+	@Test
+	void testRefreshDependencies() {
+		File podfileLock = new File(project.projectDir , "Podfile.lock")
+		FileUtils.writeStringToFile(podfileLock, "Dummy")
+
+		File manifest = new File(project.projectDir , "Pods/Manifest.lock")
+		FileUtils.writeStringToFile(manifest, "Dummy")
 
 		project.getGradle().getStartParameter().setRefreshDependencies(true)
 

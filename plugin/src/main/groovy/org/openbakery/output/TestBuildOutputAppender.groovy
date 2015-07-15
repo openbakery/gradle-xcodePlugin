@@ -54,6 +54,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 		if (line.startsWith("Compile")) {
 			state = TestState.Compile
+			super.append(line)
 		} else if (checkTestSuite(line)) {
 			state = TestState.Started
 			currentOutput.setLength(0) // deletes the buffer
@@ -76,7 +77,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				currentOutput.append(line)
 				currentOutput.append("\n")
 			}
-			if (state == TestState.Unknown) {
+			if (state == TestState.Unknown || state == TestState.Compile) {
 				super.append(line)
 			}
 

@@ -17,61 +17,56 @@ import org.openbakery.output.ConsoleOutputAppender
  */
 public class CocoapodsTask extends AbstractXcodeTask {
 
-    String podCommand = null
+	String podCommand = null
 
-    public CocoapodsTask() {
-        super()
-        setDescription "Installs the pods for the given project"
-    }
+	public CocoapodsTask() {
+		super()
+		setDescription "Installs the pods for the given project"
+	}
 
 
-    public Boolean hasPodfile() {
-        File podFile = new File(project.projectDir, "Podfile")
-        podFile.exists()
-    }
+	public Boolean hasPodfile() {
+		File podFile = new File(project.projectDir, "Podfile")
+		podFile.exists()
+	}
 
-    void runPod(String parameter) {
+	void runPod(String parameter) {
 
-        if (podCommand == null) {
-            String podPath = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir")
-            podCommand = podPath + "/bin/pod"
-        }
-        logger.lifecycle "Run pod install"
+		if (podCommand == null) {
+			String podPath = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir")
+			podCommand = podPath + "/bin/pod"
+		}
+		logger.lifecycle "Run pod install"
 
-        def output = services.get(StyledTextOutputFactory).create(CocoapodsTask)
+		def output = services.get(StyledTextOutputFactory).create(CocoapodsTask)
 
-        ArrayList<String> commandList = []
-        commandList.add podCommand
-        commandList.add parameter
-        commandRunner.run commandList, new ConsoleOutputAppender(output)
+		ArrayList<String> commandList = []
+		commandList.add podCommand
+		commandList.add parameter
+		commandRunner.run commandList, new ConsoleOutputAppender(output)
 
-    }
+	}
 
-    @TaskAction
-    void install() throws IOException {
+	@TaskAction
+	void install() throws IOException {
 
-        File podsDirectory = new File(project.projectDir, "Pods")
-        File manifestFile = new File(podsDirectory, 'Manifest.lock')
-        File podLock = new File(project.projectDir, 'Podfile.lock')
+		File manifestFile = new File(project.projectDir, 'Pods/Manifest.lock')
+		File podLock = new File(project.projectDir, 'Podfile.lock')
 
-        StartParameter startParameter = project.gradle.startParameter
-        if (startParameter.isRefreshDependencies()) {
-            if (podsDirectory.exists()) {
-                logger.lifecycle "Deleting pods directory"
-                FileUtils.deleteDirectory(podsDirectory)
-            }
-        }
+		StartParameter startParameter = project.gradle.startParameter
 
-        if (manifestFile.exists() && podLock.exists() && manifestFile.text == podLock.text) {
-            logger.lifecycle "Skipping installing pods, because <anifest.lock and Podfile.lock are identical"
-            return
-        }
+		if (!startParameter.isRefreshDependencies()) { // refresh dependencies should always reinstall the pods
+			if (manifestFile.exists() && podLock.exists() && manifestFile.text == podLock.text) {
+				logger.debug "Skipping installing pods, because Manifest.lock and Podfile.lock are identical"
+				return
+			}
+		}
 
-        logger.lifecycle "Install/Update cocoapods"
-        commandRunner.run "gem", "install", "-N", "--user-install", "cocoapods"
+		logger.lifecycle "Install/Update cocoapods"
+		commandRunner.run("gem", "install", "-N", "--user-install", "cocoapods")
 
-        runPod "setup"
-        runPod "install"
+		runPod("setup")
+		runPod("install")
 
-    }
+	}
 }
