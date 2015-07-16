@@ -102,6 +102,7 @@ class XcodeBuildTaskTest {
 	}
 
 	def void addExpectedDefaultDirs() {
+		expectedCommandList.add("-derivedDataPath=" + currentDir + "${File.separator}build${File.separator}derivedData")
 		expectedCommandList.add("DSTROOT=" + currentDir + "${File.separator}build${File.separator}dst")
 		expectedCommandList.add("OBJROOT=" + currentDir + "${File.separator}build${File.separator}obj")
 		expectedCommandList.add("SYMROOT=" + currentDir + "${File.separator}build${File.separator}sym")
@@ -125,11 +126,13 @@ class XcodeBuildTaskTest {
 		expectedCommandList.add("Debug")
 
 
+		project.xcodebuild.derivedDataPath = new File(currentDir + "${File.separator}myDerivedDataPath")
 		project.xcodebuild.dstRoot = new File(currentDir + "${File.separator}mydst")
 		project.xcodebuild.objRoot = new File(currentDir + "${File.separator}myobj")
 		project.xcodebuild.symRoot = new File(currentDir + "${File.separator}mysym")
 		project.xcodebuild.sharedPrecompsDir = new File(currentDir + "${File.separator}myshared")
 
+		expectedCommandList.add("-derivedDataPath=" + project.xcodebuild.derivedDataPath.absolutePath)
 		expectedCommandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 		expectedCommandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
 		expectedCommandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)

@@ -110,6 +110,10 @@
 
   default value: build
 
+* _derivedDataPath_ - the derived data path that should be used
+
+  default value: 'build/derivedData'
+
 * _dstRoot_ - the distribution root directory
 
   default value: 'build/dst'

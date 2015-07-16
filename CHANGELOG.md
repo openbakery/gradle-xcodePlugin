@@ -1,5 +1,9 @@
 ## 0.11.3
 
+Changes
+
+* added derivedDataPath parameter
+
 Bugfixes
 
 * Handle case where a test suite doesn't state that it has completed (Thanks to jaleksynas)
@@ -44,7 +48,7 @@ Changes
 * OS X support:
  * 'archive' task creates an xcarchive
  * You can now create a signed app with the 'package' task
-	
+
 Bugfixes
 
 * Tests on unavailable device: #161
@@ -136,10 +140,10 @@ Bugfixes
 Changes
 
 * Build in Cocoapods support. If a Podfile is found a pod install is perform automatically. If cocoapods is not install, it is installed for the current user. Issue #75
-* Add support for modifing the info plist using plistbuddy commands. See Issue #74 
+* Add support for modifing the info plist using plistbuddy commands. See Issue #74
 * For unit testing destination are not optionals. I no destination is specified then the unit tests are executed on every available simulator.
   This works both for Xcode5 and Xcode6 (here the new simctl is used)
-* The plugin should be more memory efficent now, because the output of the xcodebuild command that can be several megabytes is not hold in the mememory anymore, it is stored in an output file.	
+* The plugin should be more memory efficent now, because the output of the xcodebuild command that can be several megabytes is not hold in the mememory anymore, it is stored in an output file.
 
 ## 0.9.11 (July 22, 2014)
 
@@ -158,7 +162,7 @@ Changes
 
 * Added JUnit XML output for test results: Issue #56
 * Compatibility for Xcode 6
- * The arch is not added to a simulator build, it is only added when specified using the xcodebuild.arch parameter 
+ * The arch is not added to a simulator build, it is only added when specified using the xcodebuild.arch parameter
 
 Bugfixes
 
@@ -168,7 +172,7 @@ Bugfixes
 
 Changes
 
-* Codesign does not fail anymore when multiple keychain exists with the same key. (The PackageApplication script is copied and patched, and the proper keychain is passed as parameter to the codesign command ) 
+* Codesign does not fail anymore when multiple keychain exists with the same key. (The PackageApplication script is copied and patched, and the proper keychain is passed as parameter to the codesign command )
 
 ## 0.9.8 (May 7, 2014)
 
@@ -284,7 +288,7 @@ Bugfixes:
 Bugfixes:
 
 * fixed executing unit test. Where skipped because was TEST_HOST was set.
-* fixed provisioning cleanup and create task that failed if the Provisioning Profiles directory does not exist 
+* fixed provisioning cleanup and create task that failed if the Provisioning Profiles directory does not exist
 
 ## 0.8.0 (June 3, 2013)
 
@@ -302,7 +306,7 @@ Changes:
 * removed _keychain.keychainName_
 
 Bugfixes:
-	
+
 ## 0.7.2 (Februar 8, 2013)
 
 Bugfixes:
@@ -373,7 +377,7 @@ Changes:
 * Renamed _hockeykit.version_ to _hockeykit.versionDirectoryName_
 * _xcodebuild.additionalParameters_ now also accepts arrays
 
-Bugfixes: 
+Bugfixes:
 
 * changed to absolute file paths in build folders -> so cleanup with subprojects should now work
 
@@ -386,4 +390,4 @@ Features:
 
 Documentation:
 
-* Created documentation for new parameter -> arch 
+* Created documentation for new parameter -> arch
