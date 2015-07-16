@@ -107,7 +107,7 @@ class XcodeTestTaskTest {
 
 	def void addExpectedDefaultDirs() {
 		String currentDir = new File('').getAbsolutePath()
-		expectedCommandList.add("-derivedDataPath=" + currentDir + "${File.separator}build${File.separator}derivedData")
+		expectedCommandList.add("-derivedDataPath " + currentDir + "${File.separator}build${File.separator}derivedData")
 		expectedCommandList.add("DSTROOT=" + currentDir + "${File.separator}build${File.separator}dst")
 		expectedCommandList.add("OBJROOT=" + currentDir + "${File.separator}build${File.separator}obj")
 		expectedCommandList.add("SYMROOT=" + currentDir + "${File.separator}build${File.separator}sym")
