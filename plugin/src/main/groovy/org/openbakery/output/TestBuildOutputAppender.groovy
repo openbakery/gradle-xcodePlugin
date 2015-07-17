@@ -129,7 +129,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		}
 		if (startFound) {
 			output.withStyle(StyledTextOutput.Style.Identifier).text(failureOutput.reverse().join("\n"))
-			output.withStyle(StyledTextOutput.Style.Normal).println()
+			output.withStyle(StyledTextOutput.Style.Normal).text("\n")
 		}
 	}
 
@@ -181,7 +181,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	private String getTestInfoMessage() {
 		String message = testsCompleted + " tests completed"
 		if (testsFailed) {
-			message += ", " + testsFailed + " failed "
+			message += ", " + testsFailed + " failed"
 		}
 		return message
 	}

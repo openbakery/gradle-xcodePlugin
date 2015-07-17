@@ -214,7 +214,7 @@ class TestBuildOutputAppenderTest {
 		assert output.toString().contains("Tests finished:")
 
 	}
-
+*/
 	@Test
 	void testFinishedFailed() {
 		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
@@ -227,10 +227,10 @@ class TestBuildOutputAppenderTest {
 			appender.append(line);
 		}
 
-		assert output.toString().contains("TESTS FAILED")
+		assertThat(output.toString(), endsWith("1 tests completed, 1 failed\n"))
 
 	}
-*/
+
 
 	@Test
 	void testComplexOutput() {
