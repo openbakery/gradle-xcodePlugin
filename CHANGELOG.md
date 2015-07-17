@@ -1,11 +1,15 @@
-## 0.11.3
+## 0.11.3 (Juli 17, 2015)
 
 Changes
 
-* added derivedDataPath parameter
+* Much nicer build output and shorter output. Only warnings and errors are printed. The rest is shown in the progress.
+* Added derivedDataPath parameter and if not set the derivedData are in the build/deriveData directory
+* Added that the iOS9 support:
+ * The simulator for iOS9 can not be deleted and created
 
 Bugfixes
 
+* The cocoapods are now updated if the Podfile.lock and Manifest.lock are not equal: (Thanks to rahulsom)
 * Handle case where a test suite doesn't state that it has completed (Thanks to jaleksynas)
 
 ## 0.11.2 (Mai 19, 2015)
