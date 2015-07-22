@@ -47,6 +47,7 @@ class XcodeBuildPluginExtension {
 	Object objRoot
 	Object symRoot
 	Object sharedPrecompsDir
+	Object derivedDataPath
 	String sourceDirectory = '.'
 	Signing signing = null
 	def additionalParameters = null
@@ -58,6 +59,7 @@ class XcodeBuildPluginExtension {
 	String productName = null
 	String bundleName = null
 	String productType = "app"
+	String ipaFileName = null
 
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
@@ -96,6 +98,10 @@ class XcodeBuildPluginExtension {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("shared")
 		}
 
+		this.derivedDataPath = {
+			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
+		}
+
 	}
 
 	String getWorkspace() {
@@ -107,6 +113,10 @@ class XcodeBuildPluginExtension {
 			return fileList[0]
 		}
 		return null
+	}
+
+	void setDerivedDataPath(File derivedDataPath) {
+		this.derivedDataPath = derivedDataPath
 	}
 
 	void setDstRoot(File dstRoot) {
@@ -141,6 +151,9 @@ class XcodeBuildPluginExtension {
 		return project.file(sharedPrecompsDir)
 	}
 
+	File getDerivedDataPath() {
+		return project.file(derivedDataPath)
+	}
 
 	void signing(Closure closure) {
 		ConfigureUtil.configure(closure, this.signing)

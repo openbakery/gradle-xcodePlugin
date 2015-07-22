@@ -23,6 +23,10 @@
 
   default value: empty
 
+* _ipaFileName_ - a custom name for the generated ipa file
+
+  default value: the applicaiton name is used if no ipaFileName is given
+
 ### Sign Settings
 
 * _signing_ - signing configuration that should be used when building for the device
@@ -105,6 +109,10 @@
 * _buildRoot_ - build root directory for the build output
 
   default value: build
+
+* _derivedDataPath_ - the derived data path that should be used
+
+  default value: 'build/derivedData'
 
 * _dstRoot_ - the distribution root directory
 

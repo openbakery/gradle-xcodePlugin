@@ -6,6 +6,8 @@ import groovy.xml.XmlUtil
 import org.apache.commons.io.input.ReversedLinesFileReader
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.ProgressLogger
+import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
@@ -114,8 +116,14 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			// kill a running simulator
+			logger.info("Killing old simulators")
 			try {
 				commandRunner.run("killall", "iOS Simulator")
+			} catch (CommandRunnerException ex) {
+				// ignore, this exception means that no simulator was running
+			}
+			try {
+				commandRunner.run("killall", "Simulator") // for xcode 7
 			} catch (CommandRunnerException ex) {
 				// ignore, this exception means that no simulator was running
 			}
@@ -135,19 +143,23 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
 
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeTestTask.class).start("XcodeTestTask", "XcodeTestTask");
+
+
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(output, project)
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, project)
 			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
 			if (!parseResult(outputFile)) {
-				logger.lifecycle("Tests Failed!")
-				logger.lifecycle(getFailureFromLog(outputFile));
+				//logger.lifecycle("Tests Failed!")
+				//logger.lifecycle(getFailureFromLog(outputFile));
 				throw new Exception("Not all unit tests are successful!")
-			} 
-			logger.lifecycle("Done")
+			}
+			//logger.lifecycle("Done")
 		}
 	}
 
@@ -188,6 +200,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	boolean parseResult(File outputFile) {
+		logger.debug("parse result from: {}", outputFile)
 		if (!outputFile.exists()) {
 			logger.lifecycle("No xcodebuild output file found!");
 			return false;
@@ -200,11 +213,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		List<String> testSuites = null;
 
 		int testRun = 0;
+		boolean endOfDestination = false;
 
 		StringBuilder output = new StringBuilder()
 
-		outputFile.eachLine{
-		  String line =  it
+		outputFile.eachLine { line ->
 
 
 			def matcher = TEST_CASE_PATTERN.matcher(line)
@@ -282,6 +295,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 			if (testSuccessMatcher.matches() || testFailedMatcher.matches()) {
 				testRun ++;
+				endOfDestination = true
 			}
 
 			if (testFailedMatcher.matches()) {
@@ -289,7 +303,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 
 
-			if (testSuites != null && testSuites.isEmpty()) {
+			if( endOfDestination ) {
 				Destination destination = project.xcodebuild.availableDestinations[testRun]
 
 				if (this.allResults.containsKey(destination)) {
@@ -301,6 +315,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 				resultList = []
 				testSuites = null
+				endOfDestination = false
 			} else {
 				if (output != null) {
 					if (output.length() > 0) {
@@ -323,9 +338,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	def store() {
-
-
-
+		logger.debug("store to test-result.xml")
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)

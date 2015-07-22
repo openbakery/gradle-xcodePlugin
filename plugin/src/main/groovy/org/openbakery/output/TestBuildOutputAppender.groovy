@@ -1,10 +1,9 @@
 package org.openbakery.output
 
 import org.gradle.api.Project
+import org.gradle.logging.ProgressLogger
 import org.gradle.logging.StyledTextOutput
 import org.openbakery.Destination
-
-import java.util.regex.Pattern
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,6 +14,15 @@ import java.util.regex.Pattern
  */
 class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
+	enum TestState {
+		Unknown,
+		Compile,
+		Started, // test suite has started
+		Running, // test case is running
+		Finished, // test case is finished
+		Done // all tests are finished
+	}
+
 	def TEST_CASE_FINISH_PATTERN = ~/^Test Case '(.*)'\s(\w+)\s\((\d+\.\d+)\sseconds\)\./
 	def TEST_CASE_START_PATTERN = ~/^Test Case '(.*)' started./
 	def TEST_SUITE_START_PATTERN = ~/.*Test Suite '(.*)' started.*/
@@ -22,94 +30,160 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
-	boolean testsRunning = false
-	boolean outputLine = false
+	int testsCompleted = 0
+	int testsFailed = 0
+	TestState state = TestState.Unknown;
 	int testRun = 0
 	int startedDestination = -1
 	Project project
 	String currentTestCase = null;
 
-	TestBuildOutputAppender(StyledTextOutput output, Project project) {
-		super(output)
+	StringBuilder currentOutput = new StringBuilder();
+
+	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, Project project) {
+		super(progressLogger, output)
 		this.project = project
+	}
+
+	TestBuildOutputAppender(StyledTextOutput output, Project project) {
+		this(null, output, project)
 	}
 
 	@Override
 	void append(String line) {
 
-		checkTestSuite(line);
-
-
-
-		def startedTest = checkTestStart(line)
-		if (currentTestCase == null) {
-			currentTestCase = startedTest;
-		} else if (startedTest != null) {
-			// current test case was not properly finished, so some other error occurred, so fail it
-			printTestResult(currentTestCase, true, "(unknown)");
-			currentTestCase = startedTest
-		} else {
-			checkTestFinished(line);
-		}
-		checkAllTestsFinished(line);
-
-		if (outputLine) {
-			output.append("\n")
-			output.append(line)
-		} else if (!testsRunning) {
+		if (line.startsWith("Compile")) {
+			state = TestState.Compile
 			super.append(line)
+		} else if (checkTestSuite(line)) {
+			state = TestState.Started
+			currentOutput.setLength(0) // deletes the buffer
+		} else if (checkTestStart(line)) {
+			state = TestState.Running
+		} else if (checkTestFinished(line)) {
+			state = TestState.Finished
+			currentOutput.setLength(0) // deletes the buffer
+		}	else if (checkAllTestsFinished(line)) {
+			state = TestState.Done
+		} else {
+
+			// there was no state change
+			if (state == TestState.Started && currentTestCase != null) {
+				printTestResult(currentTestCase, true, "(unknown)");
+			}
+
+
+			if (state == TestState.Running || state == TestState.Compile) {
+				currentOutput.append(line)
+				currentOutput.append("\n")
+			}
+			if (state == TestState.Unknown || state == TestState.Compile) {
+				super.append(line)
+			}
+
 		}
+
+
+
+
+
 	}
 
-	void checkTestSuite(String line) {
+	boolean checkTestSuite(String line) {
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			if (!testsRunning) {
-				output.append("\nStart unit tests\n\n")
-			}
-			testsRunning = true
 			startDestination()
+			return true
 		}
+		return false
 	}
 
-	void checkAllTestsFinished(String line) {
+	boolean checkAllTestsFinished(String line) {
 		def successMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
 		def failedMatcher = TEST_FAILED_PATTERN.matcher(line)
-		if (successMatcher.matches() || failedMatcher.matches()) {
+
+		if (failedMatcher.matches()) {
+			printFailureOutput()
 			finishDestination()
-			testsRunning = false
-			outputLine = false
-		} else {
-			def failingTestsMatcher = FAILED_TESTS_PATTERN.matcher(line)
-			if (failingTestsMatcher.matches()) {
-				testsRunning = false
-				outputLine = true
-				output.println();
-				output.append("TESTS FAILED");
-				output.println();
+			return true
+		}
+
+		if (successMatcher.matches()) {
+			finishDestination()
+			return true
+		}
+		return false
+	}
+
+	private void printFailureOutput() {
+		project.getLogger().debug("printFailureOutput")
+		def failureOutput = []
+		def startFound = false;
+		currentOutput.toString().split("\n").reverse().any {
+			failureOutput << it
+
+			if (it.startsWith("Testing failed:")) {
+				startFound = true
 			}
+			return startFound
+		}
+		if (startFound) {
+			output.withStyle(StyledTextOutput.Style.Identifier).text(failureOutput.reverse().join("\n"))
+			output.withStyle(StyledTextOutput.Style.Normal).text("\n")
 		}
 	}
 
-	void checkTestFinished(String line) {
+	boolean checkTestFinished(String line) {
 		def finishMatcher = TEST_CASE_FINISH_PATTERN.matcher(line)
 		if (finishMatcher.matches()) {
 			String result = finishMatcher[0][2].trim()
 			String duration = finishMatcher[0][3].trim()
 			boolean failed = result.equals("failed");
+			if (failed) {
+				testsFailed++
+			}
 			printTestResult(currentTestCase, failed, duration);
 			currentTestCase = null;
+			testsCompleted++;
+			return true
 		}
+		return false
 	}
 
-	String checkTestStart(String line) {
+	boolean checkTestStart(String line) {
+
+		if (line.startsWith("Touch") && line.endsWith("xctest")) {
+			progress("Starting Tests")
+		}
+
+
 		def startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
-			testsRunning = true
 			startDestination()
-			return startMatcher[0][1].trim()
+			String testCase = startMatcher[0][1].trim()
+
+			//0 tests completed, Test Suite 'DTActionPanelTest_iPhone'
+			int endIndex = testCase.indexOf(' ')
+			int startIndex = testCase.indexOf('[')
+			if (startIndex > 0 && endIndex > 0) {
+				String message = getTestInfoMessage()
+				message += ", running '" + testCase.substring(startIndex + 1, endIndex) + "'"
+				progress(message)
+			}
+
+
+			currentTestCase = testCase;
+			return true;
 		}
-		return null;
+		return false;
+	}
+
+	private String getTestInfoMessage() {
+		String message = testsCompleted + " tests completed"
+		if (testsFailed) {
+			message += ", " + testsFailed + " failed"
+		}
+		return message
 	}
 
 	void startDestination() {
@@ -117,9 +191,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			Destination destination = project.xcodebuild.availableDestinations[testRun]
 			if (destination) {
 				startedDestination = testRun
-				output.append("\nPerform unit tests for: ")
+				output.append("\nRun tests for: ")
 				output.append(destination.toPrettyString());
-				output.println();
 				output.println();
 			}
 		}
@@ -128,18 +201,20 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	void finishDestination() {
 		Destination destination = project.xcodebuild.availableDestinations[testRun]
 		if (destination != null) {
-			output.println();
+			progress("Tests finished: " + destination.toPrettyString())
+			output.append(getTestInfoMessage())
 			output.append("\n")
-			output.append("Tests finished: ")
-			output.append(destination.toPrettyString());
-			output.println();
-			output.println();
 			testRun++;
+			testsFailed = 0;
+			testsCompleted = 0;
 		}
 	}
 
 	void printTestResult(String testCase, boolean failed, String duration) {
 		if (!failed) {
+			if (!fullProgress) {
+				return;
+			}
 			output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
 		} else {
 			output.withStyle(StyledTextOutput.Style.Failure).text("  FAILED")
@@ -150,5 +225,20 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		output.append(duration)
 		output.append(" seconds)")
 		output.println();
+		output.println();
+		if (failed) {
+			output.withStyle(StyledTextOutput.Style.Identifier).text(currentOutput.toString())
+			output.println();
+			output.println();
+		}
+	}
+
+
+
+	void progress(String message) {
+		if (progressLogger == null) {
+			return
+		}
+		progressLogger.progress(message)
 	}
 }

@@ -157,8 +157,10 @@ class SimulatorControl {
 
 		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
 			for (SimulatorDevice device in entry.getValue()) {
-				simctl("delete", device.identifier)
-				println "Delete simulator: '" + device.name + "' " + device.identifier
+				if (device.available) {
+					println "Delete simulator: '" + device.name + "' " + device.identifier
+					simctl("delete", device.identifier)
+				}
 			}
 		}
 	}
@@ -166,13 +168,20 @@ class SimulatorControl {
 
 	void createAll() {
 		for (SimulatorRuntime runtime in getRuntimes()) {
-			for (SimulatorDeviceType deviceType in getDeviceTypes()) {
-				logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
-				try {
-					simctl("create", deviceType.name, deviceType.identifier, runtime.identifier)
-					println "Create simulator: '" + deviceType.name + "' for " + runtime.version
-				} catch (CommandRunnerException ex) {
-					println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
+
+			if (runtime.available) {
+
+				for (SimulatorDeviceType deviceType in getDeviceTypes()) {
+
+					if (deviceType.canCreateWithRuntime(runtime)) {
+						logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
+						try {
+							simctl("create", deviceType.name, deviceType.identifier, runtime.identifier)
+							println "Create simulator: '" + deviceType.name + "' for " + runtime.version
+						} catch (CommandRunnerException ex) {
+							println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
+						}
+					}
 				}
 			}
 		}
@@ -181,8 +190,10 @@ class SimulatorControl {
 	void eraseAll() {
 		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
 			for (SimulatorDevice device in entry.getValue()) {
-				simctl("erase", device.identifier)
-				println "Erase simulator: '" + device.name + "' " + device.identifier
+				if (device.available) {
+					println "Erase simulator: '" + device.name + "' " + device.identifier
+					simctl("erase", device.identifier)
+				}
 			}
 		}
 	}

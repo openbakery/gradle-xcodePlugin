@@ -1,7 +1,12 @@
 package org.openbakery.output
 
-
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
+import org.openbakery.stubs.ProgressLoggerStub
 import org.testng.annotations.Test
+
+import static org.hamcrest.MatcherAssert.assertThat
+import static org.hamcrest.Matchers.*
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,19 +27,35 @@ class XcodeBuildOutputAppenderTest {
 
 
 	@Test
-	void testCompile() {
+	void testCompile_fullProgress() {
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
 		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(output)
+		appender.fullProgress = true
 
 		for (String line in data.split("\n")) {
 			appender.append(line)
 		}
 
 		String expected = "      OK - Compile: FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m\n";
-		assert output.toString().equals(expected) :  "Expected: " + expected  + " but was " + output.toString()
+		assertThat(output.toString(), is(equalTo(expected)))
 
 	}
+
+
+	@Test
+	void testCompile_complex() {
+
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(progress, output)
+		for (String line : data.split("\n")) {
+			appender.append(line);
+		}
+		assertThat(progress.progress, hasItem("Compile FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m"))
+	}
+
+
 
 
 	def errorData = "CompileC /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Intermediates/FOO.build/Debug-iphonesimulator/FOO-DMS.build/Objects-normal/i386/UIService.o Core/Source/Services/UIService.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler\n" +
@@ -191,4 +212,19 @@ class XcodeBuildOutputAppenderTest {
 		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
 
 	}
+
+	@Test
+	void testCompile_createBinary() {
+		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-createbinary.txt"))
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(progress, output)
+		for (String line : xcodebuildOutput.split("\n")) {
+			appender.append(line);
+		}
+		assertThat(progress.progress, hasItem("Create Binary"))
+	}
+
+
+
 }

@@ -53,7 +53,7 @@ class XcodeTestTaskTest {
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: 'org.openbakery.xcode-plugin'
 
 		xcodeTestTask = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME);
 		xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
@@ -107,6 +107,8 @@ class XcodeTestTaskTest {
 
 	def void addExpectedDefaultDirs() {
 		String currentDir = new File('').getAbsolutePath()
+		expectedCommandList.add("-derivedDataPath")
+		expectedCommandList.add(currentDir + "${File.separator}build${File.separator}derivedData")
 		expectedCommandList.add("DSTROOT=" + currentDir + "${File.separator}build${File.separator}dst")
 		expectedCommandList.add("OBJROOT=" + currentDir + "${File.separator}build${File.separator}obj")
 		expectedCommandList.add("SYMROOT=" + currentDir + "${File.separator}build${File.separator}sym")
@@ -174,8 +176,6 @@ class XcodeTestTaskTest {
 
 		assert xcodeTestTask.numberSuccess() == 2
 		assert xcodeTestTask.numberErrors() == 0
-
-
 	}
 
 	@Test
@@ -186,7 +186,14 @@ class XcodeTestTaskTest {
 		assert xcodeTestTask.numberErrors() == 2
 	}
 
+	@Test
+	void parseFailureResultWithPartialSuite() {
+		assert !xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
+		assert xcodeTestTask.numberSuccess() == 0
+		assert xcodeTestTask.numberErrors() == 2
+	}
+	
 	@Test
 	void parseSuccessResult_6_1() {
 		assert xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
@@ -265,6 +272,7 @@ class XcodeTestTaskTest {
 	void testCommandForIOS() {
 
 		commandRunnerMock.run("killall", "iOS Simulator")
+		commandRunnerMock.run("killall", "Simulator")
 
 		project.xcodebuild.sdk = 'iphonesimulator'
 		project.xcodebuild.target = 'Test';
@@ -299,6 +307,8 @@ class XcodeTestTaskTest {
 	void testCommandForIOS_killFailed() {
 
 		commandRunnerMock.run("killall", "iOS Simulator").raises(new CommandRunnerException("failed"))
+		commandRunnerMock.run("killall", "Simulator")
+
 
 		project.xcodebuild.sdk = 'iphonesimulator'
 		project.xcodebuild.target = 'Test';

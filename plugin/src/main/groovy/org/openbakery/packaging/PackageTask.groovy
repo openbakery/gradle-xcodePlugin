@@ -144,7 +144,7 @@ class PackageTask extends AbstractDistributeTask {
 
 
 	private void createZipPackage(File packagePath, String extension) {
-		File packageBundle = new File(outputPath, getApplicationNameFromArchive() + "." + extension)
+		File packageBundle = new File(outputPath, getIpaFileName() + "." + extension)
 		if (!packageBundle.parentFile.exists()) {
 			packageBundle.parentFile.mkdirs()
 		}
@@ -278,5 +278,13 @@ class PackageTask extends AbstractDistributeTask {
 			return bundle.absolutePath + "/"
 		}
 		return bundle.absolutePath + "/Contents/"
+	}
+
+	def getIpaFileName() {
+		if (project.xcodebuild.ipaFileName) {
+			return project.xcodebuild.ipaFileName
+		} else {
+			return getApplicationNameFromArchive()
+		}
 	}
 }

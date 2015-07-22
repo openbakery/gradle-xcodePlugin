@@ -34,7 +34,7 @@ class XcodeProjectFile {
 
 
 	void parse() {
-		this.project.logger.lifecycle("Parse project file: " + projectFile.absolutePath)
+		this.project.logger.info("Parse project file: " + projectFile.absolutePath)
 		if (!this.projectFile.exists()) {
 			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
 		}

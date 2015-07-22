@@ -7,16 +7,19 @@ class SimulatorDeviceType {
 
 	public String name
 	public String identifier
+	public String shortIdentifier
 
 	public SimulatorDeviceType(String line) {
 		//iPhone 4s (com.apple.CoreSimulator.SimDeviceType.iPhone-4s)
 
-		def PATTERN = ~/^(.*)?\s\((.*)?\)/
+		def tokenizer = new StringTokenizer(line, "()");
+		if (tokenizer.hasMoreTokens()) {
+			name = tokenizer.nextToken().trim();
+		}
 
-		def matcher = PATTERN.matcher(line)
-		if (matcher.find()) {
-			name = matcher[0][1]
-			identifier = matcher[0][2]
+		if (tokenizer.hasMoreTokens()) {
+			identifier = tokenizer.nextToken().trim();
+			shortIdentifier = identifier - "com.apple.CoreSimulator.SimDeviceType."
 		}
 
 	}
@@ -43,5 +46,20 @@ class SimulatorDeviceType {
 
 	int hashCode() {
 		return identifier.hashCode()
+	}
+
+
+	boolean canCreateWithRuntime(SimulatorRuntime simulatorRuntime) {
+				if (shortIdentifier.startsWith("Apple-Watch") && simulatorRuntime.shortIdentifier.startsWith("watchOS")) {
+			return true
+		}
+
+		if (shortIdentifier.startsWith("iPhone") ||
+						shortIdentifier.startsWith("iPad") ||
+						shortIdentifier.endsWith("iPhone") ||
+						shortIdentifier.endsWith("iPad")) {
+			return simulatorRuntime.shortIdentifier.startsWith("iOS")
+		}
+		return false
 	}
 }

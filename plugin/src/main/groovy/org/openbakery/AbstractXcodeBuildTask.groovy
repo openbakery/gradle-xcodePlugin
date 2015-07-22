@@ -90,6 +90,8 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 		}
 
+		commandList.add("-derivedDataPath")
+		commandList.add(project.xcodebuild.derivedDataPath.absolutePath)
 		commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
 		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)

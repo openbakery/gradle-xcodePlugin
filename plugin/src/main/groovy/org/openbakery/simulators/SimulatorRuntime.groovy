@@ -8,20 +8,44 @@ class SimulatorRuntime {
 	String version
 	String buildNumber
 	String identifier
-
+	String shortIdentifier
+	boolean available = true
 
 	public SimulatorRuntime(String line) {
-		// pattern to parse this:
-		// iOS 7.1 (7.1 - 11D167) (com.apple.CoreSimulator.SimRuntime.iOS-7-1)
-		def PATTERN = ~/^(\w*\s\d+\.\d+)\s\((\d+\.\d+)\s-\s(\w+)\)\s\(([^\)]*)\)/
 
-		def matcher = PATTERN.matcher(line)
-		if (matcher.find()) {
-			name = matcher[0][1]
-			version = matcher[0][2]
-			buildNumber = matcher[0][3]
-			identifier = matcher[0][4]
+		def tokenizer = new StringTokenizer(line, "()");
+		if (tokenizer.hasMoreTokens()) {
+			name = tokenizer.nextToken().trim();
 		}
+
+		if (tokenizer.hasMoreTokens()) {
+			String[] versions = tokenizer.nextToken().split(" -")
+			if (versions.length > 0) {
+				version = versions[0].trim()
+			}
+			if (versions.length > 1) {
+				buildNumber = versions[1].trim()
+			}
+		}
+
+		if (tokenizer.hasMoreTokens()) {
+			tokenizer.nextToken(); // is space
+		}
+
+		if (tokenizer.hasMoreTokens()) {
+			identifier = tokenizer.nextToken().trim();
+			shortIdentifier = identifier - "com.apple.CoreSimulator.SimRuntime."
+		}
+
+		if (tokenizer.hasMoreTokens()) {
+			tokenizer.nextToken(); // is space
+		}
+
+		if (tokenizer.hasMoreTokens()) {
+			available = !tokenizer.nextToken().startsWith("unavailable")
+		}
+
+
 	}
 
 
@@ -42,6 +66,7 @@ class SimulatorRuntime {
 		if (identifier != that.identifier) return false
 		return true
 	}
+
 
 	int hashCode() {
 		return identifier.hashCode()
