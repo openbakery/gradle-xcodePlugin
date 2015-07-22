@@ -81,6 +81,35 @@ class OCLintTaskTest {
 	}
 
 
+	@Test
+	void gunzip() {
+		mockCommandRunner()
+
+		ocLintTask.run()
+
+		assertThat(antBuilderStub.gunzip.size(), is(1));
+
+		File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+		def archive = new File(outputDirectory, 'oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz').absolutePath
+		def gunzip = antBuilderStub.gunzip.first()
+		assertThat(gunzip, hasEntry("src", archive));
+	}
+
+
+	@Test
+	void untar() {
+		mockCommandRunner()
+
+		ocLintTask.run()
+
+		assertThat(antBuilderStub.untar.size(), is(1));
+
+		File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+		def archive = new File(outputDirectory, 'oclint-0.8.1-x86_64-darwin-14.0.0.tar').absolutePath
+		def untar = antBuilderStub.untar.first()
+		assertThat(untar, hasEntry("src", archive));
+	}
+
 	def mockOclintXcodebuild() {
 		commandRunnerMock.demand.run { parameters ->
 

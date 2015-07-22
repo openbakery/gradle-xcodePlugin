@@ -22,8 +22,12 @@ class OCLintTask extends AbstractXcodeTask {
 			outputDirectory.mkdirs()
 		}
 		ant.get(src: 'http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz', dest: outputDirectory, verbose:true)
-		ant.gunzip(src: "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz")
-		ant.untar(src :"oclint-0.8.1-x86_64-darwin-14.0.0.tar")
+
+		def oclintXcodebuild = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
+
+
+		ant.gunzip(src: new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz").absolutePath )
+		ant.untar(src : new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar").absolutePath)
 
 	}
 	@TaskAction
