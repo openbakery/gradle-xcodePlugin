@@ -47,6 +47,8 @@ import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
+import org.openbakery.oclint.OCLintPluginExtension
+import org.openbakery.oclint.OCLintTask
 import org.openbakery.packaging.ReleaseNotesTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
@@ -74,6 +76,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
+	public static final String ANALYTICS_GROUP_NAME = "Analytics"
 
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
@@ -106,6 +109,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
+	public static final String OCLINT_TASK_NAME = 'oclint'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -141,6 +145,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureAppledoc(project)
 		configureCoverage(project)
 		configureCocoapods(project)
+		configureOCLint(project)
 		configureSimulatorTasks(project)
 		configureProperties(project)
 	}
@@ -384,6 +389,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
+		project.extensions.create("oclint", OCLintPluginExtension, project)
 	}
 
 	private void configureBuild(Project project) {
@@ -509,6 +515,11 @@ class XcodePlugin implements Plugin<Project> {
 			addDependencyToBuild(project, task);
 		}
 	}
+
+	private void configureOCLint(Project project) {
+		project.task(OCLINT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
+	}
+
 
 	private void addDependencyToBuild(Project project, Task task) {
 		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
