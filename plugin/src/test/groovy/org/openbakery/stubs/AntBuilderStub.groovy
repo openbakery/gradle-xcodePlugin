@@ -25,22 +25,18 @@ class AntBuilderStub extends AntBuilder {
 	}
 
 
-	@Override
 	Map<String, Object> getProperties() {
 		return null
 	}
 
-	@Override
 	Map<String, Object> getReferences() {
 		return null
 	}
 
-	@Override
 	void importBuild(Object o) {
 
 	}
 
-	@Override
 	void importBuild(Object o, Transformer<? extends String, ? super String> transformer) {
 
 	}
