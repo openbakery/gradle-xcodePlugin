@@ -108,6 +108,7 @@ class OCLintTaskTest {
 		def archive = new File(outputDirectory, 'oclint-0.8.1-x86_64-darwin-14.0.0.tar').absolutePath
 		def untar = antBuilderStub.untar.first()
 		assertThat(untar, hasEntry("src", archive));
+		assertThat(untar, hasEntry("dest", outputDirectory.absolutePath));
 	}
 
 	def mockOclintXcodebuild() {

@@ -27,7 +27,7 @@ class OCLintTask extends AbstractXcodeTask {
 
 
 		ant.gunzip(src: new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz").absolutePath )
-		ant.untar(src : new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar").absolutePath)
+		ant.untar(src : new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar").absolutePath, dest:outputDirectory.absolutePath)
 
 	}
 	@TaskAction
