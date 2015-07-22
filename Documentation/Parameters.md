@@ -345,3 +345,21 @@ Note: see also https://deploygate.com/docs/api
 * _submitPath_ - Path to the crashlytics submit command (relative to the project dir)
 
   default value: "Crashlytics.framework/submit"
+	
+## OCLint Parameters
+
+* _reportType_ - The report type that should be generated. Must be one of text, html, xml, json and pmd
+
+  default value: html
+	
+* _rules_ - the line rules as array (see also: http://docs.oclint.org/en/dev/rules/index.html) e.g
+
+```
+oclint {
+	rules = [
+		"LINT_LONG_LINE=300",
+		"LINT_LONG_VARIABLE_NAME=64"]
+}
+```
+
+ 
