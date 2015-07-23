@@ -69,7 +69,9 @@ class CommandRunner {
 		if (environment != null) {
 			logger.debug("with additional environment variables: {}", environment)
 		}
-		def processBuilder = new ProcessBuilder(commandList)
+
+		def commandsAsStrings = commandList.collect { it.toString() } // GStrings don't play well with ProcessBuilder
+		def processBuilder = new ProcessBuilder(commandsAsStrings)
 		processBuilder.redirectErrorStream(true)
 		processBuilder.directory(new File(directory))
 		if (environment != null) {
