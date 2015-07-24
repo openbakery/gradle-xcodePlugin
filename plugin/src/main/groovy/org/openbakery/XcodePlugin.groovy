@@ -517,7 +517,10 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureOCLint(Project project) {
-		project.task(OCLINT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
+		def oclint = project.task(OCLINT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
+		// XCode Build logs should start with a clean build in order for the OCLint to cover all files
+		oclint.dependsOn(project.tasks.getByName('clean'))
+		oclint.dependsOn(project.tasks.getByName(XCODE_BUILD_TASK_NAME))
 	}
 
 

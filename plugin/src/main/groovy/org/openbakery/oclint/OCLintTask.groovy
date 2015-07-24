@@ -9,6 +9,7 @@ import org.openbakery.AbstractXcodeTask
 class OCLintTask extends AbstractXcodeTask {
 
 	File outputDirectory
+	File downloadDirectory
 
 	OCLintTask() {
 		super()
@@ -17,34 +18,42 @@ class OCLintTask extends AbstractXcodeTask {
 
 
 	def download() {
-		outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+		outputDirectory = new File("${project.buildDir.absolutePath}/oclint")
+		downloadDirectory = new File("${project.gradle.gradleHomeDir.absolutePath}/ios")
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
-		ant.get(src: 'http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz', dest: outputDirectory, verbose:true)
+		if (!downloadDirectory.exists()) {
+			downloadDirectory.mkdirs()
+		}
+		ant.get(src: 'http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz', dest: downloadDirectory, verbose:true)
 
-		def oclintXcodebuild = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
-
-
-		ant.gunzip(src: new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz").absolutePath )
-		ant.untar(src : new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar").absolutePath, dest:outputDirectory.absolutePath)
+		commandRunner.run(downloadDirectory.absolutePath, ["tar", "xzvf", "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz"])
 
 	}
 	@TaskAction
 	def run() {
+		OCLintPluginExtension oclintExtension = project.oclint
 		download()
 
-		def oclintXcodebuild = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
+		def oclintXcodebuild = new File(downloadDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
 
 		commandRunner.run([oclintXcodebuild, 'build/xcodebuild-output.txt'])
 
-		def oclint = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath
-		def report = new File(outputDirectory, 'oclint.html').absolutePath
+		def oclint = new File(downloadDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath
 
-		def ocLintParameters = [oclint, '--', "-report-type"]
-		ocLintParameters << project.oclint.reportType
+		def report = new File(outputDirectory, "oclint.${oclintExtension.reportType}").absolutePath
 
-		for (String rule : project.oclint.rules) {
+		def ocLintParameters = [oclint]
+
+		if (oclintExtension.excludePods) {
+			ocLintParameters.addAll(["-e", "Pods"])
+		}
+
+		ocLintParameters.addAll(['--', "-report-type"])
+		ocLintParameters << oclintExtension.reportType
+
+		for (String rule : oclintExtension.rules) {
 			ocLintParameters << "-rc"
 			ocLintParameters << rule
 		}
