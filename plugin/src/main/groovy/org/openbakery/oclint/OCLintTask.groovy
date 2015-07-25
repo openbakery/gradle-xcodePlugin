@@ -19,7 +19,7 @@ class OCLintTask extends AbstractXcodeTask {
 
 	def download() {
 		outputDirectory = new File("${project.buildDir.absolutePath}/oclint")
-		downloadDirectory = new File("${project.gradle.gradleHomeDir.absolutePath}/ios")
+		downloadDirectory = new File("${project.gradle.gradleUserHomeDir.absolutePath}/ios")
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
