@@ -8,6 +8,7 @@ import org.gradle.api.Project
 class OCLintPluginExtension {
 
 	def String reportType = "html"
+	def Boolean excludePods = true
 
 	def rules = []
 
