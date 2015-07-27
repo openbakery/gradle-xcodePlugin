@@ -19,6 +19,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.tasks.TaskDependency
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
@@ -171,6 +172,10 @@ class XcodePluginTest {
 		assertThat(ocLintTask.dependsOn, hasItem(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)))
 		assertThat(ocLintTask.dependsOn, hasItem(reportTask))
 
+
+		TaskDependency dependency = reportTask.mustRunAfter
+
+		assertThat(dependency.getDependencies(reportTask), hasItem(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)))
 	}
 
 }
