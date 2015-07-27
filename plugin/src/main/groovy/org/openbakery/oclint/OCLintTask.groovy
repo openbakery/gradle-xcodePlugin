@@ -48,13 +48,21 @@ class OCLintTask extends AbstractXcodeTask {
 		def oclint = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath
 		def report = new File(outputDirectory, 'oclint.html').absolutePath
 
-		def ocLintParameters = [oclint, '--', "-report-type"]
+		def ocLintParameters = [oclint]
+
+		for (String exclude : project.oclint.excludes) {
+			ocLintParameters << "-e"
+			ocLintParameters << exclude
+		}
+		ocLintParameters << '--'
+		ocLintParameters << '-report-type'
+
 		ocLintParameters << project.oclint.reportType
 
 		for (String rule : project.oclint.rules) {
-			ocLintParameters << "-rc"
-			ocLintParameters << rule
+			ocLintParameters << "-rc=" + rule
 		}
+
 
 		ocLintParameters << "-o"
 		ocLintParameters << report

@@ -10,6 +10,7 @@ class OCLintPluginExtension {
 	def String reportType = "html"
 
 	def rules = []
+	def excludes = []
 
 	private final Project project
 

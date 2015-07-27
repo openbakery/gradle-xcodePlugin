@@ -230,9 +230,49 @@ class OCLintTaskTest {
 							"--",
 							"-report-type",
 							"html",
-							"-rc", "LINT_LONG_LINE=300",
-							"-rc", "LINT_LONG_VARIABLE_NAME=64",
-							"-rc", "LINT_LONG_METHOD=150",
+							"-rc=LINT_LONG_LINE=300",
+							"-rc=LINT_LONG_VARIABLE_NAME=64",
+							"-rc=LINT_LONG_METHOD=150",
+							"-o",
+							new File(outputDirectory, 'oclint.html').absolutePath,
+			]
+
+			assertThat(parameters, is(equalTo(expectedParameters)))
+		}
+
+		ocLintTask.commandRunner = commandRunnerMock.proxyInstance()
+
+		ocLintTask.run()
+
+		commandRunnerMock.verify ocLintTask.commandRunner
+	}
+
+
+	@Test
+	void oclintWithExclude() {
+
+		mockUntar()
+		mockOclintXcodebuild()
+
+		project.oclint.excludes = [
+						"Pods",
+						"Test",
+		]
+
+
+		commandRunnerMock.demand.run { parameters ->
+
+			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+
+			def expectedParameters = [
+							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"-e",
+							"Pods",
+							"-e",
+							"Test",
+							"--",
+							"-report-type",
+							"html",
 							"-o",
 							new File(outputDirectory, 'oclint.html').absolutePath,
 			]
