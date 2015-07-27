@@ -56,6 +56,7 @@ class OCLintTaskTest {
 	void mockCommandRunner() {
 		commandRunnerMock.demand.run {}
 		commandRunnerMock.demand.run {}
+		commandRunnerMock.demand.run {}
 		ocLintTask.commandRunner = commandRunnerMock.proxyInstance()
 	}
 
@@ -78,37 +79,38 @@ class OCLintTaskTest {
 		def getCall = antBuilderStub.get.first()
 		assertThat(getCall, hasEntry("src", "http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz"));
 
+		File downloadDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint/download")
+		assertThat(getCall, hasEntry("dest", downloadDirectory));
 	}
 
+	void mockUntar() {
+		commandRunnerMock.demand.run { parameters ->
 
-	@Test
-	void gunzip() {
-		mockCommandRunner()
+					File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
-		ocLintTask.run()
+					def expectedParameters = [
+									'tar',
+									'xzf',
+									new File(outputDirectory, 'download/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz').absolutePath,
+									'-C',
+									outputDirectory.absolutePath
+					]
+					assertThat(parameters, is(equalTo(expectedParameters)))
 
-		assertThat(antBuilderStub.gunzip.size(), is(1));
-
-		File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
-		def archive = new File(outputDirectory, 'oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz').absolutePath
-		def gunzip = antBuilderStub.gunzip.first()
-		assertThat(gunzip, hasEntry("src", archive));
+				}
 	}
-
 
 	@Test
 	void untar() {
-		mockCommandRunner()
+		mockUntar()
+
+		commandRunnerMock.demand.run {}
+		commandRunnerMock.demand.run {}
+		ocLintTask.commandRunner = commandRunnerMock.proxyInstance()
 
 		ocLintTask.run()
+		commandRunnerMock.verify ocLintTask.commandRunner
 
-		assertThat(antBuilderStub.untar.size(), is(1));
-
-		File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
-		def archive = new File(outputDirectory, 'oclint-0.8.1-x86_64-darwin-14.0.0.tar').absolutePath
-		def untar = antBuilderStub.untar.first()
-		assertThat(untar, hasEntry("src", archive));
-		assertThat(untar, hasEntry("dest", outputDirectory.absolutePath));
 	}
 
 	def mockOclintXcodebuild() {
@@ -127,6 +129,7 @@ class OCLintTaskTest {
 
 	@Test
 	void oclintXcodebuild() {
+		mockUntar()
 		mockOclintXcodebuild()
 		commandRunnerMock.demand.run {}
 
@@ -142,13 +145,11 @@ class OCLintTaskTest {
 
 	@Test
 	void oclint() {
-
+		mockUntar()
 		mockOclintXcodebuild()
 
 
 		commandRunnerMock.demand.run { parameters ->
-
-
 
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
@@ -175,6 +176,7 @@ class OCLintTaskTest {
 	void oclintReportType() {
 
 		project.oclint.reportType = "pmd"
+		mockUntar()
 		mockOclintXcodebuild()
 
 
@@ -213,6 +215,7 @@ class OCLintTaskTest {
 						"LINT_LONG_METHOD=150",
 		]
 
+		mockUntar()
 		mockOclintXcodebuild()
 
 

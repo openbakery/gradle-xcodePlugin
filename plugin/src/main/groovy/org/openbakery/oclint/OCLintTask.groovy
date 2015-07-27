@@ -17,21 +17,28 @@ class OCLintTask extends AbstractXcodeTask {
 
 
 	def download() {
-		outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
+		File downloadDirectory = new File(outputDirectory, "download")
+		if (!downloadDirectory.exists()) {
+			downloadDirectory.mkdirs()
 		}
-		ant.get(src: 'http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz', dest: outputDirectory, verbose:true)
-
-		def oclintXcodebuild = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
+		ant.get(src: 'http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz', dest: downloadDirectory, verbose:true)
 
 
-		ant.gunzip(src: new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz").absolutePath )
-		ant.untar(src : new File(outputDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar").absolutePath, dest:outputDirectory.absolutePath)
-
+		def command = [
+						'tar',
+						'xzf',
+						new File(downloadDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz").absolutePath,
+						'-C',
+						outputDirectory.absolutePath
+		]
+		commandRunner.run(command)
 	}
+
+
 	@TaskAction
 	def run() {
+		outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+
 		download()
 
 		def oclintXcodebuild = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
