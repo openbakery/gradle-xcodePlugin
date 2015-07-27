@@ -110,6 +110,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
 	public static final String OCLINT_TASK_NAME = 'oclint'
+	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -517,7 +518,14 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureOCLint(Project project) {
-		project.task(OCLINT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
+		OCLintTask reportTask = project.task(OCLINT_REPORT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
+
+		Task ocLintTask = project.getTasks().create(OCLINT_TASK_NAME);
+		ocLintTask.description = "Runs: " +  BasePlugin.CLEAN_TASK_NAME + " " + XCODE_BUILD_TASK_NAME + " " + OCLINT_REPORT_TASK_NAME
+		ocLintTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME))
+		ocLintTask.dependsOn(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME))
+		ocLintTask.dependsOn(reportTask)
+
 	}
 
 

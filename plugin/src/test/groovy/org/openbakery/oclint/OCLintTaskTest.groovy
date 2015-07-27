@@ -34,7 +34,7 @@ class OCLintTaskTest {
 		project.buildDir.mkdirs()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		ocLintTask = project.tasks.findByName(XcodePlugin.OCLINT_TASK_NAME);
+		ocLintTask = project.tasks.findByName(XcodePlugin.OCLINT_REPORT_TASK_NAME);
 
 		antBuilderStub = new AntBuilderStub()
 		project.ant = antBuilderStub

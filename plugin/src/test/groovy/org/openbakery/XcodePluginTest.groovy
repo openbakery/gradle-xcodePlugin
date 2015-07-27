@@ -17,6 +17,8 @@ package org.openbakery
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.plugins.BasePlugin
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
@@ -24,11 +26,15 @@ import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
+import org.openbakery.oclint.OCLintPluginExtension
+import org.openbakery.oclint.OCLintTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.appstore.AppstoreUploadTask
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*
 
 class XcodePluginTest {
 
@@ -143,6 +149,27 @@ class XcodePluginTest {
 	@Test
 	void contain_extension_appstore() {
 		assert project.extensions.findByName('appstore') instanceof AppstorePluginExtension
+	}
+
+
+	@Test
+	void contain_extension_oclint() {
+		assertThat(project.extensions.findByName('oclint'), is(instanceOf(OCLintPluginExtension.class)));
+	}
+
+	@Test
+	void oclintTasks() {
+		OCLintTask reportTask = project.tasks.findByName(XcodePlugin.OCLINT_REPORT_TASK_NAME)
+
+		assertThat(reportTask, is(instanceOf(OCLintTask)))
+
+		Task ocLintTask = project.tasks.findByName(XcodePlugin.OCLINT_TASK_NAME)
+		assertThat(ocLintTask, is(instanceOf(Task.class)))
+
+		assertThat(ocLintTask.dependsOn, hasItem(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME)))
+		assertThat(ocLintTask.dependsOn, hasItem(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)))
+		assertThat(ocLintTask.dependsOn, hasItem(reportTask))
+
 	}
 
 }

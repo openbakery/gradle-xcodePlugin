@@ -12,7 +12,7 @@ class OCLintTask extends AbstractXcodeTask {
 
 	OCLintTask() {
 		super()
-		this.description = "Runs OCLint for the given project"
+		this.description = "Create a OCLint report for the given project"
 	}
 
 
