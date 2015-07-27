@@ -155,6 +155,9 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"-max-priority-1=0",
+							"-max-priority-2=10",
+							"-max-priority-3=20",
 							"--",
 							"-report-type",
 							"html",
@@ -188,6 +191,9 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"-max-priority-1=0",
+							"-max-priority-2=10",
+							"-max-priority-3=20",
 							"--",
 							"-report-type",
 							"pmd",
@@ -227,6 +233,9 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"-max-priority-1=0",
+							"-max-priority-2=10",
+							"-max-priority-3=20",
 							"--",
 							"-report-type",
 							"html",
@@ -266,6 +275,9 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"-max-priority-1=0",
+							"-max-priority-2=10",
+							"-max-priority-3=20",
 							"-e",
 							"Pods",
 							"-e",
@@ -287,5 +299,41 @@ class OCLintTaskTest {
 		commandRunnerMock.verify ocLintTask.commandRunner
 	}
 
+
+	@Test
+	void oclint_priority() {
+		project.oclint.maxPriority1 = 100
+		project.oclint.maxPriority2 = 200
+		project.oclint.maxPriority3 = 300
+
+		mockUntar()
+		mockOclintXcodebuild()
+
+
+		commandRunnerMock.demand.run { parameters ->
+
+			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+
+			def expectedParameters = [
+							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"-max-priority-1=100",
+							"-max-priority-2=200",
+							"-max-priority-3=300",
+							"--",
+							"-report-type",
+							"html",
+							"-o",
+							new File(outputDirectory, 'oclint.html').absolutePath,
+			]
+
+			assertThat(parameters, is(equalTo(expectedParameters)))
+		}
+
+		ocLintTask.commandRunner = commandRunnerMock.proxyInstance()
+
+		ocLintTask.run()
+
+		commandRunnerMock.verify ocLintTask.commandRunner
+	}
 
 }

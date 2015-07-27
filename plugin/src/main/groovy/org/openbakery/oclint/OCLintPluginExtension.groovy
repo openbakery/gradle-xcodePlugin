@@ -12,6 +12,11 @@ class OCLintPluginExtension {
 	def rules = []
 	def excludes = []
 
+	def maxPriority1 = 0
+	def maxPriority2 = 10
+	def maxPriority3 = 20
+
+
 	private final Project project
 
 	public OCLintPluginExtension(Project project) {

@@ -50,6 +50,10 @@ class OCLintTask extends AbstractXcodeTask {
 
 		def ocLintParameters = [oclint]
 
+		ocLintParameters << "-max-priority-1=" + project.oclint.maxPriority1
+		ocLintParameters << "-max-priority-2=" + project.oclint.maxPriority2
+		ocLintParameters << "-max-priority-3=" + project.oclint.maxPriority3
+
 		for (String exclude : project.oclint.excludes) {
 			ocLintParameters << "-e"
 			ocLintParameters << exclude

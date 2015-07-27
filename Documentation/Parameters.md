@@ -362,4 +362,16 @@ oclint {
 }
 ```
 
+* _excludes_ - array of elements that should be excluded. e.g.
+
+```
+oclint {
+	excludes = [ "Pods" ]
+}
+```
+
+* _maxPriority1_, _maxPriority2_, _maxPriority3_ - maximum number of violations: see http://docs.oclint.org/en/dev/manual/oclint.html#exit-status-options
+
+	default values: maxPriority1=0, maxPriority2=10, maxPriority3=20
+
  
