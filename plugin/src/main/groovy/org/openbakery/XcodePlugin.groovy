@@ -521,6 +521,7 @@ class XcodePlugin implements Plugin<Project> {
 		OCLintTask reportTask = project.task(OCLINT_REPORT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
 
 		Task ocLintTask = project.getTasks().create(OCLINT_TASK_NAME);
+		ocLintTask.group = ANALYTICS_GROUP_NAME
 		ocLintTask.description = "Runs: " +  BasePlugin.CLEAN_TASK_NAME + " " + XCODE_BUILD_TASK_NAME + " " + OCLINT_REPORT_TASK_NAME
 		ocLintTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME))
 		ocLintTask.dependsOn(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME))

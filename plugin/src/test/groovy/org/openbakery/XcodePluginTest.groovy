@@ -165,6 +165,7 @@ class XcodePluginTest {
 
 		Task ocLintTask = project.tasks.findByName(XcodePlugin.OCLINT_TASK_NAME)
 		assertThat(ocLintTask, is(instanceOf(Task.class)))
+		assertThat(ocLintTask.group, is(XcodePlugin.ANALYTICS_GROUP_NAME))
 
 		assertThat(ocLintTask.dependsOn, hasItem(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME)))
 		assertThat(ocLintTask.dependsOn, hasItem(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)))
