@@ -348,6 +348,7 @@ Note: see also https://deploygate.com/docs/api
 	
 ## OCLint Parameters
 
+
 * _reportType_ - The report type that should be generated. Must be one of text, html, xml, json and pmd
 
   default value: html

@@ -15,6 +15,7 @@ Here a brief overview of the features:
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) )
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
+* OCLint (Works not with Xcode 7-beta)
 
 
 ## Note
@@ -64,6 +65,7 @@ You find example projects in [example/](example/) with a working build.gradle fi
 After you have fetched the example go to the `example/iOS/Example` directory and you build the project different targets:
 
 * Build with `gradle xcodebuild`
-* Run the unit tests with `gradle test` or `gradle`
+* Run the unit tests with `gradle test`
 * Perform a device build and upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
+

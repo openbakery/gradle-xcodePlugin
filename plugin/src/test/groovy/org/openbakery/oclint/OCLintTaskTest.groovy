@@ -155,10 +155,10 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
 							"-max-priority-3=20",
-							"--",
 							"-report-type",
 							"html",
 							"-o",
@@ -191,10 +191,10 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
 							"-max-priority-3=20",
-							"--",
 							"-report-type",
 							"pmd",
 							"-o",
@@ -233,10 +233,10 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
 							"-max-priority-3=20",
-							"--",
 							"-report-type",
 							"html",
 							"-rc=LINT_LONG_LINE=300",
@@ -275,14 +275,14 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
-							"-max-priority-1=0",
-							"-max-priority-2=10",
-							"-max-priority-3=20",
 							"-e",
 							"Pods",
 							"-e",
 							"Test",
 							"--",
+							"-max-priority-1=0",
+							"-max-priority-2=10",
+							"-max-priority-3=20",
 							"-report-type",
 							"html",
 							"-o",
@@ -316,10 +316,10 @@ class OCLintTaskTest {
 
 			def expectedParameters = [
 							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"--",
 							"-max-priority-1=100",
 							"-max-priority-2=200",
 							"-max-priority-3=300",
-							"--",
 							"-report-type",
 							"html",
 							"-o",
