@@ -1,3 +1,8 @@
+# 0.11.5
+
+Changes
+* added support for CPD reports. (Thanks to rahulsom) Issue #191
+
 ## 0.11.4 (July 28, 2015)
 
 Changes
