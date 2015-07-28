@@ -78,7 +78,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
 	public static final String ANALYTICS_GROUP_NAME = "Analytics"
-	public static final String CPD_GROUP_NAME = 'CPD'
 
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
@@ -113,6 +112,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
+	public static final String CPD_TASK_NAME = 'cpd'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -120,7 +120,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final COVERAGE_TASK_NAME = 'coverage'
 	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
 
-	public static final CPD_TASK_NAME = 'cpd'
 
 	public static final String SDK_MACOSX = "macosx"
 	public static final String SDK_IPHONEOS = "iphoneos"
@@ -377,6 +376,26 @@ class XcodePlugin implements Plugin<Project> {
 			}
 
 
+			if (project.hasProperty('oclint.reportType')) {
+				project.oclint.reportType = project['oclint.reportType'];
+			}
+			if (project.hasProperty('oclint.rules')) {
+				project.oclint.rules = project['oclint.rules'];
+			}
+			if (project.hasProperty('oclint.excludes')) {
+				project.oclint.excludes = project['oclint.excludes'];
+			}
+			if (project.hasProperty('oclint.maxPriority1')) {
+				project.oclint.maxPriority1 = project['oclint.maxPriority1'];
+			}
+			if (project.hasProperty('oclint.maxPriority2')) {
+				project.oclint.maxPriority2 = project['oclint.maxPriority2'];
+			}
+			if (project.hasProperty('oclint.maxPriority3')) {
+				project.oclint.maxPriority3 = project['oclint.maxPriority3'];
+			}
+
+
 			Task testTask = (Test) project.getTasks().findByPath(JavaPlugin.TEST_TASK_NAME)
 			if (testTask == null) {
 				testTask = project.getTasks().create(JavaPlugin.TEST_TASK_NAME)
@@ -505,7 +524,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureCpd(Project project) {
-		project.task(CPD_TASK_NAME, type: CpdTask, group: CPD_GROUP_NAME)
+		project.task(CPD_TASK_NAME, type: CpdTask, group: ANALYTICS_GROUP_NAME)
 	}
 
 
