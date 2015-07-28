@@ -1,7 +1,7 @@
-## 0.11.4 (TBA)
+## 0.11.4 (July 28, 2015)
 
 Changes
-* added OCLint support
+* added OCLint support: Fixes #57
 
 ## 0.11.3 (Juli 17, 2015)
 
