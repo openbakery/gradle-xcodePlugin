@@ -33,6 +33,7 @@ import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
+import org.openbakery.cpd.CpdTask
 import org.openbakery.crashlytics.CrashlyticsPluginExtension
 import org.openbakery.crashlytics.CrashlyticsUploadTask
 import org.openbakery.deploygate.DeployGateCleanTask
@@ -77,6 +78,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
 	public static final String ANALYTICS_GROUP_NAME = "Analytics"
+	public static final String CPD_GROUP_NAME = 'CPD'
 
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
@@ -117,6 +119,9 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final COVERAGE_TASK_NAME = 'coverage'
 	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
+
+	public static final CPD_TASK_NAME = 'cpd'
+
 	public static final String SDK_MACOSX = "macosx"
 	public static final String SDK_IPHONEOS = "iphoneos"
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
@@ -145,6 +150,7 @@ class XcodePlugin implements Plugin<Project> {
 		configurePackage(project)
 		configureAppledoc(project)
 		configureCoverage(project)
+		configureCpd(project)
 		configureCocoapods(project)
 		configureOCLint(project)
 		configureSimulatorTasks(project)
@@ -496,6 +502,10 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(COVERAGE_TASK_NAME, type: CoverageTask, group: COVERAGE_GROUP_NAME)
 		project.task(COVERAGE_CLEAN_TASK_NAME, type: CoverageCleanTask, group: COVERAGE_GROUP_NAME)
 
+	}
+
+	private void configureCpd(Project project) {
+		project.task(CPD_TASK_NAME, type: CpdTask, group: CPD_GROUP_NAME)
 	}
 
 
