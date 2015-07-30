@@ -336,4 +336,46 @@ class OCLintTaskTest {
 		commandRunnerMock.verify ocLintTask.commandRunner
 	}
 
+
+	@Test
+	void oclint_disableRule() {
+
+		project.oclint.disableRules = [
+						"UnusedMethodParameter",
+						"UselessParentheses",
+						"IvarAssignmentOutsideAccessorsOrInit"
+		]
+
+		mockUntar()
+		mockOclintXcodebuild()
+
+
+		commandRunnerMock.demand.run { parameters ->
+
+			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+
+			def expectedParameters = [
+							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							"--",
+							"-max-priority-1=0",
+							"-max-priority-2=10",
+							"-max-priority-3=20",
+							"-report-type",
+							"html",
+							"-disable-rule=UnusedMethodParameter",
+							"-disable-rule=UselessParentheses",
+							"-disable-rule=IvarAssignmentOutsideAccessorsOrInit",
+							"-o",
+							new File(outputDirectory, 'oclint.html').absolutePath,
+			]
+
+			assertThat(parameters, is(equalTo(expectedParameters)))
+		}
+
+		ocLintTask.commandRunner = commandRunnerMock.proxyInstance()
+
+		ocLintTask.run()
+
+		commandRunnerMock.verify ocLintTask.commandRunner
+	}
 }

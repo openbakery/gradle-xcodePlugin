@@ -382,6 +382,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('oclint.rules')) {
 				project.oclint.rules = project['oclint.rules'];
 			}
+			if (project.hasProperty('oclint.disableRules')) {
+				project.oclint.disableRules = project['oclint.disableRules'];
+			}
 			if (project.hasProperty('oclint.excludes')) {
 				project.oclint.excludes = project['oclint.excludes'];
 			}

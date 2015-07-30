@@ -363,6 +363,19 @@ oclint {
 }
 ```
 
+* _disableRules_ - the rules that should be disabled as array (see also: http://docs.oclint.org/en/dev/rules/index.html) e.g
+
+```
+oclint {
+	rules = [
+		"UnusedMethodParameter",
+		"UselessParentheses",
+	"IvarAssignmentOutsideAccessorsOrInit"
+	]
+}
+```
+
+
 * _excludes_ - array of elements that should be excluded. e.g.
 
 ```

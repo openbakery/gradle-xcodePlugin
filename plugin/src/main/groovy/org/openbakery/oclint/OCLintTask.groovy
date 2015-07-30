@@ -63,6 +63,10 @@ class OCLintTask extends AbstractXcodeTask {
 
 		ocLintParameters << project.oclint.reportType
 
+		for (String rule : project.oclint.disableRules) {
+			ocLintParameters << "-disable-rule=" + rule
+		}
+
 		for (String rule : project.oclint.rules) {
 			ocLintParameters << "-rc=" + rule
 		}

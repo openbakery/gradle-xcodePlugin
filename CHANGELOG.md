@@ -2,6 +2,7 @@
 
 Changes
 * added support for CPD reports. (Thanks to rahulsom) Issue #191
+* added that OCLint rules can be disabled
 
 ## 0.11.4 (July 28, 2015)
 
