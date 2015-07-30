@@ -367,7 +367,7 @@ oclint {
 
 ```
 oclint {
-	rules = [
+	disableRules = [
 		"UnusedMethodParameter",
 		"UselessParentheses",
 	"IvarAssignmentOutsideAccessorsOrInit"
