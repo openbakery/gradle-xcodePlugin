@@ -3,6 +3,7 @@
 Changes
 * added support for CPD reports. (Thanks to rahulsom) Issue #191
 * added that OCLint rules can be disabled
+* Fixed an issue where codesign would use the wrong version of developer tools
 
 ## 0.11.4 (July 28, 2015)
 
