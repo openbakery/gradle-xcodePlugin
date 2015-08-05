@@ -173,6 +173,8 @@ class PackageTask extends AbstractDistributeTask {
 
 		logger.lifecycle("Codesign {}", bundle)
 
+		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
+
 		def codesignCommand = [
 						"/usr/bin/codesign",
 						"--force",
@@ -184,7 +186,7 @@ class PackageTask extends AbstractDistributeTask {
 						"--keychain",
 						project.xcodebuild.signing.keychainPathInternal.absolutePath,
 		]
-		commandRunner.run(codesignCommand)
+		commandRunner.run(codesignCommand, environment)
 
 	}
 

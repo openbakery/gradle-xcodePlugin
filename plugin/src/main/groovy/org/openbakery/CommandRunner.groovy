@@ -160,7 +160,9 @@ class CommandRunner {
 		run(Arrays.asList(commandList));
 	}
 
-
+	def run(List<String> commandList, Map<String, String> environment) {
+		run(".", commandList, environment, null)
+	}
 
 	String runWithResult(String... commandList) {
 		return runWithResult(Arrays.asList(commandList));
