@@ -151,7 +151,6 @@ class CommandRunner {
 		run(".", commandList, null, outputAppender)
 	}
 
-
 	def run(List<String> commandList) {
 		run(".", commandList, null, null)
 	}
@@ -162,6 +161,10 @@ class CommandRunner {
 
 	def run(List<String> commandList, Map<String, String> environment) {
 		run(".", commandList, environment, null)
+	}
+
+	def run(List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+		run(".", commandList, environment, outputAppender)
 	}
 
 	String runWithResult(String... commandList) {
