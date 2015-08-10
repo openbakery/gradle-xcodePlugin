@@ -78,6 +78,9 @@ class CommandRunner {
 		}
 		def process = processBuilder.start()
 
+    if( resultStringBuilder == null ) {
+      resultStringBuilder = new StringBuilder()
+    }
 
 		processInputStream(process.inputStream, outputAppender)
 
@@ -85,7 +88,11 @@ class CommandRunner {
 		process.waitFor()
 		readerThread.join()
 		if (process.exitValue() > 0) {
-			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList))
+      def lastLines = resultStringBuilder.toString().split('\\n');
+      lastLines = lastLines[0 .. Math.min(lastLines.size(), 10)-1];
+      lastLines = lastLines.join('\n')
+
+			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList)+"\nTail of output:\n"+lastLines)
 		}
 
 	}
