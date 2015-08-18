@@ -95,6 +95,9 @@ class XcodeBuildSpecTest {
 		parentBuildSpec.ipaFileName = "ipaFileName"
 		parentBuildSpec.workspace = "workspace"
 		parentBuildSpec.symRoot = "symRoot"
+		parentBuildSpec.dstRoot = "dstRoot"
+		parentBuildSpec.objRoot = "objRoot"
+		parentBuildSpec.sharedPrecompsDir= "sharedPrecompsDir"
 		parentBuildSpec.devices = Devices.PAD
 		parentBuildSpec.productName = "productName"
 		parentBuildSpec.infoPlist = "infoPlist"
@@ -107,8 +110,21 @@ class XcodeBuildSpecTest {
 		assertThat(buildSpec.sdk, is(equalTo("sdk")));
 		assertThat(buildSpec.ipaFileName, is(equalTo("ipaFileName")));
 		assertThat(buildSpec.workspace, is(equalTo("workspace")));
+
 		assertThat(buildSpec.symRoot, is(instanceOf(File)));
 		assertThat(buildSpec.symRoot.absolutePath, endsWith("symRoot"));
+
+		assertThat(buildSpec.dstRoot, is(instanceOf(File)));
+		assertThat(buildSpec.dstRoot.absolutePath, endsWith("dstRoot"));
+
+		assertThat(buildSpec.objRoot, is(instanceOf(File)));
+		assertThat(buildSpec.objRoot.absolutePath, endsWith("objRoot"));
+
+		assertThat(buildSpec.sharedPrecompsDir, is(instanceOf(File)));
+		assertThat(buildSpec.sharedPrecompsDir.absolutePath, endsWith("sharedPrecompsDir"));
+
+
+
 		assertThat(buildSpec.devices, is(Devices.PAD));
 		assertThat(buildSpec.productName, is(equalTo("productName")));
 		assertThat(buildSpec.infoPlist, is(equalTo("infoPlist")));

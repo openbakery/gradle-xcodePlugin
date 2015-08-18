@@ -36,10 +36,7 @@ class XcodeBuildCleanTask extends DefaultTask {
 
 	@TaskAction
 	def clean() {
-		project.xcodebuild.dstRoot.deleteDir()
-		project.xcodebuild.objRoot.deleteDir()
-		this.buildSpec.symRoot.deleteDir()
-		project.xcodebuild.sharedPrecompsDir.deleteDir()
+		project.getBuildDir().deleteDir()
 	}
 
 }

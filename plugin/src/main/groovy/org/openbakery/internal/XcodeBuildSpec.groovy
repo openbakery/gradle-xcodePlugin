@@ -27,6 +27,9 @@ class XcodeBuildSpec {
 	String ipaFileName
 	String workspace
 	Object symRoot
+	Object dstRoot
+	Object objRoot
+	Object sharedPrecompsDir
 	String productName
 	Devices devices
 	String infoPlist
@@ -154,6 +157,38 @@ class XcodeBuildSpec {
 		}
 		return this.project.getFileResolver().withBaseDir(this.project.getBuildDir()).resolve("sym")
 	}
+
+
+	File getDstRoot() {
+		if (this.dstRoot != null) {
+			return project.file(this.dstRoot)
+		}
+		if (this.parent != null) {
+			return this.parent.getDstRoot()
+		}
+		return this.project.getFileResolver().withBaseDir(this.project.getBuildDir()).resolve("dst")
+	}
+
+	File getObjRoot() {
+		if (this.objRoot != null) {
+			return project.file(this.objRoot)
+		}
+		if (this.parent != null) {
+			return this.parent.getObjRoot()
+		}
+		return this.project.getFileResolver().withBaseDir(this.project.getBuildDir()).resolve("obj")
+	}
+
+	File getSharedPrecompsDir() {
+		if (this.sharedPrecompsDir != null) {
+			return project.file(this.sharedPrecompsDir)
+		}
+		if (this.parent != null) {
+			return this.parent.getSharedPrecompsDir()
+		}
+		return this.project.getFileResolver().withBaseDir(this.project.getBuildDir()).resolve("shared")
+	}
+
 
 
 	Devices getDevices() {

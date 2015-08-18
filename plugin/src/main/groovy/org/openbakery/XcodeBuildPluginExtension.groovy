@@ -34,9 +34,6 @@ class XcodeBuildPluginExtension {
 	XcodeBuildSpec buildSpec
 
 
-	Object dstRoot
-	Object objRoot
-	Object sharedPrecompsDir
 	Object derivedDataPath
 	String sourceDirectory = '.'
 	Signing signing = null
@@ -71,18 +68,6 @@ class XcodeBuildPluginExtension {
 		commandRunner = new CommandRunner()
 
 
-		this.dstRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
-		}
-
-		this.objRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("obj")
-		}
-
-		this.sharedPrecompsDir = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("shared")
-		}
-
 		this.derivedDataPath = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
 		}
@@ -103,31 +88,6 @@ class XcodeBuildPluginExtension {
 		this.derivedDataPath = derivedDataPath
 	}
 
-	void setDstRoot(File dstRoot) {
-		this.dstRoot = dstRoot
-	}
-
-	void setObjRoot(File objRoot) {
-		this.objRoot = objRoot
-	}
-
-
-
-	void setSharedPrecompsDir(File sharedPrecompsDir) {
-		this.sharedPrecompsDir = sharedPrecompsDir
-	}
-
-	File getDstRoot() {
-		return project.file(dstRoot)
-	}
-
-	File getObjRoot() {
-		return project.file(objRoot)
-	}
-
-	File getSharedPrecompsDir() {
-		return project.file(sharedPrecompsDir)
-	}
 
 	File getDerivedDataPath() {
 		return project.file(derivedDataPath)
@@ -419,6 +379,18 @@ class XcodeBuildPluginExtension {
 
 	void setSymRoot(Object symRoot) {
 		this.buildSpec.setSymRoot(symRoot)
+	}
+
+	void setDstRoot(File dstRoot) {
+		this.buildSpec.setDstRoot(dstRoot)
+	}
+
+	void setObjRoot(File objRoot) {
+		this.buildSpec.setObjRoot(objRoot)
+	}
+
+	void setSharedPrecompsDir(File sharedPrecompsDir) {
+		this.buildSpec.setSharedPrecompsDir(sharedPrecompsDir)
 	}
 
 }
