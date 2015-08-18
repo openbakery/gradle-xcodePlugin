@@ -68,7 +68,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	OperationIdentifier currentOperationId() {
-		return null
+	long currentOperationId() {
+		return 0
 	}
 }
