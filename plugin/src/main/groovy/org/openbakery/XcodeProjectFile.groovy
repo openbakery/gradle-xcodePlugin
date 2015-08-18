@@ -107,7 +107,7 @@ class XcodeProjectFile {
 		if (buildSpec.infoPlist == null) {
 			String key = "objects." + buildConfiguration + ".buildSettings.INFOPLIST_FILE"
 			buildSpec.infoPlist = getString(key)
-			logger.info("infoPlist: {}", buildSpec.infoPlist)
+			logger.info("setting infoPlist: {}", buildSpec.infoPlist)
 		}
 	}
 

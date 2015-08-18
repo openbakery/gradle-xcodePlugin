@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.Devices
+import org.openbakery.PlistHelper
 import org.openbakery.VariableResolver
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
@@ -43,6 +44,7 @@ class XcodeBuildSpec {
 	private CommandRunner commandRunner = new CommandRunner()
 	private VariableResolver variableResolver
 	private Project project
+	private PlistHelper plistHelper
 
 	public XcodeBuildSpec(Project project) {
 		this(project, null)
@@ -52,6 +54,7 @@ class XcodeBuildSpec {
 		this.project = project
 		this.parent = parent
 		this.variableResolver = new VariableResolver(project.projectDir, this)
+		this.plistHelper = new PlistHelper(project, commandRunner)
 	}
 
 	String getVersion() {
@@ -223,7 +226,11 @@ class XcodeBuildSpec {
 	}
 
 	File getInfoPlistFile() {
-		return new File(project.projectDir, getInfoPlist())
+		String infoPlist = getInfoPlist()
+		if (infoPlist) {
+			return new File(project.projectDir, getInfoPlist())
+		}
+		return null;
 	}
 
 
@@ -237,8 +244,13 @@ class XcodeBuildSpec {
 		return "app"
 	}
 
-	// TODO: replace this with the PListHelper
 	String getValueFromInfoPlist(key) {
+		File infoPlist =  getInfoPlistFile()
+		if (infoPlist != null) {
+			return plistHelper.getValueFromPlist(getInfoPlistFile(), key)
+		}
+		return null
+		/*
 		try {
 			File infoPlistFile = getInfoPlistFile()
 			if (infoPlistFile.exists()) {
@@ -253,6 +265,7 @@ class XcodeBuildSpec {
 			// ignore, null is retured
 		}
 		return null
+		*/
 	}
 
 
@@ -261,7 +274,10 @@ class XcodeBuildSpec {
 			return this.variableResolver.resolve(this.bundleName)
 		}
 		if (this.parent != null) {
-			return this.parent.getBundleName()
+			String parentBundleName = this.parent.getBundleName()
+			if (!StringUtils.isEmpty(parentBundleName)) {
+				return parentBundleName
+			}
 		}
 		String name = getValueFromInfoPlist("CFBundleName")
 		if (!StringUtils.isEmpty(name)) {

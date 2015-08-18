@@ -73,7 +73,7 @@ class XcodeBuildSpecTest {
 	}
 
 	@Test
-	void testMergeConfiguration() {
+	void testConfiguration() {
 		buildSpec.target = "Test"
 		parentBuildSpec.configuration = "Debug"
 		parentBuildSpec.sdk = "macosx"
@@ -99,83 +99,83 @@ class XcodeBuildSpecTest {
 
 
 	@Test
-	void testConfiguration() {
+	void testMergeConfiguration() {
 		parentBuildSpec.configuration = "configuration"
 		assertThat(buildSpec.configuration, is(equalTo("configuration")));
 	}
 
 	@Test
-	void testSdk() {
+	void testMergeSdk() {
 		parentBuildSpec.sdk = "sdk"
 		assertThat(buildSpec.sdk, is(equalTo("sdk")));
 	}
 
 	@Test
-	void testIpaFileName() {
+	void testMergeIpaFileName() {
 		parentBuildSpec.ipaFileName = "ipaFileName"
 		assertThat(buildSpec.ipaFileName, is(equalTo("ipaFileName")));
 	}
 
 	@Test
-	void testWorkspace() {
+	void testMergeWorkspace() {
 		parentBuildSpec.workspace = "workspace"
 		assertThat(buildSpec.workspace, is(equalTo("workspace")));
 	}
 
 	@Test
-	void testDevices() {
+	void testMergeDevices() {
 		parentBuildSpec.devices = Devices.PAD
 		assertThat(buildSpec.devices, is(Devices.PAD));
 	}
 
 	@Test
-	void testProductName() {
+	void testMergeProductName() {
 		parentBuildSpec.productName = "productName"
 		assertThat(buildSpec.productName, is(equalTo("productName")));
 	}
 
 	@Test
-	void testInfoPlist() {
+	void testMergeInfoPlist() {
 		parentBuildSpec.infoPlist = "infoPlist"
 		assertThat(buildSpec.infoPlist, is(equalTo("infoPlist")));
 	}
 
 	@Test
-	void testProductType() {
+	void testMergeProductType() {
 		parentBuildSpec.productType = "productType"
 		assertThat(buildSpec.productType, is(equalTo("productType")));
 	}
 
 	@Test
-	void testBundleName() {
+	void testMergeBundleName() {
 		parentBuildSpec.bundleName = "bundleName"
 		assertThat(buildSpec.bundleName, is(equalTo("bundleName")));
 	}
 
 
 	@Test
-	void testSymRoot() {
+	void testMergeSymRoot() {
 		parentBuildSpec.symRoot = "symRoot"
 		assertThat(buildSpec.symRoot, is(instanceOf(File)));
 		assertThat(buildSpec.symRoot.absolutePath, endsWith("symRoot"));
 	}
 
 	@Test
-	void testDstRoot() {
+	void testMergeDstRoot() {
 		parentBuildSpec.dstRoot = "dstRoot"
 		assertThat(buildSpec.dstRoot, is(instanceOf(File)));
 		assertThat(buildSpec.dstRoot.absolutePath, endsWith("dstRoot"));
 	}
 
 	@Test
-	void testObjRoot() {
+	void testMergeObjRoot() {
 		parentBuildSpec.objRoot = "objRoot"
 		assertThat(buildSpec.objRoot, is(instanceOf(File)));
 		assertThat(buildSpec.objRoot.absolutePath, endsWith("objRoot"));
 	}
 
 	@Test
-	void testSharedPrecompsDir() {
+	void testMergeSharedPrecompsDir() {
 		parentBuildSpec.sharedPrecompsDir = "sharedPrecompsDir"
 		assertThat(buildSpec.sharedPrecompsDir, is(instanceOf(File)));
 		assertThat(buildSpec.sharedPrecompsDir.absolutePath, endsWith("sharedPrecompsDir"))
@@ -183,7 +183,7 @@ class XcodeBuildSpecTest {
 
 
 	@Test
-	void testBundleNameSuffix() {
+	void testMergeBundleNameSuffix() {
 		parentBuildSpec.bundleNameSuffix = "bundleNameSuffix"
 		assertThat(buildSpec.bundleNameSuffix, is("bundleNameSuffix"));
 	}
@@ -204,6 +204,8 @@ class XcodeBuildSpecTest {
 	}
 
 
+
+
 	@Test
 	void init() {
 
@@ -212,7 +214,6 @@ class XcodeBuildSpecTest {
 
 		buildSpec.sdk = "iphoneos"
 		assertThat(buildSpec.sdk, is("iphoneos"))
-
 
 	}
 
