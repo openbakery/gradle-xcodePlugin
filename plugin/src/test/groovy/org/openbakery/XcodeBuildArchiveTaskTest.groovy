@@ -47,7 +47,7 @@ class XcodeBuildArchiveTaskTest {
 		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
 
-		buildOutputDirectory = new File(project.xcodebuild.symRoot, "Debug-" + XcodePlugin.SDK_IPHONEOS)
+		buildOutputDirectory = new File(xcodeBuildArchiveTask.buildSpec.symRoot, "Debug-" + XcodePlugin.SDK_IPHONEOS)
 		buildOutputDirectory.mkdirs()
 
 		appDirectory = new File(buildOutputDirectory, "Example.app")

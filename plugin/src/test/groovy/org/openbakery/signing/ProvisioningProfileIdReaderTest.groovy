@@ -43,7 +43,7 @@ class ProvisioningProfileIdReaderTest {
         packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
 
 
-        buildOutputDirectory = new File(project.xcodebuild.symRoot, "Debug")
+        buildOutputDirectory = new File(packageTask.buildSpec.symRoot, "Debug")
         buildOutputDirectory.mkdirs()
 
         appDirectory = new File(buildOutputDirectory, "Example.app")

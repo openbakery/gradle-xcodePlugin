@@ -130,14 +130,14 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.derivedDataPath = new File(currentDir + "${File.separator}myDerivedDataPath")
 		project.xcodebuild.dstRoot = new File(currentDir + "${File.separator}mydst")
 		project.xcodebuild.objRoot = new File(currentDir + "${File.separator}myobj")
-		project.xcodebuild.symRoot = new File(currentDir + "${File.separator}mysym")
+		xcodeBuildTask.buildSpec.symRoot = new File(currentDir + "${File.separator}mysym")
 		project.xcodebuild.sharedPrecompsDir = new File(currentDir + "${File.separator}myshared")
 
 		expectedCommandList.add("-derivedDataPath")
 		expectedCommandList.add(project.xcodebuild.derivedDataPath.absolutePath)
 		expectedCommandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 		expectedCommandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
-		expectedCommandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
+		expectedCommandList.add("SYMROOT=" + xcodeBuildTask.buildSpec.symRoot.absolutePath)
 		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)

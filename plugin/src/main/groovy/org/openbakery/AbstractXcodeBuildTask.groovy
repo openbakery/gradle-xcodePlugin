@@ -96,7 +96,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		commandList.add(project.xcodebuild.derivedDataPath.absolutePath)
 		commandList.add("DSTROOT=" + project.xcodebuild.dstRoot.absolutePath)
 		commandList.add("OBJROOT=" + project.xcodebuild.objRoot.absolutePath)
-		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
+		commandList.add("SYMROOT=" + this.buildSpec.symRoot.absolutePath)
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 

@@ -42,7 +42,7 @@ class XcodeBuildArchiveTaskOSXTest {
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 
-		buildOutputDirectory = new File(project.xcodebuild.symRoot, "Debug")
+		buildOutputDirectory = new File(xcodeBuildArchiveTask.buildSpec.symRoot, "Debug")
 		buildOutputDirectory.mkdirs()
 
 		appDirectory = new File(buildOutputDirectory, "Example.app")

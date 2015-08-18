@@ -107,7 +107,8 @@ class XcodeBuildSpecTest {
 		assertThat(buildSpec.sdk, is(equalTo("sdk")));
 		assertThat(buildSpec.ipaFileName, is(equalTo("ipaFileName")));
 		assertThat(buildSpec.workspace, is(equalTo("workspace")));
-		assertThat(buildSpec.symRoot, is(equalTo("symRoot")));
+		assertThat(buildSpec.symRoot, is(instanceOf(File)));
+		assertThat(buildSpec.symRoot.absolutePath, endsWith("symRoot"));
 		assertThat(buildSpec.devices, is(Devices.PAD));
 		assertThat(buildSpec.productName, is(equalTo("productName")));
 		assertThat(buildSpec.infoPlist, is(equalTo("infoPlist")));

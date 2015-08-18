@@ -10,7 +10,7 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 
 
 	String configurationPathForTarget(String target) {
-     return (project.xcodebuild.symRoot.path + "/" + project.xcodebuild.configuration + "-" + target)
+     return (this.buildSpec.symRoot.path + "/" + project.xcodebuild.configuration + "-" + target)
  }
 
 	String libPathForTarget(String target) {
@@ -54,7 +54,7 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 
         if(iosLib.exists() && simLib.exists()) {
             try {
-                def uniLib = new File(project.xcodebuild.symRoot.path + "/" + project.xcodebuild.configuration + "-universal")
+                def uniLib = new File(this.buildSpec.symRoot.path + "/" + project.xcodebuild.configuration + "-universal")
                 uniLib.exists() ? uniLib.deleteDir() : uniLib.mkdirs()
 
                 def iosHeaders = new FileXcodePlugin.SDK_IPHONEOStionPathForTarget("iphoneos") + "/include")

@@ -26,7 +26,7 @@ class XcodeBuildSpec {
 	String sdk
 	String ipaFileName
 	String workspace
-	String symRoot
+	Object symRoot
 	String productName
 	Devices devices
 	String infoPlist
@@ -145,12 +145,12 @@ class XcodeBuildSpec {
 	}
 
 
-	String getSymRoot() {
-		if (!StringUtils.isEmpty(this.symRoot)) {
-			return this.symRoot
+	File getSymRoot() {
+		if (this.symRoot != null) {
+			return project.file(this.symRoot)
 		}
 		if (this.parent != null) {
-			return this.parent.symRoot
+			return this.parent.getSymRoot()
 		}
 		return this.project.getFileResolver().withBaseDir(this.project.getBuildDir()).resolve("sym")
 	}

@@ -36,7 +36,6 @@ class XcodeBuildPluginExtension {
 
 	Object dstRoot
 	Object objRoot
-	Object symRoot
 	Object sharedPrecompsDir
 	Object derivedDataPath
 	String sourceDirectory = '.'
@@ -80,10 +79,6 @@ class XcodeBuildPluginExtension {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("obj")
 		}
 
-		this.symRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("sym")
-		}
-
 		this.sharedPrecompsDir = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("shared")
 		}
@@ -116,9 +111,7 @@ class XcodeBuildPluginExtension {
 		this.objRoot = objRoot
 	}
 
-	void setSymRoot(File symRoot) {
-		this.symRoot = symRoot
-	}
+
 
 	void setSharedPrecompsDir(File sharedPrecompsDir) {
 		this.sharedPrecompsDir = sharedPrecompsDir
@@ -130,10 +123,6 @@ class XcodeBuildPluginExtension {
 
 	File getObjRoot() {
 		return project.file(objRoot)
-	}
-
-	File getSymRoot() {
-		return project.file(symRoot)
 	}
 
 	File getSharedPrecompsDir() {
@@ -425,6 +414,11 @@ class XcodeBuildPluginExtension {
 
 	void setProductType(String productType) {
 		this.buildSpec.setProductType(productType)
+	}
+
+
+	void setSymRoot(Object symRoot) {
+		this.buildSpec.setSymRoot(symRoot)
 	}
 
 }
