@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.Devices
 import org.openbakery.VariableResolver
+import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -195,9 +196,9 @@ class XcodeBuildSpec {
 			return this.productType
 		}
 		if (this.parent != null) {
-			return this.parent.productType
+			return this.parent.getProductType()
 		}
-		return null
+		return "app"
 	}
 
 	// TODO: replace this with the PListHelper
@@ -224,7 +225,7 @@ class XcodeBuildSpec {
 			return this.variableResolver.resolve(this.bundleName)
 		}
 		if (this.parent != null) {
-			return this.parent.bundleName
+			return this.parent.getBundleName()
 		}
 		String name = getValueFromInfoPlist("CFBundleName")
 		if (!StringUtils.isEmpty(name)) {
@@ -232,5 +233,12 @@ class XcodeBuildSpec {
 		}
 		return this.productName
 	}
+
+
+	File getApplicationBundle() {
+		return new File(this.getOutputPath(), getBundleName() + "." + getProductType())
+	}
+
+
 
 }

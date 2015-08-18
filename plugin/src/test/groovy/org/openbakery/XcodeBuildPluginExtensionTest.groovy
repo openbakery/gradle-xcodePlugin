@@ -131,7 +131,7 @@ class XcodeBuildPluginExtensionTest {
 		extension.productType = "appex"
 		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
 
-		String applicationBundle = extension.getApplicationBundle().absolutePath;
+		String applicationBundle = extension.buildSpec.getApplicationBundle().absolutePath;
 		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleTodayWidget.appex")
 
 	}
@@ -148,7 +148,7 @@ class XcodeBuildPluginExtensionTest {
 		extension.productName = "Example"
 		extension.infoPlist = "../../example/iOS/Example/Example/Example-Info.plist"
 
-		String applicationBundle = extension.getApplicationBundle().absolutePath;
+		String applicationBundle = extension.buildSpec.getApplicationBundle().absolutePath;
 		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/Example.app")
 
 	}

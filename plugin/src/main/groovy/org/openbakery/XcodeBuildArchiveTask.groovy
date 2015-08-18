@@ -23,7 +23,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	public static final String ARCHIVE_FOLDER = "archive"
 
-    XcodeBuildArchiveTask() {
+	File archiveDirectory
+
+	XcodeBuildArchiveTask() {
 		super()
 
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
@@ -43,12 +45,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	def getiOSIcons() {
 		ArrayList<String> icons = new ArrayList<>();
 
-		File applicationBundle = project.xcodebuild.applicationBundle
+		File applicationBundle = this.buildSpec.applicationBundle
 		def fileList = applicationBundle.list(
 						[accept: { d, f -> f ==~ /Icon(-\d+)??\.png/ }] as FilenameFilter // matches Icon.png or Icon-72.png
 		).toList()
 
-		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
+		def applicationPath = "Applications/" + this.buildSpec.applicationBundle.name
 
 		for (String item in fileList) {
 			icons.add(applicationPath + "/" + item)
@@ -68,7 +70,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			return icons
 		}
 
-		def iconPath = "Applications/" + project.xcodebuild.applicationBundle.name + "/Contents/Resources/" + icnsFileName + ".icns"
+		def iconPath = "Applications/" + this.buildSpec.applicationBundle.name + "/Contents/Resources/" + icnsFileName + ".icns"
 		icons.add(iconPath)
 
 		return icons
@@ -82,17 +84,16 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		File appInfoPlist
 		if (project.xcodebuild.isSdk(XcodePlugin.SDK_MACOSX)) {
-			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Contents/Info.plist")
+			appInfoPlist = new File(this.buildSpec.applicationBundle, "Contents/Info.plist")
 		} else {
-			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
+			appInfoPlist = new File(this.buildSpec.applicationBundle, "Info.plist")
 		}
 
 
 		def name = this.buildSpec.bundleName
 		def schemeName = name
-		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
+		def applicationPath = "Applications/" + this.buildSpec.applicationBundle.name
 		def bundleIdentifier = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIdentifier")
-		int time = System.currentTimeMillis() / 1000;
 
 		def creationDate = formatDate(new Date());
 
@@ -165,11 +166,11 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	def createFrameworks(def applicationsDirectory) {
 
-		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
+		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + this.buildSpec.applicationBundle.name + "/Frameworks")
 
 
 		if (frameworksPath.exists()) {
-			File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
+			File swiftSupportDirectory = new File(this.archiveDirectory, "SwiftSupport");
 			if (!swiftSupportDirectory.exists()) {
 				swiftSupportDirectory.mkdirs()
 			}
@@ -195,6 +196,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	void executeTask() {
 
+		this.archiveDirectory = createArchiveDirectory()
+
 		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.debug("Create zip archive")
 
@@ -206,22 +209,22 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			zipFileName += ".zip"
 
 			def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
-			def baseDirectory = project.xcodebuild.applicationBundle.parentFile
+			def baseDirectory = this.buildSpec.applicationBundle.parentFile
 
-			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle)
+			createZip(zipFile, baseDirectory, this.buildSpec.applicationBundle)
 			return
 		}
 
 		logger.debug("Create xcarchive")
 
 		// create xcarchive
-		def applicationsDirectory = new File(project.xcodebuild.archiveDirectory, "Products/Applications")
+		def applicationsDirectory = new File(this.archiveDirectory, "Products/Applications")
 		applicationsDirectory.mkdirs()
 
-		copy(project.xcodebuild.applicationBundle, applicationsDirectory)
+		copy(this.buildSpec.applicationBundle, applicationsDirectory)
 
 
-		def dSymDirectory = new File(project.xcodebuild.archiveDirectory, "dSYMs")
+		def dSymDirectory = new File(this.archiveDirectory, "dSYMs")
 		dSymDirectory.mkdirs()
 
 		List<File> appBundles = getAppBundles(this.buildSpec.outputPath)
@@ -234,12 +237,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 
-		createInfoPlist(project.xcodebuild.archiveDirectory)
+		createInfoPlist(this.archiveDirectory)
 
-		createFrameworks(project.xcodebuild.archiveDirectory)
+		createFrameworks(this.archiveDirectory)
 
 		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
-			File applicationFolder = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+			File applicationFolder = new File(this.archiveDirectory, "Products/Applications/" + this.buildSpec.applicationBundle.name)
 			convertInfoPlistToBinary(applicationFolder)
 		}
 
@@ -282,4 +285,21 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		setValueForPlist(new File(appDirectory, "Info.plist"), "Delete: CFBundleResourceSpecification")
 
 	}
+
+
+
+	File createArchiveDirectory() {
+
+		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  this.buildSpec.bundleName
+
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
+		}
+		archiveDirectoryName += ".xcarchive"
+
+		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
+		archiveDirectory.mkdirs()
+		return archiveDirectory
+	}
+
 }

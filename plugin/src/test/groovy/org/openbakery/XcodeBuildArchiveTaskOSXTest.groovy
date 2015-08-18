@@ -100,6 +100,8 @@ class XcodeBuildArchiveTaskOSXTest {
 		// Info.plist from Example.app
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 
+
+		//xcodeBuildArchiveTask.configureTask()
 		// add key CFBundleIconFile
 		xcodeBuildArchiveTask.plistHelper.setValueForPlist(infoPlistInAppFile, "CFBundleIconFile", "icon")
 

@@ -47,7 +47,6 @@ class XcodeBuildPluginExtension {
 	String version = null
 	Map<String, String> environment = null
 	String productName = null
-	String productType = "app"
 
 
 	List<Destination> availableSimulators = []
@@ -375,26 +374,7 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	File getApplicationBundle() {
-		return new File(this.buildSpec.getOutputPath(), this.buildSpec.bundleName + "." + this.productType)
-	}
 
-
-
-	File getArchiveDirectory() {
-
-		// TODO: Move me to the build spec
-		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  this.buildSpec.bundleName
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
-		}
-		archiveDirectoryName += ".xcarchive"
-
-		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
-		archiveDirectory.mkdirs()
-		return archiveDirectory
-	}
 
 
 	boolean isSdk(String expectedSDK) {
@@ -441,6 +421,10 @@ class XcodeBuildPluginExtension {
 
 	void setBundleName(String bundleName) {
 		this.buildSpec.setBundleName(bundleName)
+	}
+
+	void setProductType(String productType) {
+		this.buildSpec.setProductType(productType)
 	}
 
 }

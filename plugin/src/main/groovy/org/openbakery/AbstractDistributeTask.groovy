@@ -123,7 +123,6 @@ abstract class AbstractDistributeTask extends AbstractXcodeTask {
 	}
 
 
-
 	def getArchiveDirectory() {
 		if (archiveDirectory != null) {
 			return archiveDirectory;
@@ -142,6 +141,8 @@ abstract class AbstractDistributeTask extends AbstractXcodeTask {
 		return new File(archiveDirectory, fileList.get(0))
 
 	}
+
+
 
 	def getApplicationNameFromArchive() {
 		return getArchiveDirectory().name - ".xcarchive"

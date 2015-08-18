@@ -173,7 +173,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	List<File> getAppBundles(File appPath) {
-		return getAppBundles(appPath, project.xcodebuild.applicationBundle.name)
+		return getAppBundles(appPath, this.buildSpec.applicationBundle.name)
 	}
 
 	List<File> getAppBundles(File appPath, String applicationBundleName) {
