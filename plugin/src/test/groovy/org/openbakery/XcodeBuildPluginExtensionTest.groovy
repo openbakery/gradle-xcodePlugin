@@ -17,6 +17,7 @@ class XcodeBuildPluginExtensionTest {
 	XcodeBuildPluginExtension extension;
 	GMockController mockControl
 	CommandRunner commandRunnerMock
+	PlistHelper plistHelperMock
 
 	File xcodebuild6_1
 	File xcodebuild6_0
@@ -26,6 +27,7 @@ class XcodeBuildPluginExtensionTest {
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
+		plistHelperMock = mockControl.mock(PlistHelper)
 
 		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -35,6 +37,7 @@ class XcodeBuildPluginExtensionTest {
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunnerMock
 		extension.buildSpec.commandRunner = commandRunnerMock;
+		extension.buildSpec.plistHelper = plistHelperMock
 		extension.infoPlist = "Info.plist";
 
 
@@ -175,11 +178,7 @@ class XcodeBuildPluginExtensionTest {
 
 	void mockValueFromPlist(String key, String value) {
 		File infoPlist = new File(project.projectDir, "Info.plist")
-
-		FileUtils.writeStringToFile(infoPlist, "dummy")
-
-		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :" + key]
-		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
+		plistHelperMock.getValueFromPlist(infoPlist, key).returns(value).atLeastOnce()
 	}
 
 
