@@ -7,8 +7,8 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
 
 
 /**
@@ -27,7 +27,7 @@ class ProvisioningProfileIdReaderTest {
     GMockController mockControl
     CommandRunner commandRunnerMock
 
-    @BeforeMethod
+    @Before
     void setup() {
 
         projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -73,7 +73,7 @@ class ProvisioningProfileIdReaderTest {
     }
 
 
-    @Test(expectedExceptions = [IllegalArgumentException.class])
+    @Test(expected = IllegalArgumentException.class)
     void readProfileHasExpired() {
         new ProvisioningProfileIdReader("src/test/Resource/expired.mobileprovision", project);
     }

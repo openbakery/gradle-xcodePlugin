@@ -5,8 +5,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.XcodePlugin
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
 
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.assertThat
@@ -21,7 +21,7 @@ class SimulatorsCreateTaskTest {
 	Project project
 	File projectDir
 
-	@BeforeMethod
+	@Before
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")

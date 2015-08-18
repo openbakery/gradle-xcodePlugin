@@ -4,11 +4,11 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Before
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.signing.KeychainCleanupTask
-import org.testng.annotations.BeforeClass
-import org.testng.annotations.Test
+import org.junit.Test
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,8 +28,8 @@ class KeychainCleanupTaskTest {
 	File keychainDestinationFile
 	File certificateFile
 
-	@BeforeClass
-	def setup() {
+	@Before
+	void setup() {
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile

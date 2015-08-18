@@ -9,9 +9,9 @@ import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -34,7 +34,7 @@ class PackageTaskTest {
 	File payloadAppDirectory
 	File archiveDirectory
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -68,7 +68,7 @@ class PackageTaskTest {
 	}
 
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
@@ -394,13 +394,13 @@ class PackageTaskTest {
 		}
 	}
 
-	@Test(expectedExceptions = IllegalArgumentException)
+	@Test(expected = IllegalArgumentException)
 	void hasNoSigning() {
 		project.xcodebuild.signing = null
 		packageTask.executeTask()
 	}
 
-	@Test(expectedExceptions = IllegalArgumentException)
+	@Test(expected = IllegalArgumentException)
 	void hasNoSigningIdentity() {
 		project.xcodebuild.signing.identity = null
 		packageTask.executeTask()

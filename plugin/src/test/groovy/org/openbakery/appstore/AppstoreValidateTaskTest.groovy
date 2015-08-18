@@ -6,9 +6,9 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import static org.hamcrest.Matchers.anything
 
@@ -26,8 +26,8 @@ class AppstoreValidateTaskTest {
 	CommandRunner commandRunnerMock
 	File ipaBundle;
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
@@ -48,12 +48,12 @@ class AppstoreValidateTaskTest {
 
 	}
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
-	@Test(expectedExceptions = IllegalStateException.class)
+	@Test(expected = IllegalStateException.class)
 	void ipaMissing() {
 		FileUtils.deleteDirectory(project.projectDir)
 
@@ -80,7 +80,7 @@ class AppstoreValidateTaskTest {
 		}
 	}
 
-	@Test(expectedExceptions = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	void testPasswordMissing() {
 		project.appstore.username = "me@example.com"
 
@@ -89,7 +89,7 @@ class AppstoreValidateTaskTest {
 		}
 	}
 
-	@Test(expectedExceptions = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	void testUsernameMissing() {
 
 		mockControl.play {

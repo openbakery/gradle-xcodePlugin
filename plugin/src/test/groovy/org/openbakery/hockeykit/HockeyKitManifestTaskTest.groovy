@@ -7,9 +7,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by rene on 12.11.14.
@@ -25,7 +25,7 @@ class HockeyKitManifestTaskTest {
 
 	File infoPlist
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -60,7 +60,7 @@ class HockeyKitManifestTaskTest {
 	}
 
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}

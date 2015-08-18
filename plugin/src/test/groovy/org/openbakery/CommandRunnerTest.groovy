@@ -1,7 +1,8 @@
 package org.openbakery
 
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
+import org.junit.Before
 
 /**
  * Created by rene on 24.07.14.
@@ -11,8 +12,8 @@ class CommandRunnerTest {
 	CommandRunner commandRunner;
 
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		commandRunner = new CommandRunner()
 	}
 

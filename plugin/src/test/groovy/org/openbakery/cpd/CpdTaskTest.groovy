@@ -9,9 +9,9 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.stubs.AntBuilderStub
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*
@@ -27,7 +27,7 @@ class CpdTaskTest {
 	CommandRunner commandRunnerMock
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -46,7 +46,7 @@ class CpdTaskTest {
 		cpdTask.setProperty("commandRunner", commandRunnerMock)
 	}
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}

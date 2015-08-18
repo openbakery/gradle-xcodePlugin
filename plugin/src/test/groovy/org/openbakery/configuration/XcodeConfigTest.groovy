@@ -9,9 +9,9 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
 import org.openbakery.XcodePlugin
 import org.openbakery.internal.XcodeBuildSpec
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * User: rene
@@ -26,8 +26,8 @@ class XcodeConfigTest {
 	CommandRunner commandRunnerMock
 
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
@@ -48,8 +48,8 @@ class XcodeConfigTest {
 
 	}
 
-	@AfterMethod
-	def cleanup() {
+	@After
+	void cleanup() {
 		FileUtils.deleteDirectory(new File("build/Platforms"))
 		FileUtils.deleteDirectory(new File("build/Contents"))
 	}

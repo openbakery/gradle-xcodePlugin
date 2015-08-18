@@ -5,9 +5,9 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by Stefan Gugarel on 04/02/15.
@@ -25,7 +25,7 @@ class XcodeBuildArchiveTaskOSXTest {
 	GMockController mockControl
 	CommandRunner commandRunnerMock
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -53,10 +53,9 @@ class XcodeBuildArchiveTaskOSXTest {
 	}
 
 
-	@AfterMethod
-	def cleanAfterTest() {
-
-        FileUtils.deleteDirectory(projectDir)
+	@After
+	void cleanAfterTest() {
+		FileUtils.deleteDirectory(projectDir)
 	}
 
 

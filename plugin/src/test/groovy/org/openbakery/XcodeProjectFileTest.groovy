@@ -4,9 +4,9 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.internal.XcodeBuildSpec
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by rene on 17.02.15.
@@ -18,7 +18,7 @@ class XcodeProjectFileTest {
 	Project project
 	XcodeBuildSpec buildSpec
 
-	@BeforeMethod
+	@Before
 	void setUp() {
 
 		File projectDir = new File("../example/iOS/Example")

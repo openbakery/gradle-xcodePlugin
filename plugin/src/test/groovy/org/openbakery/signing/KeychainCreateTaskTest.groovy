@@ -4,12 +4,12 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.After
+import org.junit.Before
 import org.openbakery.CommandRunner
 import org.openbakery.Version
 import org.openbakery.signing.KeychainCreateTask
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeClass
-import org.testng.annotations.Test
+import org.junit.Test
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,8 +28,8 @@ class KeychainCreateTaskTest {
 	File keychainDestinationFile
 	File certificateFile
 
-	@BeforeClass
-	def setup() {
+	@Before
+	void setup() {
 		commandRunnerMock = mockControl.mock(CommandRunner)
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
@@ -42,8 +42,8 @@ class KeychainCreateTaskTest {
 		keychainDestinationFile = new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName())
 	}
 
-	@AfterTest
-	def cleanAfterTest() {
+	@After
+	void cleanAfterTest() {
 		certificateFile.delete();
 		new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName()).delete()
 		project.xcodebuild.signing.keychainPathInternal.delete()

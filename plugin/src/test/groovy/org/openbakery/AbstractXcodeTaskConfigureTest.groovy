@@ -2,8 +2,8 @@ package org.openbakery
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
@@ -17,8 +17,8 @@ class AbstractXcodeTaskConfigureTest {
 
 	Project project
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 
 		File projectDir = new File("../example/iOS/Example")
 

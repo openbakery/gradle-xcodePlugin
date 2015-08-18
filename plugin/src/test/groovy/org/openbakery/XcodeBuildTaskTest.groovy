@@ -21,8 +21,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.LoggerStub
 import org.slf4j.Logger
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
@@ -39,8 +39,8 @@ class XcodeBuildTaskTest {
 	String currentDir = new File('').getAbsolutePath()
 	String projectDir
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
@@ -63,7 +63,7 @@ class XcodeBuildTaskTest {
 		expectedCommandList = ["xcodebuild"]
 	}
 
-	@Test(expectedExceptions = [IllegalArgumentException.class])
+	@Test(expected = IllegalArgumentException.class)
 	public void throw_IllegalArgumentException_when_no_scheme_or_target_given() {
 		xcodeBuildTask.executeTask()
 	}

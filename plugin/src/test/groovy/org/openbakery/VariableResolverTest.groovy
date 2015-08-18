@@ -2,9 +2,9 @@ package org.openbakery
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Before
 import org.openbakery.internal.XcodeBuildSpec
-import org.testng.annotations.BeforeTest
-import org.testng.annotations.Test
+import org.junit.Test
 
 /**
  * Created by rene on 16.02.15.
@@ -14,7 +14,7 @@ class VariableResolverTest {
 	VariableResolver resolver;
 	Project project;
 
-	@BeforeTest
+	@Before
 	void setUp() {
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")

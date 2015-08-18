@@ -5,9 +5,9 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Devices
 import org.openbakery.XcodePlugin
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
@@ -21,7 +21,7 @@ class XcodeBuildSpecTest {
 	XcodeBuildSpec parentBuildSpec
 	Project project
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -33,8 +33,8 @@ class XcodeBuildSpecTest {
 
 	}
 
-	@AfterMethod
-	def cleanup() {
+	@After
+	void cleanup() {
 		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		FileUtils.deleteDirectory(projectDir)
 	}

@@ -7,9 +7,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.internal.XcodeBuildSpec
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by rene on 10.03.15.
@@ -24,8 +24,8 @@ class XcodeConfigOSXTest {
 
 
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
@@ -44,8 +44,8 @@ class XcodeConfigOSXTest {
 
 	}
 
-	@AfterMethod
-	def cleanup() {
+	@After
+	void cleanup() {
 		FileUtils.deleteDirectory(new File("build/Platforms"))
 		FileUtils.deleteDirectory(new File("build/Contents"))
 	}

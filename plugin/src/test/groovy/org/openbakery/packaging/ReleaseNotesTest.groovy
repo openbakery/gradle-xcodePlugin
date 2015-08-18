@@ -5,9 +5,9 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.ReleaseNotesTask
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.After
+import org.junit.Test
 
 /**
  * Created by Stefan on 25/02/15.
@@ -18,7 +18,7 @@ class ReleaseNotesTest {
 	Project project
 	ReleaseNotesTask releaseNotesTask
 
-	@BeforeMethod
+	@Before
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -42,7 +42,7 @@ class ReleaseNotesTest {
 		assert(releaseNotesFile.exists())
 	}
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(projectDir)
 	}
