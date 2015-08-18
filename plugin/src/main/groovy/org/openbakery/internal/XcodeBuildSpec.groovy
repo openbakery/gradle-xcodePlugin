@@ -35,6 +35,7 @@ class XcodeBuildSpec {
 	String infoPlist
 	String productType
 	String bundleName
+	String bundleNameSuffix
 
 
 
@@ -274,6 +275,14 @@ class XcodeBuildSpec {
 		return new File(this.getOutputPath(), getBundleName() + "." + getProductType())
 	}
 
-
+	String getBundleNameSuffix() {
+		if (!StringUtils.isEmpty(this.bundleNameSuffix)) {
+			return this.bundleNameSuffix
+		}
+		if (this.parent != null) {
+			return this.parent.bundleNameSuffix
+		}
+		return null
+	}
 
 }

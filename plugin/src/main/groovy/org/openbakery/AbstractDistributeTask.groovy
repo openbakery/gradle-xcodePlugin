@@ -35,8 +35,8 @@ abstract class AbstractDistributeTask extends AbstractXcodeTask {
 
 
 	File getDestinationFile(File outputDirectory, String extension) {
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			return new File(outputDirectory, getApplicationNameFromArchive() + project.xcodebuild.bundleNameSuffix + extension)
+		if (this.buildSpec.bundleNameSuffix != null) {
+			return new File(outputDirectory, getApplicationNameFromArchive() + this.buildSpec.bundleNameSuffix + extension)
 		}
 		return new File(outputDirectory, getApplicationNameFromArchive() + extension)
 	}

@@ -203,8 +203,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 			// create zip archive
 			String zipFileName = this.buildSpec.bundleName
-			if (project.xcodebuild.bundleNameSuffix != null) {
-				zipFileName += project.xcodebuild.bundleNameSuffix
+			if (this.buildSpec.bundleNameSuffix != null) {
+				zipFileName += this.buildSpec.bundleNameSuffix
 			}
 			zipFileName += ".zip"
 
@@ -292,8 +292,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  this.buildSpec.bundleName
 
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
+		if (this.buildSpec.bundleNameSuffix != null) {
+			archiveDirectoryName += this.buildSpec.bundleNameSuffix
 		}
 		archiveDirectoryName += ".xcarchive"
 

@@ -255,7 +255,7 @@ class XcodePlugin implements Plugin<Project> {
 				project.xcodebuild.additionalParameters = project['xcodebuild.additionalParameters']
 			}
 			if (project.hasProperty('xcodebuild.bundleNameSuffix')) {
-				project.xcodebuild.bundleNameSuffix = project['xcodebuild.bundleNameSuffix']
+				this.buildSpec.bundleNameSuffix = project['xcodebuild.bundleNameSuffix']
 			}
 			if (project.hasProperty('xcodebuild.arch')) {
 				project.xcodebuild.arch = project['xcodebuild.arch']

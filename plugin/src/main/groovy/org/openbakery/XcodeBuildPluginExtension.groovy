@@ -38,11 +38,9 @@ class XcodeBuildPluginExtension {
 	String sourceDirectory = '.'
 	Signing signing = null
 	def additionalParameters = null
-	String bundleNameSuffix = null
 	List<String> arch = null
 	String version = null
 	Map<String, String> environment = null
-	String productName = null
 
 
 	List<Destination> availableSimulators = []
@@ -391,6 +389,10 @@ class XcodeBuildPluginExtension {
 
 	void setSharedPrecompsDir(File sharedPrecompsDir) {
 		this.buildSpec.setSharedPrecompsDir(sharedPrecompsDir)
+	}
+
+	void setBundleNameSuffix(String bundleNameSuffix) {
+		this.buildSpec.setBundleNameSuffix(bundleNameSuffix)
 	}
 
 }
