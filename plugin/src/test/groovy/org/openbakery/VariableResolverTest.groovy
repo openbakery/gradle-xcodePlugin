@@ -2,6 +2,7 @@ package org.openbakery
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.internal.XcodeBuildSpec
 import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 
@@ -23,7 +24,10 @@ class VariableResolverTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 
-		resolver = new VariableResolver(project);
+		XcodeBuildSpec buildSpec = new XcodeBuildSpec(project, project.xcodebuild.buildSpec)
+
+
+		resolver = new VariableResolver(projectDir, buildSpec);
 	}
 
 	@Test

@@ -32,8 +32,7 @@ class HockeyKitManifestTask extends AbstractHockeyKitTask {
 		this.description = "Creates the manifest that is needed to deploy on a HockeyKit Server"
 	}
 
-	@TaskAction
-	def createManifest() {
+	void executeTask() {
 
 
 		def infoPlist = getAppBundleInfoPlist()

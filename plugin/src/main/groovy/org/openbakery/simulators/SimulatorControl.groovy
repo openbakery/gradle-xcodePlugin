@@ -48,6 +48,7 @@ class SimulatorControl {
 
 	Project project
 
+	// Todo change to build spec!!!
 	public SimulatorControl(Project project) {
 		this.project = project
 	}

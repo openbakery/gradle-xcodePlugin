@@ -55,7 +55,7 @@ class KeychainRemoveFromSearchListTaskTest {
 	 }
 
 		task.commandRunner = commandRunnerMock.proxyInstance()
-		task.remove()
+		task.executeTask()
 		commandRunnerMock.verify task.commandRunner
 
 

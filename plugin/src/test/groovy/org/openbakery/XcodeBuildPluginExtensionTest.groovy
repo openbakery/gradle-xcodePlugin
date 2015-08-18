@@ -7,8 +7,6 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
-import static java.util.Arrays.asList
-
 /**
  * Created by rene on 24.07.14.
  */
@@ -36,6 +34,7 @@ class XcodeBuildPluginExtensionTest {
 
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunnerMock
+		extension.buildSpec.commandRunner = commandRunnerMock;
 		extension.infoPlist = "Info.plist";
 
 
@@ -122,25 +121,9 @@ class XcodeBuildPluginExtensionTest {
 
 
 	@Test
-	void testWorkspaceNil() {
-		assert extension.workspace == null;
-	}
-
-	@Test
-	void testWorkspace() {
-
-		File workspace = new File(project.projectDir , "Test.xcworkspace")
-		workspace.mkdirs()
-		assert extension.workspace == "Test.xcworkspace";
-
-	}
-
-
-
-	@Test
 	void testApplicationBundleForWidget() {
 		extension.commandRunner = new CommandRunner()
-		File projectDir =  new File("../example/Example")
+		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.sdk = XcodePlugin.SDK_IPHONEOS
@@ -155,7 +138,7 @@ class XcodeBuildPluginExtensionTest {
 
 	@Test
 	void testApplicationBundle() {
-		File projectDir =  new File("../example/Example")
+		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = new CommandRunner()
@@ -163,7 +146,7 @@ class XcodeBuildPluginExtensionTest {
 		extension.sdk = XcodePlugin.SDK_IPHONEOS
 		extension.target = "Example"
 		extension.productName = "Example"
-		extension.infoPlist = "../../example/Example/Example/Example-Info.plist"
+		extension.infoPlist = "../../example/iOS/Example/Example/Example-Info.plist"
 
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
 		assert applicationBundle.endsWith("build/sym/Debug-iphoneos/Example.app")
@@ -193,6 +176,8 @@ class XcodeBuildPluginExtensionTest {
 	void mockValueFromPlist(String key, String value) {
 		File infoPlist = new File(project.projectDir, "Info.plist")
 
+		FileUtils.writeStringToFile(infoPlist, "dummy")
+
 		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :" + key]
 		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
 	}
@@ -206,7 +191,7 @@ class XcodeBuildPluginExtensionTest {
 		mockValueFromPlist("CFBundleName", "");
 
 		mockControl.play {
-			String bundleName = extension.getBundleName();
+			String bundleName = extension.buildSpec.getBundleName();
 			assert bundleName.equals("TestApp1")
 		}
 	}
@@ -217,7 +202,7 @@ class XcodeBuildPluginExtensionTest {
 		mockValueFromPlist("CFBundleName", "TestApp2");
 
 		mockControl.play {
-			String bundleName = extension.getBundleName();
+			String bundleName = extension.buildSpec.getBundleName();
 			assert bundleName.equals("TestApp2")
 		}
 	}
@@ -293,14 +278,14 @@ class XcodeBuildPluginExtensionTest {
 	void testIsSDK() {
 
 		extension.sdk = XcodePlugin.SDK_MACOSX
-		assert extension.isSDK(XcodePlugin.SDK_MACOSX)
+		assert extension.isSdk(XcodePlugin.SDK_MACOSX)
 
 		extension.sdk = "iphoneos8.1"
-		assert extension.isSDK(XcodePlugin.SDK_IPHONEOS)
+		assert extension.isSdk(XcodePlugin.SDK_IPHONEOS)
 
 
 		extension.sdk = "iphonesimulator"
-		assert extension.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+		assert extension.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
 
 	}
 }

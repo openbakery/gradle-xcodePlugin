@@ -73,10 +73,10 @@ class HockeyKitArchiveTaskTest {
 		commandRunnerMock.runWithResult(commandList).returns("com.example.Test")
 
 		mockControl.play {
-			hockeyKitArchiveTask.archive()
+			hockeyKitArchiveTask.executeTask()
 		}
 
-		hockeyKitArchiveTask.archive()
+		hockeyKitArchiveTask.executeTask()
 
 		File expectedIpa = new File(project.buildDir, "hockeykit/com.example.test/123/Test.ipa")
 		assert expectedIpa.exists()
@@ -94,7 +94,7 @@ class HockeyKitArchiveTaskTest {
 		commandRunnerMock.runWithResult(commandList).returns("com.example.Test")
 
 		mockControl.play {
-			hockeyKitArchiveTask.archive()
+			hockeyKitArchiveTask.executeTask()
 		}
 
 		File expectedIpa = new File(project.buildDir, "hockeykit/com.example.test/123/Test-SUFFIX.ipa")

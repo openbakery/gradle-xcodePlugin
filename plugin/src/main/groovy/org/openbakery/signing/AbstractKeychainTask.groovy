@@ -2,6 +2,7 @@ package org.openbakery.signing
 
 import org.apache.commons.lang.StringUtils
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildPluginExtension
 
 /**

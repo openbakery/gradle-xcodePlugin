@@ -35,8 +35,7 @@ class AppstoreUploadTask extends AbstractAppstoreTask {
 	}
 
 
-	@TaskAction
-	def upload() {
+	void executeTask() {
 		runAltool("--upload-app")
 	}
 

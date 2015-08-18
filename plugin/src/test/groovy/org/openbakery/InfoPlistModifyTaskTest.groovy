@@ -76,7 +76,7 @@ class InfoPlistModifyTaskTest {
 		mockCommand("Set :CFBundleIdentifier " + project.infoplist.bundleIdentifier)
 
 		mockControl.play {
-			task.prepare()
+			task.executeTask()
 		}
 
 	}
@@ -90,7 +90,7 @@ class InfoPlistModifyTaskTest {
 
 
 		mockControl.play {
-			task.prepare()
+			task.executeTask()
 		}
 
 	}
@@ -109,7 +109,7 @@ class InfoPlistModifyTaskTest {
 
 
 		mockControl.play {
-			task.prepare()
+			task.executeTask()
 		}
 
 	}
@@ -126,7 +126,7 @@ class InfoPlistModifyTaskTest {
 
 
 		mockControl.play {
-			task.prepare()
+			task.executeTask()
 		}
 
 	}
@@ -141,7 +141,7 @@ class InfoPlistModifyTaskTest {
 		mockCommand("Set :CFBundleShortVersionString 1.2.3")
 
 		mockControl.play {
-			task.prepare()
+			task.executeTask()
 		}
 
 	}

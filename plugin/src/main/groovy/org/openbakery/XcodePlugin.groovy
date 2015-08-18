@@ -29,7 +29,7 @@ import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
 
 import org.openbakery.cocoapods.CocoapodsTask
-import org.openbakery.configuration.XcodeConfigTask
+import org.openbakery.configuration.XcodeConfig
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
 import org.openbakery.coverage.CoverageTask
@@ -87,7 +87,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SIMULATORS_CLEAN_TASK_NAME = "simulatorsClean"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
-	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
 	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykitManifest"
 	public static final String HOCKEYKIT_ARCHIVE_TASK_NAME = "hockeykitArchive"
 	public static final String HOCKEYKIT_NOTES_TASK_NAME = "hockeykitNotes"
@@ -425,8 +424,8 @@ class XcodePlugin implements Plugin<Project> {
 		XcodeBuildTask xcodebuildTask = project.getTasks().create(XCODE_BUILD_TASK_NAME, XcodeBuildTask.class);
 		xcodebuildTask.setGroup(XCODE_GROUP_NAME);
 
-		XcodeConfigTask configTask = project.getTasks().create(XCODE_CONFIG_TASK_NAME, XcodeConfigTask.class);
-		configTask.setGroup(XCODE_GROUP_NAME);
+		//XcodeConfig configTask = project.getTasks().create(XCODE_CONFIG_TASK_NAME, XcodeConfig.class);
+		//configTask.setGroup(XCODE_GROUP_NAME);
 
 		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(xcodebuildTask);
 	}

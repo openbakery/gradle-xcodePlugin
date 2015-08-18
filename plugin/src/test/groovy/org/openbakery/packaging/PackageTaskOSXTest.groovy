@@ -155,7 +155,7 @@ class PackageTaskOSXTest {
 			mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
 		}
 
-		project.xcodebuild.outputPath.mkdirs()
+		project.xcodebuild.buildSpec.outputPath.mkdirs()
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class PackageTaskOSXTest {
 		mockExampleApp(false, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		// has to be same folder as signing for MacOSX
@@ -176,7 +176,7 @@ class PackageTaskOSXTest {
 		mockExampleApp(false, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 		assert appDirectory.exists()
 	}
@@ -187,7 +187,7 @@ class PackageTaskOSXTest {
 		mockExampleApp(false, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		assert !(new File(appDirectory, "ResourceRules.plist")).exists()
@@ -202,7 +202,7 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 	}
 
@@ -214,7 +214,7 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 	}
 
@@ -227,7 +227,7 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
@@ -243,7 +243,7 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
@@ -269,7 +269,7 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		File outputFile = new File(packageTask.outputPath, "Example.zip")

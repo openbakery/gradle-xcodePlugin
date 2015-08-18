@@ -69,8 +69,7 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 	}
 
 
-	@TaskAction
-	def upload() throws IOException {
+	void executeTask() {
 
 		if (project.hockeyapp.apiToken == null) {
 			throw new IllegalArgumentException("Cannot upload to HockeyApp because API Token is missing")

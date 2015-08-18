@@ -19,8 +19,7 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 
 
 
-	@TaskAction
-	def universalLibrary() {
+  void executeTask() {
 		def deviceLibrary = new File(libraryPathForTarget(XcodePlugin.SDK_IPHONEOS))
 		def simulatorLibrary = new File(libraryPathForTarget(XcodePlugin.SDK_IPHONESIMULATOR))
 

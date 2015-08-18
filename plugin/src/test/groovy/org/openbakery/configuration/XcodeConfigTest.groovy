@@ -7,8 +7,8 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
-import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
+import org.openbakery.internal.XcodeBuildSpec
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -17,13 +17,13 @@ import org.testng.annotations.Test
  * User: rene
  * Date: 25/11/14
  */
-class XcodeConfigTaskTest {
+class XcodeConfigTest {
 
-	XcodeConfigTask xcodeConfigTask
+	XcodeConfig xcodeConfig
+	XcodeBuildSpec buildSpec
 	Project project
 	GMockController mockControl
 	CommandRunner commandRunnerMock
-
 
 
 	@BeforeMethod
@@ -36,12 +36,15 @@ class XcodeConfigTaskTest {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
+		buildSpec = new XcodeBuildSpec(project)
+		buildSpec.target = "Example"
+
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		xcodeConfigTask = project.getTasks().getByName(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		xcodeConfigTask.setProperty("commandRunner", commandRunnerMock)
 
-		project.xcodebuild.target = "Example"
+		xcodeConfig = new XcodeConfig(project, buildSpec)
+		xcodeConfig.setProperty("commandRunner", commandRunnerMock)
+
 
 	}
 
@@ -134,7 +137,7 @@ class XcodeConfigTaskTest {
 		mockSimctlList()
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 		assert project.xcodebuild.availableSimulators.size() == 14 : "expected 14 elements in the availableSimulators list but was: " +  project.xcodebuild.availableSimulators.size()
@@ -148,7 +151,7 @@ class XcodeConfigTaskTest {
 		mockSimctlList("src/test/Resource/simctl-unavailable-output.txt")
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 		assert project.xcodebuild.availableSimulators.size() == 16 : "expected 16 elements in the availableSimulators list but was: " +  project.xcodebuild.availableSimulators.size()
@@ -167,7 +170,7 @@ class XcodeConfigTaskTest {
 
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " +  project.xcodebuild.availableDestinations.size()
@@ -194,7 +197,7 @@ class XcodeConfigTaskTest {
 		new File("build/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 		assert project.xcodebuild.availableDestinations.size() == 3 : "expected 1 elements in the availableSimulators list but was: " +  project.xcodebuild.availableDestinations.size()
@@ -222,7 +225,7 @@ class XcodeConfigTaskTest {
 		new File("build/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk").mkdirs()
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 		assert project.xcodebuild.availableDestinations.size() == 0
@@ -238,7 +241,7 @@ class XcodeConfigTaskTest {
 		mockSimctlList()
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 
@@ -280,7 +283,7 @@ class XcodeConfigTaskTest {
 		}
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 
@@ -297,7 +300,7 @@ class XcodeConfigTaskTest {
 
 
 		mockControl.play {
-			xcodeConfigTask.createDeviceList()
+			xcodeConfig.createDeviceList()
 		}
 
 
@@ -321,7 +324,7 @@ class XcodeConfigTaskTest {
 
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 
@@ -346,7 +349,7 @@ class XcodeConfigTaskTest {
 
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 
@@ -364,10 +367,9 @@ class XcodeConfigTaskTest {
 	@Test
 	void testDestinations_iPhoneOS_Build() {
 		mockXcodeVersion()
-		mockFindSimctl()
-		mockSimctlList()
 
 		project.xcodebuild.sdk = 'iphoneos'
+		buildSpec.sdk = 'iphoneos'
 
 		project.xcodebuild.destination {
 			platform = 'iphoneos'
@@ -378,7 +380,7 @@ class XcodeConfigTaskTest {
 
 
 		mockControl.play {
-			xcodeConfigTask.configuration()
+			xcodeConfig.configuration()
 		}
 
 		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
@@ -390,12 +392,11 @@ class XcodeConfigTaskTest {
 
 	@Test
 	void testNonExistingTarget () {
-
-		project.xcodebuild.target = "test"
+		buildSpec.target = "test"
 
 		mockControl.play {
 			try {
-				xcodeConfigTask.configuration()
+				xcodeConfig.configuration()
 				fail("Expected IllegalArgumentException was not thrown")
 			} catch (IllegalArgumentException ex) {
 				assert ex.getMessage().equals("Target 'test' not found in project")

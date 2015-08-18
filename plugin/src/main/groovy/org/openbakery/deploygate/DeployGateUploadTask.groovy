@@ -38,8 +38,7 @@ class DeployGateUploadTask extends AbstractDistributeTask {
 		ipaFile =  copyIpaToDirectory(project.deploygate.outputDirectory)
 	}
 
-	@TaskAction
-	def upload() throws IOException {
+	void executeTask() {
 
 		if (project.deploygate.apiToken == null) {
 			throw new IllegalArgumentException("Cannot upload to DeployGate because API Token is missing")

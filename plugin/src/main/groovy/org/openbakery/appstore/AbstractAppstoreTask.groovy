@@ -8,7 +8,7 @@ import org.openbakery.output.ConsoleOutputAppender
 /**
  * Created by rene on 08.01.15.
  */
-class AbstractAppstoreTask extends AbstractDistributeTask {
+abstract class AbstractAppstoreTask extends AbstractDistributeTask {
 
 	def runAltool(String action) {
 		File ipa = getIpaBundle()

@@ -47,8 +47,7 @@ class XcodeBuildArchiveTaskTest {
 		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
 
-
-		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		buildOutputDirectory = new File(project.xcodebuild.symRoot, "Debug-" + XcodePlugin.SDK_IPHONEOS)
 		buildOutputDirectory.mkdirs()
 
 		appDirectory = new File(buildOutputDirectory, "Example.app")
@@ -106,7 +105,7 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void archiveDirectory() {
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File archiveDirectory = new File(projectDir, "build/archive/Example.xcarchive")
 		assert archiveDirectory.exists() : "Archive directory does not exist: " + archiveDirectory.absolutePath
@@ -118,7 +117,7 @@ class XcodeBuildArchiveTaskTest {
 	void archiveDirectoryWithBundleSuffix() {
 		project.xcodebuild.bundleNameSuffix = "-1.2.3"
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File archiveDirectory = new File(projectDir, "build/archive/Example-1.2.3.xcarchive")
 		assert archiveDirectory.exists() : "Archive directory does not exist: " + archiveDirectory.absolutePath
@@ -130,7 +129,7 @@ class XcodeBuildArchiveTaskTest {
 	@Test
 	void applicationsFolder() {
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File applicationsDirectory = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications")
 		assert applicationsDirectory.exists(): "Applications directory does not exist: " + applicationsDirectory.absolutePath
@@ -141,7 +140,7 @@ class XcodeBuildArchiveTaskTest {
 	@Test
 	void copyApp() {
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Example")
 
@@ -151,7 +150,7 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void copyDsym() {
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File dsymFile = new File(projectDir, "build/archive/Example.xcarchive/dSYMs/Example.app.dSYM")
 
@@ -168,7 +167,7 @@ class XcodeBuildArchiveTaskTest {
 		File dSymDirectory = new File(buildOutputDirectory, "ExampleTodayWidget.appex.dSYM")
 		dSymDirectory.mkdirs()
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File dsymFile = new File(projectDir, "build/archive/Example.xcarchive/dSYMs/ExampleTodayWidget.appex.dSYM")
 
@@ -187,7 +186,7 @@ class XcodeBuildArchiveTaskTest {
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File infoPlist = new File(projectDir, "build/archive/Example.xcarchive/Info.plist")
 
@@ -218,7 +217,7 @@ class XcodeBuildArchiveTaskTest {
 	@Test
 	void testZipForSimulatorBuild() {
 		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONESIMULATOR
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		def buildOutputDirectory = new File(project.xcodebuild.buildSpec.symRoot, "Debug-" + XcodePlugin.SDK_IPHONESIMULATOR)
 		buildOutputDirectory.mkdirs()
 
 		File appDirectory = new File(buildOutputDirectory, "Example.app")
@@ -226,7 +225,7 @@ class XcodeBuildArchiveTaskTest {
 		File app = new File(appDirectory, "Example")
 		FileUtils.writeStringToFile(app, "dummy")
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File zipFile = new File(projectDir, "build/archive/Example.zip");
 		assert zipFile.exists() : "Zipfile does not exist: " + zipFile.absolutePath
@@ -250,7 +249,7 @@ class XcodeBuildArchiveTaskTest {
 	@Test
 	void swiftFrameworkInApp() {
 		mockSwiftLibs()
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
 
@@ -293,7 +292,7 @@ class XcodeBuildArchiveTaskTest {
 
 
 		mockControl.play {
-			xcodeBuildArchiveTask.archive()
+			xcodeBuildArchiveTask.executeTask()
 		}
 	}
 
@@ -316,7 +315,7 @@ class XcodeBuildArchiveTaskTest {
 
 		mockControl.play {
 			// should not fail!!!
-			xcodeBuildArchiveTask.archive()
+			xcodeBuildArchiveTask.executeTask()
 		}
 	}
 }

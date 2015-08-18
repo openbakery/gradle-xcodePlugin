@@ -2,6 +2,7 @@ package org.openbakery.cpd
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.internal.XcodeBuildSpec
 
 /**
  * Generates a CPD report on Objective C code
@@ -21,8 +22,7 @@ class CpdTask extends AbstractXcodeTask {
 		this.description = "Runs the CPD report on Objective C code"
 	}
 
-	@TaskAction
-	def cpd() {
+	void executeTask() {
 		def gradle = project.gradle
 		File destinationDirectory = new File(gradle.gradleUserHomeDir, "/caches/gxp")
 
@@ -36,7 +36,6 @@ class CpdTask extends AbstractXcodeTask {
 		def cp = computeClasspath(destinationDirectory)
 
 		def projectDir = project.projectDir
-		def xcodebuild = project.xcodebuild
 		def buildDir = project.buildDir
 
 		commandRunner.setOutputFile(new File("${buildDir}/cpd.xml"))
@@ -46,7 +45,7 @@ class CpdTask extends AbstractXcodeTask {
 						"-cp", "\"${cp.join(':')}\"",
 						'net.sourceforge.pmd.cpd.CPD',
 						"--minimum-tokens", "10",
-						"--files", "${projectDir.absolutePath}/${xcodebuild.target}", "${projectDir.absolutePath}/${xcodebuild.target}Tests",
+						"--files", "${projectDir.absolutePath}/${buildSpec.target}", "${projectDir.absolutePath}/${buildSpec.target}Tests",
 						"--language", "ObjectiveC",
 						"--encoding", "UTF-8",
 						"--format", "net.sourceforge.pmd.cpd.XMLRenderer"

@@ -65,7 +65,7 @@ class XcodeBuildTaskTest {
 
 	@Test(expectedExceptions = [IllegalArgumentException.class])
 	public void throw_IllegalArgumentException_when_no_scheme_or_target_given() {
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.executeTask()
 	}
 
 
@@ -75,7 +75,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneos')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -86,18 +86,18 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
 	def void addExpectedScheme() {
 		project.xcodebuild.scheme = 'myscheme'
 		expectedCommandList.add("-scheme")
-		expectedCommandList.add(project.xcodebuild.scheme)
+		expectedCommandList.add('myscheme')
 
 		project.xcodebuild.workspace = 'myworkspace'
 		expectedCommandList.add("-workspace")
-		expectedCommandList.add(project.xcodebuild.workspace)
+		expectedCommandList.add('myworkspace')
 
 	}
 
@@ -121,7 +121,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.sdk = 'iphoneSimulator';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneSimulator')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -143,7 +143,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -165,7 +165,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -175,7 +175,7 @@ class XcodeBuildTaskTest {
 		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneos')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -190,7 +190,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -199,7 +199,7 @@ class XcodeBuildTaskTest {
 		addExpectedScheme()
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneos')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -214,7 +214,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -224,13 +224,11 @@ class XcodeBuildTaskTest {
 		addExpectedScheme()
 		project.xcodebuild.sdk = 'macosx';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('macosx')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
 
-
-		def signIdentity = ""
 		project.xcodebuild.signing.identity = ""
 
 		addExpectNoSigning()
@@ -239,7 +237,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -249,7 +247,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneos')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -266,7 +264,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -294,7 +292,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -302,7 +300,7 @@ class XcodeBuildTaskTest {
 	public void run_command_with_workspace() {
 		project.xcodebuild.scheme = 'myscheme'
 		expectedCommandList.add("-scheme")
-		expectedCommandList.add(project.xcodebuild.scheme)
+		expectedCommandList.add('myscheme')
 
 		
 		project.xcodebuild.workspace = 'myworkspace'
@@ -311,7 +309,7 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.sdk = 'iphoneSimulator';
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneSimulator')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -322,7 +320,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -346,7 +344,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -367,7 +365,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -393,7 +391,7 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -431,7 +429,7 @@ class XcodeBuildTaskTest {
 		mockControl.play {
 			project.xcodebuild.version = '5B1008';
 
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
 
@@ -439,7 +437,6 @@ class XcodeBuildTaskTest {
 	void dependsOn() {
 		def dependsOn  = xcodeBuildTask.getDependsOn()
 
-		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
@@ -462,9 +459,9 @@ class XcodeBuildTaskTest {
 
 		project.xcodebuild.signing.keychain = keychainFile
 		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
-		project.xcodebuild.sdk = 'iphoneos';
+		project.xcodebuild.sdk = 'iphoneos'
 		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		expectedCommandList.add('iphoneos')
 
 		expectedCommandList.add("-configuration")
 		expectedCommandList.add("Debug")
@@ -482,8 +479,36 @@ class XcodeBuildTaskTest {
 		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+			xcodeBuildTask.executeTask()
 		}
 	}
+
+
+	@Test
+	void run_command_with_with_merged_build_spec() {
+		// currently order is important
+		expectedCommandList.add("-configuration")
+		expectedCommandList.add("Release")
+		expectedCommandList.add("-sdk")
+		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
+
+		def target = 'mytarget'
+		xcodeBuildTask.target = target
+		xcodeBuildTask.configuration = "Release"
+		project.xcodebuild.target = "Another"
+		expectedCommandList.add("-target")
+		expectedCommandList.add(target)
+
+		addExpectedDefaultDirs()
+
+		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
+
+		mockControl.play {
+			xcodeBuildTask.executeTask()
+		}
+	}
+
+
+
 
 }

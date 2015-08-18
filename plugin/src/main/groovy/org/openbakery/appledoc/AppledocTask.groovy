@@ -1,18 +1,22 @@
 package org.openbakery.appledoc
 
 import org.apache.commons.io.FileUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 
 /**
  * Created by rene on 21.07.14.
  */
-class AppledocTask extends AbstractXcodeTask {
+class AppledocTask extends DefaultTask {
+
+	CommandRunner commandRunner
 
 	AppledocTask() {
 		super()
+		commandRunner = new CommandRunner()
 		this.description = "Runs the appledoc for the given project"
 	}
 

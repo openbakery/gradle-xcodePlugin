@@ -4,7 +4,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.openbakery.Destination;
 import org.openbakery.XcodeBuildPluginExtension;
-import org.openbakery.XcodePlugin;
+import org.openbakery.configuration.XcodeConfig;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class SimulatorsListTask extends DefaultTask {
 
+	private XcodeConfig config;
+	private XcodeBuildPluginExtension xcodebuild;
 
 	int compareTo(String first, String second) {
 		if (first == null && second == null) {
@@ -35,14 +37,16 @@ public class SimulatorsListTask extends DefaultTask {
 	public SimulatorsListTask() {
 
 		setDescription("List all available iOS Simulators");
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME);
+
+		xcodebuild = getProject().getExtensions().findByType(XcodeBuildPluginExtension.class);
+
+		config = new XcodeConfig(getProject(), xcodebuild.getBuildSpec());
 
 	}
 
-	@TaskAction
-	void list() {
+	void executeTask() {
+		config.configuration();
 
-		XcodeBuildPluginExtension xcodebuild = getProject().getExtensions().findByType(XcodeBuildPluginExtension.class);
 
 		List<Destination> availableSimulators = xcodebuild.getAvailableSimulators();
 

@@ -1,7 +1,9 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.internal.XcodeBuildSpec
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -14,6 +16,7 @@ class XcodeProjectFileTest {
 
 	XcodeProjectFile xcodeProjectFile
 	Project project
+	XcodeBuildSpec buildSpec
 
 	@BeforeMethod
 	void setUp() {
@@ -26,64 +29,65 @@ class XcodeProjectFileTest {
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"));
+		File projectFile = new File(projectDir, "Example.xcodeproj/project.pbxproj")
+		//xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"));
+
+		buildSpec = new XcodeBuildSpec(project)
+
+		xcodeProjectFile = new XcodeProjectFile(projectFile, project.buildDir, buildSpec);
 
 	}
 
-	@AfterMethod
-	def cleanup() {
-		//FileUtils.deleteDirectory(project.buildDir)
-	}
 
 	@Test
 	void testBundleName() {
 
-		project.xcodebuild.target = "Example"
+		buildSpec.target = "Example"
 
 		xcodeProjectFile.parse()
 
-		assert project.xcodebuild.bundleName.equals("Example")
+		assert buildSpec.bundleName.equals("Example")
 	}
 
 
 	@Test
 	void testBundleNameWidget() {
-		project.xcodebuild.target = "ExampleTodayWidget"
+		buildSpec.target = "ExampleTodayWidget"
 
 		xcodeProjectFile.parse()
 
-		assert project.xcodebuild.bundleName.equals("ExampleTodayWidget")
+		assert buildSpec.bundleName.equals("ExampleTodayWidget")
 	}
 
 
 	@Test
 	void testProductName() {
-		project.xcodebuild.target = "Example"
+		buildSpec.target = "Example"
 		xcodeProjectFile.parse()
-		assert project.xcodebuild.productName.equals("Example")
+		assert buildSpec.productName.equals("Example")
 	}
 
 	@Test
 	void testProductNameOfWidget() {
-		project.xcodebuild.target = "ExampleTodayWidget"
+		buildSpec.target = "ExampleTodayWidget"
 		xcodeProjectFile.parse()
-		assert project.xcodebuild.productName.equals("ExampleTodayWidget")
+		assert buildSpec.productName.equals("ExampleTodayWidget")
 	}
 
 	@Test
 	void testProductType() {
-		project.xcodebuild.target = "ExampleTodayWidget"
+		buildSpec.target = "ExampleTodayWidget"
 		xcodeProjectFile.parse()
-		assert project.xcodebuild.productType.equals("appex")
+		assert buildSpec.productType.equals("appex")
 	}
 
 
 	@Test
 	void testProductNameFromConfig() {
-		project.xcodebuild.productName = 'MyFancyProductName'
-		project.xcodebuild.target = "Example"
+		buildSpec.productName = 'MyFancyProductName'
+		buildSpec.target = "Example"
 		xcodeProjectFile.parse()
-		assert project.xcodebuild.productName.equals("MyFancyProductName")
+		assert buildSpec.productName.equals("MyFancyProductName")
 	}
 
 }

@@ -14,8 +14,7 @@ class KeychainRemoveFromSearchListTask extends AbstractKeychainTask {
 
 
 
-	@TaskAction
-	def remove() {
+	void executeTask() {
 		removeGradleKeychainsFromSearchList()
 	}
 }

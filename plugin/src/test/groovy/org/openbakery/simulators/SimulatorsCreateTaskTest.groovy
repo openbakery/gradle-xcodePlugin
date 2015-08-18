@@ -3,9 +3,13 @@ package org.openbakery.simulators
 import groovy.mock.interceptor.MockFor
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.AbstractXcodeTask
 import org.openbakery.XcodePlugin
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+
+import static org.hamcrest.Matchers.*
+import static org.junit.Assert.assertThat
 
 /**
  * Created by rene on 30.04.15.
@@ -36,10 +40,11 @@ class SimulatorsCreateTaskTest {
 	}
 
 	@Test
-	void dependsOn() {
-		def dependsOn  = task.getDependsOn()
-		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+	void hasConfig() {
+		assertThat(task, is(instanceOf(AbstractXcodeTask.class)));
 	}
+
+
 
 	@Test
 	void run() {

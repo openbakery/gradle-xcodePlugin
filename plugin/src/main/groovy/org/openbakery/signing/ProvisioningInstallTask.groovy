@@ -30,7 +30,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
 		this.description = "Installs the given provisioning profile"
 		this.setOnlyIf {
-			return !project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+			return !project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
 		}
 	}
 
@@ -51,10 +51,9 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	}
 
-	@TaskAction
-	def install() {
+	void executeTask() {
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("The simulator build does not need a provisioning profile")
 			return
 		}
@@ -75,7 +74,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 			String mobileProvisionName
 
-			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 				mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
 			} else {
 				mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".provisionprofile"

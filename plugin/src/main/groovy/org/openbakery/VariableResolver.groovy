@@ -1,6 +1,7 @@
 package org.openbakery
 
 import org.gradle.api.Project
+import org.openbakery.internal.XcodeBuildSpec
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -10,10 +11,13 @@ import org.slf4j.LoggerFactory
 class VariableResolver {
 	private static Logger logger = LoggerFactory.getLogger(VariableResolver.class)
 
-	private Project project
+	private XcodeBuildSpec buildSpec
+	private File projectDirectory
 
-	VariableResolver(Project project) {
-		this.project = project
+
+	VariableResolver(File projectDirectory, XcodeBuildSpec buildSpec) {
+		this.projectDirectory = projectDirectory
+		this.buildSpec = buildSpec
 	}
 
 	/**
@@ -54,9 +58,9 @@ class VariableResolver {
 
 	def binding() {
 		return [
-						"PRODUCT_NAME": project.xcodebuild.productName,
-						"SRC_ROOT"    : project.projectDir.absolutePath,
-						"TARGET_NAME" : project.xcodebuild.target
+						"PRODUCT_NAME": buildSpec.productName,
+						"SRC_ROOT"    :projectDirectory.absolutePath,
+						"TARGET_NAME" : buildSpec.target
 		];
 	}
 }

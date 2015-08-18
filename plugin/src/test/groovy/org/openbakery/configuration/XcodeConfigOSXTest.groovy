@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
+import org.openbakery.internal.XcodeBuildSpec
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -13,12 +14,13 @@ import org.testng.annotations.Test
 /**
  * Created by rene on 10.03.15.
  */
-class XcodeConfigTaskOSXTest {
+class XcodeConfigOSXTest {
 
-	XcodeConfigTask xcodeConfigTask
+	XcodeConfig xcodeConfig
 	Project project
 	GMockController mockControl
 	CommandRunner commandRunnerMock
+	XcodeBuildSpec buildSpec
 
 
 
@@ -32,12 +34,13 @@ class XcodeConfigTaskOSXTest {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
-		project.apply plugin: org.openbakery.XcodePlugin
 
-		xcodeConfigTask = project.getTasks().getByName(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		xcodeConfigTask.setProperty("commandRunner", commandRunnerMock)
+		buildSpec = new XcodeBuildSpec(project, buildSpec)
+		buildSpec.target = "ExampleOSX"
 
-		project.xcodebuild.target = "ExampleOSX"
+		xcodeConfig = new XcodeConfig(project, buildSpec)
+		xcodeConfig.setProperty("commandRunner", commandRunnerMock)
+
 
 	}
 
@@ -50,8 +53,8 @@ class XcodeConfigTaskOSXTest {
 
 	@Test
 	void testOSX() {
-		xcodeConfigTask.configuration()
-		assert xcodeConfigTask.xcodeProjectFile.isOSX
+		xcodeConfig.configuration()
+		assert xcodeConfig.xcodeProjectFile.isOSX
 	}
 
 }

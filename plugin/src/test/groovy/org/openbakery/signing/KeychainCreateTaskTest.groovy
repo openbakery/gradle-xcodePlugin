@@ -108,7 +108,7 @@ class KeychainCreateTaskTest {
 		expectKeychainImportCommand()
 
 		mockControl.play {
-			keychainCreateTask.create()
+			keychainCreateTask.executeTask()
 		}
 
 	}
@@ -130,7 +130,7 @@ class KeychainCreateTaskTest {
 		expectKeychainListSetCommand()
 
 		mockControl.play {
-			keychainCreateTask.create()
+			keychainCreateTask.executeTask()
 		}
 	}
 

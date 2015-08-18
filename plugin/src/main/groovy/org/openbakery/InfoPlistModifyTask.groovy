@@ -17,27 +17,23 @@ package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
 
-
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
 	File infoPlist
-	Boolean modfied = false
+	Boolean modified = false
 
 	public InfoPlistModifyTask() {
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
 
 
+	void executeTask() {
 
-	@TaskAction
-	def prepare() {
-
-		if (project.xcodebuild.infoPlist == null) {
+		if (this.buildSpec.infoPlist == null) {
 			throw new IllegalArgumentException("No Info.plist was found! Check you xcode project settings if the specified target has a Info.plist set.")
 		}
 
-		infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
+		infoPlist = new File(project.projectDir, this.buildSpec.infoPlist)
 
 
 		logger.lifecycle("Updating {}", infoPlist)
@@ -80,7 +76,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			setValueForPlist(command)
 		}
 
-		if (!modfied) {
+		if (!modified) {
 			logger.lifecycle("Nothing was modifed!")
 		}
 	}
@@ -142,7 +138,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 	void setValueForPlist(String key, String value) {
-		modfied = true
+		modified = true
 		logger.lifecycle("Set {} to {}", key, value)
 		plistHelper.setValueForPlist(infoPlist, key, value)
 
@@ -150,7 +146,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 	void setValueForPlist(String command) {
-		modfied = true
+		modified = true
 		logger.lifecycle("Set {}", command)
 		plistHelper.setValueForPlist(infoPlist, command)
 

@@ -1,18 +1,21 @@
 package org.openbakery.oclint
 
+import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunner
 
 /**
  * Created by rene on 22.07.15.
  */
-class OCLintTask extends AbstractXcodeTask {
+class OCLintTask extends DefaultTask {
 
 	File outputDirectory
+	CommandRunner commandRunner
 
 	OCLintTask() {
 		super()
 		this.description = "Create a OCLint report for the given project"
+		commandRunner = new CommandRunner()
 	}
 
 

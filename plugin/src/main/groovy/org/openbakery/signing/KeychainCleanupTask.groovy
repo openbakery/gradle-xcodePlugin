@@ -27,8 +27,8 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 
 
 
-	@TaskAction
-	def clean() {
+
+	void executeTask() {
 		if (project.xcodebuild.signing.keychain) {
 			logger.debug("Nothing to cleanup")
 			return;

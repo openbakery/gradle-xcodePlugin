@@ -24,8 +24,7 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 	ProvisioningCleanupTask() {
 	}
 
-	@TaskAction
-	def clean() {
+	void executeTask() {
 		if (project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
 			logger.debug("deleting {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
 			project.xcodebuild.signing.mobileProvisionDestinationRoot.deleteDir()

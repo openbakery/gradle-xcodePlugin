@@ -3,6 +3,8 @@ package org.openbakery
 import org.apache.commons.io.input.ReversedLinesFileReader
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
+import org.openbakery.configuration.XcodeConfig
+import org.openbakery.internal.XcodeBuildSpec
 import org.openbakery.signing.ProvisioningProfileIdReader
 
 /**
@@ -10,13 +12,13 @@ import org.openbakery.signing.ProvisioningProfileIdReader
  * Date: 15.07.13
  * Time: 11:57
  */
-abstract class AbstractXcodeBuildTask extends DefaultTask {
+abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
-	CommandRunner commandRunner
+
 
 	AbstractXcodeBuildTask() {
 		super()
-		commandRunner = new CommandRunner()
+
 	}
 
 	def createCommandList() {
@@ -25,39 +27,39 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 					project.xcodebuild.xcodebuildCommand
 		]
 
-		if (project.xcodebuild.scheme) {
+		if (this.buildSpec.scheme) {
 			commandList.add("-scheme");
-			commandList.add(project.xcodebuild.scheme);
+			commandList.add(this.buildSpec.scheme);
 
-			if (project.xcodebuild.workspace != null) {
+			if (this.buildSpec.workspace != null) {
 				commandList.add("-workspace")
-				commandList.add(project.xcodebuild.workspace)
+				commandList.add(this.buildSpec.workspace)
 			}
 
-			if (project.xcodebuild.sdk != null) {
+			if (this.buildSpec.sdk != null) {
 				commandList.add("-sdk")
-				commandList.add(project.xcodebuild.sdk)
-				if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR) && project.xcodebuild.arch != null) {
+				commandList.add(this.buildSpec.sdk)
+				if (this.buildSpec.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR) && project.xcodebuild.arch != null) {
 					commandList.add("ONLY_ACTIVE_ARCH=NO")
 				}
 			}
 
-			if (project.xcodebuild.configuration != null) {
+			if (this.buildSpec.configuration != null) {
 				commandList.add("-configuration")
-				commandList.add(project.xcodebuild.configuration)
+				commandList.add(this.buildSpec.configuration)
 			}
 
 
 		} else {
 			commandList.add("-configuration")
-			commandList.add(project.xcodebuild.configuration)
+			commandList.add(this.buildSpec.configuration)
 			commandList.add("-sdk")
-			commandList.add(project.xcodebuild.sdk)
+			commandList.add(this.buildSpec.sdk)
 			commandList.add("-target")
-			commandList.add(project.xcodebuild.target)
+			commandList.add(this.buildSpec.target)
 		}
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
 				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
@@ -69,7 +71,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				commandList.add("CODE_SIGN_IDENTITY=")
 				commandList.add("CODE_SIGNING_REQUIRED=NO")
 			}
-		} else if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+		} else if (this.buildSpec.isSdk(XcodePlugin.SDK_MACOSX)) {
 			// disable signing during xcodebuild for os x, maybe this should be also default for iOS?
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
@@ -98,7 +100,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
 			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + project.xcodebuild.signing.keychainPathInternal.path)
 		}
 
@@ -147,5 +149,27 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		return builder.toString()
+	}
+
+
+
+	void setTarget(String target) {
+		this.buildSpec.target = target
+	}
+
+	void setScheme(String scheme) {
+		this.buildSpec.scheme = scheme
+	}
+
+	void setConfiguration(String configuration) {
+		this.buildSpec.configuration = configuration
+	}
+
+	void setSdk(String sdk) {
+		this.buildSpec.sdk = sdk
+	}
+
+	void setIpaFileName(String ipaFileName) {
+		this.buildSpec.ipaFileName = ipaFileName
 	}
 }

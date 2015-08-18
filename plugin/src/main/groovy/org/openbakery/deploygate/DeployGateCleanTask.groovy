@@ -19,7 +19,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
 
-class DeployGateCleanTask extends DefaultTask{
+class DeployGateCleanTask extends DefaultTask {
 
 	DeployGateCleanTask() {
 		super()

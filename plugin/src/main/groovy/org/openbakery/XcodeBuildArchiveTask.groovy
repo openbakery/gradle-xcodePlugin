@@ -81,14 +81,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 		File appInfoPlist
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_MACOSX)) {
 			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Contents/Info.plist")
 		} else {
 			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
 		}
 
 
-		def name = project.xcodebuild.bundleName
+		def name = this.buildSpec.bundleName
 		def schemeName = name
 		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
 		def bundleIdentifier = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIdentifier")
@@ -101,7 +101,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		List icons = new ArrayList<String>()
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			icons = getiOSIcons()
 		} else {
 			icons = getMacOSXIcons(appInfoPlist)
@@ -193,15 +193,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	}
 
+	void executeTask() {
 
-	@TaskAction
-	def archive() {
-
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.debug("Create zip archive")
 
 			// create zip archive
-			String zipFileName = project.xcodebuild.bundleName
+			String zipFileName = this.buildSpec.bundleName
 			if (project.xcodebuild.bundleNameSuffix != null) {
 				zipFileName += project.xcodebuild.bundleNameSuffix
 			}
@@ -226,10 +224,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		def dSymDirectory = new File(project.xcodebuild.archiveDirectory, "dSYMs")
 		dSymDirectory.mkdirs()
 
-		List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
+		List<File> appBundles = getAppBundles(this.buildSpec.outputPath)
 
 		for (File bundle : appBundles) {
-			File dsymPath = new File(project.xcodebuild.outputPath, bundle.getName() + ".dSYM");
+			File dsymPath = new File(this.buildSpec.outputPath, bundle.getName() + ".dSYM");
 			if (dsymPath.exists()) {
 				copy(dsymPath, dSymDirectory)
 			}
@@ -240,7 +238,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		createFrameworks(project.xcodebuild.archiveDirectory)
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			File applicationFolder = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
 			convertInfoPlistToBinary(applicationFolder)
 		}
@@ -251,6 +249,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	}
 
 	def convertInfoPlistToBinary(File archiveDirectory) {
+
+		if (!archiveDirectory.exists()) {
+			return
+		}
 
 		archiveDirectory.eachFileRecurse(FILES) {
 			if (it.name.endsWith('.plist')) {

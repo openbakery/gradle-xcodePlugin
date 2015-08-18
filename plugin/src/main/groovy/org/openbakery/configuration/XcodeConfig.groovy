@@ -3,37 +3,48 @@ package org.openbakery.configuration
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
-import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractXcodeTask
+import org.gradle.api.Project
+import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
 import org.openbakery.XcodePlugin
 import org.openbakery.XcodeProjectFile
+import org.openbakery.internal.XcodeBuildSpec
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * User: rene
  * Date: 25/11/14
  */
-class XcodeConfigTask extends AbstractXcodeTask {
+class XcodeConfig {
 
+	private static Logger logger = LoggerFactory.getLogger(XcodeConfig.class)
 
 	XcodeProjectFile xcodeProjectFile;
 
-	XcodeConfigTask() {
+	Project project
+	XcodeBuildSpec buildSpec
+	CommandRunner commandRunner
+
+	XcodeConfig(Project project, XcodeBuildSpec buildSpec) {
 		super()
-		this.description = "Parses the xcodeproj file and setups the configuration for the build"
+		this.project = project;
+		this.buildSpec = buildSpec;
+		commandRunner = new CommandRunner()
 	}
 
 
-	@TaskAction
 	void configuration() {
 
-
-		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
-		def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
+		String[] projectFileList = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))
+		if (projectFileList.length == 0) {
+			throw new Exception("No project file found in " + project.projectDir)
+		}
+		def xcodeProjectDir = new File(project.projectDir, projectFileList[0]) // prepend project dir to support multi-project build
 		def projectFile = new File(xcodeProjectDir, "project.pbxproj")
 
-		xcodeProjectFile = new XcodeProjectFile(project, projectFile)
+		xcodeProjectFile = new XcodeProjectFile(projectFile, this.project.buildDir,  this.buildSpec);
 		xcodeProjectFile.parse()
 
 
@@ -46,14 +57,16 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		logger.debug("isXcode5 {}", isXcode5);
 
 
-		if (isXcode5) {
-			createXcode5DeviceList()
-		} else {
-			createDeviceList()
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
+
+			if (isXcode5) {
+				createXcode5DeviceList()
+			} else {
+				createDeviceList()
+			}
+
+			logger.debug("availableSimulators: {}", project.xcodebuild.availableSimulators)
 		}
-
-		logger.debug("availableSimulators: {}", project.xcodebuild.availableSimulators)
-
 	}
 
 	void createXcode5DeviceList() {

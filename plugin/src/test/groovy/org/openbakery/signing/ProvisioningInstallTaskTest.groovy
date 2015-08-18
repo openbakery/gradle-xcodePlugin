@@ -77,7 +77,7 @@ class ProvisioningInstallTaskTest {
 		mockLinking(name)
 
 		mockControl.play {
-			provisioningInstallTask.install()
+			provisioningInstallTask.executeTask()
 		}
 
 
@@ -100,7 +100,7 @@ class ProvisioningInstallTaskTest {
 		mockLinking(secondName)
 
 		mockControl.play {
-			provisioningInstallTask.install()
+			provisioningInstallTask.executeTask()
 		}
 
 

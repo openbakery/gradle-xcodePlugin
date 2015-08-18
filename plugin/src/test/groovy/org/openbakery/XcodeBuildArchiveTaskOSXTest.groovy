@@ -42,7 +42,7 @@ class XcodeBuildArchiveTaskOSXTest {
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 
-		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration)
+		buildOutputDirectory = new File(project.xcodebuild.symRoot, "Debug")
 		buildOutputDirectory.mkdirs()
 
 		appDirectory = new File(buildOutputDirectory, "Example.app")
@@ -63,7 +63,7 @@ class XcodeBuildArchiveTaskOSXTest {
 	@Test
 	void copyOSXApp() {
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app")
 
@@ -76,7 +76,7 @@ class XcodeBuildArchiveTaskOSXTest {
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
-		xcodeBuildArchiveTask.archive()
+		xcodeBuildArchiveTask.executeTask()
 
 		File infoPlist = new File(projectDir, "build/archive/Example.xcarchive/Info.plist")
 
@@ -149,7 +149,7 @@ class XcodeBuildArchiveTaskOSXTest {
 
 
 		mockControl.play {
-			xcodeBuildArchiveTask.archive()
+			xcodeBuildArchiveTask.executeTask()
 		}
 	}
 }

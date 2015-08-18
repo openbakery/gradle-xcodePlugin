@@ -15,21 +15,15 @@
  */
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
+import org.openbakery.internal.XcodeBuildSpec
 import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-enum Devices {
-	UNIVERSAL,
-	PHONE,
-	PAD
-}
 
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
@@ -37,12 +31,9 @@ class XcodeBuildPluginExtension {
 
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
+	XcodeBuildSpec buildSpec
 
-	String infoPlist = null
-	String scheme = null
-	String configuration = 'Debug'
-	String sdk = 'iphonesimulator'
-	String target = null
+
 	Object dstRoot
 	Object objRoot
 	Object symRoot
@@ -53,15 +44,12 @@ class XcodeBuildPluginExtension {
 	def additionalParameters = null
 	String bundleNameSuffix = null
 	List<String> arch = null
-	String workspace = null
 	String version = null
 	Map<String, String> environment = null
 	String productName = null
-	String bundleName = null
 	String productType = "app"
-	String ipaFileName = null
 
-	Devices devices = Devices.UNIVERSAL;
+
 	List<Destination> availableSimulators = []
 
 	Set<Destination> destinations = null
@@ -76,9 +64,12 @@ class XcodeBuildPluginExtension {
 	private final Project project
 
 	public XcodeBuildPluginExtension(Project project) {
+
 		this.project = project;
 		this.signing = new Signing(project)
-		this.variableResolver = new VariableResolver(project)
+		this.buildSpec = new XcodeBuildSpec(project);
+
+		this.variableResolver = new VariableResolver(project.projectDir, this.buildSpec)
 		commandRunner = new CommandRunner()
 
 
@@ -101,7 +92,6 @@ class XcodeBuildPluginExtension {
 		this.derivedDataPath = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
 		}
-
 	}
 
 	String getWorkspace() {
@@ -161,11 +151,11 @@ class XcodeBuildPluginExtension {
 
 
 	boolean isDeviceBuild() {
-		return this.isSDK(XcodePlugin.SDK_IPHONEOS)
+		return this.isSdk(XcodePlugin.SDK_IPHONEOS)
 	}
 
 	boolean isSimulatorBuild() {
-		return this.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+		return this.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
 	}
 
 
@@ -177,16 +167,6 @@ class XcodeBuildPluginExtension {
 		}
 
 		destinations << destination
-
-/*
-		if (isSimulatorBuild()) {
-			// filter only on simulator builds
-			destinations.addAll(findMatchingDestinations(destination))
-		} else {
-			destinations << destination
-		}
-
-		*/
 	}
 
 	boolean matches(String first, String second) {
@@ -248,6 +228,7 @@ class XcodeBuildPluginExtension {
 		return result.asList();
 	}
 
+	// TODO: move to Build Spec
 	List<Destination> getAvailableDestinations() {
 		def availableDestinations = []
 
@@ -260,7 +241,7 @@ class XcodeBuildPluginExtension {
 			if (availableDestinations.isEmpty()) {
 				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
-				switch (this.devices) {
+				switch (this.buildSpec.devices) {
 					case Devices.PHONE:
 						availableDestinations = availableSimulators.findAll {
 							d -> d.name.contains("iPhone");
@@ -388,51 +369,16 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	String getValueFromInfoPlist(key) {
-		try {
-			logger.debug("project.projectDir {}", project.projectDir)
-			File infoPlistFile = new File(project.projectDir, infoPlist)
-			logger.debug("get value {} from plist file {}", key, infoPlistFile)
-			return commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlistFile.absolutePath,
-							"-c",
-							"Print :" + key])
-		} catch (IllegalStateException ex) {
-			return null
-		}
-	}
-
-	String getBundleName() {
-		if (bundleName != null) {
-			return bundleName
-		}
-		bundleName = getValueFromInfoPlist("CFBundleName")
-
-		bundleName = variableResolver.resolve(bundleName);
-
-		if (StringUtils.isEmpty(bundleName)) {
-			bundleName = this.productName
-		}
-		return bundleName
-	}
-
-	File getOutputPath() {
-		if (getSdk().startsWith(XcodePlugin.SDK_MACOSX)) {
-			return new File(getSymRoot(), getConfiguration())
-		}
-		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
-	}
-
 	File getApplicationBundle() {
-		return new File(getOutputPath(), getBundleName() + "." + this.productType)
+		return new File(this.buildSpec.getOutputPath(), this.buildSpec.bundleName + "." + this.productType)
 	}
 
 
 
 	File getArchiveDirectory() {
 
-		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
+		// TODO: Move me to the build spec
+		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  this.buildSpec.bundleName
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
@@ -445,7 +391,50 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	boolean isSDK(String expectedSDK) {
-		return sdk.toLowerCase().startsWith(expectedSDK)
+	boolean isSdk(String expectedSDK) {
+		return this.buildSpec.isSdk(expectedSDK)
 	}
+
+	void setTarget(String target) {
+		this.buildSpec.target = target
+	}
+
+	void setScheme(String scheme) {
+		this.buildSpec.scheme = scheme
+	}
+
+	void setConfiguration(String configuration) {
+		this.buildSpec.configuration = configuration
+	}
+
+
+	void setSdk(String sdk) {
+		this.buildSpec.sdk = sdk
+	}
+
+
+	void setIpaFileName(String ipaFileName) {
+		this.buildSpec.ipaFileName = ipaFileName
+	}
+
+	void setWorkspace(String workspace) {
+		this.buildSpec.setWorkspace(workspace)
+	}
+
+	void setProductName(String productName) {
+		this.buildSpec.setProductName(productName)
+	}
+
+	void setDevices(Devices devices) {
+		this.buildSpec.setDevices(devices)
+	}
+
+	void setInfoPlist(String infoPlist) {
+		this.buildSpec.setInfoPlist(infoPlist)
+	}
+
+	void setBundleName(String bundleName) {
+		this.buildSpec.setBundleName(bundleName)
+	}
+
 }

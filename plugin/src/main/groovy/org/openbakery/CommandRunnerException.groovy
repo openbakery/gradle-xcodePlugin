@@ -15,11 +15,11 @@ class CommandRunnerException extends IllegalStateException {
 		super(s)
 	}
 
-	CommandRunnerException(String s, Throwable throwable) {
-		super(s, throwable)
+	CommandRunnerException(String message, Throwable cause) {
+		super(message, cause)
 	}
 
-	CommandRunnerException(Throwable throwable) {
-		super(throwable)
+	CommandRunnerException(Throwable cause) {
+		super(cause)
 	}
 }

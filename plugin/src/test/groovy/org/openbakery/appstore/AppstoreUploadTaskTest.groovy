@@ -57,7 +57,7 @@ class AppstoreUploadTaskTest {
 	void ipaMissing() {
 		FileUtils.deleteDirectory(project.projectDir)
 
-		task.upload()
+		task.executeTask()
 
 	}
 
@@ -76,7 +76,7 @@ class AppstoreUploadTaskTest {
 
 
 		mockControl.play {
-			task.upload()
+			task.executeTask()
 		}
 
 

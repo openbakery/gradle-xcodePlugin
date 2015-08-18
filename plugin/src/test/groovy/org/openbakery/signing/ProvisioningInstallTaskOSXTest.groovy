@@ -75,7 +75,7 @@ class ProvisioningInstallTaskOSXTest {
 		mockLinking(name)
 
 		mockControl.play {
-			provisioningInstallTask.install()
+			provisioningInstallTask.executeTask()
 		}
 
 		File sourceFile = new File(projectDir, "build/provision/" + name)
@@ -96,7 +96,7 @@ class ProvisioningInstallTaskOSXTest {
 		mockLinking(secondName)
 
 		mockControl.play {
-			provisioningInstallTask.install()
+			provisioningInstallTask.executeTask()
 		}
 
 		File firstFile = new File(projectDir, "build/provision/" + firstName)

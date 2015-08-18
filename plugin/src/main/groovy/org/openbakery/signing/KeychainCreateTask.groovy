@@ -29,15 +29,14 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		dependsOn(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
 
 		this.setOnlyIf {
-			return !project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+			return !project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
 		}
 	}
 
-	@TaskAction
-	def create() {
+	void executeTask() {
 
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("The simulator build does not need a provisioning profile");
 			return
 		}

@@ -25,8 +25,7 @@ class HockeyKitArchiveTask extends AbstractHockeyKitTask {
 	}
 
 
-	@TaskAction
-	def archive() {
+	void executeTask() {
 		if (project.hockeykit.versionDirectoryName == null) {
 			throw new IllegalArgumentException("hockeykit.versionDirectoryName is missing")
 		}

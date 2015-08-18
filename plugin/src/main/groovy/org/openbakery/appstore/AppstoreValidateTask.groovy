@@ -14,8 +14,7 @@ class AppstoreValidateTask extends AbstractAppstoreTask {
 	}
 
 
-	@TaskAction
-	def validate() {
+	void executeTask() {
 		runAltool("--validate-app")
 	}
 

@@ -97,11 +97,11 @@ class XcodeTestTaskTest {
 	def void addExpectedScheme() {
 		project.xcodebuild.scheme = 'myscheme'
 		expectedCommandList.add("-scheme")
-		expectedCommandList.add(project.xcodebuild.scheme)
+		expectedCommandList.add('myscheme')
 
 		project.xcodebuild.workspace = 'myworkspace'
 		expectedCommandList.add("-workspace")
-		expectedCommandList.add(project.xcodebuild.workspace)
+		expectedCommandList.add('myworkspace')
 
 	}
 
@@ -261,7 +261,7 @@ class XcodeTestTaskTest {
 		commandRunnerMock.run(project.projectDir.absolutePath, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeTestTask.test()
+			xcodeTestTask.executeTask()
 		}
 
 	}
@@ -297,7 +297,7 @@ class XcodeTestTaskTest {
 		commandRunnerMock.run(project.projectDir.absolutePath, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeTestTask.test()
+			xcodeTestTask.executeTask()
 		}
 
 	}
@@ -333,7 +333,7 @@ class XcodeTestTaskTest {
 		commandRunnerMock.run(project.projectDir.absolutePath, expectedCommandList, null, anything()).times(1)
 
 		mockControl.play {
-			xcodeTestTask.test()
+			xcodeTestTask.executeTask()
 		}
 
 	}

@@ -1,11 +1,10 @@
 package org.openbakery.cocoapods
 
-import org.apache.commons.io.FileUtils
 import org.gradle.StartParameter
+import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
 
 /**
@@ -15,13 +14,15 @@ import org.openbakery.output.ConsoleOutputAppender
  * @author rene
  * @author rahul
  */
-public class CocoapodsTask extends AbstractXcodeTask {
+public class CocoapodsTask extends DefaultTask {
 
 	String podCommand = null
+	CommandRunner commandRunner
 
 	public CocoapodsTask() {
 		super()
 		setDescription "Installs the pods for the given project"
+		commandRunner = new CommandRunner()
 	}
 
 

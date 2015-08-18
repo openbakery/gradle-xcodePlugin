@@ -91,7 +91,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	XcodeTestTask() {
 		super()
 		dependsOn(
-						XcodePlugin.XCODE_CONFIG_TASK_NAME,
 						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
 						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
@@ -99,9 +98,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		this.description = "Runs the unit tests for the Xcode project"
 	}
 
-	@TaskAction
-	def test() {
-		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
+	void executeTask() {
+		if (this.buildSpec.scheme == null && this.buildSpec.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 
@@ -111,7 +109,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 
-		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			// kill a running simulator
 			logger.info("Killing old simulators")
 			try {
@@ -162,7 +160,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	void addIOSSimulatorTargets(ArrayList commandList) {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_MACOSX)) {
 			return
 		}
 

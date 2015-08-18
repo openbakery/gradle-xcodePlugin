@@ -81,7 +81,7 @@ class KeychainCleanupTaskTest {
 		commandRunnerMock.run(["security", "list-keychains", "-s", userHome + "/Library/Keychains/login.keychain"])
 
 		mockControl.play {
-			keychainCleanupTask.clean()
+			keychainCleanupTask.executeTask()
 		}
 	}
 
@@ -99,7 +99,7 @@ class KeychainCleanupTaskTest {
 		expectKeychainListSetCommand()
 
 		mockControl.play {
-			keychainCleanupTask.clean()
+			keychainCleanupTask.executeTask()
 		}
 	}
 

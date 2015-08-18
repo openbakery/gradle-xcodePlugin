@@ -21,6 +21,7 @@ import org.gradle.logging.ProgressLogger
 import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
+import org.openbakery.configuration.XcodeConfig
 import org.openbakery.output.XcodeBuildOutputAppender
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
@@ -29,20 +30,21 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		super()
 
 		dependsOn(
-						XcodePlugin.XCODE_CONFIG_TASK_NAME,
 						XcodePlugin.INFOPLIST_MODIFY_TASK_NAME,
 						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
 						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
+
 		finalizedBy(
 						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
 		)
 		this.description = "Builds the Xcode project"
 	}
 
-	@TaskAction
-	def xcodebuild() {
-		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
+	void executeTask() {
+		// apply the missing values from the global build spec
+
+		if (buildSpec.scheme == null && buildSpec.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 

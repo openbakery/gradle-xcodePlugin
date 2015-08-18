@@ -91,7 +91,7 @@ class CpdTaskTest {
 	@Test
 	void testCreateDestinationDirectory() {
 		try {
-			cpdTask.cpd()
+			cpdTask.executeTask()
 		} catch (Exception ex) {
 			// ignore
 		}
@@ -127,7 +127,7 @@ class CpdTaskTest {
 		]).times(1)
 
 		mockControl.play {
-			cpdTask.cpd()
+			cpdTask.executeTask()
 		}
 
 	}

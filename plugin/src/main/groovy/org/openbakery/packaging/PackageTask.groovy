@@ -30,9 +30,8 @@ class PackageTask extends AbstractDistributeTask {
 		)
 	}
 
-	@TaskAction
-	void packageApplication() throws IOException {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+	void executeTask() throws IOException {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
@@ -73,11 +72,11 @@ class PackageTask extends AbstractDistributeTask {
 
 		for (File bundle : appBundles) {
 
-			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 				embedProvisioningProfileToBundle(bundle)
 			}
 
-			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 				File embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded.provisionprofile")
 				embeddedProvisionFile.delete()
 			}
@@ -87,7 +86,7 @@ class PackageTask extends AbstractDistributeTask {
 			codesign(bundle)
 		}
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			createIpa(applicationFolder);
 		} else {
 			createPackage(appBundles.last());
@@ -223,7 +222,7 @@ class PackageTask extends AbstractDistributeTask {
 	private void embedProvisioningProfileToBundle(File bundle) {
         File infoPlist
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -255,7 +254,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createApplicationFolder() throws IOException {
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			return createSigningDestination("Payload")
 		} else {
 			// same folder as signing
@@ -276,15 +275,15 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private String getAppContentPath(File bundle) {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			return bundle.absolutePath + "/"
 		}
 		return bundle.absolutePath + "/Contents/"
 	}
 
 	def getIpaFileName() {
-		if (project.xcodebuild.ipaFileName) {
-			return project.xcodebuild.ipaFileName
+		if (this.buildSpec.ipaFileName) {
+			return this.buildSpec.ipaFileName
 		} else {
 			return getApplicationNameFromArchive()
 		}

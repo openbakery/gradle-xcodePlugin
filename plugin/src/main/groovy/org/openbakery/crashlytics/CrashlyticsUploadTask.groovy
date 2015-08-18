@@ -29,8 +29,8 @@ class CrashlyticsUploadTask extends AbstractDistributeTask {
 		this.description = "Upload the IPA to crashlytics for crash reports"
 	}
 
-	@TaskAction
-	def upload() throws IOException {
+
+	void executeTask() {
 
 		if (project.crashlytics.apiKey == null) {
 			throw new IllegalArgumentException("Cannot upload to Crashlytics because API Key is missing")

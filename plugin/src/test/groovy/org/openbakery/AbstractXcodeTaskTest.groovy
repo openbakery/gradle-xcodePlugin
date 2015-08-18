@@ -36,7 +36,7 @@ class AbstractXcodeTaskTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		xcodeTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 
 		xcodeTask.plistHelper = new PlistHelper(project, commandRunnerMock)
 	}

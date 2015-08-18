@@ -11,7 +11,7 @@ buildscript {
 
 
 
-def versionNumber = '0.11.4'
+def versionNumber = '0.12.0'
 def publishURL
 def publishUser
 def publishPassword
@@ -28,6 +28,7 @@ if (project.hasProperty("publishPassword")) {
 if (project.hasProperty("buildNumber")) {
 	versionNumber += "." + project.buildNumber 
 }
+
 
 
 group = 'org.openbakery'

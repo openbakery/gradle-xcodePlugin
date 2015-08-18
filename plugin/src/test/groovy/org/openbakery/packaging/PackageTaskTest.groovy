@@ -67,6 +67,13 @@ class PackageTaskTest {
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 	}
 
+
+	@AfterMethod
+	void cleanUp() {
+		FileUtils.deleteDirectory(project.projectDir)
+	}
+
+
 	void mockExampleApp(boolean withPlugin, boolean withSwift) {
 		mockExampleApp(withPlugin, withSwift, false)
 	}
@@ -106,7 +113,7 @@ class PackageTaskTest {
 		if (withPlugin) {
 			mockCodesignCommand("Payload/Example.app/" + widgetPath)
 		}
-		project.xcodebuild.outputPath.mkdirs()
+		project.xcodebuild.buildSpec.outputPath.mkdirs()
 
 		if (withSwift) {
 
@@ -192,10 +199,6 @@ class PackageTaskTest {
 		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
 	}
 
-	@AfterMethod
-	void cleanUp() {
-		FileUtils.deleteDirectory(project.projectDir)
-	}
 
 
 	@Test
@@ -203,7 +206,7 @@ class PackageTaskTest {
 		mockExampleApp(false, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 		File payloadDirectory = new File(packageTask.outputPath, "Payload")
 		assert payloadDirectory.exists()
@@ -215,7 +218,7 @@ class PackageTaskTest {
 		mockExampleApp(false, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 		assert payloadAppDirectory.exists()
 	}
@@ -227,7 +230,7 @@ class PackageTaskTest {
 
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		assert !(new File(payloadAppDirectory, "ResourceRules.plist")).exists()
@@ -246,7 +249,7 @@ class PackageTaskTest {
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		File embedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision")
@@ -266,7 +269,7 @@ class PackageTaskTest {
 		project.xcodebuild.signing.mobileProvisionFile = secondMobileprovision
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		File firstEmbedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision")
@@ -288,7 +291,7 @@ class PackageTaskTest {
 
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 	}
 
@@ -298,7 +301,7 @@ class PackageTaskTest {
 		mockExampleApp(true, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 	}
 
@@ -307,7 +310,7 @@ class PackageTaskTest {
 		mockExampleApp(false, false)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 
@@ -351,7 +354,7 @@ class PackageTaskTest {
 		mockExampleApp(false, true)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
@@ -377,7 +380,7 @@ class PackageTaskTest {
 
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 	}
 
@@ -387,20 +390,20 @@ class PackageTaskTest {
 		mockExampleApp(false, true, true)
 
 		mockControl.play {
-			packageTask.packageApplication()
+			packageTask.executeTask()
 		}
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException)
 	void hasNoSigning() {
 		project.xcodebuild.signing = null
-		packageTask.packageApplication()
+		packageTask.executeTask()
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException)
 	void hasNoSigningIdentity() {
 		project.xcodebuild.signing.identity = null
-		packageTask.packageApplication()
+		packageTask.executeTask()
 	}
 
 	@Test

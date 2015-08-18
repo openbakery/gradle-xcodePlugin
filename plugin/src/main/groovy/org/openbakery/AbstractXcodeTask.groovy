@@ -17,7 +17,12 @@ package org.openbakery
 
 
 import org.apache.commons.io.FilenameUtils
+import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.Task
+import org.gradle.api.tasks.TaskAction
+import org.openbakery.configuration.XcodeConfig
+import org.openbakery.internal.XcodeBuildSpec
 
 import java.text.SimpleDateFormat
 
@@ -28,19 +33,34 @@ import java.text.SimpleDateFormat
  */
 abstract class AbstractXcodeTask extends DefaultTask {
 
-
-	public CommandRunner commandRunner
-
-	public PlistHelper plistHelper
+	XcodeBuildSpec buildSpec
+	CommandRunner commandRunner
+	PlistHelper plistHelper
+	XcodeConfig config
 
 	AbstractXcodeTask() {
-		commandRunner = new CommandRunner()
-
-		plistHelper = new PlistHelper(project, commandRunner)
+		this.commandRunner = new CommandRunner()
+		this.buildSpec = new XcodeBuildSpec(project, project.xcodebuild.buildSpec)
+		this.plistHelper = new PlistHelper(project, commandRunner)
+		this.config = new XcodeConfig(project, this.buildSpec)
 	}
 
 
-	/**
+	void configureTask() {
+		this.config.configuration();
+	}
+
+
+	abstract void executeTask();
+
+
+	@TaskAction
+	void run() {
+		configureTask();
+		executeTask();
+	}
+
+/**
 	 * Copies a file to a new location
 	 *
 	 * @param source
@@ -165,7 +185,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File plugins
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			plugins = new File(appBundle, "PlugIns")
 		} else {
 			plugins = new File(appBundle, "Contents/Frameworks")

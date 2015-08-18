@@ -1,19 +1,23 @@
 package org.openbakery.coverage
 
 import org.apache.commons.lang.StringUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 
 /**
  * Created by rene on 22.07.14.
  */
-class CoverageTask extends AbstractXcodeTask {
+class CoverageTask extends DefaultTask {
+
+	CommandRunner commandRunner
 
 	CoverageTask() {
 		super()
 		dependsOn(XcodePlugin.XCODE_TEST_TASK_NAME)
 		this.description = "Runs the gcovr code coverage for the project"
+		commandRunner = new CommandRunner()
 	}
 
 	@TaskAction

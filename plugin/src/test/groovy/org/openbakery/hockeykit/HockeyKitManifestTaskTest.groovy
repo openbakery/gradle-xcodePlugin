@@ -78,7 +78,7 @@ class HockeyKitManifestTaskTest {
 		mockValueFromPlist("CFBundleShortVersionString", "1.0.0")
 
 		mockControl.play {
-			hockeyKitManifestTask.createManifest()
+			hockeyKitManifestTask.executeTask()
 		}
 
 		File manifestFile = new File(project.buildDir, "hockeykit/com.example.Test/1234/Test-b1234.plist")

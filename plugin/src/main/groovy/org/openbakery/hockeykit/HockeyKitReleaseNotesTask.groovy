@@ -32,8 +32,7 @@ class HockeyKitReleaseNotesTask extends AbstractHockeyKitTask {
 		this.description = "Creates the releasenotes.html and includes the notes that can be deployed to the HockeyKit Server"
 	}
 
-	@TaskAction
-	def createReleaseNotes() {
+	void executeTask() {
 
 		if (project.hockeykit.notes != null) {
 

@@ -57,7 +57,7 @@ class AppstoreValidateTaskTest {
 	void ipaMissing() {
 		FileUtils.deleteDirectory(project.projectDir)
 
-		task.validate()
+		task.executeTask()
 
 	}
 
@@ -76,7 +76,7 @@ class AppstoreValidateTaskTest {
 
 
 		mockControl.play {
-			task.validate()
+			task.executeTask()
 		}
 	}
 
@@ -85,7 +85,7 @@ class AppstoreValidateTaskTest {
 		project.appstore.username = "me@example.com"
 
 		mockControl.play {
-			task.validate()
+			task.executeTask()
 		}
 	}
 
@@ -93,7 +93,7 @@ class AppstoreValidateTaskTest {
 	void testUsernameMissing() {
 
 		mockControl.play {
-			task.validate()
+			task.executeTask()
 		}
 	}
 }
