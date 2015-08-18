@@ -1,5 +1,6 @@
 package org.openbakery.stubs
 
+import org.gradle.internal.progress.OperationIdentifier
 import org.gradle.logging.ProgressLogger
 
 /**
@@ -15,9 +16,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	ProgressLogger setDescription(String s) {
-		return this
-
+	void setDescription(String s) {
 	}
 
 	@Override
@@ -26,9 +25,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	ProgressLogger setShortDescription(String s) {
-		return this
-
+	void setShortDescription(String s) {
 	}
 
 	@Override
@@ -37,8 +34,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	ProgressLogger setLoggingHeader(String s) {
-		return this
+	void setLoggingHeader(String s) {
 	}
 
 	@Override
@@ -71,4 +67,8 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	}
 
+	@Override
+	OperationIdentifier currentOperationId() {
+		return null
+	}
 }
