@@ -10,7 +10,7 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.1'
+    gradleVersion = '2.4'
 }
 
 def versionNumber = '0.12.0'
@@ -37,7 +37,6 @@ group = 'org.openbakery'
 version = versionNumber
 
 
-apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
@@ -78,8 +77,6 @@ dependencies {
 
 
 
-
-
 uploadArchives {
 	repositories {
 		mavenDeployer {
@@ -107,10 +104,6 @@ uploadArchives {
 			}
 		}
 	}
-}
-
-test {
-	useTestNG()
 }
 
 

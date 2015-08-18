@@ -1,0 +1,60 @@
+User defaults from command line:
+    IDEDerivedDataPathOverride = /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/derivedData
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY =
+    CODE_SIGNING_REQUIRED = NO
+    DSTROOT = /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/dst
+    OBJROOT = /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/obj
+    SDKROOT = macosx10.10
+    SHARED_PRECOMPS_DIR = /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/shared
+    SYMROOT = /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/sym
+
+[1m[36m=== BUILD TARGET Pods OF PROJECT Pods WITH CONFIGURATION Debug ===[0m
+
+Check dependencies
+
+[1m[36m=== BUILD TARGET ExampleOSX OF PROJECT ExampleOSX WITH CONFIGURATION Debug ===[0m
+
+Check dependencies
+
+[1mPhaseScriptExecution[0m Check\ Pods\ Manifest.lock build/obj/ExampleOSX.build/Debug/ExampleOSX.build/Script-D638ED2B9AB217840A7D8893.sh
+    cd /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX
+    /bin/sh -c /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/obj/ExampleOSX.build/Debug/ExampleOSX.build/Script-D638ED2B9AB217840A7D8893.sh
+
+[1mPhaseScriptExecution[0m Copy\ Pods\ Resources build/obj/ExampleOSX.build/Debug/ExampleOSX.build/Script-74CFFE44BED5D7F70AF2BC42.sh
+    cd /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX
+    /bin/sh -c /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/obj/ExampleOSX.build/Debug/ExampleOSX.build/Script-74CFFE44BED5D7F70AF2BC42.sh
+mkdir -p /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/sym/Debug/ExampleOSX.app/Contents/Frameworks
+rsync -av /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/Pods/Sparkle/Sparkle.framework /Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/build/sym/Debug/ExampleOSX.app/Contents/Frameworks
+building file list ... done
+
+sent 5659 bytes  received 20 bytes  11358.00 bytes/sec
+total size is 2103343  speedup is 370.37
+building file list ... done
+
+sent 29 bytes  received 20 bytes  98.00 bytes/sec
+total size is 0  speedup is 0.00
+
+[1m[36m=== BUILD TARGET ExampleOSXTests OF PROJECT ExampleOSX WITH CONFIGURATION Debug ===[0m
+
+Check dependencies
+
+2015-08-18 13:28:29.812 ExampleOSX[9304:130895] ApplePersistenceIgnoreState: Existing state will not be touched. New state will be written to /var/folders/wd/7sh5_vr13w17mmybfj62p29w0000gn/T/com.cocoanetics.ExampleOSX.savedState
+Test Suite 'All tests' started at 2015-08-18 11:28:29 +0000
+Test Suite 'ExampleOSXTests.xctest' started at 2015-08-18 11:28:29 +0000
+Test Suite 'ExampleOSXTests' started at 2015-08-18 11:28:29 +0000
+Test Case '-[ExampleOSXTests testExample]' started.
+Test Case '-[ExampleOSXTests testExample]' passed (0.000 seconds).
+Test Case '-[ExampleOSXTests testPerformanceExample]' started.
+/Users/rene/workspace/openbakery/xcodePlugin/gxp/example/OSX/ExampleOSX/ExampleOSXTests/ExampleOSXTests.m:35: Test Case '-[ExampleOSXTests testPerformanceExample]' measured [Time, seconds] average: 0.000, relative standard deviation: 119.001%, values: [0.000004, 0.000001, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000], performanceMetricID:com.apple.XCTPerformanceMetric_WallClockTime, baselineName: "", baselineAverage: , maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.100, maxStandardDeviation: 0.100
+Test Case '-[ExampleOSXTests testPerformanceExample]' passed (0.659 seconds).
+Test Suite 'ExampleOSXTests' passed at 2015-08-18 11:28:30 +0000.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.659 (0.660) seconds
+Test Suite 'ExampleOSXTests.xctest' passed at 2015-08-18 11:28:30 +0000.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.659 (0.661) seconds
+Test Suite 'All tests' passed at 2015-08-18 11:28:30 +0000.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.659 (0.662) seconds
+[1m** TEST SUCCEEDED **
+
+[0m
