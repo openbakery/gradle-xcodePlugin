@@ -54,7 +54,7 @@ class SimulatorsCleanTaskTest {
 
 		task.simulatorControl = mock.proxyInstance()
 
-		task.run()
+		task.executeTask()
 
 		mock.verify task.simulatorControl
 
