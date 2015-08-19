@@ -31,7 +31,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	void executeTask() throws IOException {
-		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}

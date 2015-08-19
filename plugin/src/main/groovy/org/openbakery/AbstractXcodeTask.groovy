@@ -214,4 +214,10 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return bundles;
 
 	}
+
+	void with(XcodeBuildSpec newParent) {
+		this.buildSpec.with(newParent)
+	}
+
+
 }

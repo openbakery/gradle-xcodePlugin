@@ -38,26 +38,6 @@ buildscript {
 apply plugin: 'org.openbakery.xcode-plugin'
 
 
-def first = xcodebuild.spec {
-	target = 'First'
-	configuration = 'Release'
-	
-}
-
-def second = xcodebuild.spec {
-	target = 'Second'
-	
-	with first
-}
-
-
-task foo << {
-	println "1: " + first.target + " " + first.configuration
-	println "2: " + second.target + " " + second.configuration
-
-}
-
-
 xcodebuild {
 	version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 
@@ -68,6 +48,21 @@ xcodebuild {
 	sdk = 'iphonesimulator'
 
 }
+
+
+
+def releaseSpec = xcodebuild.spec {
+	sdk = 'iphoneos'
+	configuration = 'Release'
+	signing {
+		certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
+		certificatePassword = signingCertificatePassword // e.g. 'secret'
+		mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+	}
+}
+
+
+package.buildSpec=releaseSpec
 
 
 task continuous(dependsOn:'test') {
@@ -91,6 +86,15 @@ task appstore(dependsOn: 'package') {
 
 
 
+hockeyapp {
+	apiToken = hockeyappApiToken
+	appID = hockeyappAppId
+}
+
+deploygate {
+	apiToken = deploygateApiToken
+	userName = deploygateUserName
+}
 
 gradle.taskGraph.whenReady { taskGraph ->
 
@@ -118,24 +122,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 		}
 	}
 
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(tasks.hockeyapp)) {
-		println ("using api token: " + hockeyappApiToken)
-		hockeyapp {
-			apiToken = hockeyappApiToken
-			appID = hockeyappAppId
-		}
-	}
-	
-	if (taskGraph.hasTask(tasks.deploygate)) {
-		println ("using api token: " + deploygateApiToken)
-		deploygate {
-			apiToken = deploygateApiToken
-			userName = deploygateUserName
-		}
-	}
-	
 	// ------------------------------------------------------------------------------------------
 
 	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
