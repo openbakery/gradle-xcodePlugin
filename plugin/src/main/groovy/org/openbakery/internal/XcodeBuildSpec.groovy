@@ -390,6 +390,11 @@ class XcodeBuildSpec {
 
 
 	void with(XcodeBuildSpec newParent) {
+		logger.debug("new parent: {}\n\n", newParent)
+		if (newParent == this) {
+			throw new IllegalArgumentException("self cannot be a parent of itself")
+		}
+
 		if (this.parent != null) {
 			newParent.with(this.parent)
 		}
@@ -397,7 +402,25 @@ class XcodeBuildSpec {
 	}
 
 
-
-
-
+	@Override
+	public String toString() {
+		return "XcodeBuildSpec{" +
+						"target='" + target + '\'' +
+						", scheme='" + scheme + '\'' +
+						", configuration='" + configuration + '\'' +
+						", sdk='" + sdk + '\'' +
+						", workspace='" + workspace + '\'' +
+						", productName='" + productName + '\'' +
+						", devices=" + devices +
+						", arch=" + arch +
+						", signing=" + signing +
+						", environment=" + environment +
+						", additionalParameters=" + additionalParameters +
+						", ipaFileName='" + ipaFileName + '\'' +
+						", productType='" + productType + '\'' +
+						", bundleName='" + bundleName + '\'' +
+						", bundleNameSuffix='" + bundleNameSuffix + '\'' +
+						", parent=" + parent +
+						'}';
+	}
 }

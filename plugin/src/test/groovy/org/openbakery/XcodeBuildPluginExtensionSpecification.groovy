@@ -36,4 +36,14 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.availableDestinations[0].name.equals("OS X")
 
 	}
+
+
+	def "new build spec"() {
+
+
+		expect:
+		extension.spec() != null
+		extension.spec().parent == null
+
+	}
 }

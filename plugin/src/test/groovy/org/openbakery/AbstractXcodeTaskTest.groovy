@@ -7,6 +7,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.openbakery.internal.XcodeBuildSpec
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile

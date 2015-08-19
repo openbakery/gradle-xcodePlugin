@@ -279,4 +279,5 @@ class XcodeBuildPluginExtensionTest {
 		assert extension.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
 
 	}
+
 }

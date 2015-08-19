@@ -289,4 +289,10 @@ class XcodeBuildSpecTest {
 		assertThat(buildSpec.sdk, is("Foo"))
 
 	}
+
+	@Test(expected = IllegalArgumentException)
+	void testSelfParent() {
+		buildSpec.with(buildSpec)
+	}
+
 }

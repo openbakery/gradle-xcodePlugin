@@ -33,12 +33,8 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 			logger.debug("Nothing to cleanup")
 			return;
 		}
-
 		this.buildSpec.signing.signingDestinationRoot.deleteDir()
-
 		removeGradleKeychainsFromSearchList()
-
-
 	}
 
 }

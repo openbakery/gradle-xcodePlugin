@@ -24,7 +24,9 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://repository.openbakery.org/')
+			//url('http://repository.openbakery.org/')
+			url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
+			
 		}
 		mavenCentral()
   }
@@ -39,7 +41,7 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
-	version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
+	//version = "6.2"  // uncomment this if you want to use xcode 6.2, but another xcode is the default on your machine
 
 	target = 'Example'
 	scheme = 'Example'
@@ -61,8 +63,17 @@ def releaseSpec = xcodebuild.spec {
 	}
 }
 
+def appstoreSpec = xcodebuild.spec {
+	signing {
+		certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'
+		certificatePassword = 'secret'     // e.g. 'secret'
+		mobileProvisionURI = '...'         // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+	}
+}
 
-package.buildSpec=releaseSpec
+
+
+package.with releaseSpec
 
 
 task continuous(dependsOn:'test') {
