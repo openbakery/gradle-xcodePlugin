@@ -29,12 +29,12 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 
 
 	void executeTask() {
-		if (project.xcodebuild.signing.keychain) {
+		if (this.buildSpec.signing.keychain) {
 			logger.debug("Nothing to cleanup")
 			return;
 		}
 
-		project.xcodebuild.signing.signingDestinationRoot.deleteDir()
+		this.buildSpec.signing.signingDestinationRoot.deleteDir()
 
 		removeGradleKeychainsFromSearchList()
 

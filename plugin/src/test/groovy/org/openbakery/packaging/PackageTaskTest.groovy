@@ -246,7 +246,7 @@ class PackageTaskTest {
 		mockExampleApp(false, false)
 
 		File mobileprovision = new File("src/test/Resource/test.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		packageTask.buildSpec.signing.mobileProvisionFile = mobileprovision
 
 		mockControl.play {
 			packageTask.executeTask()
@@ -265,8 +265,8 @@ class PackageTaskTest {
 
 		File firstMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = firstMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = secondMobileprovision
+		packageTask.buildSpec.signing.mobileProvisionFile = firstMobileprovision
+		packageTask.buildSpec.signing.mobileProvisionFile = secondMobileprovision
 
 		mockControl.play {
 			packageTask.executeTask()
@@ -335,9 +335,9 @@ class PackageTaskTest {
 		File appMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		File wildcardMobileprovision = new File("src/test/Resource/test-wildcard.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = appMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = widgetMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = wildcardMobileprovision
+		packageTask.buildSpec.signing.mobileProvisionFile = appMobileprovision
+		packageTask.buildSpec.signing.mobileProvisionFile = widgetMobileprovision
+		packageTask.buildSpec.signing.mobileProvisionFile = wildcardMobileprovision
 
 
 		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision

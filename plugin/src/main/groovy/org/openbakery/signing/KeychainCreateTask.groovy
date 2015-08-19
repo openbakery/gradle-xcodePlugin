@@ -29,7 +29,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		dependsOn(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
 
 		this.setOnlyIf {
-			return !project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
+			return !this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)
 		}
 	}
 
@@ -41,35 +41,35 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			return
 		}
 
-		if (project.xcodebuild.signing.keychain) {
-			if (!project.xcodebuild.signing.keychain.exists()) {
-				throw new IllegalStateException("Keychain not found: " + project.xcodebuild.signing.keychain.absolutePath)
+		if (this.buildSpec.signing.keychain) {
+			if (!this.buildSpec.signing.keychain.exists()) {
+				throw new IllegalStateException("Keychain not found: " + this.buildSpec.signing.keychain.absolutePath)
 			}
-			logger.debug("Using keychain {}", project.xcodebuild.signing.keychain)
-			logger.debug("Internal keychain {}", project.xcodebuild.signing.keychainPathInternal)
+			logger.debug("Using keychain {}", this.buildSpec.signing.keychain)
+			logger.debug("Internal keychain {}", this.buildSpec.signing.keychainPathInternal)
 			return
 		}
 
-		if (project.xcodebuild.signing.certificateURI == null) {
+		if (this.buildSpec.signing.certificateURI == null) {
 			logger.debug("not certificateURI specifed so do not create the keychain");
 			return
 		}
 
 
-		if (project.xcodebuild.signing.certificatePassword == null) {
-			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificatePassword is missing")
+		if (this.buildSpec.signing.certificatePassword == null) {
+			throw new InvalidUserDataException("Property signing.certificatePassword is missing")
 		}
 
-		def certificateFile = download(project.xcodebuild.signing.signingDestinationRoot, project.xcodebuild.signing.certificateURI)
+		def certificateFile = download(this.buildSpec.signing.signingDestinationRoot, this.buildSpec.signing.certificateURI)
 
-		def keychainPath = project.xcodebuild.signing.keychainPathInternal.absolutePath
+		def keychainPath = this.buildSpec.signing.keychainPathInternal.absolutePath
 
 		logger.debug("Create Keychain: {}", keychainPath)
 
 		if (!new File(keychainPath).exists()) {
-			commandRunner.run(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
+			commandRunner.run(["security", "create-keychain", "-p", this.buildSpec.signing.keychainPassword, keychainPath])
 		}
-		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
+		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", this.buildSpec.signing.certificatePassword, "-T", "/usr/bin/codesign"])
 
 
 		if (getOSVersion().minor >= 9) {
@@ -80,8 +80,8 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		}
 
 		// Set a custom timeout on the keychain if requested
-		if (project.xcodebuild.signing.timeout != null) {
-			commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])
+		if (this.buildSpec.signing.timeout != null) {
+			commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", this.buildSpec.signing.timeout.toString(), keychainPath])
 		}
 	}
 

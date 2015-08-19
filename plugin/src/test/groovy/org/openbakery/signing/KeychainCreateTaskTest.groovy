@@ -45,8 +45,8 @@ class KeychainCreateTaskTest {
 	@After
 	void cleanAfterTest() {
 		certificateFile.delete();
-		new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName()).delete()
-		project.xcodebuild.signing.keychainPathInternal.delete()
+		new File(keychainCreateTask.buildSpec.signing.signingDestinationRoot, certificateFile.getName()).delete()
+		keychainCreateTask.buildSpec.signing.keychainPathInternal.delete()
 	}
 
 	@Test
@@ -65,14 +65,14 @@ class KeychainCreateTaskTest {
 	void expectKeychainCreateCommand() {
 		List<String> commandList
 		commandList?.clear()
-		commandList = ["security", "create-keychain", "-p", "This_is_the_default_keychain_password", project.xcodebuild.signing.keychainPathInternal.toString()]
+		commandList = ["security", "create-keychain", "-p", "This_is_the_default_keychain_password", keychainCreateTask.buildSpec.signing.keychainPathInternal.toString()]
 		commandRunnerMock.run(commandList).times(1)
 	}
 
 	void expectKeychainImportCommand() {
 		List<String> commandList
 		commandList?.clear()
-		commandList = ["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"];
+		commandList = ["security", "-v", "import",  keychainDestinationFile.toString(), "-k", keychainCreateTask.buildSpec.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"];
 		commandRunnerMock.run(commandList).times(1)
 
 	}
@@ -92,7 +92,7 @@ class KeychainCreateTaskTest {
 		String userHome = System.getProperty("user.home")
 		commandList = ["security", "list-keychains", "-s"]
 		commandList.add(userHome + "/Library/Keychains/login.keychain")
-		commandList.add(project.xcodebuild.signing.keychainPathInternal.toString())
+		commandList.add(keychainCreateTask.buildSpec.signing.keychainPathInternal.toString())
 		commandRunnerMock.run(commandList).times(1)
 
 	}
@@ -121,7 +121,7 @@ class KeychainCreateTaskTest {
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 
-		project.xcodebuild.signing.keychainPathInternal.createNewFile()
+		keychainCreateTask.buildSpec.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 
 		String userHome = System.getProperty("user.home")

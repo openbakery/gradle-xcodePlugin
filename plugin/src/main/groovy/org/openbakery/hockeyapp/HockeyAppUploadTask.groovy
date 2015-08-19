@@ -129,7 +129,7 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 
 		httpUpload.url = HOCKEY_APP_API_URL + project.hockeyapp.appID + "/provisioning_profiles"
 
-		if (project.xcodebuild.signing.mobileProvisionFile.size() != 1) {
+		if (this.buildSpec.signing.mobileProvisionFile.size() != 1) {
 			logger.debug("mobileProvisionFile not found");
 			return;
 		}
@@ -140,7 +140,7 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		}
 
 		httpUpload.postRequest(getHttpHeaders(),
-			["mobileprovision": project.xcodebuild.signing.mobileProvisionFile.get(0)]
+			["mobileprovision": this.buildSpec.signing.mobileProvisionFile.get(0)]
 		)
 
 	}

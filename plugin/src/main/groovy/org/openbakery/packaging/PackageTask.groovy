@@ -36,11 +36,11 @@ class PackageTask extends AbstractDistributeTask {
 			return;
 		}
 
-		if (project.xcodebuild.signing == null) {
+		if (this.buildSpec.signing == null) {
 			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
 		}
 
-		if (project.xcodebuild.signing.identity == null) {
+		if (this.buildSpec.signing.identity == null) {
 			throw new IllegalArgumentException("cannot signed with unknown signing identity");
 		}
 
@@ -98,7 +98,7 @@ class PackageTask extends AbstractDistributeTask {
 
 		def mobileProvisionFileMap = [:]
 
-		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
+		for (File mobileProvisionFile : this.buildSpec.signing.mobileProvisionFile) {
 			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
 			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
@@ -183,7 +183,7 @@ class PackageTask extends AbstractDistributeTask {
 						"--verbose",
 						bundle.absolutePath,
 						"--keychain",
-						project.xcodebuild.signing.keychainPathInternal.absolutePath,
+						this.buildSpec.signing.keychainPathInternal.absolutePath,
 		]
 		commandRunner.run(codesignCommand, environment)
 
@@ -208,11 +208,11 @@ class PackageTask extends AbstractDistributeTask {
 								"/usr/bin/codesign",
 								"--force",
 								"--sign",
-								project.xcodebuild.getSigning().getIdentity(),
+								this.buildSpec.signing.getIdentity(),
 								"--verbose",
 								file.absolutePath,
 								"--keychain",
-								project.xcodebuild.signing.keychainPathInternal.absolutePath,
+								this.buildSpec.signing.keychainPathInternal.absolutePath,
 				]
 				commandRunner.run(codesignCommand)
 			}
@@ -222,7 +222,7 @@ class PackageTask extends AbstractDistributeTask {
 	private void embedProvisioningProfileToBundle(File bundle) {
         File infoPlist
 
-		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")

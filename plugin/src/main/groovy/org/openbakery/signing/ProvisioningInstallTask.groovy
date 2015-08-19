@@ -53,18 +53,18 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	void executeTask() {
 
-		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			logger.lifecycle("The simulator build does not need a provisioning profile")
 			return
 		}
 
-		if (project.xcodebuild.signing.mobileProvisionURI == null) {
+		if (this.buildSpec.signing.mobileProvisionURI == null) {
 			logger.lifecycle("No provisioning profile specifed so do nothing here")
 			return
 		}
 
-		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
-			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
+		for (String mobileProvisionURI : this.buildSpec.signing.mobileProvisionURI) {
+			def mobileProvisionFile = download(this.buildSpec.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
 			ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
 
@@ -86,7 +86,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)
 			downloadedFile.renameTo(renamedProvisionFile)
 
-			project.xcodebuild.signing.mobileProvisionFile = renamedProvisionFile;
+			this.buildSpec.signing.mobileProvisionFile = renamedProvisionFile;
 
 			linkToLibraray(renamedProvisionFile	)
 		}

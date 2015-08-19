@@ -25,12 +25,12 @@ class ProvisioningCleanupTask extends AbstractXcodeTask {
 	}
 
 	void executeTask() {
-		if (project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
-			logger.debug("deleting {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
-			project.xcodebuild.signing.mobileProvisionDestinationRoot.deleteDir()
+		if (this.buildSpec.signing.mobileProvisionDestinationRoot.exists()) {
+			logger.debug("deleting {}", this.buildSpec.signing.mobileProvisionDestinationRoot)
+			this.buildSpec.signing.mobileProvisionDestinationRoot.deleteDir()
 
-			if (project.xcodebuild.signing.mobileProvisionDestinationRoot.exists()) {
-				logger.error("error deleting provisioning: {}", project.xcodebuild.signing.mobileProvisionDestinationRoot)
+			if (this.buildSpec.signing.mobileProvisionDestinationRoot.exists()) {
+				logger.error("error deleting provisioning: {}", this.buildSpec.signing.mobileProvisionDestinationRoot)
 			}
 		} else {
 			logger.debug("Provisioning destination cleanup skipped because the destination directory does not exit")
