@@ -38,11 +38,11 @@ buildscript {
 apply plugin: 'org.openbakery.xcode-plugin'
 
 
-def first = xcodebuild {
+def first = xcodebuild.spec {
 	target = 'First'
 }
 
-def second = xcodebuild {
+def second = xcodebuild.spec {
 	target = 'Second'
 }
 

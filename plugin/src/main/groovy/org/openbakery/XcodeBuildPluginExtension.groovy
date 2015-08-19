@@ -17,6 +17,7 @@ package org.openbakery
 
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.gradle.api.Project
+import org.gradle.api.internal.ClosureBackedAction
 import org.gradle.util.ConfigureUtil
 import org.openbakery.internal.XcodeBuildSpec
 import org.openbakery.signing.Signing
@@ -375,8 +376,13 @@ class XcodeBuildPluginExtension {
 		return this.buildSpec.signing
 	}
 
+	XcodeBuildSpec spec(Closure closure) {
+		XcodeBuildSpec result = spec()
+		ConfigureUtil.configure(closure, result)
+		return result
+	}
 
-	public XcodeBuildSpec spec() {
+	XcodeBuildSpec spec() {
 		return new XcodeBuildSpec(project)
 	}
 
