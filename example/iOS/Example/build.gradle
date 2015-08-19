@@ -38,6 +38,22 @@ buildscript {
 apply plugin: 'org.openbakery.xcode-plugin'
 
 
+def first = xcodebuild {
+	target = 'First'
+}
+
+def second = xcodebuild {
+	target = 'Second'
+}
+
+
+task foo << {
+	println "1: " + first.buildSpec.target
+	println "2: " + second.buildSpec.target
+
+}
+
+
 xcodebuild {
 	version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 

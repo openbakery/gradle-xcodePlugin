@@ -375,4 +375,9 @@ class XcodeBuildPluginExtension {
 		return this.buildSpec.signing
 	}
 
+
+	public XcodeBuildSpec spec() {
+		return new XcodeBuildSpec(project)
+	}
+
 }
