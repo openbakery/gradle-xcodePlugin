@@ -204,7 +204,17 @@ class XcodeBuildSpecTest {
 	}
 
 
+	@Test
+	void testMergeAdditionalParameters() {
+		parentBuildSpec.additionalParameters = ['one', 'two']
+		assertThat(buildSpec.additionalParameters, contains('one', 'two'));
+	}
 
+	@Test
+	void testMergeArch() {
+		parentBuildSpec.arch = ['i368', 'x86_64']
+		assertThat(buildSpec.arch, contains('i368', 'x86_64'));
+	}
 
 	@Test
 	void init() {

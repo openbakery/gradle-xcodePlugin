@@ -1,3 +1,5 @@
 build
 Example.xcodeproj/xcuserdata/
 Example.xcodeproj/project.xcworkspace/
+gradle.properties
+rene.gradle

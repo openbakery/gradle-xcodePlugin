@@ -39,7 +39,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 			if (this.buildSpec.sdk != null) {
 				commandList.add("-sdk")
 				commandList.add(this.buildSpec.sdk)
-				if (this.buildSpec.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR) && project.xcodebuild.arch != null) {
+				if (this.buildSpec.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR) && buildSpec.arch != null) {
 					commandList.add("ONLY_ACTIVE_ARCH=NO")
 				}
 			}
@@ -80,16 +80,15 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 
 
-		if (project.xcodebuild.arch != null) {
+		if (buildSpec.arch != null) {
 			StringBuilder archs = new StringBuilder("ARCHS=");
-			for (String singleArch in project.xcodebuild.arch) {
+			for (String singleArch : buildSpec.arch) {
 				if (archs.length() > 7) {
 					archs.append(" ");
 				}
 				archs.append(singleArch);
 			}
 			commandList.add(archs.toString());
-
 		}
 
 		commandList.add("-derivedDataPath")
@@ -105,15 +104,10 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		}
 
 
-		if (project.xcodebuild.additionalParameters instanceof List) {
-			for (String value in project.xcodebuild.additionalParameters) {
-				commandList.add(value)
-			}
-		} else {
-			if (project.xcodebuild.additionalParameters != null) {
-				commandList.add(project.xcodebuild.additionalParameters)
-			}
+		if (buildSpec.additionalParameters != null) {
+			commandList.addAll(buildSpec.additionalParameters)
 		}
+
 
 		return commandList;
 	}
@@ -172,4 +166,13 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	void setIpaFileName(String ipaFileName) {
 		this.buildSpec.ipaFileName = ipaFileName
 	}
+
+ 	void setAdditionalParameters(Object parameters) {
+		this.buildSpec.setAdditionalParameters(parameters)
+	}
+
+	void setArch(Object parameters) {
+		this.buildSpec.setArch(parameters)
+ 	}
+
 }

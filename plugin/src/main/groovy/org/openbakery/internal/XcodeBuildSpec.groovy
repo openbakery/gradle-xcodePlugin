@@ -37,7 +37,8 @@ class XcodeBuildSpec {
 	String productType
 	String bundleName
 	String bundleNameSuffix
-
+	List<String> additionalParameters
+	List<String> arch
 
 
 	private XcodeBuildSpec parent = null
@@ -299,6 +300,45 @@ class XcodeBuildSpec {
 			return this.parent.bundleNameSuffix
 		}
 		return null
+	}
+
+
+	List<String>getAdditionalParameters() {
+		if (this.additionalParameters != null) {
+			return this.additionalParameters
+		}
+		if (this.parent != null) {
+			return this.parent.additionalParameters
+		}
+		return null
+	}
+
+	void setAdditionalParameters(Object parameters) {
+		if (parameters instanceof List) {
+			this.additionalParameters = parameters;
+		} else {
+			this.additionalParameters = []
+			this.additionalParameters << parameters.toString()
+		}
+	}
+
+	List<String>getArch() {
+		if (this.arch != null) {
+			return this.arch
+		}
+		if (this.parent != null) {
+			return this.parent.arch
+		}
+		return null
+	}
+
+	void setArch(Object parameters) {
+		if (parameters instanceof List) {
+			this.arch = parameters;
+		} else {
+			this.arch = []
+			this.arch << parameters.toString()
+		}
 	}
 
 }

@@ -37,7 +37,6 @@ class XcodeBuildPluginExtension {
 	Object derivedDataPath
 	String sourceDirectory = '.'
 	Signing signing = null
-	def additionalParameters = null
 	List<String> arch = null
 	String version = null
 	Map<String, String> environment = null
@@ -220,16 +219,6 @@ class XcodeBuildPluginExtension {
 		return availableDestinations
 	}
 
-	void setArch(Object arch) {
-		if (arch instanceof List) {
-			logger.debug("Arch is List: " + arch + " - " + arch.getClass().getName())
-			this.arch = arch;
-		} else {
-			logger.debug("Arch is string: " + arch + " - " + arch.getClass().getName())
-			this.arch = new ArrayList<String>();
-			this.arch.add(arch.toString());
-		}
-	}
 
 	void setEnvironment(Object environment) {
 		if (environment == null) {
@@ -393,6 +382,14 @@ class XcodeBuildPluginExtension {
 
 	void setBundleNameSuffix(String bundleNameSuffix) {
 		this.buildSpec.setBundleNameSuffix(bundleNameSuffix)
+	}
+
+	void setAdditionalParameters(Object additionalParameters) {
+		this.buildSpec.setAdditionalParameters(additionalParameters)
+	}
+
+	void setArch(Object parameters) {
+		this.buildSpec.setArch(parameters)
 	}
 
 }

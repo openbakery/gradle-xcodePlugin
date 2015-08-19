@@ -1,7 +1,9 @@
 *.iml
 *.ipr
 *.iws
-
 build
-
 .idea
+.gradle*
+gradle.properties
+project-ios.xml
+project.xml
