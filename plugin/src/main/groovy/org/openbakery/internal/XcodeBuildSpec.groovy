@@ -3,6 +3,7 @@ package org.openbakery.internal
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
+import org.gradle.util.ConfigureUtil
 import org.openbakery.CommandRunner
 import org.openbakery.Devices
 import org.openbakery.PlistHelper
@@ -65,6 +66,10 @@ class XcodeBuildSpec {
 		} else {
 			this.signing = new Signing(project)
 		}
+	}
+
+	void signing(Closure closure) {
+		ConfigureUtil.configure(closure, this.signing)
 	}
 
 	String getVersion() {
@@ -381,6 +386,14 @@ class XcodeBuildSpec {
 			return this.parent.environment
 		}
 		return null
+	}
+
+
+	void with(XcodeBuildSpec newParent) {
+		if (this.parent != null) {
+			newParent.with(this.parent)
+		}
+		this.parent = newParent
 	}
 
 

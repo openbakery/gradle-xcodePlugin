@@ -255,4 +255,38 @@ class XcodeBuildSpecTest {
 		assertThat(buildSpec.environment, hasEntry("foo", ""));
 
 	}
+
+
+	@Test
+	void testWith() {
+		parentBuildSpec.sdk = "macosx"
+
+		def third = new XcodeBuildSpec(project)
+		third.with(buildSpec)
+
+		assertThat(third.sdk, is("macosx"))
+
+	}
+
+	@Test
+	void testWithThatHasParent() {
+		parentBuildSpec.sdk = "macosx"
+
+		def third = new XcodeBuildSpec(project)
+		buildSpec.with(third)
+
+		assertThat(buildSpec.sdk, is("macosx"))
+	}
+
+	@Test
+	void testWithThatHasParent_2() {
+		parentBuildSpec.sdk = "macosx"
+
+		def third = new XcodeBuildSpec(project)
+		third.sdk = "Foo"
+		buildSpec.with(third)
+
+		assertThat(buildSpec.sdk, is("Foo"))
+
+	}
 }
