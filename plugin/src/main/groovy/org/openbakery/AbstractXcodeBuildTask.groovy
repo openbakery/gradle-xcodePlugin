@@ -6,6 +6,7 @@ import org.gradle.api.DefaultTask
 import org.openbakery.configuration.XcodeConfig
 import org.openbakery.internal.XcodeBuildSpec
 import org.openbakery.signing.ProvisioningProfileIdReader
+import org.openbakery.signing.Signing
 
 /**
  * User: rene
@@ -60,10 +61,10 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		}
 
 		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
-			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
-				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
-				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
-					ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
+			if (buildSpec.signing != null && StringUtils.isNotEmpty(buildSpec.signing.identity)) {
+				commandList.add("CODE_SIGN_IDENTITY=" + buildSpec.signing.identity)
+				if (buildSpec.signing.mobileProvisionFile.size() == 1) {
+					ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(buildSpec.signing.mobileProvisionFile.get(0), project)
 					String uuid = provisioningProfileIdReader.getUUID()
 					commandList.add("PROVISIONING_PROFILE=" + uuid)
 				}
@@ -99,8 +100,8 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		commandList.add("SHARED_PRECOMPS_DIR=" + this.buildSpec.sharedPrecompsDir.absolutePath)
 
 
-		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + project.xcodebuild.signing.keychainPathInternal.path)
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS) && buildSpec.signing.keychainPathInternal.exists()) {
+			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + buildSpec.signing.keychainPathInternal.path)
 		}
 
 
@@ -175,4 +176,11 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		this.buildSpec.setArch(parameters)
  	}
 
+	Signing getSigning() {
+		return this.buildSpec.signing
+	}
+
+	void setEnvironment(Object parameters) {
+		this.buildSpec.setEnvironment(parameters)
+	}
 }

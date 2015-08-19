@@ -17,15 +17,15 @@ class Signing {
 	String certificateURI
 	String certificatePassword
 	List<String> mobileProvisionURI = null
-	String keychainPassword = "This_is_the_default_keychain_password"
+	String keychainPassword
 	File keychain
 	Integer timeout
-	String plugin
 
 
 	/**
 	 * internal parameters
 	 */
+	Signing parent
 	Object signingDestinationRoot
 	Object keychainPathInternal
 	final Project project
@@ -36,11 +36,14 @@ class Signing {
 	Object mobileProvisionDestinationRoot
 	List<File> mobileProvisionFile = new ArrayList<File>()
 
-
-
-
 	public Signing(Project project) {
+		this(project, null)
+	}
+
+
+	public Signing(Project project, Signing parent) {
 		this.project = project;
+		this.parent = parent
 		this.commandRunner = new CommandRunner()
 
 		this.signingDestinationRoot = {
@@ -73,7 +76,7 @@ class Signing {
 	}
 
 	void setSigningDestinationRoot(Object keychainDestinationRoot) {
-		this.destinationRoot = keychainDestinationRoot
+		this.signingDestinationRoot = keychainDestinationRoot
 	}
 
 	File getKeychainPathInternal() {
@@ -116,6 +119,10 @@ class Signing {
 
 	String getIdentity() {
 
+		if (this.identity == null && this.parent != null) {
+			return this.parent.getIdentity()
+		}
+
 		def IDENTITY_PATTERN = ~/\s*\d+\)\s*(\w+)\s*\"(.*)\"/
 
 		if (this.identity == null) {
@@ -139,6 +146,67 @@ class Signing {
 	}
 
 
+
+	String getCertificateURI() {
+		if (this.certificateURI != null) {
+			return this.certificateURI
+		}
+		if (this.parent != null) {
+			return this.parent.certificateURI
+		}
+		return null
+	}
+
+	String getCertificatePassword() {
+		if (this.certificatePassword != null) {
+			return this.certificatePassword
+		}
+		if (this.parent != null) {
+			return this.parent.certificatePassword
+		}
+		return null
+	}
+
+	List<String> getMobileProvisionURI() {
+		if (this.mobileProvisionURI != null) {
+			return this.mobileProvisionURI
+		}
+		if (this.parent != null) {
+			return this.parent.mobileProvisionURI
+		}
+		return null
+	}
+
+	String getKeychainPassword() {
+		if (this.keychainPassword != null) {
+			return this.keychainPassword
+		}
+		if (this.parent != null) {
+			return this.parent.keychainPassword
+		}
+		return "This_is_the_default_keychain_password"
+	}
+
+	Integer getTimeout() {
+		if (this.timeout != null) {
+			return this.timeout
+		}
+		if (this.parent != null) {
+			return this.parent.timeout
+		}
+		return null
+	}
+
+
+	File getKeychain() {
+		if (this.keychain != null) {
+			return this.keychain
+		}
+		if (this.parent != null) {
+			return this.parent.keychain
+		}
+		return null
+	}
 
 	@Override
 	public String toString() {

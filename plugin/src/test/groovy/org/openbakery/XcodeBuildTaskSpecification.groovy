@@ -145,6 +145,7 @@ class XcodeBuildTaskSpecification extends Specification {
 							'xcodebuild',
 							'-scheme', 'MyScheme',
 							'-sdk', XcodePlugin.SDK_IPHONESIMULATOR,
+							'ONLY_ACTIVE_ARCH=NO',
 							'-configuration', 'Debug',
 							'ARCHS=x86_64',
 							'-derivedDataPath', project.xcodebuild.derivedDataPath.absolutePath,
@@ -158,30 +159,77 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	}
 
-	/*
-	@Test
-			void run_command_with_with_merged_build_spec_2() {
 
 
+	def "build with sign settings"() {
+		setup:
+		task.sdk = XcodePlugin.SDK_IPHONEOS
+		task.signing.identity = "Me"
+
+		when:
+		task.executeTask()
 
 
-				// currently order is important
-				expectedCommandList.add("-configuration")
-				expectedCommandList.add("configuration")
-				expectedCommandList.add("-sdk")
-				expectedCommandList.add(XcodePlugin.SDK_IPHONEOS)
+		then:
+		1 * commandRunner.run(*_) >> { arguments ->
+			assertThat(arguments[1], contains(
+							'xcodebuild',
+							'-configuration', 'Debug',
+							'-sdk', XcodePlugin.SDK_IPHONEOS,
+							'-target', 'Test',
+							"CODE_SIGN_IDENTITY=Me",
+							'-derivedDataPath', project.xcodebuild.derivedDataPath.absolutePath,
+							'DSTROOT=' + task.buildSpec.dstRoot.absolutePath,
+							'OBJROOT=' + task.buildSpec.objRoot.absolutePath,
+							'SYMROOT=' + task.buildSpec.symRoot.absolutePath,
+							'SHARED_PRECOMPS_DIR=' + task.buildSpec.sharedPrecompsDir.absolutePath
+			))
 
-				expectedCommandList.add("-target")
-				expectedCommandList.add("mytarget")
+		}
+	}
 
-				addExpectedDefaultDirs()
 
-				commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
+	def "build with sign with provisioning profile"() {
+		setup:
+		task.sdk = XcodePlugin.SDK_IPHONEOS
+		task.signing.identity = "Me"
+		task.signing.mobileProvisionFile = "src/test/Resource/openbakery-example.provisionprofile"
 
-				mockControl.play {
-					xcodeBuildTask.executeTask()
-				}
-			}
-			*/
+		when:
+		task.executeTask()
+
+
+		then:
+		1 * commandRunner.run(*_) >> { arguments ->
+			assertThat(arguments[1], contains(
+							'xcodebuild',
+							'-configuration', 'Debug',
+							'-sdk', XcodePlugin.SDK_IPHONEOS,
+							'-target', 'Test',
+							"CODE_SIGN_IDENTITY=Me",
+							"PROVISIONING_PROFILE=198594d0-ba62-48fc-bc43-a3377d407727",
+							'-derivedDataPath', project.xcodebuild.derivedDataPath.absolutePath,
+							'DSTROOT=' + task.buildSpec.dstRoot.absolutePath,
+							'OBJROOT=' + task.buildSpec.objRoot.absolutePath,
+							'SYMROOT=' + task.buildSpec.symRoot.absolutePath,
+							'SHARED_PRECOMPS_DIR=' + task.buildSpec.sharedPrecompsDir.absolutePath
+			))
+
+		}
+	}
+
+
+	def "build with environment variables"() {
+		setup:
+		task.environment = ["foo": "bar"]
+
+		when:
+		task.executeTask()
+
+		then:
+		1 * commandRunner.run(*_) >> { arguments ->
+			assertThat(arguments[2], hasEntry("foo", "bar"))
+		}
+	}
 
 }

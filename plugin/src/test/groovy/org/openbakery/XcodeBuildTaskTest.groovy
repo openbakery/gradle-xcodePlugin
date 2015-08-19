@@ -172,7 +172,7 @@ class XcodeBuildTaskTest {
 	@Test
 	public void run_command_with_signIdentity() {
 		addExpectedScheme()
-		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
+		xcodeBuildTask.buildSpec.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
 		project.xcodebuild.sdk = 'iphoneos';
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add('iphoneos')
@@ -458,7 +458,7 @@ class XcodeBuildTaskTest {
 		FileUtils.writeStringToFile(keychainFile, "dummy")
 
 		project.xcodebuild.signing.keychain = keychainFile
-		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
+		xcodeBuildTask.buildSpec.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
 		project.xcodebuild.sdk = 'iphoneos'
 		expectedCommandList.add("-sdk")
 		expectedCommandList.add('iphoneos')

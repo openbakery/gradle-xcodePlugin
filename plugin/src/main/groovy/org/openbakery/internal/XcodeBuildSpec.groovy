@@ -9,6 +9,7 @@ import org.openbakery.PlistHelper
 import org.openbakery.VariableResolver
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
+import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -39,6 +40,9 @@ class XcodeBuildSpec {
 	String bundleNameSuffix
 	List<String> additionalParameters
 	List<String> arch
+	Signing signing
+	Map<String, String> environment = null
+
 
 
 	private XcodeBuildSpec parent = null
@@ -56,6 +60,11 @@ class XcodeBuildSpec {
 		this.parent = parent
 		this.variableResolver = new VariableResolver(project.projectDir, this)
 		this.plistHelper = new PlistHelper(project, commandRunner)
+		if (parent != null) {
+			this.signing = new Signing(project, parent.signing)
+		} else {
+			this.signing = new Signing(project)
+		}
 	}
 
 	String getVersion() {
@@ -340,5 +349,42 @@ class XcodeBuildSpec {
 			this.arch << parameters.toString()
 		}
 	}
+
+
+
+	void setEnvironment(Object parameters) {
+
+		if (parameters instanceof Map) {
+			this.environment = new LinkedHashMap<String, String>();
+			for (Map.Entry entry : parameters) {
+				// convert to a String, String map
+				this.environment.put(entry.key.toString(), entry.value.toString())
+			}
+		} else {
+			logger.debug("environment is string: " + environment)
+			this.environment = new LinkedHashMap<String, String>();
+
+			String environmentString = parameters.toString()
+			int index = environmentString.indexOf("=")
+			if (index > 0) {
+				this.environment.put(environmentString.substring(0, index),environmentString.substring(index + 1))
+			}
+		}
+	}
+
+
+	Map<String, String>getEnvironment() {
+		if (this.environment != null) {
+			return environment
+		}
+		if (this.parent != null) {
+			return this.parent.environment
+		}
+		return null
+	}
+
+
+
+
 
 }

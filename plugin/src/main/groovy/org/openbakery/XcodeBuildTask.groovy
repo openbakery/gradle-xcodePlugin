@@ -51,7 +51,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		def commandList = createCommandList()
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
-		Map<String, String> environment = project.xcodebuild.environment
+		Map<String, String> environment = buildSpec.environment
 
 		if (!project.getBuildDir().exists()) {
 			project.getBuildDir().mkdirs()

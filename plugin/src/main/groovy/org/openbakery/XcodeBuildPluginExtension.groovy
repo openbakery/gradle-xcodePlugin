@@ -39,7 +39,6 @@ class XcodeBuildPluginExtension {
 	Signing signing = null
 	List<String> arch = null
 	String version = null
-	Map<String, String> environment = null
 
 
 	List<Destination> availableSimulators = []
@@ -220,29 +219,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	void setEnvironment(Object environment) {
-		if (environment == null) {
-			return
-		}
-
-		if (environment instanceof Map) {
-			logger.debug("environment is Map: " + environment + " - " + environment.getClass().getName())
-			this.index = index;
-		} else {
-			logger.debug("environment is string: " + environment + " - " + environment.getClass().getName())
-			this.environment = new HashMap<String, String>();
-
-			String environmentString = environment.toString()
-			int index = environmentString.indexOf("=")
-			if (index == -1) {
-				environment.put(environmentString, null)
-			} else {
-				environment.put(environmentString.substring(0, index),environmentString.substring(index + 1))
-			}
-		}
-	}
-
-
 
 
 
@@ -390,6 +366,14 @@ class XcodeBuildPluginExtension {
 
 	void setArch(Object parameters) {
 		this.buildSpec.setArch(parameters)
+	}
+
+	void setEnvironment(Object parameters) {
+		this.buildSpec.setEnvironment(parameters)
+	}
+
+	Signing getSigning() {
+		return this.buildSpec.signing
 	}
 
 }

@@ -227,5 +227,32 @@ class XcodeBuildSpecTest {
 
 	}
 
+	@Test
+	void testMergeSigning() {
+		parentBuildSpec.signing.identity = "Me"
+		assertThat(buildSpec.signing.identity, is("Me"));
+	}
 
+	@Test
+	void testMergeEnvironment() {
+		parentBuildSpec.environment = ["foo" : "bar"]
+		assertThat(buildSpec.environment, hasEntry("foo", "bar"));
+	}
+
+
+	@Test
+	void testEnvironment() {
+		buildSpec.environment = ["foo" : 1]
+		assertThat(buildSpec.environment, hasEntry("foo", "1"));
+	}
+
+	@Test
+	void testEnvironment_asString() {
+		buildSpec.environment = "foo=bar"
+		assertThat(buildSpec.environment, hasEntry("foo", "bar"));
+
+		buildSpec.environment = "foo="
+		assertThat(buildSpec.environment, hasEntry("foo", ""));
+
+	}
 }
