@@ -10,6 +10,7 @@ import org.gradle.logging.ProgressLogger
 import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
+import org.openbakery.simulators.SimulatorApp
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.output.XcodeBuildOutputAppender
 
@@ -115,18 +116,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
-			// kill a running simulator
-			logger.info("Killing old simulators")
-			try {
-				commandRunner.run("killall", "iOS Simulator")
-			} catch (CommandRunnerException ex) {
-				// ignore, this exception means that no simulator was running
-			}
-			try {
-				commandRunner.run("killall", "Simulator") // for xcode 7
-			} catch (CommandRunnerException ex) {
-				// ignore, this exception means that no simulator was running
-			}
+       new SimulatorApp(commandRunner).killAll()
 		}
 
 		def commandList = createCommandList()
