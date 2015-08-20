@@ -3,6 +3,7 @@ package org.openbakery.packaging
 import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.PlistHelper
@@ -413,4 +414,6 @@ class PackageTaskTest {
 		assert dependsOn.contains(XcodePlugin.ARCHIVE_TASK_NAME)
 		assert dependsOn.size() == 2
 	}
+
+
 }

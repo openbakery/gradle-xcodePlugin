@@ -404,23 +404,56 @@ class XcodeBuildSpec {
 
 	@Override
 	public String toString() {
-		return "XcodeBuildSpec{" +
-						"target='" + target + '\'' +
-						", scheme='" + scheme + '\'' +
-						", configuration='" + configuration + '\'' +
-						", sdk='" + sdk + '\'' +
-						", workspace='" + workspace + '\'' +
-						", productName='" + productName + '\'' +
-						", devices=" + devices +
-						", arch=" + arch +
-						", signing=" + signing +
-						", environment=" + environment +
-						", additionalParameters=" + additionalParameters +
-						", ipaFileName='" + ipaFileName + '\'' +
-						", productType='" + productType + '\'' +
-						", bundleName='" + bundleName + '\'' +
-						", bundleNameSuffix='" + bundleNameSuffix + '\'' +
-						", parent=" + parent +
-						'}';
+		StringBuilder builder = new StringBuilder("XcodeBuildSpec{");
+		if (target != null) {
+			builder.append(" target='" + target + '\'')
+		}
+		if (scheme != null) {
+			builder.append(" scheme='" + scheme + '\'')
+		}
+		if (configuration != null) {
+			builder.append(" configuration='" + configuration + '\'')
+		}
+		if (sdk != null) {
+			builder.append(" sdk='" + sdk + '\'')
+		}
+		if (workspace != null) {
+			builder.append(" workspace='" + workspace + '\'')
+		}
+		if (productName != null) {
+			builder.append(" productName='" + productName + '\'')
+		}
+		if (devices != null) {
+			builder.append(" devices=" + devices)
+		}
+		if (arch != null) {
+			builder.append(" arch=" + arch)
+		}
+		if (signing != null) {
+			builder.append(" signing=" + signing)
+		}
+		if (environment != null) {
+			builder.append(" environment=" + environment)
+		}
+		if (additionalParameters != null) {
+			builder.append(" additionalParameters=" + additionalParameters)
+		}
+		if (ipaFileName != null) {
+			builder.append(" ipaFileName='" + ipaFileName + '\'')
+		}
+		if (productType != null) {
+			builder.append(" productType='" + productType + '\'')
+		}
+		if (bundleName != null) {
+			builder.append(" bundleName='" + bundleName + '\'')
+		}
+		if (bundleNameSuffix != null) {
+			builder.append(" bundleNameSuffix='" + bundleNameSuffix + '\'')
+		}
+		if (parent != null) {
+			builder.append(" parent=" + parent)
+		}
+		builder.append('}')
+		return builder.toString()
 	}
 }

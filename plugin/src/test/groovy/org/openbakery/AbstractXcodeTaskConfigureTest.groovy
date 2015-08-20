@@ -4,6 +4,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.Test
+import org.openbakery.internal.XcodeBuildSpec
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
@@ -37,6 +38,14 @@ class AbstractXcodeTaskConfigureTest {
 		assertThat(xcodeTask.buildSpec.getInfoPlistFile().absolutePath, endsWith("example/iOS/Example/Example/Example-Info.plist"))
 
 
+	}
+
+
+	@Test
+	void with() {
+		XcodeBuildSpec newParent = new XcodeBuildSpec(project)
+		xcodeTask.with(newParent)
+		assertThat(xcodeTask.buildSpec.parent, is(newParent))
 	}
 
 

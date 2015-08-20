@@ -11,7 +11,7 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 /**
  * Created by rene on 14.11.14.
  */
-class PackageTask extends AbstractDistributeTask {
+	class PackageTask extends AbstractDistributeTask {
 
 
 	public static final String PACKAGE_PATH = "package"
@@ -37,10 +37,12 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		if (this.buildSpec.signing == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
+			logger.info("Cannot signed with unknown signing configuration using spec " + this.buildSpec)
+			throw new IllegalArgumentException("Cannot signed with unknown signing configuration");
 		}
 
 		if (this.buildSpec.signing.identity == null) {
+			logger.info("Cannot signed with unknown signing identity using spec " + this.buildSpec)
 			throw new IllegalArgumentException("cannot signed with unknown signing identity");
 		}
 

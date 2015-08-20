@@ -383,7 +383,7 @@ class XcodeBuildPluginExtension {
 	}
 
 	XcodeBuildSpec spec() {
-		return new XcodeBuildSpec(project)
+		return new XcodeBuildSpec(project, buildSpec)
 	}
 
 }

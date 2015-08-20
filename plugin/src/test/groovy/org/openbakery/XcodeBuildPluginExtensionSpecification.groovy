@@ -43,7 +43,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 		expect:
 		extension.spec() != null
-		extension.spec().parent == null
+		extension.spec().parent != null
 
 	}
 }

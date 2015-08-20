@@ -48,6 +48,14 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	void configureTask() {
 		this.config.configuration();
+
+		// make that all depended AbstractXcodeTasks also uses the parent
+		for (Task task : getTaskDependencies().getDependencies(this)) {
+			if (task instanceof AbstractXcodeTask) {
+				AbstractXcodeTask abstractXcodeTask = (AbstractXcodeTask)task
+				abstractXcodeTask.with(this.buildSpec)
+			}
+		}
 	}
 
 
@@ -216,7 +224,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 	void with(XcodeBuildSpec newParent) {
-		this.buildSpec.with(newParent)
+		logger.info("Updated build spec for {} with {}", this, newParent)
+		this.buildSpec.parent = newParent
 	}
 
 
