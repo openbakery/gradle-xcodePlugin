@@ -54,7 +54,7 @@ plugins {
 }
 
 xcodebuild {
-  schema = 'MY-SCHEMA'
+  scheme = 'MY-SCHEMA'
   target = 'MY-TARGET'
 }
 
