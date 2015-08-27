@@ -348,7 +348,7 @@ Note: see also https://deploygate.com/docs/api
 
 ## Coverage
 
-[GCovr](http://gcovr.com) is used for coverage
+[GCovr](http://gcovr.com) is used for coverage. Make your you have enabled the code coverage support in xcode (See https://developer.apple.com/library/ios/qa/qa1514/_index.html)
 
 * _outputFormat_ - The coverage output format: can be text, xml or html
 

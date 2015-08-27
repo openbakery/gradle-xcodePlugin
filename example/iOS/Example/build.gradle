@@ -39,7 +39,7 @@ apply plugin: 'org.openbakery.xcode-plugin'
 import org.openbakery.AppExtension;
 
 xcodebuild {
-	version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
+	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 
 	target = 'Example'
 	scheme = 'Example'
@@ -47,11 +47,29 @@ xcodebuild {
 	configuration = 'Debug'
 	sdk = 'iphonesimulator'
 
-    appExtensions = [
-        new AppExtension('ExampleTodayWidget'),
-        new AppExtension('Example WatchKit App'), 
-        new AppExtension('Example WatchKit Extension')
-    ]
+	appExtensions = [
+		new AppExtension('ExampleTodayWidget'),
+		new AppExtension('Example WatchKit App'), 
+		new AppExtension('Example WatchKit Extension')
+	]
+		
+		
+	destination {
+		platform = 'iOS Simulator'
+		name = 'iPad 2'
+		os='8.*'
+	}
+	destination {
+		platform = 'iOS Simulator'
+		name = 'iPhone 4s'
+		os='8.*'
+	}	
+}
+
+
+coverage {
+	outputFormat = 'html'
+	exclude = '.*h$|.*UnitTests.*m$'
 }
 
 
@@ -78,30 +96,6 @@ task appstore(dependsOn: 'package') {
 
 
 gradle.taskGraph.whenReady { taskGraph ->
-
-	
-
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(continuous) || taskGraph.hasTask(test)) {
-		println "Configure device settings for the continuous and test build"
-
-		println "CONFIGURE INTEGRATION"
-		xcodebuild {
-		
-			destination {
-				platform = 'iOS Simulator'
-				name = 'iPad 2'
-				os='8.*'
-			}
-			destination {
-				platform = 'iOS Simulator'
-				name = 'iPhone 4s'
-				os='8.*'
-			}
-		
-		}
-	}
 
 	// ------------------------------------------------------------------------------------------
 
