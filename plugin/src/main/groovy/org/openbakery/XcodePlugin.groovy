@@ -113,6 +113,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
+	public static final String ENTITLEMENTSMODIFY_TASK_NAME = 'entitlementsModify'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -141,6 +142,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureHockeyKit(project)
 		configureKeychain(project)
 		configureInfoPlist(project)
+		configureEntitlements(project)
 		configureProvisioning(project)
 		configureAppstore(project)
 		configureHockeyApp(project)
@@ -269,6 +271,9 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('xcodebuild.ipaFileName')) {
 				project.xcodebuild.ipaFileName = project['xcodebuild.ipaFileName']
+			}
+			if (project.hasProperty('xcodebuild.appExtensions')) {
+				project.xcodebuild.appExtensions = project['xcodebuild.appExtensions']
 			}
 
 			if (project.hasProperty('hockeykit.displayName')) {
@@ -549,6 +554,7 @@ class XcodePlugin implements Plugin<Project> {
 		}
 	}
 
+
 	private void configureOCLint(Project project) {
 		OCLintTask reportTask = project.task(OCLINT_REPORT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
 
@@ -565,6 +571,10 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
+
+	private void configureEntitlements(Project project) {
+		project.task(ENTITLEMENTSMODIFY_TASK_NAME, type: EntitlementsModifyTask, group: XCODE_GROUP_NAME)
+	}
 
 	private void addDependencyToBuild(Project project, Task task) {
 		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)

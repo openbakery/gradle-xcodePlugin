@@ -169,21 +169,23 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 		if (frameworksPath.exists()) {
-			File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
-			if (!swiftSupportDirectory.exists()) {
-				swiftSupportDirectory.mkdirs()
-			}
-
 			def libNames = []
 			frameworksPath.eachFile() {
 				libNames.add(it.getName())
 			}
 
-			File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+			if (libNames) {
+				File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
+				if (!swiftSupportDirectory.exists()) {
+					swiftSupportDirectory.mkdirs()
+				}
 
-			swiftLibs.eachFile() {
-				if (libNames.contains(it.name)) {
-					copy(it, swiftSupportDirectory)
+				File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+
+				swiftLibs.eachFile() {
+					if (libNames.contains(it.name)) {
+						copy(it, swiftSupportDirectory)
+					}
 				}
 			}
 
