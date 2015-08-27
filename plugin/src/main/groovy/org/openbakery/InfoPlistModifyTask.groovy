@@ -80,6 +80,24 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			setValueForPlist(command)
 		}
 
+		// Ensure all app extensions have the exact same version info as the main app
+		if (project.xcodebuild.hasAppExtensions()) {
+			String parentAppVersion = plistHelper.getValueFromPlist(infoPlist,"CFBundleVersion")
+			String parentAppShortVersion = plistHelper.getValueFromPlist(infoPlist,"CFBundleShortVersionString")
+			project.xcodebuild.appExtensions.each {appExtension->
+				if (appExtension.infoPlistPath) {
+					def appExtensionInfoPlistFile = new File(appExtension.infoPlistPath)
+					logger.lifecycle("Updating {}", appExtensionInfoPlistFile)
+					appExtension.infoPlistConfig.each { String key, String value ->
+						plistHelper.setValueForPlist(appExtensionInfoPlistFile, key, value)
+					}
+					plistHelper.setValueForPlist(appExtensionInfoPlistFile, "CFBundleVersion", parentAppVersion)
+					plistHelper.setValueForPlist(appExtensionInfoPlistFile, "CFBundleShortVersionString",
+parentAppShortVersion)
+				}
+			}
+		}
+
 		if (!modfied) {
 			logger.lifecycle("Nothing was modifed!")
 		}
