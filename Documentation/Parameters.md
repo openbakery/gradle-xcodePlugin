@@ -345,6 +345,18 @@ Note: see also https://deploygate.com/docs/api
 * _submitPath_ - Path to the crashlytics submit command (relative to the project dir)
 
   default value: "Crashlytics.framework/submit"
+
+## Coverage
+
+[GCovr](http://gcovr.com) is used for coverage
+
+* _outputFormat_ - The coverage output format: can be text, xml or html
+
+  default value: empty - Creates text summary
+	
+* _exclude_ - Files to exclude for the coverage report as regular expresssion: e.g. '.*h$|.*UnitTests.*m$'
+
+
 	
 ## OCLint Parameters
 
@@ -387,5 +399,6 @@ oclint {
 * _maxPriority1_, _maxPriority2_, _maxPriority3_ - maximum number of violations: see http://docs.oclint.org/en/dev/manual/oclint.html#exit-status-options
 
 	default values: maxPriority1=0, maxPriority2=10, maxPriority3=20
+
 
  
