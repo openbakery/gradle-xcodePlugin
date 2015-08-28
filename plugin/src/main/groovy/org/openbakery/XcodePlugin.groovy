@@ -112,8 +112,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
-	// removed because it does not work anymore
-	// public static final String CPD_TASK_NAME = 'cpd'
+	public static final String CPD_TASK_NAME = 'cpd'
 	public static final String ENTITLEMENTSMODIFY_TASK_NAME = 'entitlementsModify'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
@@ -152,7 +151,7 @@ class XcodePlugin implements Plugin<Project> {
 		configurePackage(project)
 		configureAppledoc(project)
 		configureCoverage(project)
-		//configureCpd(project)
+		configureCpd(project)
 		configureCocoapods(project)
 		configureOCLint(project)
 		configureSimulatorTasks(project)
@@ -531,11 +530,10 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(COVERAGE_CLEAN_TASK_NAME, type: CoverageCleanTask, group: COVERAGE_GROUP_NAME)
 
 	}
-/*
+
 	private void configureCpd(Project project) {
 		project.task(CPD_TASK_NAME, type: CpdTask, group: ANALYTICS_GROUP_NAME)
 	}
-*/
 
 	private void configureDeployGate(Project project) {
 		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)

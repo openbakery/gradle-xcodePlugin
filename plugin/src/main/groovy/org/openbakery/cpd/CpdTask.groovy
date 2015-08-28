@@ -64,7 +64,7 @@ class CpdTask extends AbstractXcodeTask {
 
 	private void downloadObjcGrammar(File destinationDirectory) {
 		def objCJarFile = new File(destinationDirectory, "ObjCLanguage-${OBJC_LANG_VERSION}.jar")
-		def objcUrl = OBJC_LANG_SOURCE + "ObjCLanguage-${OBJC_LANG_VERSION}.jar"
+		def objcUrl = OBJC_LANG_SOURCE + "/ObjCLanguage-${OBJC_LANG_VERSION}.jar"
 		if (!objCJarFile.exists()) {
 			downloadFile(objCJarFile, objcUrl)
 		}
