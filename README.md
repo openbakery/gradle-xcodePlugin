@@ -70,3 +70,13 @@ After you have fetched the example go to the `example/iOS/Example` directory and
 * Perform a device build and upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
 
+# Collaborate
+
+I'm always happy to receive pull requests with new features and if you send a pull request please consider the following things:
+
+* Use the _develop_ branch for pull requests, because all the new stuff is implemented in the _develop_ branch and also pull requests are always merge into _develop_
+* Make sure that all unit tests are working before you send the pull request. Just run 'gradle test' 
+* I urge you to write unit tests.
+* For unit test please use the [spock framework](http://spockframework.org) for mocking. I want to remove the old gmock framework and port the old tests to use spock.
+* If a pull request does not contain any unit tests, I always think twice if I should merge it at all.
+
