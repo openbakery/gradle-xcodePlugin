@@ -75,6 +75,7 @@ After you have fetched the example go to the `example/iOS/Example` directory and
 I'm always happy to receive pull requests with new features and if you send a pull request please consider the following things:
 
 * Use the _develop_ branch for pull requests, because all the new stuff is implemented in the _develop_ branch and also pull requests are always merge into _develop_
+* Use Tabs instead of spaces.
 * Make sure that all unit tests are working before you send the pull request. Just run 'gradle test' 
 * I urge you to write unit tests.
 * For unit test please use the [spock framework](http://spockframework.org) for mocking. I want to remove the old gmock framework and port the old tests to use spock.
