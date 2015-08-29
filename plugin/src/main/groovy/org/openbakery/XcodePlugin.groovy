@@ -59,6 +59,9 @@ import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.simulators.SimulatorsCleanTask
 import org.openbakery.simulators.SimulatorsCreateTask
 import org.openbakery.simulators.SimulatorsListTask
+import org.openbakery.simulators.SimulatorsStartTask
+import org.openbakery.simulators.SimulatorsRunAppTask
+import org.openbakery.simulators.SimulatorsInstallAppTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -84,6 +87,9 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String SIMULATORS_CREATE_TASK_NAME = "simulatorsCreate"
 	public static final String SIMULATORS_CLEAN_TASK_NAME = "simulatorsClean"
+	public static final String SIMULATORS_START_TASK_NAME = "simulatorsStart"
+	public static final String SIMULATORS_INSTALL_APP_TASK_NAME = "simulatorsInstallApp"
+	public static final String SIMULATORS_RUN_APP_TASK_NAME = "simulatorsRunApp"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
 	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
@@ -422,6 +428,9 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CREATE_TASK_NAME, type: SimulatorsCreateTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CLEAN_TASK_NAME, type: SimulatorsCleanTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_START_TASK_NAME, type: SimulatorsStartTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_RUN_APP_TASK_NAME, type: SimulatorsRunAppTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_INSTALL_APP_TASK_NAME, type: SimulatorsInstallAppTask, group: SIMULATORS_LIST_TASK_NAME)
 	}
 
 	private void configureHockeyKit(Project project) {

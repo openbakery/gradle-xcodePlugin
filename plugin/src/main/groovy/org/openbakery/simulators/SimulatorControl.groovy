@@ -45,6 +45,7 @@ class SimulatorControl {
 	ArrayList<SimulatorDeviceType> deviceTypes
 	ArrayList<SimulatorRuntime> runtimes
 	HashMap<SimulatorRuntime, List<SimulatorDevice>>devices;
+	HashMap<String, SimulatorDevice> identifierToDevice;
 
 	Project project
 
@@ -56,6 +57,7 @@ class SimulatorControl {
 		runtimes = new ArrayList<>()
 		devices = new HashMap<>()
 		deviceTypes = new ArrayList<>()
+    identifierToDevice = new HashMap<>()
 
 		Section section = null;
 		String simctlList = simctl("list")
@@ -93,6 +95,7 @@ class SimulatorControl {
 					if (simulatorDevices != null) {
 						SimulatorDevice device = new SimulatorDevice(line)
 						simulatorDevices.add(device)
+            identifierToDevice[device.identifier]=device
 					}
 
 					break
@@ -112,6 +115,17 @@ class SimulatorControl {
 	}
 
 
+	public void waitForDevice(SimulatorDevice device, int timeoutMS=10000) {
+     def start = System.currentTimeMillis()
+     while( (System.currentTimeMillis()-start) < timeoutMS ) {
+		   parse()
+       def polledDevice = identifierToDevice[device.identifier]
+       if ( polledDevice != null && polledDevice.state == "Booted" )
+          return
+       sleep(500)
+     }
+     throw new Exception("Timeout waiting for "+device)
+	}
 
 	List<SimulatorRuntime> getRuntimes() {
 		if (runtimes == null) {
