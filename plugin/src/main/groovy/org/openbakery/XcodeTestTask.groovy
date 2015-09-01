@@ -1,17 +1,15 @@
 package org.openbakery
 
 import groovy.xml.MarkupBuilder
-import groovy.xml.StreamingMarkupBuilder
-import groovy.xml.XmlUtil
-import org.apache.commons.io.input.ReversedLinesFileReader
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.ProgressLogger
 import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
+
 import org.openbakery.output.TestBuildOutputAppender
-import org.openbakery.output.XcodeBuildOutputAppender
+import org.openbakery.simulators.SimulatorControl
 
 
 class TestResult {
@@ -87,6 +85,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
+	SimulatorControl simulatorControl
 
 	XcodeTestTask() {
 		super()
@@ -96,6 +95,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
+		this.simulatorControl = new SimulatorControl(project)
 	}
 
 	void executeTask() {
@@ -109,19 +109,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 
-		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
-			// kill a running simulator
-			logger.info("Killing old simulators")
-			try {
-				commandRunner.run("killall", "iOS Simulator")
-			} catch (CommandRunnerException ex) {
-				// ignore, this exception means that no simulator was running
-			}
-			try {
-				commandRunner.run("killall", "Simulator") // for xcode 7
-			} catch (CommandRunnerException ex) {
-				// ignore, this exception means that no simulator was running
-			}
+		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
+			simulatorControl.killAll()
 		}
 
 		def commandList = createCommandList()

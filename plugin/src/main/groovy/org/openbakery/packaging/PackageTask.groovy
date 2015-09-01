@@ -96,38 +96,6 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 
 	}
 
-	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
-
-		def mobileProvisionFileMap = [:]
-
-		for (File mobileProvisionFile : this.buildSpec.signing.mobileProvisionFile) {
-			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
-			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
-		}
-
-		for ( entry in mobileProvisionFileMap ) {
-			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
-				return entry.value
-			}
-		}
-
-		// match wildcard
-		for ( entry in mobileProvisionFileMap ) {
-			if (entry.key.equals("*")) {
-				return entry.value
-			}
-
-			if (entry.key.endsWith("*")) {
-				String key = entry.key[0..-2]
-				if (bundleIdentifier.toLowerCase().startsWith(key)) {
-					return entry.value
-				}
-			}
-		}
-
-		return null
-	}
-
 
 	def addSwiftSupport(File payloadPath,  String applicationBundleName) {
 
@@ -137,10 +105,23 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 		}
 
 		File swiftLibArchive = new File(getArchiveDirectory(), "SwiftSupport")
+		if (swiftLibArchive.exists()) {
+			copy(swiftLibArchive, payloadPath.getParentFile())
+			return new File(payloadPath.getParentFile(), "SwiftSupport");
+		}
 
-		copy(swiftLibArchive, payloadPath.getParentFile())
-		return new File(payloadPath.getParentFile(), "SwiftSupport");;
-
+		return null
+	}
+	
+	def addWatchKitSupport(File payloadPath) {
+		File watchKitSupport = null
+		if (project.xcodebuild.hasWatchKitExtension) {
+			watchKitSupport = new File(payloadPath.getParentFile(), "WatchKitSupport");
+			watchKitSupport.mkdirs();
+			File wkFile = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit/WK");
+			copy(wkFile, new File(watchKitSupport, "WK"));
+		}
+		return watchKitSupport
 	}
 
 
@@ -151,11 +132,8 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 		}
 
 		File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
-		if (swiftSupportPath != null) {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath)
-		} else {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath)
-		}
+		File watchKitSupportPath = addWatchKitSupport(packagePath)
+		createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath, watchKitSupportPath)
 	}
 
 	private void createIpa(File payloadPath) {
@@ -232,7 +210,7 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 
 		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
 
-		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
+		File mobileProvisionFile = project.xcodebuild.getMobileProvisionFileForIdentifier(bundleIdentifier);
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 

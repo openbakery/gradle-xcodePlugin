@@ -60,6 +60,9 @@ import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.simulators.SimulatorsCleanTask
 import org.openbakery.simulators.SimulatorsCreateTask
 import org.openbakery.simulators.SimulatorsListTask
+import org.openbakery.simulators.SimulatorsStartTask
+import org.openbakery.simulators.SimulatorsRunAppTask
+import org.openbakery.simulators.SimulatorsInstallAppTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -85,6 +88,9 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String SIMULATORS_CREATE_TASK_NAME = "simulatorsCreate"
 	public static final String SIMULATORS_CLEAN_TASK_NAME = "simulatorsClean"
+	public static final String SIMULATORS_START_TASK_NAME = "simulatorsStart"
+	public static final String SIMULATORS_INSTALL_APP_TASK_NAME = "simulatorsInstallApp"
+	public static final String SIMULATORS_RUN_APP_TASK_NAME = "simulatorsRunApp"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
 	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykitManifest"
@@ -112,6 +118,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
+	public static final String ENTITLEMENTSMODIFY_TASK_NAME = 'entitlementsModify'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -140,6 +147,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureHockeyKit(project)
 		configureKeychain(project)
 		configureInfoPlist(project)
+		configureEntitlements(project)
 		configureProvisioning(project)
 		configureAppstore(project)
 		configureHockeyApp(project)
@@ -268,6 +276,9 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('xcodebuild.ipaFileName')) {
 				project.xcodebuild.ipaFileName = project['xcodebuild.ipaFileName']
+			}
+			if (project.hasProperty('xcodebuild.appExtensions')) {
+				project.xcodebuild.appExtensions = project['xcodebuild.appExtensions']
 			}
 
 			if (project.hasProperty('hockeykit.displayName')) {
@@ -449,6 +460,9 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CREATE_TASK_NAME, type: SimulatorsCreateTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CLEAN_TASK_NAME, type: SimulatorsCleanTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_START_TASK_NAME, type: SimulatorsStartTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_RUN_APP_TASK_NAME, type: SimulatorsRunAppTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_INSTALL_APP_TASK_NAME, type: SimulatorsInstallAppTask, group: SIMULATORS_LIST_TASK_NAME)
 	}
 
 	private void configureHockeyKit(Project project) {
@@ -529,7 +543,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(CPD_TASK_NAME, type: CpdTask, group: ANALYTICS_GROUP_NAME)
 	}
 
-
 	private void configureDeployGate(Project project) {
 		project.task(DEPLOYGATE_CLEAN_TASK_NAME, type: DeployGateCleanTask, group: DEPLOYGATE_GROUP_NAME)
 		project.task(DEPLOYGATE_TASK_NAME, type: DeployGateUploadTask, group: DEPLOYGATE_GROUP_NAME)
@@ -548,6 +561,7 @@ class XcodePlugin implements Plugin<Project> {
 		}
 	}
 
+
 	private void configureOCLint(Project project) {
 		OCLintTask reportTask = project.task(OCLINT_REPORT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)
 
@@ -564,6 +578,10 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
+
+	private void configureEntitlements(Project project) {
+		project.task(ENTITLEMENTSMODIFY_TASK_NAME, type: EntitlementsModifyTask, group: XCODE_GROUP_NAME)
+	}
 
 	private void addDependencyToBuild(Project project, Task task) {
 		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)

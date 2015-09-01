@@ -341,11 +341,11 @@ class PackageTaskTest {
 		packageTask.buildSpec.signing.mobileProvisionFile = wildcardMobileprovision
 
 
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.ExampleWidget") == widgetMobileprovision
+		assert project.xcodebuild.getMobileProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
+		assert project.xcodebuild.getMobileProvisionFileForIdentifier("org.openbakery.ExampleWidget") == widgetMobileprovision
 
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Test") == wildcardMobileprovision
-		assert packageTask.getMobileProvisionFileForIdentifier("org.Test") == wildcardMobileprovision
+		assert project.xcodebuild.getMobileProvisionFileForIdentifier("org.openbakery.Test") == wildcardMobileprovision
+		assert project.xcodebuild.getMobileProvisionFileForIdentifier("org.Test") == wildcardMobileprovision
 
 	}
 

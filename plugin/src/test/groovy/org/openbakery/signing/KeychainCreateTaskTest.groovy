@@ -1,15 +1,13 @@
 package org.openbakery.signing
 
-import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
+import org.junit.Test
 import org.openbakery.CommandRunner
 import org.openbakery.Version
-import org.openbakery.signing.KeychainCreateTask
-import org.junit.Test
 
 /**
  * Created with IntelliJ IDEA.
