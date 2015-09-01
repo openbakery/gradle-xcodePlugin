@@ -107,7 +107,7 @@ class PackageTaskOSXTest {
 				"/var/tmp/gradle.keychain"
 
 		]
-		commandRunnerMock.run(commandList)
+		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
 
 	}
 

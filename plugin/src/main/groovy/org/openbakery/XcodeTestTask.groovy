@@ -1,17 +1,15 @@
 package org.openbakery
 
 import groovy.xml.MarkupBuilder
-import groovy.xml.StreamingMarkupBuilder
-import groovy.xml.XmlUtil
-import org.apache.commons.io.input.ReversedLinesFileReader
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.ProgressLogger
 import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
+
 import org.openbakery.output.TestBuildOutputAppender
-import org.openbakery.output.XcodeBuildOutputAppender
+import org.openbakery.simulators.SimulatorControl
 
 
 class TestResult {
@@ -84,12 +82,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
-	def TEST_SUITE_PATTERN = ~/.*Test Suite '(.*)'(.*)/
-
-
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
+	SimulatorControl simulatorControl
 
 	XcodeTestTask() {
 		super()
@@ -100,6 +96,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
+		this.simulatorControl = new SimulatorControl(project)
 	}
 
 	@TaskAction
@@ -115,18 +112,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
-			// kill a running simulator
-			logger.info("Killing old simulators")
-			try {
-				commandRunner.run("killall", "iOS Simulator")
-			} catch (CommandRunnerException ex) {
-				// ignore, this exception means that no simulator was running
-			}
-			try {
-				commandRunner.run("killall", "Simulator") // for xcode 7
-			} catch (CommandRunnerException ex) {
-				// ignore, this exception means that no simulator was running
-			}
+			simulatorControl.killAll()
 		}
 
 		def commandList = createCommandList()
@@ -210,8 +196,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		def resultList = []
 
-		List<String> testSuites = null;
-
 		int testRun = 0;
 		boolean endOfDestination = false;
 
@@ -271,25 +255,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 
-			def testSuiteMatcher = TEST_SUITE_PATTERN.matcher(line)
-			if (testSuiteMatcher.matches()) {
-
-				String testSuiteName = testSuiteMatcher[0][1].trim();
-				def testSuiteAction = testSuiteMatcher[0][2].trim();
-
-
-				if (testSuiteAction.startsWith('started')) {
-					if (testSuites == null) {
-						testSuites = new ArrayList<String>();
-					}
-					testSuites.add(testSuiteName);
-				} else if (testSuiteAction.startsWith('finished') || testSuiteAction.startsWith('passed') || testSuiteAction.startsWith('failed')) {
-					testSuites.remove(testSuiteName);
-				}
-
-
-			}
-
 			def testSuccessMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
 			def testFailedMatcher = TEST_FAILED_PATTERN.matcher(line)
 
@@ -304,7 +269,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 			if( endOfDestination ) {
-				Destination destination = project.xcodebuild.availableDestinations[testRun]
+				Destination destination = project.xcodebuild.availableDestinations[(testRun - 1)]
 
 				if (this.allResults.containsKey(destination)) {
 					def destinationResultList = this.allResults.get(destination)
@@ -314,7 +279,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 
 				resultList = []
-				testSuites = null
 				endOfDestination = false
 			} else {
 				if (output != null) {
@@ -339,16 +303,16 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	def store() {
 		logger.debug("store to test-result.xml")
+
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)
 
 		xmlBuilder.testsuites() {
-			for (Destination destination in project.xcodebuild.availableDestinations) {
-				String name = destination.toPrettyString()
+			for (e in this.allResults) {
+				String name = e.key.toPrettyString()
 
-				def resultList = this.allResults[destination]
-
+				def resultList = e.value
 				int success = 0;
 				int errors = 0;
 				if (resultList != null) {

@@ -69,7 +69,9 @@ class CommandRunner {
 		if (environment != null) {
 			logger.debug("with additional environment variables: {}", environment)
 		}
-		def processBuilder = new ProcessBuilder(commandList)
+
+		def commandsAsStrings = commandList.collect { it.toString() } // GStrings don't play well with ProcessBuilder
+		def processBuilder = new ProcessBuilder(commandsAsStrings)
 		processBuilder.redirectErrorStream(true)
 		processBuilder.directory(new File(directory))
 		if (environment != null) {
@@ -78,6 +80,9 @@ class CommandRunner {
 		}
 		def process = processBuilder.start()
 
+    if( resultStringBuilder == null ) {
+      resultStringBuilder = new StringBuilder()
+    }
 
 		processInputStream(process.inputStream, outputAppender)
 
@@ -85,7 +90,11 @@ class CommandRunner {
 		process.waitFor()
 		readerThread.join()
 		if (process.exitValue() > 0) {
-			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList))
+      def lastLines = resultStringBuilder.toString().split('\\n');
+      lastLines = lastLines[0 .. Math.min(lastLines.size(), 10)-1];
+      lastLines = lastLines.join('\n')
+
+			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList)+"\nTail of output:\n"+lastLines)
 		}
 
 	}
@@ -149,7 +158,6 @@ class CommandRunner {
 		run(".", commandList, null, outputAppender)
 	}
 
-
 	def run(List<String> commandList) {
 		run(".", commandList, null, null)
 	}
@@ -158,7 +166,13 @@ class CommandRunner {
 		run(Arrays.asList(commandList));
 	}
 
+	def run(List<String> commandList, Map<String, String> environment) {
+		run(".", commandList, environment, null)
+	}
 
+	def run(List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+		run(".", commandList, environment, outputAppender)
+	}
 
 	String runWithResult(String... commandList) {
 		return runWithResult(Arrays.asList(commandList));

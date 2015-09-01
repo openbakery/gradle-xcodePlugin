@@ -10,6 +10,7 @@ class OCLintPluginExtension {
 	def String reportType = "html"
 
 	def rules = []
+	def disableRules = []
 	def excludes = []
 
 	def maxPriority1 = 0

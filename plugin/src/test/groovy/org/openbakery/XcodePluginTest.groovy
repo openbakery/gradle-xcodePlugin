@@ -23,6 +23,7 @@ import org.gradle.api.tasks.TaskDependency
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
+import org.openbakery.cpd.CpdTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
@@ -67,6 +68,11 @@ class XcodePluginTest {
 	void contain_task_infoplist_modify() {
 		assert project.tasks.findByName('infoplistModify') instanceof InfoPlistModifyTask
 	}
+
+    @Test
+    void contain_task_entitlements_modify() {
+        assert project.tasks.findByName('entitlementsModify') instanceof EntitlementsModifyTask
+    }
 
 	@Test
 	void contain_task_keychain_create() {
@@ -178,4 +184,14 @@ class XcodePluginTest {
 		assertThat(dependency.getDependencies(reportTask), hasItem(project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)))
 	}
 
+
+	@Test
+	void cpdTasks() {
+		CpdTask cpdTask = project.tasks.findByName(XcodePlugin.CPD_TASK_NAME)
+		assertThat(cpdTask, is(instanceOf(CpdTask)))
+
+		assertThat(cpdTask.group, is(XcodePlugin.ANALYTICS_GROUP_NAME))
+
+
+	}
 }
