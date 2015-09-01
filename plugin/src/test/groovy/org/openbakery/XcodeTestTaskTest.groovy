@@ -6,6 +6,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.simulators.SimulatorControl
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -25,6 +26,7 @@ class XcodeTestTaskTest {
 
 	GMockController mockControl
 	CommandRunner commandRunnerMock
+	SimulatorControl simulatorControlMock
 
 	Project project
 	XcodeTestTask xcodeTestTask
@@ -50,13 +52,16 @@ class XcodeTestTaskTest {
 	def setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
+		simulatorControlMock = mockControl.mock(SimulatorControl)
+
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: 'org.openbakery.xcode-plugin'
 
 		xcodeTestTask = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME);
-		xcodeTestTask.setProperty("commandRunner", commandRunnerMock)
+		xcodeTestTask.commandRunner = commandRunnerMock
+		xcodeTestTask.simulatorControl = simulatorControlMock
 
 
 		destinationPad = createDestination("iPad", "iPad Air")
@@ -271,8 +276,7 @@ class XcodeTestTaskTest {
 	@Test
 	void testCommandForIOS() {
 
-		commandRunnerMock.run("killall", "iOS Simulator")
-		commandRunnerMock.run("killall", "Simulator")
+		simulatorControlMock.killAll()
 
 		project.xcodebuild.sdk = 'iphonesimulator'
 		project.xcodebuild.target = 'Test';
@@ -306,6 +310,10 @@ class XcodeTestTaskTest {
 	@Test
 	void testCommandForIOS_killFailed() {
 
+		SimulatorControl simulatorControl = new SimulatorControl(project)
+		simulatorControl.commandRunner = commandRunnerMock
+		xcodeTestTask.simulatorControl = simulatorControl
+
 		commandRunnerMock.run("killall", "iOS Simulator").raises(new CommandRunnerException("failed"))
 		commandRunnerMock.run("killall", "Simulator")
 
@@ -337,5 +345,8 @@ class XcodeTestTaskTest {
 		}
 
 	}
+
+
+
 
 }

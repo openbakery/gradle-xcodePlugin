@@ -1,18 +1,15 @@
 package org.openbakery
 
 import groovy.xml.MarkupBuilder
-import groovy.xml.StreamingMarkupBuilder
-import groovy.xml.XmlUtil
-import org.apache.commons.io.input.ReversedLinesFileReader
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.ProgressLogger
 import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
-import org.openbakery.simulators.SimulatorApp
+
 import org.openbakery.output.TestBuildOutputAppender
-import org.openbakery.output.XcodeBuildOutputAppender
+import org.openbakery.simulators.SimulatorControl
 
 
 class TestResult {
@@ -88,6 +85,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
+	SimulatorControl simulatorControl
 
 	XcodeTestTask() {
 		super()
@@ -98,6 +96,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
+		this.simulatorControl = new SimulatorControl(project)
 	}
 
 	@TaskAction
@@ -113,7 +112,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
-       new SimulatorApp(commandRunner).killAll()
+			simulatorControl.killAll()
 		}
 
 		def commandList = createCommandList()

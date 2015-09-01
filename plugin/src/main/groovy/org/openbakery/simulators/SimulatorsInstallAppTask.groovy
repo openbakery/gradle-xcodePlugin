@@ -1,14 +1,9 @@
 package org.openbakery.simulators
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.XcodePlugin
-import org.openbakery.PlistHelper
-import org.openbakery.simulators.SimulatorControl
-import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
-import org.openbakery.simulators.SimulatorApp
 
 class SimulatorsInstallAppTask extends DefaultTask {
   SimulatorControl simulatorControl
@@ -23,10 +18,10 @@ class SimulatorsInstallAppTask extends DefaultTask {
   @TaskAction
   void run() {
     try {
-       simulatorControl.simctl("install","booted", project.xcodebuild.applicationBundle.absolutePath)
+      simulatorControl.simctl("install", "booted", project.xcodebuild.applicationBundle.absolutePath)
     } catch (CommandRunnerException ex) {
-        println "Unable to install"+project.xcodebuild.applicationBundle.absolutePath
-        throw ex
+      println "Unable to install" + project.xcodebuild.applicationBundle.absolutePath
+      throw ex
     }
   }
 }
