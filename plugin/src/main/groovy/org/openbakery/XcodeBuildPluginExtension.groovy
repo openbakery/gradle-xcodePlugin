@@ -254,6 +254,12 @@ class XcodeBuildPluginExtension {
 	List<Destination> getAvailableDestinations() {
 		def availableDestinations = []
 
+
+		if (isSDK(XcodePlugin.SDK_MACOSX)) {
+			availableDestinations << new Destination("OS X", "OS X", "10.x")
+			return availableDestinations
+		}
+
 		if (isSimulatorBuild()) {
 			// filter only on simulator builds
 			for (Destination destination in this.destinations) {

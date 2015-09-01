@@ -286,7 +286,7 @@ class XcodeBuildPluginExtensionTest {
 
 		extension.sdk = XcodePlugin.SDK_MACOSX
 
-		assert extension.getAvailableDestinations().isEmpty()
+		assert extension.getAvailableDestinations().size() == 1
 	}
 
 	@Test
