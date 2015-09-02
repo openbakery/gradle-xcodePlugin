@@ -1,10 +1,11 @@
-# 0.11.5
+# 0.11.5 (September 1, 2015)
 
 Changes
-* added support for CPD reports. (Thanks to rahulsom) Issue #191
-* added that OCLint rules can be disabled
-* Fixed an issue where codesign and crashlytics would use the wrong version of developer tools
-* added new simulator task for starting the simulator and running an app in the simulator  (Thanks to jeduden)
+* Added support for CPD reports. (Thanks to rahulsom) Issue #191
+* Added that OCLint rules can be disabled
+* Added support for WatchKit (Thanks to icecrystal23) Issue #185
+* Fixed an issue where codesign and crashlytics would use the wrong version of developer tools (Thanks to icecrystal23) Issue #197
+* Added new simulator task for starting the simulator and running an app in the simulator (Thanks to jeduden) Issue #204
 
 ## 0.11.4 (July 28, 2015)
 
