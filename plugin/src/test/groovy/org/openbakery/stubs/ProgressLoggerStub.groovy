@@ -16,7 +16,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	void setDescription(String s) {
+	ProgressLogger setDescription(String s) {
 	}
 
 	@Override
@@ -25,7 +25,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	void setShortDescription(String s) {
+	ProgressLogger setShortDescription(String s) {
 	}
 
 	@Override
@@ -34,7 +34,7 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	void setLoggingHeader(String s) {
+	ProgressLogger setLoggingHeader(String s) {
 	}
 
 	@Override
@@ -67,8 +67,4 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	}
 
-	@Override
-	OperationIdentifier currentOperationId() {
-		return null
-	}
 }

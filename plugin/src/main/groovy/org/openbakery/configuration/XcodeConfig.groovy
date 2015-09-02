@@ -56,10 +56,10 @@ class XcodeConfig {
 			return;
 		}
 
-		setAppProvisioningProfileId()
+		//setAppProvisioningProfileId()
 
-		if (project.xcodebuild.hasAppExtensions()) {
-			project.xcodebuild.appExtensions.each { appExtension ->
+		if (this.buildSpec.hasAppExtensions()) {
+			this.buildSpec.appExtensions.each { appExtension ->
 				configureAppExtension(appExtension.name)
 			}
 		}
@@ -82,11 +82,15 @@ class XcodeConfig {
 	}
 
 	def setAppProvisioningProfileId() {
+		throw new IllegalStateException("the xcodeConfig should only parse the config, but not modifing it!!!")
+/*
 		def value = getAppProvisioningProfileID()
 		if (value) {
-			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(project.xcodebuild.target)
+			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(buildSpec.target)
+
 			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
 		}
+		*/
 	}
 
 	def configureAppExtension(String targetName) {
@@ -97,14 +101,17 @@ class XcodeConfig {
 	}
 
 	def setProvisioningProfileIdForExtension(String targetName) {
+		throw new IllegalStateException("the xcodeConfig should only parse the config, but not modifing it!!!")
+/*
 		def value = getExtensionProvisioningProfileID(targetName)
 		if (value) {
 			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(targetName)
 			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
 		}
+		*/
 	}
 
-
+/*
 	String getExtensionProvisioningProfileID(name) {
 		def appExtension = project.xcodebuild.appExtensions.find {  it.name.equalsIgnoreCase(name) }
 		if (null == appExtension) {
@@ -120,6 +127,10 @@ class XcodeConfig {
 	}
 
 	def getProvisioningProfileIDFromInfoPlist(String infoPlistPath) {
+
+		/// Use ProvisioningProfileIdReader !!!!!!
+
+
 		if (infoPlistPath) {
 			String bundleIdentifier = plistHelper.getValueFromPlist(infoPlistPath, "CFBundleIdentifier")
 			File provisioningProfile = project.xcodebuild.getMobileProvisionFileForIdentifier(bundleIdentifier)
@@ -135,6 +146,7 @@ class XcodeConfig {
 		}
 		return null
 	}
+	*/
 
 	void createXcode5DeviceList() {
 

@@ -7,11 +7,9 @@ import org.gradle.api.tasks.TaskAction
  */
 class EntitlementsModifyTask extends AbstractDistributeTask  {
 	public EntitlementsModifyTask() {
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
-	@TaskAction
-	void prepare() {
+	void executeTask() {
 		if (project.xcodebuild.entitlementsPath) {
 			def entitlementsFile = new File(project.projectDir, project.xcodebuild.entitlementsPath)
 

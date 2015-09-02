@@ -74,11 +74,11 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 
 		for (File bundle : appBundles) {
 
-			if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
+			if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 				embedProvisioningProfileToBundle(bundle)
 			}
 
-			if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
+			if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 				File embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded.provisionprofile")
 				embeddedProvisionFile.delete()
 			}
@@ -88,12 +88,44 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 			codesign(bundle)
 		}
 
-		if (project.xcodebuild.isSdk(XcodePlugin.SDK_IPHONEOS)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONEOS)) {
 			createIpa(applicationFolder);
 		} else {
 			createPackage(appBundles.last());
 		}
 
+	}
+
+	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
+
+		def mobileProvisionFileMap = [:]
+
+		for (File mobileProvisionFile : this.buildSpec.signing.mobileProvisionFile) {
+			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
+			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+		}
+
+		for ( entry in mobileProvisionFileMap ) {
+			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
+				return entry.value
+			}
+		}
+
+		// match wildcard
+		for ( entry in mobileProvisionFileMap ) {
+			if (entry.key.equals("*")) {
+				return entry.value
+			}
+
+			if (entry.key.endsWith("*")) {
+				String key = entry.key[0..-2]
+				if (bundleIdentifier.toLowerCase().startsWith(key)) {
+					return entry.value
+				}
+			}
+		}
+
+		return null
 	}
 
 
@@ -115,7 +147,7 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 	
 	def addWatchKitSupport(File payloadPath) {
 		File watchKitSupport = null
-		if (project.xcodebuild.hasWatchKitExtension) {
+		if (this.buildSpec.hasWatchKitExtension) {
 			watchKitSupport = new File(payloadPath.getParentFile(), "WatchKitSupport");
 			watchKitSupport.mkdirs();
 			File wkFile = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit/WK");
@@ -210,7 +242,7 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 
 		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
 
-		File mobileProvisionFile = project.xcodebuild.getMobileProvisionFileForIdentifier(bundleIdentifier);
+		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 

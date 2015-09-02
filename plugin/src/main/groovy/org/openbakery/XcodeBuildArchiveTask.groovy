@@ -176,7 +176,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			}
 
 			if (libNames) {
-				File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
+				File swiftSupportDirectory = new File(archiveDirectory, "SwiftSupport");
 				if (!swiftSupportDirectory.exists()) {
 					swiftSupportDirectory.mkdirs()
 				}

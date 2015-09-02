@@ -23,8 +23,7 @@ class SimulatorsRunAppTask extends AbstractXcodeTask {
     return bundle.absolutePath + "/"
   }
 
-  @TaskAction
-  void run() {
+  void executeTask() {
     if (!project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
       throw new IllegalArgumentException("Can only run app in simulator if the sdk is " + XcodePlugin.SDK_IPHONESIMULATOR + " but was " + project.xcodebuild.sdk)
     }

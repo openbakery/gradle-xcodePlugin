@@ -115,10 +115,10 @@ class XcodeProjectFile {
 			logger.info("setting infoPlist: {}", buildSpec.infoPlist)
 		}
 
-		if (project.xcodebuild.entitlementsPath == null) {
+		if (buildSpec.entitlementsPath == null) {
 			String key = "objects." + buildConfiguration + ".buildSettings.CODE_SIGN_ENTITLEMENTS"
-			project.xcodebuild.entitlementsPath = config.getString(key)
-			logger.info("entitlements path: {}", project.xcodebuild.entitlementsPath)
+			buildSpec.entitlementsPath = config.getString(key)
+			logger.info("entitlements path: {}", buildSpec.entitlementsPath)
 		}
 	}
 
@@ -130,7 +130,7 @@ class XcodeProjectFile {
 			projectTargets[targetName] = target
 			String type = getValueFromTarget(targetName, PRODUCT_TYPE_KEY)
 			if (type.equalsIgnoreCase("com.apple.product-type.watchkit-extension")) {
-				project.xcodebuild.hasWatchKitExtension = true;
+				buildSpec.hasWatchKitExtension = true;
 			}
 		}
 
@@ -141,7 +141,7 @@ class XcodeProjectFile {
 	}
 
 	String getValueFromBuildTarget(String key) {
-		getValueFromTarget(project.xcodebuild.target, key)
+		getValueFromTarget(buildSpec.target, key)
 	}
 
 	String getValueFromTarget(String targetName, String key) {

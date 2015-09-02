@@ -109,7 +109,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 
-		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (this.buildSpec.isSdk(XcodePlugin.SDK_IPHONESIMULATOR)) {
 			simulatorControl.killAll()
 		}
 
