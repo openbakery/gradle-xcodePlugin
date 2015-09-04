@@ -47,12 +47,6 @@ xcodebuild {
 	configuration = 'Debug'
 	sdk = 'iphonesimulator'
 
-	appExtensions = [
-		new AppExtension('ExampleTodayWidget'),
-		new AppExtension('Example WatchKit App'), 
-		new AppExtension('Example WatchKit Extension')
-	]
-		
 		
 	destination {
 		platform = 'iOS Simulator'
