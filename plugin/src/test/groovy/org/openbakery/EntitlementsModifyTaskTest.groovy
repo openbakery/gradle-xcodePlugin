@@ -50,7 +50,7 @@ class EntitlementsModifyTaskTest {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
-
+/*
 	@Test
 	void testModifyAppGroup() {
 		def value = "group.ZillowRE.test"
@@ -63,4 +63,5 @@ class EntitlementsModifyTaskTest {
 		}
 
 	}
+	*/
 }

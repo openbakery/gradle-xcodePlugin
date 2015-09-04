@@ -3,9 +3,9 @@ package org.openbakery.signing
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass
 import org.openbakery.CommandRunner
 import org.openbakery.Version
+import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
@@ -40,7 +40,7 @@ class KeychainCreateTaskTest {
 		keychainDestinationFile = new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName())
 	}
 
-	@AfterClass
+	@AfterTest
 	def cleanAfterTest() {
 		certificateFile.delete();
 		new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName()).delete()

@@ -17,15 +17,10 @@ class XcodeProjectFile {
 
 	private static Logger logger = LoggerFactory.getLogger(XcodeProjectFile.class)
 
-	private static final String PRODUCT_TYPE_KEY = ".productType";
-
 	CommandRunner commandRunner = new CommandRunner()
 
 	Project project
 	File projectFile
-
-	// a map from target names to target IDs in the XML objects
-	def projectTargets = [:]
 
 	private String rootObjectKey;
 	private XMLPropertyListConfiguration config
@@ -70,10 +65,10 @@ class XcodeProjectFile {
 
 		logger.debug("rootObjectKey {}", rootObjectKey);
 
-		parseTargets()
+		verifyTarget()
 
 
-		String type = getValueFromBuildTarget(PRODUCT_TYPE_KEY)
+		String type = getValueFromTarget(".productType")
 		if ("com.apple.product-type.app-extension".equalsIgnoreCase(type)) {
 			project.xcodebuild.productType = "appex"
 		}
@@ -113,38 +108,30 @@ class XcodeProjectFile {
 			project.xcodebuild.infoPlist = getString(key)
 			logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
 		}
-
-		if (project.xcodebuild.entitlementsPath == null) {
-			String key = "objects." + buildConfiguration + ".buildSettings.CODE_SIGN_ENTITLEMENTS"
-			project.xcodebuild.entitlementsPath = config.getString(key)
-			logger.info("entitlements path: {}", project.xcodebuild.entitlementsPath)
-		}
 	}
 
-	void parseTargets() {
+	void verifyTarget() {
+		String forTargetName = project.xcodebuild.target
 		List<String> list = getList("objects." + rootObjectKey + ".targets")
 		for (target in list) {
 			def targetName = getString("objects." + target + ".name")
-			projectTargets[targetName] = target
-			String type = getValueFromTarget(targetName, PRODUCT_TYPE_KEY)
-			if (type.equalsIgnoreCase("com.apple.product-type.watchkit-extension")) {
-				project.xcodebuild.hasWatchKitExtension = true;
+			if (targetName.equals(forTargetName)) {
+				return;
+			}
+		}
+		throw new IllegalArgumentException("Target '" + project.xcodebuild.target + "' not found in project")
+	}
+
+	String getValueFromTarget(String key) {
+		String forTargetName = project.xcodebuild.target
+		List<String> list = getList("objects." + rootObjectKey + ".targets")
+		for (target in list) {
+			def targetName = getString("objects." + target + ".name")
+			if (targetName.equals(forTargetName)) {
+				return getString("objects." + target + key)
 			}
 		}
 
-		// Verify the requested target to build exists
-		if(!projectTargets[project.xcodebuild.target]) {
-			throw new IllegalArgumentException("Target '" + project.xcodebuild.target + "' not found in project")
-		}
-	}
-
-	String getValueFromBuildTarget(String key) {
-		getValueFromTarget(project.xcodebuild.target, key)
-	}
-
-	String getValueFromTarget(String targetName, String key) {
-		String target = projectTargets[targetName]
-		return getString("objects." + target + key)
 	}
 
 
@@ -176,49 +163,6 @@ class XcodeProjectFile {
 		throw new IllegalArgumentException("No Build configuration for for target: " + forTargetName)
 	}
 
-	String getInfoPlistPathForTarget(String targetName) {
-		def path = null
-		String targetId = projectTargets[targetName]
-		if(targetId) {
-			def buildConfiguration = getBuildConfiguration(targetId)
-			if (buildConfiguration) {
-				path = config.getString("objects." + buildConfiguration + ".buildSettings.INFOPLIST_FILE")
-				if (path) {
-					path = project.projectDir.toString() + "/" + path
-				}
-			}
-		}
-		return path
-	}
-
-	String getEntitlementsFilePathForTarget(String targetName) {
-		def path = null
-		String targetId = projectTargets[targetName]
-		if(targetId) {
-			def buildConfiguration = getBuildConfiguration(targetId)
-			if (buildConfiguration) {
-				path = config.getString("objects."+ buildConfiguration  +".buildSettings.CODE_SIGN_ENTITLEMENTS")
-				if (path) {
-					path = project.projectDir.toString() + "/" + path
-				}
-			}
-		}
-		return path
-	}
-
-	String getProvisioningProfileKeyForTarget(String targetName) {
-		def key = null
-		String targetId = projectTargets[targetName]
-		if(targetId) {
-			def buildConfiguration = getBuildConfiguration(targetId)
-			if (buildConfiguration) {
-				// attempt to get the value, which will throw an exception if it doesn't exist
-				config.getString("objects." + buildConfiguration + ".buildSettings.PROVISIONING_PROFILE")
-				key = "objects:" + buildConfiguration + ":buildSettings:PROVISIONING_PROFILE"
-			}
-		}
-		return key
-	}
 
 	String getRootBuildConfigurationsItem() {
 		return getBuildConfiguration(rootObjectKey)

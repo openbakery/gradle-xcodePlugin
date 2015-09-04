@@ -68,12 +68,12 @@ class XcodePluginTest {
 	void contain_task_infoplist_modify() {
 		assert project.tasks.findByName('infoplistModify') instanceof InfoPlistModifyTask
 	}
-
-    @Test
-    void contain_task_entitlements_modify() {
-        assert project.tasks.findByName('entitlementsModify') instanceof EntitlementsModifyTask
-    }
-
+/*
+	@Test
+	void contain_task_entitlements_modify() {
+		assert project.tasks.findByName('entitlementsModify') instanceof EntitlementsModifyTask
+	}
+*/
 	@Test
 	void contain_task_keychain_create() {
 		assert project.tasks.findByName('keychainCreate') instanceof KeychainCreateTask

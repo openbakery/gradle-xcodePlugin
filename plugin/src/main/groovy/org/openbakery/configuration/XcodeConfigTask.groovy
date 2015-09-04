@@ -7,12 +7,8 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
-import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.openbakery.XcodeProjectFile
-import org.openbakery.AppExtension
-
-import java.util.regex.Matcher;
 
 /**
  * User: rene
@@ -25,7 +21,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	XcodeConfigTask() {
 		super()
-		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME);
 		this.description = "Parses the xcodeproj file and setups the configuration for the build"
 	}
 
@@ -46,14 +41,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 			return;
 		}
 
-		setAppProvisioningProfileId()
-
-		if (project.xcodebuild.hasAppExtensions()) {
-			project.xcodebuild.appExtensions.each { appExtension ->
-				configureAppExtension(appExtension.name)
-			}
-		}
-
 		String version = commandRunner.runWithResult([project.xcodebuild.xcodebuildCommand, "-version"])
 		boolean isXcode5 = version.startsWith("Xcode 5");
 		logger.debug("isXcode5 {}", isXcode5);
@@ -67,61 +54,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 		logger.debug("availableSimulators: {}", project.xcodebuild.availableSimulators)
 
-	}
-
-	def setAppProvisioningProfileId() {
-		def value = getAppProvisioningProfileID()
-		if (value) {
-			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(project.xcodebuild.target)
-			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
-		}
-	}
-
-	def configureAppExtension(String targetName) {
-		def infoPlistFilePath = xcodeProjectFile.getInfoPlistPathForTarget(targetName)
-		def entitlementsFilePath = xcodeProjectFile.getEntitlementsFilePathForTarget(targetName)
-		project.xcodebuild.updateAppExtensionWithFilePaths(targetName,infoPlistFilePath,entitlementsFilePath)
-		setProvisioningProfileIdForExtension(targetName)
-	}
-
-	def setProvisioningProfileIdForExtension(String targetName) {
-		def value = getExtensionProvisioningProfileID(targetName)
-		if (value) {
-			def key = xcodeProjectFile.getProvisioningProfileKeyForTarget(targetName)
-			plistHelper.setValueForPlist(xcodeProjectFile.projectFile, key, value)
-		}
-	}
-
-
-	String getExtensionProvisioningProfileID(name) {
-		def appExtension = project.xcodebuild.appExtensions.find {  it.name.equalsIgnoreCase(name) }
-		if (null == appExtension) {
-			// Couldn't find an extension with that name
-			throw new IllegalStateException("Couldn't find extension with name: ${name}")
-		}
-		return getProvisioningProfileIDFromInfoPlist(appExtension.infoPlistPath)
-	}
-
-
-	String getAppProvisioningProfileID() {
-		return getProvisioningProfileIDFromInfoPlist(project.xcodebuild.infoPlist)
-	}
-
-	def getProvisioningProfileIDFromInfoPlist(String infoPlistPath) {
-		if (infoPlistPath) {
-			String bundleIdentifier = plistHelper.getValueFromPlist(infoPlistPath, "CFBundleIdentifier")
-			File provisioningProfile = project.xcodebuild.getMobileProvisionFileForIdentifier(bundleIdentifier)
-			if (provisioningProfile?.absolutePath) {
-				def cmd = "security cms -D -i ${provisioningProfile.absolutePath}"
-				def profileText = commandRunner.runWithResult(cmd.tokenize())
-				Matcher matcher = profileText =~ /(?m)<key>UUID<\/key>\s*\n\s*<string>([^<]*)<\/string>/
-				if (matcher.find()) {
-					return matcher[0][1]
-				}
-				throw new IllegalStateException("Couldn't parse out the profile ID for ${profile}")
-			}
-		}
-		return null
 	}
 
 	void createXcode5DeviceList() {

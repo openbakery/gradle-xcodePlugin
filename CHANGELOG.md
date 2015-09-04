@@ -1,3 +1,8 @@
+#0.11.6
+
+Changes
+* Reverted the WatchKit pull: Issue #185
+
 # 0.11.5 (September 1, 2015)
 
 Changes
