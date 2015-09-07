@@ -10,7 +10,6 @@ class SimulatorsStartTask extends DefaultTask {
   public SimulatorsStartTask() {
     setDescription("Start iOS Simulators")
     dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
-    dependsOn(XcodePlugin.SIMULATORS_CREATE_TASK_NAME)
     simulatorControl = new SimulatorControl(project)
   }
 
@@ -23,7 +22,7 @@ class SimulatorsStartTask extends DefaultTask {
     }
 
     SimulatorRuntime runtime = runtimes.get(0)
-    List<SimulatorDevice> deviceList = simulatorControl.getDevices(runtimes)
+    List<SimulatorDevice> deviceList = simulatorControl.getDevices(runtime)
 
     if (deviceList.size() == 0) {
       logger.lifecycle("No device for for runtime {}", runtime)

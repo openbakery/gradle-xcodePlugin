@@ -11,7 +11,6 @@ class SimulatorsRunAppTask extends AbstractXcodeTask {
   public SimulatorsRunAppTask() {
     setDescription("Install app on iOS Simulators")
     dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
-    dependsOn(XcodePlugin.SIMULATORS_CREATE_TASK_NAME)
     simulatorControl = new SimulatorControl(project)
   }
 
