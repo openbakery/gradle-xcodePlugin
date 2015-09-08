@@ -4,8 +4,8 @@ import groovy.mock.interceptor.MockFor
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by rene on 30.04.15.
@@ -17,7 +17,7 @@ class SimulatorsCleanTaskTest {
 	Project project
 	File projectDir
 
-	@BeforeMethod
+	@Before
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")

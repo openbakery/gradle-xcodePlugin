@@ -228,6 +228,29 @@ class SimulatorControl {
 	}
 
 	public void runDevice(SimulatorDevice device) {
-		commandRunner.run("open", "-b", "com.apple.iphonesimulator", "--args", "-CurrentDeviceUDID", device.identifier)
+		SimulatorRuntime runtime = getRuntime(device)
+		if (runtime == null) {
+			throw new IllegalArgumentException("cannot find runtime for device: " + device)
+		}
+
+		try {
+			commandRunner.run([project.xcodebuild.xcodePath + "/Contents/Developer/usr/bin/instruments", "-w", device.name + " (" + runtime.version + " Simulator)"])
+		} catch (CommandRunnerException ex) {
+			// ignore, because the result of this command is a failure, but the simulator should be launched
+		}
+		//commandRunner.run("open", "-b", "com.apple.iphonesimulator", "--args", "-CurrentDeviceUDID", device.identifier)
+	}
+
+	SimulatorRuntime getRuntime(SimulatorDevice simulatorDevice) {
+
+		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> runtime : devices) {
+			for (SimulatorDevice device : runtime.value) {
+				if (device.equals(simulatorDevice)) {
+					return runtime.key
+				}
+			}
+		}
+
+		return null
 	}
 }

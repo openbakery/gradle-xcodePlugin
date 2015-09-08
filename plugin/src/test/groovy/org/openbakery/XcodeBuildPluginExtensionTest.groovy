@@ -3,9 +3,9 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import static java.util.Arrays.asList
 
@@ -24,8 +24,8 @@ class XcodeBuildPluginExtensionTest {
 	File xcodebuild6_0
 	File xcodebuild5_1
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
@@ -54,8 +54,8 @@ class XcodeBuildPluginExtensionTest {
 
 	}
 
-	@AfterMethod
-	def cleanup() {
+	@After
+	void cleanup() {
 		FileUtils.deleteDirectory(xcodebuild6_1)
 		FileUtils.deleteDirectory(xcodebuild6_0)
 		FileUtils.deleteDirectory(xcodebuild5_1)
@@ -104,7 +104,7 @@ class XcodeBuildPluginExtensionTest {
 	}
 
 
-	@Test(expectedExceptions = IllegalStateException.class)
+	@Test(expected = IllegalStateException.class)
 	void xcodeVersion_select_not_found() {
 
 		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns( xcodebuild6_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath).times(1)
@@ -251,7 +251,7 @@ class XcodeBuildPluginExtensionTest {
 		assert extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 	}
 
-	@Test(expectedExceptions = IllegalStateException.class)
+	@Test(expected = IllegalStateException.class)
 	void xcodeVersionSimple_not_found() {
 
 		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns(xcodebuild6_1.absolutePath + "\n" + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath).times(1)

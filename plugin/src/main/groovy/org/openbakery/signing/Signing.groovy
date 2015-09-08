@@ -19,7 +19,7 @@ class Signing {
 	List<String> mobileProvisionURI = null
 	String keychainPassword = "This_is_the_default_keychain_password"
 	File keychain
-	Integer timeout
+	Integer timeout = 3600
 	String plugin
 
 

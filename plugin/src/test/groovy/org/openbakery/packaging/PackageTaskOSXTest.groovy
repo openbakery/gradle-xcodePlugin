@@ -9,9 +9,9 @@ import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -36,7 +36,7 @@ class PackageTaskOSXTest {
 
 
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -68,7 +68,7 @@ class PackageTaskOSXTest {
 		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 	}
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(projectDir)
 	}

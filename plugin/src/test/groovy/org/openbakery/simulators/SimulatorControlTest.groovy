@@ -4,10 +4,14 @@ import groovy.mock.interceptor.MockFor
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+
+
+import static org.hamcrest.MatcherAssert.assertThat
+import static org.hamcrest.Matchers.*
 
 
 /**
@@ -22,7 +26,7 @@ class SimulatorControlTest {
 	Project project
 
 
-	@BeforeMethod
+	@Before
 	void setUp() {
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -261,4 +265,28 @@ class SimulatorControlTest {
 		simulatorControl.eraseAll()
 		assert expectedParameters.size() == 0
 	}
+
+
+	@Test
+	void launchSimulator() {
+		mockSimCtlList()
+
+		commandRunnerMock.demand.run { parameters ->
+			if (parameters != null) {
+				assertThat(parameters, hasItems("/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "iPhone 4s (7.1 Simulator)"))
+			}
+
+				}
+
+
+		proxy()
+
+		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
+
+
+		simulatorControl.runDevice(devices.get(0))
+
+	}
+
 }

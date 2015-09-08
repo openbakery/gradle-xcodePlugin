@@ -40,7 +40,8 @@ import org.openbakery.AppExtension;
 
 xcodebuild {
 	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
-
+	version = "7.0"
+	
 	target = 'Example'
 	scheme = 'Example'
 
@@ -118,7 +119,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget, signingMobileProvisionURIWatchKit ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
 		

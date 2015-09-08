@@ -11,7 +11,7 @@ import org.openbakery.signing.ProvisioningProfileIdReader
 /**
  * Created by rene on 14.11.14.
  */
-class PackageTask extends AbstractDistributeTask {
+class  PackageTask extends AbstractDistributeTask {
 
 
 	public static final String PACKAGE_PATH = "package"

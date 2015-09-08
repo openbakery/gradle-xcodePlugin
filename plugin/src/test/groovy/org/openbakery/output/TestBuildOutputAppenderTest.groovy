@@ -7,8 +7,8 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Destination
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.ProgressLoggerStub
-import org.testng.annotations.BeforeClass
-import org.testng.annotations.Test
+import org.junit.Test
+import org.junit.Before
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -41,8 +41,8 @@ class TestBuildOutputAppenderTest {
 
 	Project project
 
-	@BeforeClass
-	def setup() {
+	@Before
+	void setup() {
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin

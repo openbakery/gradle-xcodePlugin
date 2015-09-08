@@ -21,6 +21,7 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.TaskDependency
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Before
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.cpd.CpdTask
@@ -33,8 +34,7 @@ import org.openbakery.oclint.OCLintTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.appstore.AppstoreUploadTask
-import org.testng.annotations.BeforeClass
-import org.testng.annotations.Test
+import org.junit.Test
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*
 
@@ -42,8 +42,8 @@ class XcodePluginTest {
 
 	Project project
 
-	@BeforeClass
-	def setup() {
+	@Before
+	void setup() {
 		project = ProjectBuilder.builder().build()
 		project.apply plugin: org.openbakery.XcodePlugin
 	}
