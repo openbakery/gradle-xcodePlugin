@@ -36,7 +36,6 @@ buildscript {
 }
 
 apply plugin: 'org.openbakery.xcode-plugin'
-import org.openbakery.AppExtension;
 
 xcodebuild {
 	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine

@@ -98,9 +98,11 @@ class KeychainCreateTaskTest {
 	@Test
 	void create_with_os_x_10_8() {
 		System.setProperty("os.version", "10.8.0");
+
 		project.xcodebuild.sdk = 'iphoneos'
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
+		project.xcodebuild.signing.timeout = null
 
 		expectKeychainCreateCommand()
 		expectKeychainImportCommand()
@@ -118,7 +120,8 @@ class KeychainCreateTaskTest {
 		project.xcodebuild.sdk = 'iphoneos'
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
-
+		project.xcodebuild.signing.timeout = null
+		
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 
