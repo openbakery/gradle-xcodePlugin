@@ -25,21 +25,22 @@ import org.slf4j.LoggerFactory
 
 import java.text.DateFormat
 
-class ProvisioningProfileIdReader {
+class ProvisioningProfileReader {
 
 	protected CommandRunner commandRunner
 	private PlistHelper plistHelper
 
 
-	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileIdReader.class)
+	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileReader.class)
 
 	XMLPropertyListConfiguration config;
 
 	public Project project
 
 	private File provisioningProfile
+	private File provisioningPlist
 
-	ProvisioningProfileIdReader(def provisioningProfile, def project) {
+	ProvisioningProfileReader(def provisioningProfile, def project) {
 		super()
 
 		String text = load(provisioningProfile)
@@ -112,14 +113,8 @@ class ProvisioningProfileIdReader {
 
 	}
 
-	String getApplicationIdentifier() {
-
-		String value
-
-		if (this.provisioningProfile.path.endsWith(".mobileprovision")) {
-			value = config.getProperty("Entitlements.application-identifier")
-		} else {
-
+	File getPlistFromProvisioningProfile() {
+		if (provisioningPlist == null) {
 			// unpack provisioning profile to plain plist
 			String extractedPlist = commandRunner.runWithResult(["security",
 																													 "cms",
@@ -128,12 +123,22 @@ class ProvisioningProfileIdReader {
 																													 provisioningProfile.path]);
 
 			// read temporary plist file
-			File tempPlist = new File(project.buildDir.absolutePath + "/tmp/tmp.plist")
+			provisioningPlist = new File(project.buildDir.absolutePath + "/tmp/provision_" + System.currentTimeMillis() + ".plist")
 
 			// write temporary plist to disk
-			FileUtils.writeStringToFile(tempPlist, extractedPlist)
+			FileUtils.writeStringToFile(provisioningPlist, extractedPlist)
+		}
+		return provisioningPlist;
+	}
 
-			value = plistHelper.getValueFromPlist(tempPlist, "Entitlements:com.apple.application-identifier")
+	String getApplicationIdentifier() {
+
+		String value
+
+		if (this.provisioningProfile.path.endsWith(".mobileprovision")) {
+			value = config.getProperty("Entitlements.application-identifier")
+		} else {
+			value = plistHelper.getValueFromPlist(getPlistFromProvisioningProfile(), "Entitlements:com.apple.application-identifier")
 		}
 
 		String prefix = getApplicationIdentifierPrefix() + "."
@@ -143,5 +148,13 @@ class ProvisioningProfileIdReader {
 		return value;
 	}
 
-
+	void extractEntitlements(File entitlementFile) {
+		String entitlements = commandRunner.runWithResult([
+							"/usr/libexec/PlistBuddy",
+						"-x",
+							getPlistFromProvisioningProfile().absolutePath,
+							"-c",
+							"Print Entitlements" ])
+		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
+	}
 }

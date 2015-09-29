@@ -121,7 +121,7 @@ class KeychainCreateTaskTest {
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 		project.xcodebuild.signing.timeout = null
-		
+
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 		expectKeychainImportCommand()
 

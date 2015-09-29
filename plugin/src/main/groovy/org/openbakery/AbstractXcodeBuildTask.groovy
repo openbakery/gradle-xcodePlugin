@@ -3,7 +3,7 @@ package org.openbakery
 import org.apache.commons.io.input.ReversedLinesFileReader
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
-import org.openbakery.signing.ProvisioningProfileIdReader
+import org.openbakery.signing.ProvisioningProfileReader
 
 /**
  * User: rene
@@ -61,7 +61,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
 				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
-					ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
+					ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
 					String uuid = provisioningProfileIdReader.getUUID()
 					commandList.add("PROVISIONING_PROFILE=" + uuid)
 				}

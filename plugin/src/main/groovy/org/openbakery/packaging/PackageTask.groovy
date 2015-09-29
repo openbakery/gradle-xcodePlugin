@@ -6,7 +6,7 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
-import org.openbakery.signing.ProvisioningProfileIdReader
+import org.openbakery.signing.ProvisioningProfileReader
 
 /**
  * Created by rene on 14.11.14.
@@ -100,7 +100,7 @@ class  PackageTask extends AbstractDistributeTask {
 		def mobileProvisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project)
 			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 

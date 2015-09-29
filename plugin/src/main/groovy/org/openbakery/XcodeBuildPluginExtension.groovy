@@ -19,7 +19,6 @@ import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
-import org.openbakery.signing.ProvisioningProfileIdReader
 import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
