@@ -1,6 +1,7 @@
 package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -73,9 +74,9 @@ class PackageTaskOSXTest {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
-	void mockCodesignSwiftCommand(String path) {
+	void mockCodesignLibCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
+		File payloadApp = new File(packageTask.outputPath, path)
 
 		def commandList = [
 				"/usr/bin/codesign",
@@ -94,11 +95,13 @@ class PackageTaskOSXTest {
 	void mockCodesignCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		File payloadApp = new File(packageTask.outputPath, path)
+		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements.plist")
 
 		def commandList = [
 				"/usr/bin/codesign",
 				"--force",
-				"--preserve-metadata=identifier,entitlements",
+				"--entitlements",
+				entitlements.absolutePath,
 				"--sign",
 				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
 				"--verbose",
@@ -121,6 +124,21 @@ class PackageTaskOSXTest {
 		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
 		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
 	}
+
+	void mockEntitlementsFromPlist(File provisioningProfile) {
+		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
+		String result = new File('src/test/Resource/entitlements.plist').text
+		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
+
+		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
+		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
+		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
+		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
+
+		mockValueFromPlist(plist.absolutePath, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
+
+	}
+
 
 	void mockExampleApp(boolean withFramework, boolean withSwift) {
 		String frameworkPath = "Contents/Frameworks/Sparkle.framework"
@@ -152,8 +170,15 @@ class PackageTaskOSXTest {
 		mockCodesignCommand("Example.app")
 
 		if (withFramework) {
-			mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+			mockCodesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
 		}
+
+		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+
+
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		mockEntitlementsFromPlist(mobileprovision)
 
 		project.xcodebuild.outputPath.mkdirs()
 	}

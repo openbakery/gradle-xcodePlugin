@@ -1,6 +1,7 @@
 package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -136,6 +137,17 @@ class PackageTaskTest {
 
 		}
 
+		File mobileprovision = new File("src/test/Resource/test.mobileprovision")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		mockEntitlementsFromPlist(mobileprovision)
+
+		if (withPlugin) {
+			File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
+			project.xcodebuild.signing.mobileProvisionFile = widgetMobileprovision
+			mockEntitlementsFromPlist(widgetMobileprovision)
+		}
+
+
 	}
 
 
@@ -162,11 +174,13 @@ class PackageTaskTest {
 	void mockCodesignCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		File payloadApp = new File(packageTask.outputPath, path)
+		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements.plist")
 
 		def commandList = [
 						"/usr/bin/codesign",
 						"--force",
-						"--preserve-metadata=identifier,entitlements",
+						"--entitlements",
+						entitlements.absolutePath,
 						"--sign",
 						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
 						"--verbose",
@@ -190,6 +204,18 @@ class PackageTaskTest {
 	void mockValueFromPlist(String infoplist, String key, String value) {
 		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
 		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
+	}
+
+
+	void mockEntitlementsFromPlist(File provisioningProfile) {
+		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
+		String result = new File('src/test/Resource/entitlements.plist').text
+		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
+
+		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
+		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
+		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
+		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
 	}
 
 	@After
@@ -372,6 +398,7 @@ class PackageTaskTest {
 
 	@Test
 	void swiftCodesignLibs() {
+
 
 		mockExampleApp(false, true)
 

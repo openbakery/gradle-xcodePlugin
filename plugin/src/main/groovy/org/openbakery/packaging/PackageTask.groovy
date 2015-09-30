@@ -95,12 +95,17 @@ class  PackageTask extends AbstractDistributeTask {
 
 	}
 
+	File getMobileProvisionFileForBundle(File bundle) {
+		String bundleIdentifier = getIdentifierForBundle(bundle)
+		return getMobileProvisionFileForIdentifier(bundleIdentifier)
+	}
+
 	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
 
 		def mobileProvisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project)
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner)
 			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 
@@ -175,10 +180,17 @@ class  PackageTask extends AbstractDistributeTask {
 
 		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
+		File provisionFile = getMobileProvisionFileForBundle(bundle)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner)
+		File entitlementsFile = new File(outputPath, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile)
+
+
 		def codesignCommand = [
 						"/usr/bin/codesign",
 						"--force",
-						"--preserve-metadata=identifier,entitlements",
+						"--entitlements",
+						entitlementsFile.absolutePath,
 						"--sign",
 						project.xcodebuild.getSigning().getIdentity(),
 						"--verbose",
@@ -192,7 +204,12 @@ class  PackageTask extends AbstractDistributeTask {
 
 	private void codeSignFrameworks(File bundle) {
 
-		File frameworksDirectory = new File(bundle, "Frameworks");
+		File frameworksDirectory
+		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			frameworksDirectory = new File(bundle, "Frameworks");
+		} else {
+			frameworksDirectory = new File(bundle, "Contents/Frameworks");
+		}
 
 		if (frameworksDirectory.exists()) {
 
@@ -220,8 +237,8 @@ class  PackageTask extends AbstractDistributeTask {
 		}
 	}
 
-	private void embedProvisioningProfileToBundle(File bundle) {
-        File infoPlist
+	private String getIdentifierForBundle(File bundle) {
+		File infoPlist
 
 		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 			infoPlist = new File(bundle, "Info.plist");
@@ -230,8 +247,11 @@ class  PackageTask extends AbstractDistributeTask {
 		}
 
 		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
+		return bundleIdentifier
+	}
 
-		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
+	private void embedProvisioningProfileToBundle(File bundle) {
+		File mobileProvisionFile = getMobileProvisionFileForBundle(bundle);
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 

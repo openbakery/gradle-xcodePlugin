@@ -61,7 +61,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
 				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
 				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
-					ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
+					ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project, this.commandRunner)
 					String uuid = provisioningProfileIdReader.getUUID()
 					commandList.add("PROVISIONING_PROFILE=" + uuid)
 				}

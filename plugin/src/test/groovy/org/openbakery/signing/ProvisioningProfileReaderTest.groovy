@@ -61,27 +61,27 @@ class ProvisioningProfileReaderTest {
 
 	@Test
 	void readUUIDFromFile() {
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
 		assertThat(reader.getUUID(), is(equalTo("FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")))
 	}
 
 	@Test
 	void readApplicationIdentifierPrefix() {
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
 		assertThat(reader.getApplicationIdentifierPrefix(), is(equalTo("AAAAAAAAAAA")))
 	}
 
 
 	@Test
 	void readApplicationIdentifier() {
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
 		assertThat(reader.getApplicationIdentifier(), is(equalTo("org.openbakery.Example")))
 	}
 
 
 	@Test(expected = IllegalArgumentException.class)
 	void readProfileHasExpired() {
-		new ProvisioningProfileReader("src/test/Resource/expired.mobileprovision", project)
+		new ProvisioningProfileReader("src/test/Resource/expired.mobileprovision", project, new CommandRunner())
 	}
 
 	// OSX Tests
@@ -93,7 +93,7 @@ class ProvisioningProfileReaderTest {
 
 		assert wildcardMacProfile.exists()
 
-		ProvisioningProfileReader provisioningProfileReader = new ProvisioningProfileReader(wildcardMacProfile, project)
+		ProvisioningProfileReader provisioningProfileReader = new ProvisioningProfileReader(wildcardMacProfile, project, new CommandRunner())
 
 		def applicationIdentifier = provisioningProfileReader.getApplicationIdentifier()
 
@@ -104,7 +104,7 @@ class ProvisioningProfileReaderTest {
 	@Test
 	void extractEntitlements() {
 
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
 		reader.extractEntitlements(entitlementsFile)

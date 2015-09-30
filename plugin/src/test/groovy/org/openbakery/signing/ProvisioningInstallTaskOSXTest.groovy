@@ -68,7 +68,7 @@ class ProvisioningInstallTaskOSXTest {
 		File testMobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project)
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunnerMock)
 		String uuid = provisioningProfileIdReader.getUUID()
 		String name =  "gradle-" + uuid + ".provisionprofile";
 
@@ -89,8 +89,8 @@ class ProvisioningInstallTaskOSXTest {
 		File secondMobileprovision = new File("src/test/Resource/openbakery-example.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
 
-		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision.absolutePath, project).getUUID() + ".provisionprofile";
-		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision.absolutePath, project).getUUID() + ".provisionprofile";
+		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".provisionprofile";
+		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".provisionprofile";
 
 		mockLinking(firstName)
 		mockLinking(secondName)

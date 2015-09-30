@@ -17,6 +17,7 @@ package org.openbakery.signing
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.PlistHelper
@@ -40,16 +41,16 @@ class ProvisioningProfileReader {
 	private File provisioningProfile
 	private File provisioningPlist
 
-	ProvisioningProfileReader(def provisioningProfile, def project) {
+	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner) {
 		super()
 
 		String text = load(provisioningProfile)
 		config = new XMLPropertyListConfiguration()
 		config.load(new StringReader(text))
 
-		commandRunner = new CommandRunner()
+		this.commandRunner = commandRunner
 
-		plistHelper = new PlistHelper(project, commandRunner)
+		plistHelper = new PlistHelper(project, this.commandRunner)
 
 		this.project = project
 
@@ -120,10 +121,11 @@ class ProvisioningProfileReader {
 																													 "cms",
 																													 "-D",
 																													 "-i",
-																													 provisioningProfile.path]);
+																													 provisioningProfile.absolutePath]);
 
+			String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 			// read temporary plist file
-			provisioningPlist = new File(project.buildDir.absolutePath + "/tmp/provision_" + System.currentTimeMillis() + ".plist")
+			provisioningPlist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
 
 			// write temporary plist to disk
 			FileUtils.writeStringToFile(provisioningPlist, extractedPlist)
@@ -150,11 +152,11 @@ class ProvisioningProfileReader {
 
 	void extractEntitlements(File entitlementFile) {
 		String entitlements = commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
+						"/usr/libexec/PlistBuddy",
 						"-x",
-							getPlistFromProvisioningProfile().absolutePath,
-							"-c",
-							"Print Entitlements" ])
+						getPlistFromProvisioningProfile().absolutePath,
+						"-c",
+						"Print Entitlements"])
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 	}
 }

@@ -67,7 +67,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
 			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
-			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(mobileProvisionFile, project)
+			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner)
 
 			String uuid = provisioningProfileIdReader.getUUID()
 
