@@ -372,6 +372,20 @@ class PackageTaskTest {
 	}
 
 	@Test
+	void provisioningMatch_2() {
+		File appMobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
+		File wildcardMobileprovision = new File("src/test/Resource/openbakery-wildcard.mobileprovision")
+		project.xcodebuild.signing.mobileProvisionFile = appMobileprovision
+		project.xcodebuild.signing.mobileProvisionFile = wildcardMobileprovision
+
+
+		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
+		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example.widget") == wildcardMobileprovision
+		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example.extension") == wildcardMobileprovision
+
+	}
+
+	@Test
 	void swiftFramework() {
 
 		mockExampleApp(false, true)

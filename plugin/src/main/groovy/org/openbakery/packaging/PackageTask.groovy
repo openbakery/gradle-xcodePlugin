@@ -3,6 +3,8 @@ package org.openbakery.packaging
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
@@ -116,6 +118,8 @@ class  PackageTask extends AbstractDistributeTask {
 			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 
+		logger.debug("mobileProvisionFileMap: {}", mobileProvisionFileMap)
+
 		for ( entry in mobileProvisionFileMap ) {
 			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
 				return entry.value
@@ -129,12 +133,18 @@ class  PackageTask extends AbstractDistributeTask {
 			}
 
 			if (entry.key.endsWith("*")) {
-				String key = entry.key[0..-2]
+				String key = entry.key[0..-2].toLowerCase()
 				if (bundleIdentifier.toLowerCase().startsWith(key)) {
 					return entry.value
 				}
 			}
 		}
+
+		def output = services.get(StyledTextOutputFactory).create(PackageTask)
+
+		output.withStyle(StyledTextOutput.Style.Failure).println("No provisioning profile found for bundle identifier " + bundleIdentifier)
+		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + mobileProvisionFileMap.keySet())
+
 
 		return null
 	}
