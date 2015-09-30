@@ -57,23 +57,10 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.target)
 		}
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
-			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
-				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
-				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
-					ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project, this.commandRunner)
-					String uuid = provisioningProfileIdReader.getUUID()
-					commandList.add("PROVISIONING_PROFILE=" + uuid)
-				}
-			} else {
-				commandList.add("CODE_SIGN_IDENTITY=")
-				commandList.add("CODE_SIGNING_REQUIRED=NO")
-			}
-		} else if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
-			// disable signing during xcodebuild for os x, maybe this should be also default for iOS?
+		if (!project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+			// disable codesign when building for OS X and iOS device
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
-
 		}
 
 

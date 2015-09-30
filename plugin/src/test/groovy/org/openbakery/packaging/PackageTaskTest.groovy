@@ -433,8 +433,18 @@ class PackageTaskTest {
 	@Test
 	void dependsOn() {
 		def dependsOn  = packageTask.getDependsOn()
+		assert dependsOn.size() == 4
 
 		assert dependsOn.contains(XcodePlugin.ARCHIVE_TASK_NAME)
-		assert dependsOn.size() == 2
+		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+
 	}
+
+	@Test
+	void finalized() {
+		def finalized = packageTask.finalizedBy.values
+		assert finalized.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+	}
+
 }

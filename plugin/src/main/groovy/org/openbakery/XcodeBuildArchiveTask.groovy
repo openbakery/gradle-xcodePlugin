@@ -254,7 +254,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		archiveDirectory.eachFileRecurse(FILES) {
 			if (it.name.endsWith('.plist')) {
-				logger.lifecycle("convert plist to binary {}", it)
+				logger.debug("convert plist to binary {}", it)
 				def commandList = ["/usr/bin/plutil", "-convert", "binary1", it.absolutePath]
 				try {
 					commandRunner.run(commandList)

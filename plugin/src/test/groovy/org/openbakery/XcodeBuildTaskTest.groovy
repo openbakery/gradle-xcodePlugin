@@ -154,30 +154,7 @@ class XcodeBuildTaskTest {
 		}
 	}
 
-	@Test
-	public void run_command_with_signIdentity() {
-		addExpectedScheme()
-		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
-		project.xcodebuild.sdk = 'iphoneos';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
 
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-
-
-		def signIdentity = 'mysign'
-		project.xcodebuild.signing.identity = signIdentity
-		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
-		expectedCommandList.add("PROVISIONING_PROFILE=FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
-		}
-	}
 
 	@Test
 	public void run_command_without_signIdentity() {
@@ -425,50 +402,11 @@ class XcodeBuildTaskTest {
 		def dependsOn  = xcodeBuildTask.getDependsOn()
 
 		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		assert dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
-		assert dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
 
-	@Test
-	void finalized() {
-		def finalized = xcodeBuildTask.finalizedBy.values
-		assert finalized.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
-	}
-
-	@Test
-	public void run_command_with_keychain_path_escaped() {
-		addExpectedScheme()
-
-		File keychainFile = new File(projectDir, "path with spaces/test.keychain")
-
-		FileUtils.writeStringToFile(keychainFile, "dummy")
-
-		project.xcodebuild.signing.keychain = keychainFile
-		project.xcodebuild.signing.mobileProvisionFile = "src/test/Resource/test.mobileprovision"
-		project.xcodebuild.sdk = 'iphoneos';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
-
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
 
 
-		def signIdentity = 'mysign'
-		project.xcodebuild.signing.identity = signIdentity
-		expectedCommandList.add("CODE_SIGN_IDENTITY=" + signIdentity)
-		expectedCommandList.add("PROVISIONING_PROFILE=FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
-
-		addExpectedDefaultDirs()
-
-		expectedCommandList.add("OTHER_CODE_SIGN_FLAGS=--keychain=" + projectDir + "/path with spaces/test.keychain")
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
-		}
-	}
 
 }
