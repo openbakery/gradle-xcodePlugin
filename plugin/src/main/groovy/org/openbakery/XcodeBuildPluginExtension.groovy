@@ -40,6 +40,7 @@ class XcodeBuildPluginExtension {
 	String scheme = null
 	String configuration = 'Debug'
 	String sdk = 'iphonesimulator'
+	boolean simualtor = true
 	String target = null
 	Object dstRoot
 	Object objRoot

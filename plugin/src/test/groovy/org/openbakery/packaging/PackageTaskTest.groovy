@@ -174,7 +174,7 @@ class PackageTaskTest {
 	void mockCodesignCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		File payloadApp = new File(packageTask.outputPath, path)
-		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements.plist")
+		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test.plist")
 
 		def commandList = [
 						"/usr/bin/codesign",

@@ -3,18 +3,12 @@
 If you what to create a for the device than you have to specify for sign sign settings.
 Create a gradle.properties and add the following values: 
 
-	hockeyappApiToken = ""
-	hockeyappAppId = ""
-	deploygateApiToken = ""
-	deploygateUserName = ""
-
 	signingIdentity = iPhone Developer: ... 
 	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
 	signingCertificatePassword = password // password to unlock to p12
 	signingMobileProvisionURI = http://../Development.mobileprovision
 	
 	signingMobileProvisionURIWidget = http://../Development.mobileprovision // provisioning profil for the widget
-	exampleTodayWidgetBundleIdentifier = com.example.MyWidget
 	
 You can also scroll down and add the values directly (line 115ff).
 
@@ -39,11 +33,10 @@ buildscript {
 apply plugin: 'org.openbakery.xcode-plugin'
 
 xcodebuild {
-	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 	version = "7.0"
 	
-	target = 'Example'
-	scheme = 'Example'
+	target = 'ExampleWatchkit WatchKit App'
+	scheme = 'ExampleWatchkit WatchKit App'
 
 	configuration = 'Debug'
 	sdk = 'iphonesimulator'
@@ -56,28 +49,17 @@ xcodebuild {
 	}
 	destination {
 		platform = 'iOS Simulator'
-		name = 'iPhone 4s'
+		name = 'iPhone 6s'
 		os='8.*'
 	}	
 }
 
-
-coverage {
-	outputFormat = 'html'
-	exclude = '.*h$|.*UnitTests.*m$'
-}
 
 
 task continuous(dependsOn:'test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
 
-
-task integration(dependsOn: ['package', 'hockeyapp']) {
-	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
-}
-
-tasks.hockeyapp.mustRunAfter tasks.package
 
 task release(dependsOn: 'package') {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
@@ -92,38 +74,21 @@ task appstore(dependsOn: 'package') {
 
 gradle.taskGraph.whenReady { taskGraph ->
 
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(tasks.hockeyapp)) {
-		println ("using api token: " + hockeyappApiToken)
-		hockeyapp {
-			apiToken = hockeyappApiToken
-			appID = hockeyappAppId
-		}
-	}
 	
-	if (taskGraph.hasTask(tasks.deploygate)) {
-		println ("using api token: " + deploygateApiToken)
-		deploygate {
-			apiToken = deploygateApiToken
-			userName = deploygateUserName
-		}
-	}
 	
 	// ------------------------------------------------------------------------------------------
 
-	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
+	if (taskGraph.hasTask(release)) {
 		println "Configure sign settings for the integration and release build"
 		xcodebuild {
-			sdk = 'iphoneos'
+			configuration = 'Release'
+			sdk = 'watchos'
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
 				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
-		
-		
 	}
 
 	// ------------------------------------------------------------------------------------------
@@ -140,25 +105,9 @@ gradle.taskGraph.whenReady { taskGraph ->
 				mobileProvisionURI = '...'         // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
-		infoplist {
-			bundleIdentifier = 'org.openbakery.Example'
-		}
 	}
 	
-	
-	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
-	
-		if (appstore.username == null) {
-			def username = System.console().readLine("\nPlease enter your Apple-ID that you use for iTunesConnect: ")
-			appstore.username = new String(username)
-		}
-		
-		if (appstore.password == null) {
-			def password = System.console().readPassword("\nPlease enter the password for <" + appstore.username + ">: ")
-			appstore.password = new String(password)
-		}
-	
-	}
+
 }
 
 

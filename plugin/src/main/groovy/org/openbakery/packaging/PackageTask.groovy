@@ -189,18 +189,21 @@ class  PackageTask extends AbstractDistributeTask {
 	}
 
 	private void codesign(File bundle) {
-		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
+		logger.debug("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
 
 		codeSignFrameworks(bundle)
 
-		logger.lifecycle("Codesign {}", bundle)
+		logger.debug("Codesign {}", bundle)
 
 		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
 		File provisionFile = getMobileProvisionFileForBundle(bundle)
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner)
-		File entitlementsFile = new File(outputPath, "entitlements.plist")
+		String basename = FilenameUtils.getBaseName(provisionFile.path)
+		File entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
 		reader.extractEntitlements(entitlementsFile)
+
+		logger.debug("Using entitlementsFile {}", entitlementsFile)
 
 
 		def codesignCommand = [

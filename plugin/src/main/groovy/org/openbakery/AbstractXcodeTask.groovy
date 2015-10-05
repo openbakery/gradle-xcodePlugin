@@ -49,7 +49,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	def copy(File source, File destination) {
 		logger.debug("Copy '{}' -> '{}'", source, destination);
 
-		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
+		// use rsync to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
 		ant.exec(failonerror: "true",
 						executable: 'rsync') {
 			arg(value: '-avz')

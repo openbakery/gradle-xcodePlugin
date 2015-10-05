@@ -35,12 +35,18 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			}
 
 			if (project.xcodebuild.sdk != null) {
+
+			}
+
+			/*
+			if (project.xcodebuild.sdk != null) {
 				commandList.add("-sdk")
 				commandList.add(project.xcodebuild.sdk)
 				if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR) && project.xcodebuild.arch != null) {
 					commandList.add("ONLY_ACTIVE_ARCH=NO")
 				}
 			}
+			*/
 
 			if (project.xcodebuild.configuration != null) {
 				commandList.add("-configuration")
@@ -51,8 +57,10 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		} else {
 			commandList.add("-configuration")
 			commandList.add(project.xcodebuild.configuration)
+			/*
 			commandList.add("-sdk")
 			commandList.add(project.xcodebuild.sdk)
+			*/
 			commandList.add("-target")
 			commandList.add(project.xcodebuild.target)
 		}
