@@ -91,7 +91,11 @@ class  PackageTask extends AbstractDistributeTask {
 
 			logger.lifecycle("codesign path: {}", bundle);
 
-			codesign(bundle)
+			if (project.xcodebuild.signing.customCodesign != null) {
+				project.xcodebuild.signing.customCodesign(bundle)
+			} else {
+				codesign(bundle)
+			}
 		}
 
 		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {

@@ -21,6 +21,7 @@ class Signing {
 	File keychain
 	Integer timeout = 3600
 	String plugin
+	Closure customCodesign = null
 
 
 	/**
