@@ -42,6 +42,10 @@ class ProvisioningProfileReader {
 	private File provisioningPlist
 
 	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner) {
+		this(provisioningProfile, project, commandRunner, new PlistHelper(project, commandRunner))
+	}
+
+	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner, PlistHelper plistHelper) {
 		super()
 
 		String text = load(provisioningProfile)
@@ -50,7 +54,7 @@ class ProvisioningProfileReader {
 
 		this.commandRunner = commandRunner
 
-		plistHelper = new PlistHelper(project, this.commandRunner)
+		this.plistHelper = plistHelper
 
 		this.project = project
 
@@ -150,7 +154,7 @@ class ProvisioningProfileReader {
 		return value;
 	}
 
-	void extractEntitlements(File entitlementFile) {
+	void extractEntitlements(File entitlementFile, String bundleIdentifier) {
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
 						"-x",
@@ -158,5 +162,37 @@ class ProvisioningProfileReader {
 						"-c",
 						"Print Entitlements"])
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
+
+
+		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
+		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
+		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
+		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "keychain-access-groups")
+
+
+
+	}
+
+	private void setBundleIndentiferToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
+		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
+
+		if (currentValue == null) {
+			return
+		}
+
+		if (currentValue instanceof List) {
+			def modifiedValues = []
+			currentValue.each { item ->
+				if (item.toString().endsWith('*')) {
+					modifiedValues << item[0..-2] + bundleIdentifier
+				}
+			}
+			plistHelper.setValueForPlist(entitlementFile, value, modifiedValues)
+
+		} else {
+			if (currentValue.toString().endsWith('*')) {
+				plistHelper.setValueForPlist(entitlementFile, value, currentValue[0..-2] + bundleIdentifier)
+			}
+		}
 	}
 }

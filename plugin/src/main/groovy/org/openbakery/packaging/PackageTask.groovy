@@ -13,7 +13,7 @@ import org.openbakery.signing.ProvisioningProfileReader
 /**
  * Created by rene on 14.11.14.
  */
-class  PackageTask extends AbstractDistributeTask {
+class PackageTask extends AbstractDistributeTask {
 
 
 	public static final String PACKAGE_PATH = "package"
@@ -197,10 +197,11 @@ class  PackageTask extends AbstractDistributeTask {
 
 		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
-		File provisionFile = getMobileProvisionFileForBundle(bundle)
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner)
+		String bundleIdentifier = getIdentifierForBundle(bundle)
+		File provisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
 		File entitlementsFile = new File(outputPath, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile)
+		reader.extractEntitlements(entitlementsFile, bundleIdentifier)
 
 
 		def codesignCommand = [

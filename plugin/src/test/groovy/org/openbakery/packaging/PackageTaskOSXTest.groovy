@@ -6,13 +6,12 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
-import org.openbakery.packaging.PackageTask
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.openbakery.stubs.PlistHelperStub
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -36,6 +35,7 @@ class PackageTaskOSXTest {
 	File provisionProfile
 
 
+	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
 	@Before
 	void setup() {
@@ -55,7 +55,7 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
-		packageTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		packageTask.plistHelper = plistHelperStub
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
 
@@ -114,12 +114,6 @@ class PackageTaskOSXTest {
 
 	}
 
-	void mockPlistCommmand(String infoplist, String command) {
-		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", command]
-		commandRunnerMock.run(commandList).atLeastOnce()
-	}
-
-
 	void mockValueFromPlist(String infoplist, String key, String value) {
 		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
 		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
@@ -165,7 +159,7 @@ class PackageTaskOSXTest {
 		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
 
 
-		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
+		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
 
 		mockCodesignCommand("Example.app")
 
@@ -173,7 +167,7 @@ class PackageTaskOSXTest {
 			mockCodesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
 		}
 
-		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 
 		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")

@@ -58,12 +58,18 @@ class PlistHelper {
 		}
 	}
 
-	String setValueForPlist(def plist, String key, String value) {
+	void setValueForPlist(def plist, String key, List values) {
+		values.eachWithIndex { value, index ->
+			setValueForPlist(plist, "Set :" + key + ":" + index + " " + value)
+		}
+	}
+
+	void setValueForPlist(def plist, String key, String value) {
 		setValueForPlist(plist, "Set :" + key + " " + value)
 	}
 
 
-	String setValueForPlist(def plist, String command) {
+	void setValueForPlist(def plist, String command) {
 		File infoPlistFile;
 		if (plist instanceof File) {
 			infoPlistFile = plist
