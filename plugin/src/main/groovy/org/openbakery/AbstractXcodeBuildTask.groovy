@@ -34,8 +34,9 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				commandList.add(project.xcodebuild.workspace)
 			}
 
-			if (project.xcodebuild.sdk != null) {
-
+			if (project.xcodebuild.type == Type.OSX) {
+				commandList.add("-sdk")
+				commandList.add("macosx")
 			}
 
 			/*
@@ -65,12 +66,17 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add(project.xcodebuild.target)
 		}
 
-		if (!project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (!project.xcodebuild.isSimulatorBuild()) {
 			// disable codesign when building for OS X and iOS device
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
 		}
 
+		if (project.xcodebuild.type == Type.iOS && project.xcodebuild.isSimulatorBuild()) {
+			Destination destination = project.xcodebuild.availableDestinations.get(0);
+			commandList.add("-destination")
+			commandList.add(getDestinationCommandParameter(destination))
+		}
 
 
 		if (project.xcodebuild.arch != null) {
@@ -142,5 +148,28 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		return builder.toString()
+	}
+
+	protected String getDestinationCommandParameter(Destination destination) {
+		def destinationParameters = []
+
+		if (destination.platform != null) {
+			destinationParameters << "platform=" + destination.platform
+		}
+		if (destination.id != null) {
+			destinationParameters << "id=" + destination.id
+		} else {
+			if (destination.name != null) {
+				destinationParameters << "name=" + destination.name
+			}
+			if (destination.arch != null && destination.platform.equals("OS X")) {
+				destinationParameters << "arch=" + destination.arch
+			}
+
+			if (destination.os != null && destination.platform.equals("iOS Simulator")) {
+				destinationParameters << "OS=" + destination.os
+			}
+		}
+		return destinationParameters.join(",")
 	}
 }

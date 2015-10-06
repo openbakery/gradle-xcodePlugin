@@ -23,11 +23,35 @@ import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-enum Devices {
+public enum Devices {
 	UNIVERSAL,
 	PHONE,
 	PAD
 }
+
+public enum Type {
+	iOS("iOS"),
+	OSX("OSX"),
+	tvOS("tvOS");
+
+
+	String value;
+
+	public Type(String value) {
+		this.value = value;
+	}
+
+	public static Type typeFromString(String string) {
+
+		for (Type type in Type.values()) {
+			if (type.value.equalsIgnoreCase(string)) {
+				return type;
+			}
+		}
+		return iOS;
+	}
+}
+
 
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
@@ -40,7 +64,9 @@ class XcodeBuildPluginExtension {
 	String scheme = null
 	String configuration = 'Debug'
 	String sdk = 'iphonesimulator'
-	boolean simualtor = true
+	boolean simulator = true
+	Type type = Type.iOS
+
 	String target = null
 	Object dstRoot
 	Object objRoot
@@ -164,7 +190,10 @@ class XcodeBuildPluginExtension {
 	}
 
 	boolean isSimulatorBuild() {
-		return this.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+		if (this.type == Type.OSX) {
+			return false;
+		}
+		return this.simulator;
 	}
 
 
@@ -452,5 +481,9 @@ class XcodeBuildPluginExtension {
 
 	boolean isSDK(String expectedSDK) {
 		return sdk.toLowerCase().startsWith(expectedSDK)
+	}
+
+	void setType(String type) {
+		this.type = Type.typeFromString(type);
 	}
 }

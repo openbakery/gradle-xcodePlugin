@@ -18,20 +18,31 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	CommandRunner commandRunner = Mock(CommandRunner);
 
+	Destination createDestination(String name, String id) {
+		Destination destination = new Destination()
+		destination.platform = XcodePlugin.SDK_IPHONESIMULATOR
+		destination.name = name
+		destination.arch = "i386"
+		destination.id = id
+		destination.os = "iOS"
+		return destination
+	}
 
 	def setup() {
 
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 
-		//File outputFile = new File(project.buildDir, "xcodebuild-output.txt" )
-		//FileUtils.writeStringToFile(outputFile, "dummy")
-		//commandRunnerMock.setOutputFile(outputFile)
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
+
+
+		project.xcodebuild.availableSimulators << createDestination("iPad", "iPad Air")
+		project.xcodebuild.availableSimulators << createDestination("iPhone", "iPhone 4s")
+
 
 	}
 
@@ -71,6 +82,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.sdk = 'iphoneos';
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.simulator = false
 
 
 		when:
@@ -91,6 +103,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	def "run command with expected scheme and expected directories"() {
 		def commandList
+		def expectedCommandList
 
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
@@ -109,298 +122,311 @@ class XcodeBuildTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			commandList == ['xcodebuild',
-							"-scheme", 'myscheme',
-							"-workspace", 'myworkspace',
-							"-configuration", "Debug",
-							"CODE_SIGN_IDENTITY=",
-							"CODE_SIGNING_REQUIRED=NO",
-							"-derivedDataPath", new File("build/myDerivedData").absolutePath,
-							"DSTROOT=" + new File("build/myDst").absolutePath,
-							"OBJROOT=" + new File("build/myObj").absolutePath,
-							"SYMROOT=" + new File("build/mySym").absolutePath,
-							"SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
+														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
+														 "DSTROOT=" + new File("build/myDst").absolutePath,
+														 "OBJROOT=" + new File("build/myObj").absolutePath,
+														 "SYMROOT=" + new File("build/mySym").absolutePath,
+														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath
 			]
 		}
+		commandList == expectedCommandList
 
 	}
 
-		/*
 
-	@Test
-	void run_command_with_expected_target_and_expected_defaults() {
-		// currently order is important
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
+	def "run command with expected target and expected defaults"() {
+		def commandList
+		def expectedCommandList
 
 		def target = 'mytarget'
 		project.xcodebuild.target = target
-		expectedCommandList.add("-target")
-		expectedCommandList.add(target)
 
-		addExpectedDefaultDirs()
+		when:
+		xcodeBuildTask.xcodebuild()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-configuration", "Debug",
+														 "-target", 'mytarget',
+														 "-destination", "platform=iphonesimulator,id=iPad Air",]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
+
 	}
 
 
 
-	@Test
-	public void run_command_without_signIdentity() {
-		addExpectedScheme()
-		project.xcodebuild.sdk = 'iphoneos';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+	def "run command without signIdentity"() {
+		def commandList
+		def expectedCommandList
 
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.simulator = false
 
 
-		def signIdentity = ""
-		project.xcodebuild.signing.identity = ""
-
-		addExpectNoSigning()
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
+		when:
 			xcodeBuildTask.xcodebuild()
+
+			then:
+			1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
+			interaction {
+				expectedCommandList = ['xcodebuild',
+															 "-scheme", 'myscheme',
+															 "-workspace", 'myworkspace',
+															 "-configuration", "Debug",
+															 "CODE_SIGN_IDENTITY=",
+															 "CODE_SIGNING_REQUIRED=NO"
+				]
+				expectedCommandList.addAll(expectedDefaultDirectories())
+			}
+			commandList == expectedCommandList
+	}
+
+	def "run command without signIdentity osx"() {
+		def commandList
+		def expectedCommandList
+
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.type = Type.OSX
+
+		when:
+		xcodeBuildTask.xcodebuild()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-sdk", "macosx",
+														 "-configuration", "Debug",
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO"
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
 	}
 
 
-	@Test
-	public void run_command_without_signIdentity_osx() {
-		addExpectedScheme()
-		project.xcodebuild.sdk = 'macosx';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+	def "run command with arch"() {
 
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
+		def commandList
+		def expectedCommandList
 
-
-		def signIdentity = ""
-		project.xcodebuild.signing.identity = ""
-
-		addExpectNoSigning()
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
-		}
-	}
-
-	@Test
-	public void run_command_with_arch() {
-		addExpectedScheme()
-
-		project.xcodebuild.sdk = 'iphoneos';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
-
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-
-		addExpectNoSigning()
-
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
 		project.xcodebuild.arch = ['myarch']
 
-		expectedCommandList.add("ARCHS=myarch")
 
+		when:
+		xcodeBuildTask.xcodebuild()
 
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
+														 "ARCHS=myarch"
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
 	}
 
 
-	@Test
-	public void run_command_with_muiltple_arch() {
-		addExpectedScheme()
+	def "run command with multiple arch"() {
 
-		project.xcodebuild.sdk = 'iphoneos';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add('iphoneos')
+		def commandList
+		def expectedCommandList
 
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-
-		addExpectNoSigning()
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.simulator = false
 
 		project.xcodebuild.arch = ['armv', 'armv7s']
 
-		expectedCommandList.add("ARCHS=armv armv7s")
 
+		when:
+		xcodeBuildTask.xcodebuild()
 
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO",
+														 "ARCHS=armv armv7s"
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
 	}
 
-	@Test
-	public void run_command_with_workspace() {
+
+
+	def "run command with workspace"() {
+		def commandList
+		def expectedCommandList
+
 		project.xcodebuild.scheme = 'myscheme'
-		expectedCommandList.add("-scheme")
-		expectedCommandList.add(project.xcodebuild.scheme)
-
-
 		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-workspace")
-		expectedCommandList.add("myworkspace")
 
-		project.xcodebuild.sdk = 'iphoneSimulator';
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(project.xcodebuild.sdk)
+		when:
+		xcodeBuildTask.xcodebuild()
 
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-
-
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
 	}
 
 
-	@Test
-	void run_command_with_workspace_but_without_scheme() {
-		// currently order is important
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
 
-		def target = 'mytarget'
-		project.xcodebuild.target = target
+	def "run command with workspace but without scheme"() {
+
+		def commandList
+		def expectedCommandList
+
+		project.xcodebuild.target = 'mytarget'
 		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-target")
-		expectedCommandList.add(target)
 
-		addExpectedDefaultDirs()
+		when:
+		xcodeBuildTask.xcodebuild()
 
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-configuration", "Debug",
+														 "-target", 'mytarget',
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
+
+	}
+
+
+	def "run command scheme and simulatorbuild"() {
+		def commandList
+		def expectedCommandList
+
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.simulator = true
+
+		when:
+		xcodeBuildTask.xcodebuild()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", 'Debug',
+														 "-destination", "platform==iphonesimulator,id=iPad Air",
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
+		}
+		commandList == expectedCommandList
 	}
 
 
 
-	@Test
-	void run_command_scheme_and_simulatorbuild() {
-		addExpectedScheme()
+	def "run command scheme and simulatorbuild and arch"() {
+		def commandList
+		def expectedCommandList
 
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.simulator = true
+		project.xcodebuild.arch = ['i386'];
 
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
+		when:
+		xcodeBuildTask.xcodebuild()
 
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 // "-destination", "..."
+														 "-configuration", 'Debug',
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
+														 "ARCHS=i386"
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
-	}
-
-	@Test
-	void run_command_scheme_and_simulatorbuild_and_arch() {
-		addExpectedScheme()
-
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
-
-		project.xcodebuild.arch = ['i368'];
-
-		expectedCommandList.add("ONLY_ACTIVE_ARCH=NO");
-
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-
-		expectedCommandList.add("ARCHS=i368");
-
-
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-		mockControl.play {
-			xcodeBuildTask.xcodebuild()
-		}
+		commandList == expectedCommandList
 	}
 
 
+	def "run command xcodeversion"() {
+		def commandList
+		def expectedCommandList
 
+		project.xcodebuild.commandRunner = commandRunner
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> "/Applications/Xcode.app"
+		commandRunner.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
 
-	@Test
-	void run_command_xcodeversion() {
+		project.xcodebuild.target = 'mytarget'
 
-		commandRunnerMock.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode").returns("/Applications/Xcode.app")
-		commandRunnerMock.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version").returns("Xcode 5.1.1\nBuild version 5B1008")
-		project.xcodebuild.commandRunner = commandRunnerMock
+		when:
+		project.xcodebuild.version = '5B1008';
 
+		xcodeBuildTask.xcodebuild()
 
-
-		expectedCommandList?.clear()
-		expectedCommandList = ["/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild"]
-
-		expectedCommandList.add("-configuration")
-		expectedCommandList.add("Debug")
-		expectedCommandList.add("-sdk")
-		expectedCommandList.add(XcodePlugin.SDK_IPHONESIMULATOR)
-
-		def target = 'mytarget'
-		project.xcodebuild.target = target
-		expectedCommandList.add("-target")
-		expectedCommandList.add(target)
-
-		addExpectedDefaultDirs()
-
-		commandRunnerMock.run(projectDir, expectedCommandList, null, anything()).times(1)
-
-
-
-		mockControl.play {
-			project.xcodebuild.version = '5B1008';
-
-			xcodeBuildTask.xcodebuild()
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
+														 "-configuration", 'Debug',
+														 "-target", 'mytarget',
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
+			]
+			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
+		commandList == expectedCommandList
 	}
 
-	@Test
-	void dependsOn() {
+
+	def "depends on"() {
+		when:
 		def dependsOn  = xcodeBuildTask.getDependsOn()
 
-		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		assert dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
+		then:
+		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		dependsOn.contains(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 	}
 
-	*/
 
 
 }

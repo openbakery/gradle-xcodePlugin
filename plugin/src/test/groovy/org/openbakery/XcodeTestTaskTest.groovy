@@ -67,7 +67,6 @@ class XcodeTestTaskTest {
 		destinationPad = createDestination("iPad", "iPad Air")
 		destinationPhone = createDestination("iPhone", "iPhone 4s")
 
-
 		project.xcodebuild.availableSimulators << destinationPad
 		project.xcodebuild.availableSimulators << destinationPhone
 
