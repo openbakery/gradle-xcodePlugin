@@ -351,7 +351,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", 'Debug',
-														 "-destination", "platform==iphonesimulator,id=iPad Air",
+														 "-destination", "platform=iphonesimulator,id=iPad Air",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
