@@ -61,6 +61,10 @@
 
 	default value: 3600 seconds (1 hour)
 
+* _customCodesign_ - A custom code signing method represented by a closure.
+
+    default value: empty (default /usr/bin/codesign usage)
+
 ### Unit Test Settings
 
 * _destination_ * - destination configuration, that is used for the unit test execution
