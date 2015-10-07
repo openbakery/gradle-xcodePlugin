@@ -4,6 +4,7 @@ import groovy.mock.interceptor.MockFor
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.PlistHelper
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.PlistHelperStub
 import org.junit.Before
@@ -50,7 +51,7 @@ class SimulatorsRunAppTaskTest {
 	@Test(expected = IllegalArgumentException)
 	void noSimulatorSDK() {
 		project.xcodebuild.infoPlist =  "Info.plist"
-		project.xcodebuild.sdk = XcodePlugin.SDK_MACOSX
+		project.xcodebuild.type = Type.OSX
 		task.run()
 	}
 

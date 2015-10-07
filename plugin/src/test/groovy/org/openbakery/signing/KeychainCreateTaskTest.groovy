@@ -6,6 +6,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.After
 import org.openbakery.CommandRunner
+import org.openbakery.Type
 import org.openbakery.Version
 import org.junit.Test
 
@@ -99,7 +100,7 @@ class KeychainCreateTaskTest {
 	void create_with_os_x_10_8() {
 		System.setProperty("os.version", "10.8.0");
 
-		project.xcodebuild.sdk = 'iphoneos'
+		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 		project.xcodebuild.signing.timeout = null
@@ -117,7 +118,7 @@ class KeychainCreateTaskTest {
 	@Test
 	void create_with_os_x_10_9() {
 		System.setProperty("os.version", "10.9.0");
-		project.xcodebuild.sdk = 'iphoneos'
+		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 		project.xcodebuild.signing.timeout = null

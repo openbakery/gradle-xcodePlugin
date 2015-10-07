@@ -63,7 +63,6 @@ class XcodeBuildPluginExtension {
 	String infoPlist = null
 	String scheme = null
 	String configuration = 'Debug'
-	String sdk = 'iphonesimulator'
 	boolean simulator = true
 	Type type = Type.iOS
 
@@ -185,17 +184,19 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	boolean isDeviceBuild() {
-		return this.isSDK(XcodePlugin.SDK_IPHONEOS)
-	}
-
-	boolean isSimulatorBuild() {
-		if (this.type == Type.OSX) {
+	boolean isSimulatorBuildOf(Type expectedType) {
+		if (type != expectedType) {
 			return false;
 		}
 		return this.simulator;
 	}
 
+	boolean isDeviceBuildOf(Type expectedType) {
+		if (type != expectedType) {
+			return false;
+		}
+		return !this.simulator
+	}
 
 	void destination(Closure closure) {
 		Destination destination = new Destination()
@@ -280,12 +281,12 @@ class XcodeBuildPluginExtension {
 		def availableDestinations = []
 
 
-		if (isSDK(XcodePlugin.SDK_MACOSX)) {
+		if (type == Type.OSX) {
 			availableDestinations << new Destination("OS X", "OS X", "10.x")
 			return availableDestinations
 		}
 
-		if (isSimulatorBuild()) {
+		if (isSimulatorBuildOf(Type.iOS)) {
 			// filter only on simulator builds
 			for (Destination destination in this.destinations) {
 				availableDestinations.addAll(findMatchingDestinations(destination))
@@ -452,10 +453,15 @@ class XcodeBuildPluginExtension {
 	}
 
 	File getOutputPath() {
-		if (getSdk().startsWith(XcodePlugin.SDK_MACOSX)) {
-			return new File(getSymRoot(), getConfiguration())
+		String path = getConfiguration()
+		if (type == Type.iOS) {
+			if (simulator) {
+				path += "-iphonesimulator"
+			} else {
+				path += "-iphoneos"
+			}
 		}
-		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
+		return new File(getSymRoot(), path)
 	}
 
 	File getApplicationBundle() {
@@ -479,11 +485,13 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	boolean isSDK(String expectedSDK) {
-		return sdk.toLowerCase().startsWith(expectedSDK)
-	}
 
 	void setType(String type) {
 		this.type = Type.typeFromString(type);
+	}
+
+
+	void setSDK(String sdk) {
+		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
 	}
 }

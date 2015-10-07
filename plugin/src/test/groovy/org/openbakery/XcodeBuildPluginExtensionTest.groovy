@@ -143,7 +143,8 @@ class XcodeBuildPluginExtensionTest {
 		File projectDir =  new File("../example/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.sdk = XcodePlugin.SDK_IPHONEOS
+		extension.type = Type.iOS
+		extension.simulator = false
 		extension.productName = "ExampleTodayWidget"
 		extension.productType = "appex"
 		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
@@ -160,7 +161,8 @@ class XcodeBuildPluginExtensionTest {
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = new CommandRunner()
 
-		extension.sdk = XcodePlugin.SDK_IPHONEOS
+		extension.type = Type.iOS
+		extension.simulator = false
 		extension.target = "Example"
 		extension.productName = "Example"
 		extension.infoPlist = "../../example/Example/Example/Example-Info.plist"
@@ -284,11 +286,12 @@ class XcodeBuildPluginExtensionTest {
 	@Test
 	void testAvailableDestinations() {
 
-		extension.sdk = XcodePlugin.SDK_MACOSX
+		extension.type= Type.OSX
 
 		assert extension.getAvailableDestinations().size() == 1
 	}
 
+	/*
 	@Test
 	void testIsSDK() {
 
@@ -303,4 +306,5 @@ class XcodeBuildPluginExtensionTest {
 		assert extension.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
 
 	}
+	*/
 }

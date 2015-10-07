@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.PlistHelper
+import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
@@ -51,7 +52,8 @@ class PackageTaskTest {
 		//project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
+		project.xcodebuild.type = Type.iOS
+		project.xcodebuild.simulator = false
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 

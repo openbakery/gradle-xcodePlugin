@@ -44,7 +44,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		def commandList = createCommandList()
 
 
-		if (project.xcodebuild.type == Type.iOS && project.xcodebuild.isSimulatorBuild()) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			Destination destination = project.xcodebuild.availableDestinations.get(0);
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))

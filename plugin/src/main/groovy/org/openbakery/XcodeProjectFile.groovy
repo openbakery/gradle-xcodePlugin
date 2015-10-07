@@ -89,7 +89,7 @@ class XcodeProjectFile {
 			sdkRoot = getString("objects." + rootBuildConfigurationsItem + ".buildSettings.SDKROOT")
 		}
 
-		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase(XcodePlugin.SDK_MACOSX)) {
+		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
 			this.isOSX = true
 		} else {
 

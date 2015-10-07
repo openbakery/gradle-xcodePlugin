@@ -6,6 +6,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.junit.After
@@ -50,7 +51,7 @@ class PackageTaskOSXTest {
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = XcodePlugin.SDK_MACOSX
+		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 

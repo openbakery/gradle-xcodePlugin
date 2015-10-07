@@ -21,8 +21,8 @@ class XcodeUniversalLibraryTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def universalLibrary() {
-		def deviceLibrary = new File(libraryPathForTarget(XcodePlugin.SDK_IPHONEOS))
-		def simulatorLibrary = new File(libraryPathForTarget(XcodePlugin.SDK_IPHONESIMULATOR))
+		def deviceLibrary = new File(libraryPathForTarget("iphoneos"))
+		def simulatorLibrary = new File(libraryPathForTarget("iphonesimulator"))
 
 		if (!deviceLibrary.exists()) {
 			logger.lifecycle "Library for device does not exist in:" + deviceLibrary.path

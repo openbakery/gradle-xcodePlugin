@@ -79,7 +79,7 @@ class XcodeBuildTaskSpecification extends Specification {
 	def "run command with expected scheme and expected default directories"() {
 		def commandList
 
-		project.xcodebuild.sdk = 'iphoneos';
+		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
 		project.xcodebuild.simulator = false
@@ -107,7 +107,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
-		project.xcodebuild.sdk = 'iphoneSimulator';
+		project.xcodebuild.type = Type.iOS
 
 
 		project.xcodebuild.derivedDataPath = new File("build/myDerivedData").absoluteFile

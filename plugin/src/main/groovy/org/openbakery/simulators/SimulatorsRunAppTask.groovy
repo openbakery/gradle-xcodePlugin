@@ -1,6 +1,7 @@
 package org.openbakery.simulators
 
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
@@ -24,8 +25,8 @@ class SimulatorsRunAppTask extends AbstractXcodeTask {
 
   @TaskAction
   void run() {
-    if (!project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
-      throw new IllegalArgumentException("Can only run app in simulator if the sdk is " + XcodePlugin.SDK_IPHONESIMULATOR + " but was " + project.xcodebuild.sdk)
+    if (!project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
+      throw new IllegalArgumentException("Build is not a simulator build for iOS: Is " + project.xcodebuild.type + " and simulator flag is " + project.xcodebuild.simulator )
     }
 
     if (project.xcodebuild.infoPlist == null) {

@@ -46,7 +46,7 @@ class SimulatorControlXcode7Test {
 		void mockSimCtlList() {
 
 			commandRunnerMock.demand.runWithResult { parameters ->
-				def expectedParameters = ["xcrun", "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]
+				def expectedParameters = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
 				if (parameters.equals(expectedParameters)) {
 					return "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 				}

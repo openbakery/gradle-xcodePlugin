@@ -7,6 +7,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
+import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.junit.After
@@ -53,7 +54,7 @@ class XcodeConfigTaskTest {
 
 
 	void mockFindSimctl() {
-		def commandList = ["xcrun", "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]
+		def commandList = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
 		commandRunnerMock.runWithResult(commandList).returns("/Applications/Xcode.app/Contents/Developer/usr/bin/simctl").times(1)
 	}
 
@@ -367,7 +368,7 @@ class XcodeConfigTaskTest {
 		mockFindSimctl()
 		mockSimctlList()
 
-		project.xcodebuild.sdk = 'iphoneos'
+		project.xcodebuild.type = Type.iOS
 
 		project.xcodebuild.destination {
 			platform = 'iOS Simulator'

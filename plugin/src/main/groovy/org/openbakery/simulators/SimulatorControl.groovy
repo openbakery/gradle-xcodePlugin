@@ -155,7 +155,7 @@ class SimulatorControl {
 
 	String simctl(String... commands) {
 		if (simctlCommand == null) {
-			simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]);
+			simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", "iphoneos", "-find", "simctl"]);
 		}
 
 		ArrayList<String>parameters = new ArrayList<>()

@@ -7,6 +7,7 @@ import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.signing.ProvisioningProfileReader
 
@@ -41,7 +42,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
@@ -82,21 +83,22 @@ class PackageTask extends AbstractDistributeTask {
 
 		for (File bundle : appBundles) {
 
-			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 				embedProvisioningProfileToBundle(bundle)
 			}
-
+/*
 			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 				File embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded.provisionprofile")
 				embeddedProvisionFile.delete()
 			}
+			*/
 
 			logger.lifecycle("codesign path: {}", bundle);
 
 			codesign(bundle)
 		}
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			createIpa(applicationFolder);
 		} else {
 			createPackage(appBundles.last());
@@ -226,7 +228,7 @@ class PackageTask extends AbstractDistributeTask {
 	private void codeSignFrameworks(File bundle) {
 
 		File frameworksDirectory
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			frameworksDirectory = new File(bundle, "Frameworks");
 		} else {
 			frameworksDirectory = new File(bundle, "Contents/Frameworks");
@@ -261,7 +263,7 @@ class PackageTask extends AbstractDistributeTask {
 	private String getIdentifierForBundle(File bundle) {
 		File infoPlist
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -296,7 +298,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createApplicationFolder() throws IOException {
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			return createSigningDestination("Payload")
 		} else {
 			// same folder as signing
@@ -317,7 +319,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private String getAppContentPath(File bundle) {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.type == Type.iOS) {
 			return bundle.absolutePath + "/"
 		}
 		return bundle.absolutePath + "/Contents/"

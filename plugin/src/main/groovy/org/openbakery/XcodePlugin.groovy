@@ -127,8 +127,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
 
 
-	public static final String SDK_MACOSX = "macosx"
-	public static final String SDK_IPHONEOS = "iphoneos"
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
 

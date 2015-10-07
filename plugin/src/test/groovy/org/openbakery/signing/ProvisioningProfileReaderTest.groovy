@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.openbakery.CommandRunner
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
 import org.junit.Before
@@ -38,7 +39,7 @@ class ProvisioningProfileReaderTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = XcodePlugin.SDK_MACOSX
+		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)

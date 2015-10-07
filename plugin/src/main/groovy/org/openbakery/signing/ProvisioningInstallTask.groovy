@@ -17,6 +17,7 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
@@ -54,7 +55,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 	@TaskAction
 	def install() {
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			logger.lifecycle("The simulator build does not need a provisioning profile")
 			return
 		}
@@ -75,7 +76,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 			String mobileProvisionName
 
-			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 				mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
 			} else {
 				mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".provisionprofile"

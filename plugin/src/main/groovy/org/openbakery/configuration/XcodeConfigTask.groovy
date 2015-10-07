@@ -102,7 +102,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 
 	void createDeviceList() {
-		String simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]);
+		String simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", "iphoneos", "-find", "simctl"]);
 		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
 
 		String iOSVersion = null

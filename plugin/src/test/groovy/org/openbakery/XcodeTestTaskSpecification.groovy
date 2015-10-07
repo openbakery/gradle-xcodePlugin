@@ -335,7 +335,7 @@ class XcodeTestTaskSpecification extends Specification {
 		commandRunner.run("killall", "Simulator")
 
 
-		project.xcodebuild.sdk = 'iphonesimulator'
+		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.target = 'Test';
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'

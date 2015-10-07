@@ -109,7 +109,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 
-		if (project.xcodebuild.isSimulatorBuild()) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			simulatorControl.killAll()
 		}
 

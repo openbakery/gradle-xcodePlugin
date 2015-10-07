@@ -5,6 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.junit.After
 import org.junit.Before
@@ -36,7 +37,7 @@ class ProvisioningInstallTaskOSXTest {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		project.xcodebuild.sdk = XcodePlugin.SDK_MACOSX
+		project.xcodebuild.type = Type.OSX
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
