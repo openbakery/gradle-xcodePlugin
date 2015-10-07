@@ -20,7 +20,7 @@ Here a brief overview of the features:
 
 ## Note
 
-**With version 0.11 the identifier of the plugin has changed to org.openbakery.xcode-plugin see: https://plugins.gradle.org/plugin/org.openbakery.xcode-plugin**
+**With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter
 
 ## Requirements
 
@@ -29,13 +29,11 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.11.6
+### Current stable version is 0.12
 
-0.9.x up to 0.11.x supports Xcode 5, Xcode 6.* and Xcode 7
+0.9.x up to 0.12.x supports Xcode 5, Xcode 6.* and Xcode 7
 
-**Note:**
 
-When you use gradle 1.x you you can use version 0.10.3-gradle1
 
 ## Documentation
 

@@ -15,9 +15,13 @@
 
   default value: 'Debug'
 
-* _sdk_ - the SDK that should be used (e.g. 'iphonesimulator', 'iphoneos')
+* _type_ - the type of the build. Possible values are iOS, OSX (tvOS will be added in the future). This parameter replaces the sdk parameter. The given values is not case sensitive therefor 'ios', 'iOs', 'IOS' are all correct values.
 
-  default value: 'iphonesimulator'
+  default value: iOS
+	
+* _simulator_ - should perform a simulator build. Possible values are 'true' and 'false'
+
+  default value: true
 
 * _target_ - the xcode build target that should be used
 
