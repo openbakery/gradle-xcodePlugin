@@ -126,12 +126,12 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
 														 "DSTROOT=" + new File("build/myDst").absolutePath,
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
 														 "SYMROOT=" + new File("build/mySym").absolutePath,
-														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath
+														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
+														 "-destination", "platform=iphonesimulator,id=iPad Air"
 			]
 		}
 		commandList == expectedCommandList
@@ -155,8 +155,9 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['xcodebuild',
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
-														 "-destination", "platform=iphonesimulator,id=iPad Air",]
+														]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
 		}
 		commandList == expectedCommandList
 
@@ -239,10 +240,11 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 														 "ARCHS=myarch"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+
 		}
 		commandList == expectedCommandList
 	}
@@ -298,9 +300,10 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+
 		}
 		commandList == expectedCommandList
 	}
@@ -324,9 +327,9 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['xcodebuild',
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
 		}
 		commandList == expectedCommandList
 
@@ -351,9 +354,9 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", 'Debug',
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
 		}
 		commandList == expectedCommandList
 	}
@@ -378,12 +381,11 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['xcodebuild',
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
-														 // "-destination", "..."
 														 "-configuration", 'Debug',
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 														 "ARCHS=i386"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
 		}
 		commandList == expectedCommandList
 	}
@@ -410,9 +412,9 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
 														 "-configuration", 'Debug',
 														 "-target", 'mytarget',
-														 "-destination", "platform=iphonesimulator,id=iPad Air",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
 		}
 		commandList == expectedCommandList
 	}

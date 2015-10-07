@@ -58,10 +58,12 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		} else {
 			commandList.add("-configuration")
 			commandList.add(project.xcodebuild.configuration)
-			/*
-			commandList.add("-sdk")
-			commandList.add(project.xcodebuild.sdk)
-			*/
+
+			if (project.xcodebuild.type == Type.OSX) {
+				commandList.add("-sdk")
+				commandList.add("macosx")
+			}
+
 			commandList.add("-target")
 			commandList.add(project.xcodebuild.target)
 		}
@@ -71,13 +73,6 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
 		}
-
-		if (project.xcodebuild.type == Type.iOS && project.xcodebuild.isSimulatorBuild()) {
-			Destination destination = project.xcodebuild.availableDestinations.get(0);
-			commandList.add("-destination")
-			commandList.add(getDestinationCommandParameter(destination))
-		}
-
 
 		if (project.xcodebuild.arch != null) {
 			StringBuilder archs = new StringBuilder("ARCHS=");

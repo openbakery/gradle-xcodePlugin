@@ -109,7 +109,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 
-		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSimulatorBuild()) {
 			simulatorControl.killAll()
 		}
 
@@ -149,7 +149,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	void addIOSSimulatorTargets(ArrayList commandList) {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+		if (project.xcodebuild.type == Type.OSX) {
 			return
 		}
 
