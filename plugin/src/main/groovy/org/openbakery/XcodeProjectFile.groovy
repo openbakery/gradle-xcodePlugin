@@ -69,7 +69,7 @@ class XcodeProjectFile {
 
 
 		String type = getValueFromTarget(".productType")
-		if ("com.apple.product-type.app-extension".equalsIgnoreCase(type)) {
+		if (type.endsWith("-extension")) {
 			project.xcodebuild.productType = "appex"
 		}
 
@@ -84,21 +84,25 @@ class XcodeProjectFile {
 
 		String rootBuildConfigurationsItem = getRootBuildConfigurationsItem()
 
-		String sdkRoot = getString("objects.{buildConfiguration}.buildSettings.SDKROOT")
+		String sdkRoot = getString("objects.${buildConfiguration}.buildSettings.SDKROOT")
 		if (sdkRoot == null) {
 			sdkRoot = getString("objects." + rootBuildConfigurationsItem + ".buildSettings.SDKROOT")
 		}
+
+		project.xcodebuild.setSdkRoot(sdkRoot)
 
 		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
 			this.isOSX = true
 		} else {
 
-			String devicesString = getString("objects.{buildConfiguration}.buildSettings.TARGETED_DEVICE_FAMILY")
+			String devicesString = getString("objects.${buildConfiguration}.buildSettings.TARGETED_DEVICE_FAMILY")
 
 			if (devicesString.equals("1")) {
 				project.xcodebuild.devices = Devices.PHONE;
 			} else if (devicesString.equals("2")) {
 				project.xcodebuild.devices = Devices.PAD;
+			} else if (devicesString.equals("4")) {
+				project.xcodebuild.devices = Devices.WATCH;
 			}
 
 		}

@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory
 public enum Devices {
 	UNIVERSAL,
 	PHONE,
-	PAD
+	PAD,
+	WATCH
 }
 
 public enum Type {
@@ -93,6 +94,8 @@ class XcodeBuildPluginExtension {
 	String xcodePath = null
 	CommandRunner commandRunner
 	VariableResolver variableResolver;
+
+	String _sdkRoot
 
 	/**
 	 * internal parameters
@@ -454,7 +457,9 @@ class XcodeBuildPluginExtension {
 
 	File getOutputPath() {
 		String path = getConfiguration()
-		if (type == Type.iOS) {
+		if ("watchos".equalsIgnoreCase(_sdkRoot)) {
+			path += "-watchos"
+		} else if (type == Type.iOS) {
 			if (simulator) {
 				path += "-iphonesimulator"
 			} else {
@@ -493,5 +498,9 @@ class XcodeBuildPluginExtension {
 
 	void setSdk(String sdk) {
 		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
+	}
+
+	void setSdkRoot(String sdkRoot) {
+		_sdkRoot = sdkRoot
 	}
 }

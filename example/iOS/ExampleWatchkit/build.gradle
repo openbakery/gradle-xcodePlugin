@@ -18,8 +18,7 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			//url('http://repository.openbakery.org/')
-			url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
+			url('http://repository.openbakery.org/')
 		}
 		mavenCentral()
   }
@@ -38,19 +37,16 @@ xcodebuild {
 	target = 'ExampleWatchkit WatchKit App'
 	scheme = 'ExampleWatchkit WatchKit App'
 
-	configuration = 'Debug'
-	sdk = 'iphonesimulator'
-
 		
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPad 2'
-		os='8.*'
+		os='9.*'
 	}
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPhone 6s'
-		os='8.*'
+		os='9.*'
 	}	
 }
 
@@ -82,7 +78,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 		println "Configure sign settings for the integration and release build"
 		xcodebuild {
 			configuration = 'Release'
-			sdk = 'watchos'
+			simulator = false
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
@@ -97,7 +93,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 		println "Configure build settings for release or appstore"
 		xcodebuild {
 			configuration = 'Release'
-			sdk = 'iphoneos'
+			simulator = false
 
 			signing {
 				certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'
