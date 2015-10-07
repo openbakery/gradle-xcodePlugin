@@ -16,11 +16,9 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
-	//workspace = 'ExampleOSX.xcworkspace'
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
-	sdk = 'macosx'
-	version = '6.2'
+	type = 'OSX'
 }
 
 task release(dependsOn: 'package') {

@@ -30,7 +30,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		dependsOn(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
 
 		this.setOnlyIf {
-			return !project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+			return !project.xcodebuild.simulator
 		}
 	}
 

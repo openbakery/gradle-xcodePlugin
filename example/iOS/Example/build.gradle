@@ -25,7 +25,6 @@ buildscript {
 	repositories {
 		maven {
 			url('http://repository.openbakery.org/')
-			//url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -44,20 +43,16 @@ xcodebuild {
 	
 	target = 'Example'
 	scheme = 'Example'
-
-	configuration = 'Debug'
-	sdk = 'iphonesimulator'
-
 		
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPad 2'
-		os='8.*'
+		os='9.*'
 	}
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPhone 4s'
-		os='8.*'
+		os='9.*'
 	}	
 }
 
@@ -115,7 +110,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
 		println "Configure sign settings for the integration and release build"
 		xcodebuild {
-			sdk = 'iphoneos'
+			simulator = false
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
@@ -131,7 +126,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 		println "Configure build settings for release or appstore"
 		xcodebuild {
 			configuration = 'Release'
-			sdk = 'iphoneos'
+			simulator = false
 
 			signing {
 				certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'

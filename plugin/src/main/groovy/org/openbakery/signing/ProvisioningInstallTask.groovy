@@ -31,7 +31,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
 		this.description = "Installs the given provisioning profile"
 		this.setOnlyIf {
-			return !project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+			return !project.xcodebuild.simulator
 		}
 	}
 

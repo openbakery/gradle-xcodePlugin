@@ -85,8 +85,6 @@ class XcodeBuildPluginExtension {
 	String productType = "app"
 	String ipaFileName = null
 
-	String sdk
-
 	Devices devices = Devices.UNIVERSAL;
 	List<Destination> availableSimulators = []
 
@@ -493,7 +491,7 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	void setSDK(String sdk) {
+	void setSdk(String sdk) {
 		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
 	}
 }
