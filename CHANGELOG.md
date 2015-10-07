@@ -1,3 +1,9 @@
+# 0.12.0
+
+Changes
+* TODO - Removed Xcode 5 Support
+* Remove the sdk parameter, use the type and simulator parameter. Reason is that iOS Projects with WatchKit needs multiple sdks
+
 #0.11.6 (September 4, 2015)
 
 Changes

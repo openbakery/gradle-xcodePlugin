@@ -370,9 +370,9 @@ class XcodeConfigTaskTest {
 		project.xcodebuild.sdk = 'iphoneos'
 
 		project.xcodebuild.destination {
-			platform = 'iphoneos'
+			platform = 'iOS Simulator'
 			name = 'iPhone 5s'
-			id = '60B5BBDA-6485-44B4-AB87-9C0421EF5D8F'
+			id = '1124FAA3-9BE1-4234-B704-0741A30722F3'
 		}
 
 
@@ -383,8 +383,7 @@ class XcodeConfigTaskTest {
 
 		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
-
-		assert project.xcodebuild.availableDestinations.asList()[0].id.equals("60B5BBDA-6485-44B4-AB87-9C0421EF5D8F")
+		assert project.xcodebuild.availableDestinations.asList()[0].id.equals('1124FAA3-9BE1-4234-B704-0741A30722F3')
 
 	}
 

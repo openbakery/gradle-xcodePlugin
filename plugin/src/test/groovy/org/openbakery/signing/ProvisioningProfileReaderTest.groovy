@@ -106,8 +106,9 @@ class ProvisioningProfileReaderTest {
 
 		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
 
+
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example")
 
 		assertThat(entitlementsFile.exists(), is(true));
 
@@ -116,7 +117,7 @@ class ProvisioningProfileReaderTest {
 						"<plist version=\"1.0\">\n" +
 						"<dict>\n" +
 						"\t<key>com.apple.application-identifier</key>\n" +
-						"\t<string>Z7L2YCUH45.*</string>\n" +
+						"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
 						"\t<key>com.apple.developer.aps-environment</key>\n" +
 						"\t<string>development</string>\n" +
 						"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
@@ -135,13 +136,13 @@ class ProvisioningProfileReaderTest {
 						"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
 						"\t<array/>\n" +
 						"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
-						"\t<string>Z7L2YCUH45.*</string>\n" +
+						"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
 						"\t<key>keychain-access-groups</key>\n" +
 						"\t<array>\n" +
-						"\t\t<string>Z7L2YCUH45.*</string>\n" +
+						"\t\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
 						"\t</array>\n" +
 						"</dict>\n" +
-						"</plist>"
+						"</plist>\n"
 
 		assertThat(entitlementsFile.text, is(equalTo(expectedContents)));
 

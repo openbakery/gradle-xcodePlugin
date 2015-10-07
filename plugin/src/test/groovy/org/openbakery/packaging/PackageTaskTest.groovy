@@ -13,6 +13,7 @@ import org.openbakery.packaging.PackageTask
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.openbakery.stubs.PlistHelperStub
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -28,6 +29,8 @@ class PackageTaskTest {
 
 	GMockController mockControl
 	CommandRunner commandRunnerMock
+
+	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
 	File provisionLibraryPath
 	File projectDir
@@ -53,7 +56,7 @@ class PackageTaskTest {
 
 
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
-		packageTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		packageTask.plistHelper = plistHelperStub
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
 
@@ -94,18 +97,16 @@ class PackageTaskTest {
 		}
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		mockValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 		if (withPlugin) {
 			File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
-			mockValueFromPlist(infoPlistWidget.absolutePath, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
+			plistHelperStub.setValueForPlist(infoPlistWidget.absolutePath, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
 		}
 
-		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
-
-		mockCodesignCommand("Payload/Example.app")
+		mockCodesignCommand("Payload/Example.app", "entitlements_test.plist")
 		if (withPlugin) {
-			mockCodesignCommand("Payload/Example.app/" + widgetPath)
+			mockCodesignCommand("Payload/Example.app/" + widgetPath, "entitlements_test1.plist")
 		}
 		project.xcodebuild.outputPath.mkdirs()
 
@@ -171,10 +172,10 @@ class PackageTaskTest {
 
 	}
 
-	void mockCodesignCommand(String path) {
+	void mockCodesignCommand(String path, String entitlementsName) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		File payloadApp = new File(packageTask.outputPath, path)
-		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test.plist")
+		File entitlements = new File(project.buildDir.absolutePath, "package/" + entitlementsName)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -460,5 +461,19 @@ class PackageTaskTest {
 		def finalized = packageTask.finalizedBy.values
 		assert finalized.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 	}
+
+
+	@Test
+	void deleteCFBundleResourceSpecification() {
+		mockExampleApp(false, true)
+
+		mockControl.play {
+			packageTask.packageApplication()
+		}
+
+		assert plistHelperStub.plistCommands.size() == 1
+		assert plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
+	}
+
 
 }
