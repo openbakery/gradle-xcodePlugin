@@ -169,7 +169,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 		if (frameworksPath.exists()) {
-			File swiftSupportDirectory = new File(project.xcodebuild.archiveDirectory, "SwiftSupport");
+			File swiftSupportDirectory = new File(getArchiveDirectory(), "SwiftSupport");
 			if (!swiftSupportDirectory.exists()) {
 				swiftSupportDirectory.mkdirs()
 			}
@@ -217,13 +217,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		logger.debug("Create xcarchive")
 
 		// create xcarchive
-		def applicationsDirectory = new File(project.xcodebuild.archiveDirectory, "Products/Applications")
+		def applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
 		applicationsDirectory.mkdirs()
 
 		copy(project.xcodebuild.applicationBundle, applicationsDirectory)
 
 
-		def dSymDirectory = new File(project.xcodebuild.archiveDirectory, "dSYMs")
+		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
 		dSymDirectory.mkdirs()
 
 		List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
@@ -236,12 +236,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 
-		createInfoPlist(project.xcodebuild.archiveDirectory)
+		createInfoPlist(getArchiveDirectory())
 
-		createFrameworks(project.xcodebuild.archiveDirectory)
+		createFrameworks(getArchiveDirectory())
 
 		if (project.xcodebuild.type == Type.iOS) {
-			File applicationFolder = new File(project.xcodebuild.archiveDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + project.xcodebuild.applicationBundle.name)
 			convertInfoPlistToBinary(applicationFolder)
 		}
 
@@ -280,4 +280,21 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		setValueForPlist(new File(appDirectory, "Info.plist"), "Delete: CFBundleResourceSpecification")
 
 	}
+
+
+	File getArchiveDirectory() {
+
+		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
+
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
+		}
+		archiveDirectoryName += ".xcarchive"
+
+		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
+		archiveDirectory.mkdirs()
+		return archiveDirectory
+	}
+
+
 }

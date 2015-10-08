@@ -173,7 +173,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
 
 		then:
-		applicationBundle.endsWith("build/sym/Debug-watchos/ExampleWatchkit WatchKit App.app")
+		applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
 
 	}
 

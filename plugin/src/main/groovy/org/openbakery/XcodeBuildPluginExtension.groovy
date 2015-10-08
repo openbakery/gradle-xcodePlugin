@@ -97,6 +97,9 @@ class XcodeBuildPluginExtension {
 
 	String _sdkRoot
 
+	HashMap<String, BuildConfiguration> projectSettings
+
+
 	/**
 	 * internal parameters
 	 */
@@ -457,9 +460,7 @@ class XcodeBuildPluginExtension {
 
 	File getOutputPath() {
 		String path = getConfiguration()
-		if ("watchos".equalsIgnoreCase(_sdkRoot)) {
-			path += "-watchos"
-		} else if (type == Type.iOS) {
+		if (type == Type.iOS) {
 			if (simulator) {
 				path += "-iphonesimulator"
 			} else {
@@ -475,19 +476,6 @@ class XcodeBuildPluginExtension {
 
 
 
-	File getArchiveDirectory() {
-
-		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
-
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
-		}
-		archiveDirectoryName += ".xcarchive"
-
-		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
-		archiveDirectory.mkdirs()
-		return archiveDirectory
-	}
 
 
 
