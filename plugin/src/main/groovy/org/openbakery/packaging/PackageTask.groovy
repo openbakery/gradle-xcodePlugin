@@ -106,30 +106,30 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
-	File getMobileProvisionFileForBundle(File bundle) {
+	File getProvisionFileForBundle(File bundle) {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
-		return getMobileProvisionFileForIdentifier(bundleIdentifier)
+		return getProvisionFileForIdentifier(bundleIdentifier)
 	}
 
-	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
+	File getProvisionFileForIdentifier(String bundleIdentifier) {
 
-		def mobileProvisionFileMap = [:]
+		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
 			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner)
-			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 
-		logger.debug("mobileProvisionFileMap: {}", mobileProvisionFileMap)
+		logger.debug("provisionFileMap: {}", provisionFileMap)
 
-		for ( entry in mobileProvisionFileMap ) {
+		for ( entry in provisionFileMap ) {
 			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
 				return entry.value
 			}
 		}
 
 		// match wildcard
-		for ( entry in mobileProvisionFileMap ) {
+		for ( entry in provisionFileMap ) {
 			if (entry.key.equals("*")) {
 				return entry.value
 			}
@@ -145,7 +145,7 @@ class PackageTask extends AbstractDistributeTask {
 		def output = services.get(StyledTextOutputFactory).create(PackageTask)
 
 		output.withStyle(StyledTextOutput.Style.Failure).println("No provisioning profile found for bundle identifier " + bundleIdentifier)
-		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + mobileProvisionFileMap.keySet())
+		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + provisionFileMap.keySet())
 
 
 		return null
@@ -200,7 +200,7 @@ class PackageTask extends AbstractDistributeTask {
 		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
 		String bundleIdentifier = getIdentifierForBundle(bundle)
-		File provisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier)
+		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
@@ -274,7 +274,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void embedProvisioningProfileToBundle(File bundle) {
-		File mobileProvisionFile = getMobileProvisionFileForBundle(bundle);
+		File mobileProvisionFile = getProvisionFileForBundle(bundle);
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 

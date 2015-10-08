@@ -6,11 +6,9 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.PlistHelper
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
-import org.openbakery.packaging.PackageTask
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -366,11 +364,11 @@ class PackageTaskTest {
 		project.xcodebuild.signing.mobileProvisionFile = wildcardMobileprovision
 
 
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.ExampleWidget") == widgetMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.openbakery.ExampleWidget") == widgetMobileprovision
 
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Test") == wildcardMobileprovision
-		assert packageTask.getMobileProvisionFileForIdentifier("org.Test") == wildcardMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.openbakery.Test") == wildcardMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.Test") == wildcardMobileprovision
 
 	}
 
@@ -382,9 +380,9 @@ class PackageTaskTest {
 		project.xcodebuild.signing.mobileProvisionFile = wildcardMobileprovision
 
 
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example.widget") == wildcardMobileprovision
-		assert packageTask.getMobileProvisionFileForIdentifier("org.openbakery.Example.extension") == wildcardMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.openbakery.Example.widget") == wildcardMobileprovision
+		assert packageTask.getProvisionFileForIdentifier("org.openbakery.Example.extension") == wildcardMobileprovision
 
 	}
 

@@ -503,4 +503,11 @@ class XcodeBuildPluginExtension {
 	void setSdkRoot(String sdkRoot) {
 		_sdkRoot = sdkRoot
 	}
+
+	boolean getSimulator() {
+		if (type == Type.OSX) {
+			return false
+		}
+		return this.simulator
+	}
 }

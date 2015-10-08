@@ -261,10 +261,19 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	def "available destinations for OS X"() {
 
 		when:
-		extension.type= Type.OSX
+		extension.type = Type.OSX
 
 		then:
 		extension.getAvailableDestinations().size() == 1
+	}
+
+	def "os x has no simulator"() {
+
+		when:
+		extension.type = Type.OSX
+		then:
+		extension.simulator == false
+
 	}
 
 
