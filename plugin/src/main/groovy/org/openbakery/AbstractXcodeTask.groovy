@@ -162,34 +162,44 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File appBundle = new File(appPath, applicationBundleName)
 
-
-		File plugins
-
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-			plugins = new File(appBundle, "PlugIns")
+			addPluginsToAppBundle(appBundle, bundles)
+			addWatchToAppBundle(appBundle, bundles)
+		}
+		bundles.add(appBundle)
+		return bundles;
+	}
 
+	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
+		File plugins
+		plugins = new File(appBundle, "PlugIns")
+		if (plugins.exists()) {
+			for (File pluginBundle : plugins.listFiles()) {
+				if (pluginBundle.isDirectory()) {
 
-			if (plugins.exists()) {
+					if (pluginBundle.name.endsWith(".framework")) {
+						// Frameworks have to be signed with this path
+						bundles.add(new File(pluginBundle, "/Versions/Current"))
+					} else {
+						bundles.add(pluginBundle)
+					}
+				}
+			}
+		}
+	}
 
-				for (File pluginBundle : plugins.listFiles()) {
-
-					if (pluginBundle.isDirectory()) {
-
-						if (pluginBundle.name.endsWith(".framework")) {
-
-							// Frameworks have to be signed with this path
-							bundles.add(new File(pluginBundle, "/Versions/Current"))
-						} else {
-							bundles.add(pluginBundle)
+	private void addWatchToAppBundle(File appBundle, ArrayList<File> bundles) {
+			File watchDirectory
+			watchDirectory = new File(appBundle, "Watch")
+			if (watchDirectory.exists()) {
+				for (File bundle : watchDirectory.listFiles()) {
+					if (bundle.isDirectory()) {
+						if (bundle.name.endsWith(".app")) {
+							addPluginsToAppBundle(bundle, bundles)
+							bundles.add(bundle)
 						}
 					}
 				}
 			}
 		}
-
-		bundles.add(appBundle)
-
-		return bundles;
-
-	}
 }
