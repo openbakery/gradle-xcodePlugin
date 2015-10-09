@@ -35,6 +35,8 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 		xcodeProjectFile = new XcodeProjectFile(project, projectFile)
 		xcodeProjectFile.parse()
+		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+
 
 
 		if (xcodeProjectFile.isOSX) {

@@ -34,19 +34,11 @@ class XcodeProjectFile {
 		this.projectFile = projectFile
 	}
 
-
-	void parse() {
-		this.project.logger.info("Parse project file: " + projectFile.absolutePath)
-		if (!this.projectFile.exists()) {
-			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
+	void loadConfig() {
+		if (config != null) {
+			// already loaded
+			return
 		}
-
-		if (project.xcodebuild.target == null) {
-			throw new IllegalArgumentException("'xcodebuild.target' is null");
-		}
-
-
-
 		def buildRoot = project.buildDir
 		if (!buildRoot.exists()) {
 			buildRoot.mkdirs()
@@ -63,20 +55,33 @@ class XcodeProjectFile {
 
 		config = new XMLPropertyListConfiguration(projectPlistFile)
 		rootObjectKey = getString("rootObject")
+	}
 
-
-		logger.debug("rootObjectKey {}", rootObjectKey);
-
+	HashMap<String, BuildConfiguration> getProjectSettings() {
+		loadConfig()
 		BuildConfiguration projectBuildConfiguration = createProjectBuildConfiguration(rootObjectKey)
 
 		HashMap<String, BuildConfiguration> projectSettings = new HashMap<>()
 		getTargets().each { String targetName, String target ->
 			projectSettings.put(targetName, createBuildConfiguration(target, targetName, projectBuildConfiguration));
 		}
+		return projectSettings
+	}
 
-		project.xcodebuild.projectSettings = projectSettings
+	void parse() {
+		this.project.logger.info("Parse project file: " + projectFile.absolutePath)
+		if (!this.projectFile.exists()) {
+			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
+		}
+
+		if (project.xcodebuild.target == null) {
+			throw new IllegalArgumentException("'xcodebuild.target' is null");
+		}
 
 
+		loadConfig()
+
+		logger.debug("rootObjectKey {}", rootObjectKey);
 
 		verifyTarget()
 
@@ -102,8 +107,6 @@ class XcodeProjectFile {
 			sdkRoot = getString("objects." + rootBuildConfigurationsItem + ".buildSettings.SDKROOT")
 		}
 
-		project.xcodebuild.setSdkRoot(sdkRoot)
-
 		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
 			this.isOSX = true
 		} else {
@@ -125,6 +128,7 @@ class XcodeProjectFile {
 			project.xcodebuild.infoPlist = getString(key)
 			logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
 		}
+
 	}
 
 

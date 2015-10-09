@@ -51,6 +51,57 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
+	HashMap<String, BuildConfiguration> createProjectSettings() {
+		HashMap<String, BuildConfiguration> result = new HashMap<>()
+
+		BuildConfiguration appConfiguration = new BuildConfiguration();
+		appConfiguration.release = new BuildSettings();
+		appConfiguration.debug = new BuildSettings();
+
+		appConfiguration.debug.infoplist = "ExampleWatchkit/Info.plist"
+		appConfiguration.debug.bundleIdentifier = "org.openbakery.Example"
+		appConfiguration.debug.productName = "ExampleWatchkit"
+		appConfiguration.debug.sdkRoot = "iphoneos"
+		appConfiguration.release.infoplist = "ExampleWatchkit/Info.plist"
+		appConfiguration.release.bundleIdentifier = "org.openbakery.Example"
+		appConfiguration.release.productName = "ExampleWatchkit"
+		appConfiguration.release.sdkRoot = "iphoneos"
+		appConfiguration.release.devices = Devices.UNIVERSAL
+
+
+		BuildConfiguration watchAppConfiguration = new BuildConfiguration();
+		watchAppConfiguration.release = new BuildSettings();
+		watchAppConfiguration.debug = new BuildSettings();
+		watchAppConfiguration.debug.infoplist = "ExampleWatchkit WatchKit App/Info.plist"
+		watchAppConfiguration.debug.bundleIdentifier = "org.openbakery.Example.watchkitapp"
+		watchAppConfiguration.debug.productName = "ExampleWatchkit WatchKit App"
+		watchAppConfiguration.debug.sdkRoot = "watchos"
+		watchAppConfiguration.release.infoplist = "ExampleWatchkit WatchKit App/Info.plist"
+		watchAppConfiguration.release.bundleIdentifier = "org.openbakery.Example.watchkitapp"
+		watchAppConfiguration.release.productName = "ExampleWatchkit WatchKit App"
+		watchAppConfiguration.release.sdkRoot = "watchos"
+		watchAppConfiguration.release.devices = Devices.WATCH
+
+		BuildConfiguration extenstionConfiguration = new BuildConfiguration();
+		extenstionConfiguration.release = new BuildSettings();
+		extenstionConfiguration.debug = new BuildSettings();
+		extenstionConfiguration.debug.infoplist = "ExampleWatchkit WatchKit Extension/Info.plist"
+		extenstionConfiguration.debug.bundleIdentifier = "org.openbakery.Example.watchkitapp.watchkitextension"
+		extenstionConfiguration.debug.productName = "ExampleWatchkit WatchKit Extension"
+		extenstionConfiguration.debug.sdkRoot = "watchos"
+		extenstionConfiguration.release.infoplist = "ExampleWatchkit WatchKit Extension/Info.plist"
+		extenstionConfiguration.release.bundleIdentifier = "org.openbakery.Example.watchkitapp.watchkitextension"
+		extenstionConfiguration.release.productName = "ExampleWatchkit WatchKit Extension"
+		extenstionConfiguration.release.sdkRoot = "watchos"
+		extenstionConfiguration.release.devices = Devices.WATCH
+
+
+		result.put("ExampleWatchkit", appConfiguration);
+		result.put("ExampleWatchkit WatchKit App", watchAppConfiguration);
+		result.put("ExampleWatchkit WatchKit Extension", extenstionConfiguration);
+
+		return result
+	}
 
 	def "xcode version"() {
 		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild5_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath
@@ -118,15 +169,17 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "application bundle for widget"() {
 		when:
-		extension.commandRunner = new CommandRunner()
-		File projectDir =  new File("../example/Example")
+		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
+		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 		extension.type = Type.iOS
 		extension.simulator = false
+		extension.target = "ExampleTodayWidget"
 		extension.productName = "ExampleTodayWidget"
 		extension.productType = "appex"
-		extension.infoPlist = "../../example/Example/ExampleTodayWidget/Info.plist"
+		extension.infoPlist = "../../example/iOS/Example/ExampleTodayWidget/Info.plist"
 
 
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
@@ -138,16 +191,18 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "application bundle"() {
 		when:
-		File projectDir =  new File("../example/Example")
+		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = new CommandRunner()
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
+		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 
 		extension.type = Type.iOS
 		extension.simulator = false
 		extension.target = "Example"
 		extension.productName = "Example"
-		extension.infoPlist = "../../example/Example/Example/Example-Info.plist"
+		extension.infoPlist = "../../example/iOS/Example/Example/Example-Info.plist"
 
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
 
@@ -158,24 +213,43 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "application bundle for watchos"() {
 		when:
-		extension.commandRunner = new CommandRunner()
-		File projectDir =  new File("../example/ExampleWatchkit")
+
+		File projectDir =  new File("../example/iOS/ExampleWatchkit")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
+		extension.projectSettings = createProjectSettings()
 		extension.type = Type.iOS
-		extension._sdkRoot = "watchos"
+		extension.target = "ExampleWatchkit WatchKit App"
 		extension.simulator = false
 		extension.productName = "ExampleWatchkit WatchKit App"
 		extension.productType = "app"
-		extension.infoPlist = "../../example/ExampleWatchkit/ExampleWatchkit WatchKit App/Info.plist"
+		extension.infoPlist = "../../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit App/Info.plist"
 
 
 		String applicationBundle = extension.getApplicationBundle().absolutePath;
 
 		then:
-		applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
+		applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleWatchkit.app")
 
 	}
+
+	def "application bundle for watch find parent"() {
+		when:
+		File projectDir =  new File("../example/iOS/ExampleWatchkit")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.projectSettings = createProjectSettings()
+		extension.type = Type.iOS
+		extension.target = "ExampleWatchkit WatchKit App"
+		extension.simulator = false
+
+
+		BuildSettings parent = extension.getParent(extension.projectSettings["ExampleWatchkit WatchKit App"].debug)
+
+		then:
+		parent.bundleIdentifier == "org.openbakery.Example"
+	}
+
 
 
 	void mockValueFromPlist(String key, String value) {
