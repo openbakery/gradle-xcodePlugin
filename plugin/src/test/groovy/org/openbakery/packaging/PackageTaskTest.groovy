@@ -439,12 +439,6 @@ class PackageTaskTest {
 		packageTask.packageApplication()
 	}
 
-	@Test(expected = IllegalArgumentException)
-	void hasNoSigningIdentity() {
-		project.xcodebuild.signing.identity = null
-		packageTask.packageApplication()
-	}
-
 	@Test
 	void dependsOn() {
 		def dependsOn  = packageTask.getDependsOn()
