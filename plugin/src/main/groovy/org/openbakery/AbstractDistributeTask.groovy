@@ -144,7 +144,14 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 	}
 
 	def getApplicationNameFromArchive() {
-		return getArchiveDirectory().name - ".xcarchive"
+		def fileList = new File(getArchiveDirectory(), "Products/Applications").list(
+						[accept: { d, f -> f ==~ /.*app/ }] as FilenameFilter
+		).toList()
+
+		if (fileList.isEmpty()) {
+			throw new IllegalStateException("No app	 found")
+		}
+		return fileList.get(0) - ".app"
 	}
 
 
