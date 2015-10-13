@@ -453,9 +453,8 @@ class PackageTaskSpecification extends Specification {
 		when:
 		def dependsOn = packageTask.getDependsOn()
 		then:
-		dependsOn.size() == 4
+		dependsOn.size() == 3
 
-		dependsOn.contains(XcodePlugin.ARCHIVE_TASK_NAME)
 		dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
 		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
@@ -477,8 +476,9 @@ class PackageTaskSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		plistHelperStub.plistCommands.size() == 1
+		plistHelperStub.plistCommands.size() == 2
 		plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
+		plistHelperStub.plistCommands.get(0).equals("Delete keychain-access-groups")
 	}
 
 

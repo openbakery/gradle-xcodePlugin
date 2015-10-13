@@ -23,13 +23,14 @@ class SimulatorControlSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin:org.openbakery.XcodePlugin
 
+		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
 
 		projectDir.mkdirs()
 
 		simulatorControl = new SimulatorControl(project)
 		simulatorControl.commandRunner = commandRunner
 
-		commandRunner.runWithResult(["xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/simctl", "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-unavailable-output.txt"))
 	}
 
