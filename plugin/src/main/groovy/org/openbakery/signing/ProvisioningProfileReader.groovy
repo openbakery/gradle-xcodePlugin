@@ -167,7 +167,10 @@ class ProvisioningProfileReader {
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "keychain-access-groups")
+		//setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "keychain-access-groups")
+
+
+		plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 
 
 

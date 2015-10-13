@@ -89,4 +89,9 @@ class PlistHelper {
 		])
 	}
 
+
+	void deleteValueFromPlist(def plist, String key) {
+		setValueForPlist(plist, "Delete " + key);
+	}
+
 }

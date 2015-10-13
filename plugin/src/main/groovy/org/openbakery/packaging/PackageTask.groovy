@@ -29,7 +29,6 @@ class PackageTask extends AbstractDistributeTask {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
 		dependsOn(
-						XcodePlugin.ARCHIVE_TASK_NAME,
 						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
 						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
