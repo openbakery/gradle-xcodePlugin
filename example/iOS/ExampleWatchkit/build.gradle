@@ -18,7 +18,8 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://repository.openbakery.org/')
+			//url('http://repository.openbakery.org/')
+			url('/Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -51,17 +52,16 @@ xcodebuild {
 }
 
 
-
 task continuous(dependsOn:'test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
 
 
-task release(dependsOn: 'package') {
+task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
 }
 
-task appstore(dependsOn: 'package') {
+task release(dependsOn: ['archive', 'package']) {
 	description = 'Build for the AppStore'
 }
 
@@ -74,7 +74,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 	
 	// ------------------------------------------------------------------------------------------
 
-	if (taskGraph.hasTask(release)) {
+	if (taskGraph.hasTask(release) || taskGraph.hasTask(package)) {
 		println "Configure sign settings for the integration and release build"
 		xcodebuild {
 			configuration = 'Release'
@@ -82,7 +82,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+				mobileProvisionURI = [ signingMobileProvisionURI, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
 	}

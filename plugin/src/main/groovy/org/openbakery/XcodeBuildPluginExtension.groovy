@@ -93,11 +93,10 @@ class XcodeBuildPluginExtension {
 
 	String xcodePath = null
 	CommandRunner commandRunner
-	VariableResolver variableResolver;
+	VariableResolver variableResolver
+	PlistHelper plistHelper
 
-	String _sdkRoot
-
-	HashMap<String, BuildConfiguration> projectSettings
+	HashMap<String, BuildConfiguration> projectSettings = new HashMap<>()
 
 
 	/**
@@ -110,6 +109,7 @@ class XcodeBuildPluginExtension {
 		this.signing = new Signing(project)
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
+		plistHelper = new PlistHelper(this.project, commandRunner)
 
 
 		this.dstRoot = {
@@ -470,7 +470,49 @@ class XcodeBuildPluginExtension {
 		return new File(getSymRoot(), path)
 	}
 
+
+	BuildSettings getParent(BuildSettings buildSettings) {
+		BuildSettings result = buildSettings
+		File infoPlist = new File(project.projectDir, buildSettings.infoplist);
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "WKCompanionAppBundleIdentifier")
+		if (bundleIdentifier != null) {
+
+			projectSettings.each { String key, BuildConfiguration buildConfiguration ->
+
+				BuildSettings settings
+				if (configuration.equals("debug")) {
+					settings = buildConfiguration.debug
+				} else {
+					settings = buildConfiguration.release
+				}
+				if (settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
+					result = settings
+					return
+				}
+			}
+		}
+		return result;
+
+	}
+
+
 	File getApplicationBundle() {
+
+		BuildConfiguration buildConfiguration = projectSettings[target]
+		if (buildConfiguration != null) {
+			BuildSettings buildSettings
+			if (configuration.equalsIgnoreCase("release")) {
+				buildSettings = buildConfiguration.release
+			} else {
+				buildSettings = buildConfiguration.debug
+			}
+
+			if (buildSettings.sdkRoot.equalsIgnoreCase("watchos")) {
+				BuildSettings parent = getParent(buildSettings)
+
+				return new File(getOutputPath(), parent.productName + "." + this.productType)
+			}
+		}
 		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
@@ -488,9 +530,6 @@ class XcodeBuildPluginExtension {
 		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
 	}
 
-	void setSdkRoot(String sdkRoot) {
-		_sdkRoot = sdkRoot
-	}
 
 	boolean getSimulator() {
 		if (type == Type.OSX) {

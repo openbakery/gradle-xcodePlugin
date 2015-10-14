@@ -29,7 +29,6 @@ class PackageTask extends AbstractDistributeTask {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
 		dependsOn(
-						XcodePlugin.ARCHIVE_TASK_NAME,
 						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
 						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
@@ -211,6 +210,9 @@ class PackageTask extends AbstractDistributeTask {
 		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
 		String bundleIdentifier = getIdentifierForBundle(bundle)
+		if (bundleIdentifier == null) {
+			logger.debug("bundleIdentifier not found in bundle {}", bundle)
+		}
 		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
@@ -237,6 +239,8 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void codeSignFrameworks(File bundle) {
+
+		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
 		File frameworksDirectory
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -266,7 +270,7 @@ class PackageTask extends AbstractDistributeTask {
 								"--keychain",
 								project.xcodebuild.signing.keychainPathInternal.absolutePath,
 				]
-				commandRunner.run(codesignCommand)
+				commandRunner.run(codesignCommand, environment)
 			}
 		}
 	}

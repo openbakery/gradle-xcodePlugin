@@ -1,7 +1,14 @@
 # 0.12.0
 
 Changes
-* Remove the sdk parameter, use the type and simulator parameter. Reason is that iOS Projects with WatchKit needs multiple sdks
+* watchOS support. Now iOS Apps with a watchOS App included can be build and signed.
+ * For this the sdk parameter was removed and replaced by the type and simualtor parameter
+* The xcodebuild task does not sign anymore more. 
+ * Signing task only place in the package tasks
+ * The proper entitlements for signing are now read from the provisioning profile
+ * The keychain is created prior to the package task.
+
+* The package task is not depended to the archive task anymore. The reason is that sometimes you can package archives that aready exists.
 
 #0.11.6 (September 4, 2015)
 

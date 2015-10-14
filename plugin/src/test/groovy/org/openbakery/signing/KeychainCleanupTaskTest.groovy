@@ -10,13 +10,6 @@ import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.signing.KeychainCleanupTask
 import org.junit.Test
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 23.08.13
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
 class KeychainCleanupTaskTest {
 
 	Project project

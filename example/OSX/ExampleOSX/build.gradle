@@ -21,7 +21,7 @@ xcodebuild {
 	type = 'OSX'
 }
 
-task release(dependsOn: 'package') {
+task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a release build and signed the created app using the provided sign settings'
 }
 

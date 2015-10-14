@@ -55,6 +55,8 @@ class PackageTaskOSXTest {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
+		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
+
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
 		packageTask.plistHelper = plistHelperStub
 
@@ -90,7 +92,7 @@ class PackageTaskOSXTest {
 				"/var/tmp/gradle.keychain"
 
 		]
-		commandRunnerMock.run(commandList)
+		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
 	}
 
 	void mockCodesignCommand(String path) {

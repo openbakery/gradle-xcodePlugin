@@ -138,10 +138,6 @@ class ProvisioningProfileReaderTest {
 						"\t<array/>\n" +
 						"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
 						"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
-						"\t<key>keychain-access-groups</key>\n" +
-						"\t<array>\n" +
-						"\t\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
-						"\t</array>\n" +
 						"</dict>\n" +
 						"</plist>\n"
 

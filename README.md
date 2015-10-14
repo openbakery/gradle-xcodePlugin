@@ -1,20 +1,20 @@
 gradle-xcodePlugin
 ==================
 
-gradle-xcodePlugin makes it easier to build Mac and iOS projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
+The gradle xcode plugin (gxp) makes it easier to build Xcode projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
 
-The gradle-xcodePlugin uses the Apple command line tools (like xcodebuild) to perform the build.
+The gxp uses the Apple command line tools (like xcodebuild) to perform the build.
 
 Here a brief overview of the features:
 
-* Build iOS and Mac projects
-* Override sign settings for iOS builds
+* Build iOS, watchOS and Mac projects
+* Override sign settings for builds
 * Perform unit tests
 * Support for multiple Xcodes (on one machine)
 * [Cocoapods](Cocoapods) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) )
-* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
+* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint (Works not with Xcode 7-beta)
 
 
@@ -48,7 +48,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.11.6"
+  id "org.openbakery.xcode-plugin" version "0.12.0"
 }
 
 xcodebuild {
