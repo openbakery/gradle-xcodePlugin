@@ -169,7 +169,8 @@ class ProvisioningProfileReader {
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
 		//setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "keychain-access-groups")
 
-
+		// the keychain-access-groups were removed from the entitlements on the xcode export step
+		// therefor I also remove this here. Maybe this is wrong, but I hope the future will clarify this.
 		plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 
 
