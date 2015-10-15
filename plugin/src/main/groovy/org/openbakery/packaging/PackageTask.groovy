@@ -24,6 +24,7 @@ class PackageTask extends AbstractDistributeTask {
 	private List<File> appBundles
 
 	String applicationBundleName
+	StyledTextOutput output
 
 	PackageTask() {
 		super();
@@ -36,6 +37,7 @@ class PackageTask extends AbstractDistributeTask {
 						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
 		)
 
+		output = services.get(StyledTextOutputFactory).create(PackageTask)
 
 	}
 
@@ -46,9 +48,6 @@ class PackageTask extends AbstractDistributeTask {
 			return;
 		}
 
-		if (project.xcodebuild.signing == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
-		}
 
 		File applicationFolder = createApplicationFolder();
 
@@ -75,16 +74,13 @@ class PackageTask extends AbstractDistributeTask {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
 
-		def isSigningAvailable = false
-		def notSignedMessage = 'Bundles will not be signed.'
-		if (project.xcodebuild.signing.identity == null) {
-			logger.warn('No Signing Identity provided. ' + notSignedMessage)
-		} else if (project.xcodebuild.signing.mobileProvisionFile == null) {
-			logger.warn('No mobile provision file provided. ' + notSignedMessage)
+		def signSettingsAvailable = true;
+		if (project.xcodebuild.signing.mobileProvisionFile == null) {
+			logger.warn('No mobile provision file provided.')
+			signSettingsAvailable = false;
 		} else if (!project.xcodebuild.signing.keychainPathInternal.exists()) {
-			logger.warn("No certificate or keychain found. " + notSignedMessage)
-		} else {
-			isSigningAvailable = true;
+			logger.warn('No certificate or keychain found.')
+			signSettingsAvailable = false;
 		}
 
 		for (File bundle : appBundles) {
@@ -99,12 +95,12 @@ class PackageTask extends AbstractDistributeTask {
 			}
 			*/
 
-			if (isSigningAvailable) {
+			if (signSettingsAvailable) {
 				logger.lifecycle("codesign path: {}", bundle);
 				codesign(bundle)
 			} else {
-				def output = services.get(StyledTextOutputFactory).create(PackageTask)
-				output.withStyle(StyledTextOutput.Style.Failure).println("Bundle not signed: " + bundle)
+				String message = "Bundle not signed: " + bundle
+				output.withStyle(StyledTextOutput.Style.Failure).println(message)
 			}
 		}
 

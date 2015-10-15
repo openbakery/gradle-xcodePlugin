@@ -29,6 +29,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 	File infoPlist
 	File payloadAppDirectory
 	File archiveDirectory
+	File keychain
 
 	void setup() {
 
@@ -57,6 +58,14 @@ class PackageTask_WatchKitSpecification extends Specification {
 		payloadAppDirectory = new File(payloadDirectory, "ExampleWatchKit.app");
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+		keychain = new File(projectDir, "gradle.keychain")
+		FileUtils.writeStringToFile(keychain, "dummy");
+		project.xcodebuild.signing.keychain = keychain.absolutePath
+
+	}
+
+	def cleanup() {
+		FileUtils.deleteDirectory(projectDir)
 	}
 
 
@@ -115,8 +124,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 						"--verbose",
 						payloadApp.absolutePath,
 						"--keychain",
-						"/var/tmp/gradle.keychain"
-
+						keychain.absolutePath
 		]
 
 		return commandList
@@ -136,8 +144,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 						"--verbose",
 						payloadApp.absolutePath,
 						"--keychain",
-						"/var/tmp/gradle.keychain"
-
+						keychain.absolutePath
 		]
 
 		return commandList

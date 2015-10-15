@@ -3,11 +3,16 @@ package org.openbakery.packaging
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.wrapper.Logger
+import org.junit.After
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
+import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.stubs.PlistHelperStub
 import spock.lang.Specification
 
@@ -32,6 +37,7 @@ class PackageTaskSpecification extends Specification {
 	File infoPlist
 	File payloadAppDirectory
 	File archiveDirectory
+	File keychain
 
 	void setup() {
 
@@ -60,8 +66,16 @@ class PackageTaskSpecification extends Specification {
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+
+		keychain = new File(projectDir, "gradle.keychain")
+		FileUtils.writeStringToFile(keychain, "dummy");
+		project.xcodebuild.signing.keychain = keychain.absolutePath
+
 	}
 
+	def cleanup() {
+		FileUtils.deleteDirectory(projectDir)
+	}
 
 	void mockExampleApp(boolean withPlugin, boolean withSwift) {
 		mockExampleApp(withPlugin, withSwift, false)
@@ -145,7 +159,7 @@ class PackageTaskSpecification extends Specification {
 						"--verbose",
 						payloadApp.absolutePath,
 						"--keychain",
-						"/var/tmp/gradle.keychain"
+						keychain.absolutePath
 
 		]
 
@@ -166,7 +180,7 @@ class PackageTaskSpecification extends Specification {
 						"--verbose",
 						payloadApp.absolutePath,
 						"--keychain",
-						"/var/tmp/gradle.keychain"
+						keychain.absolutePath
 
 		]
 		return commandList
@@ -185,9 +199,7 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
-	def cleanup() {
-		FileUtils.deleteDirectory(project.projectDir)
-	}
+
 
 
 	def "swift Framework"() {
@@ -426,27 +438,21 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
-	def "no signing"() {
-		given:
-		project.xcodebuild.signing = null
-
-		when:
-		packageTask.packageApplication()
-
-		then:
-		thrown(IllegalArgumentException)
-	}
 
 
 	def "has No Signing Identity"() {
+		def message
 		given:
-		project.xcodebuild.signing.identity = null
+		mockExampleApp(false, false)
+		keychain.delete()
+		StyledTextOutputStub textOutputStub = new StyledTextOutputStub()
+		packageTask.output = textOutputStub
 
 		when:
 		packageTask.packageApplication()
 
 		then:
-		thrown(IllegalArgumentException)
+		textOutputStub.toString().startsWith("Bundle not signed")
 	}
 
 	def "depends on"() {
