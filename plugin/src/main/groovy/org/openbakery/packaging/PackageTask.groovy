@@ -24,6 +24,7 @@ class PackageTask extends AbstractDistributeTask {
 	private List<File> appBundles
 
 	String applicationBundleName
+	StyledTextOutput output
 
 	PackageTask() {
 		super();
@@ -36,6 +37,7 @@ class PackageTask extends AbstractDistributeTask {
 						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
 		)
 
+		output = services.get(StyledTextOutputFactory).create(PackageTask)
 
 	}
 
@@ -46,13 +48,6 @@ class PackageTask extends AbstractDistributeTask {
 			return;
 		}
 
-		if (project.xcodebuild.signing == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
-		}
-
-		if (project.xcodebuild.signing.identity == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signing identity");
-		}
 
 		File applicationFolder = createApplicationFolder();
 
@@ -79,6 +74,14 @@ class PackageTask extends AbstractDistributeTask {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
 
+		def signSettingsAvailable = true;
+		if (project.xcodebuild.signing.mobileProvisionFile == null) {
+			logger.warn('No mobile provision file provided.')
+			signSettingsAvailable = false;
+		} else if (!project.xcodebuild.signing.keychainPathInternal.exists()) {
+			logger.warn('No certificate or keychain found.')
+			signSettingsAvailable = false;
+		}
 
 		for (File bundle : appBundles) {
 
@@ -92,9 +95,13 @@ class PackageTask extends AbstractDistributeTask {
 			}
 			*/
 
-			logger.lifecycle("codesign path: {}", bundle);
-
-			codesign(bundle)
+			if (signSettingsAvailable) {
+				logger.lifecycle("codesign path: {}", bundle);
+				codesign(bundle)
+			} else {
+				String message = "Bundle not signed: " + bundle
+				output.withStyle(StyledTextOutput.Style.Failure).println(message)
+			}
 		}
 
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {

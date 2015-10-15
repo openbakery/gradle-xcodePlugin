@@ -34,25 +34,33 @@ class PackageTaskOSXTest {
 	File appDirectory
 	File archiveDirectory
 	File provisionProfile
-
+	File keychain
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
 	@Before
 	void setup() {
+
+
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		FileUtils.deleteDirectory(projectDir)
+		projectDir.mkdirs()
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.type = Type.OSX
-		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
+
+		keychain = new File(projectDir, "gradle.keychain")
+		FileUtils.writeStringToFile(keychain, "dummy");
+
+		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
 		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
@@ -72,10 +80,10 @@ class PackageTaskOSXTest {
 		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 	}
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
 	}
+
 
 	void mockCodesignLibCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
@@ -89,7 +97,7 @@ class PackageTaskOSXTest {
 				"--verbose",
 				payloadApp.absolutePath,
 				"--keychain",
-				"/var/tmp/gradle.keychain"
+				keychain.absolutePath
 
 		]
 		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
@@ -110,7 +118,7 @@ class PackageTaskOSXTest {
 				"--verbose",
 				payloadApp.absolutePath,
 				"--keychain",
-				"/var/tmp/gradle.keychain"
+				keychain.absolutePath
 
 		]
 		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
