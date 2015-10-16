@@ -59,7 +59,7 @@ class XcodeConfigTaskTest {
 	}
 
 	void mockSimctlList() {
-		mockSimctlList("src/test/Resource/simctl-output.txt")
+		mockSimctlList("src/test/Resource/simctl-list.txt")
 	}
 
 	void mockSimctlList(String filePath) {
@@ -146,7 +146,7 @@ class XcodeConfigTaskTest {
 	void testCreateDeviceList_parseDevices_withUnavilableDevices() {
 		mockXcodeVersion()
 		mockFindSimctl()
-		mockSimctlList("src/test/Resource/simctl-unavailable-output.txt")
+		mockSimctlList("src/test/Resource/simctl-list-unavailable.txt")
 
 		mockControl.play {
 			xcodeConfigTask.configuration()
