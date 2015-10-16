@@ -45,7 +45,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 
 		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			Destination destination = project.xcodebuild.availableDestinations.get(0);
+			Destination destination = project.xcodebuild.availableDestinations.last()
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
 		}

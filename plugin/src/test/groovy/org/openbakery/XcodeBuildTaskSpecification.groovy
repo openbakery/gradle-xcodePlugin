@@ -40,8 +40,8 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask.commandRunner = commandRunner
 
 
-		project.xcodebuild.availableSimulators << createDestination("iPad", "iPad Air")
 		project.xcodebuild.availableSimulators << createDestination("iPhone", "iPhone 4s")
+		project.xcodebuild.availableSimulators << createDestination("iPad", "iPad Air")
 
 
 	}
@@ -446,5 +446,6 @@ class XcodeBuildTaskSpecification extends Specification {
 
 
 	}
+
 
 }
