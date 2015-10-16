@@ -350,6 +350,22 @@ Note: see also https://deploygate.com/docs/api
 
   default value: "Crashlytics.framework/submit"
 
+* _emails_ - List of email addresses of users that get added as testers to the new build
+
+  default value: empty
+
+* _groupAliases_ - List of group aliases from the web dashboard
+
+  default value: empty
+
+* _notesPath_ - Path to a .txt file containing notes for the beta (relative to the project dir)
+
+  default value: empty
+
+* _notifications_ - Boolean value that enables/disables email notification to testers
+
+  default value: true
+
 ## Coverage
 
 [GCovr](http://gcovr.com) is used for coverage. Make your you have enabled the code coverage support in xcode (See https://developer.apple.com/library/ios/qa/qa1514/_index.html)
@@ -357,18 +373,18 @@ Note: see also https://deploygate.com/docs/api
 * _outputFormat_ - The coverage output format: can be text, xml or html
 
   default value: empty - Creates text summary
-	
+
 * _exclude_ - Files to exclude for the coverage report as regular expresssion: e.g. '.*h$|.*UnitTests.*m$'
 
 
-	
+
 ## OCLint Parameters
 
 
 * _reportType_ - The report type that should be generated. Must be one of text, html, xml, json and pmd
 
   default value: html
-	
+
 * _rules_ - the line rules as array (see also: http://docs.oclint.org/en/dev/rules/index.html) e.g
 
 ```
@@ -403,6 +419,3 @@ oclint {
 * _maxPriority1_, _maxPriority2_, _maxPriority3_ - maximum number of violations: see http://docs.oclint.org/en/dev/manual/oclint.html#exit-status-options
 
 	default values: maxPriority1=0, maxPriority2=10, maxPriority3=20
-
-
- 
