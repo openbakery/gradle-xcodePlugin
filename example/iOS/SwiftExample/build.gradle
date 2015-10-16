@@ -82,12 +82,12 @@ gradle.taskGraph.whenReady { taskGraph ->
 			destination {
 				platform = 'iOS Simulator'
 				name = 'iPad 2'
-				os='8.*'
+				os='9.*'
 			}
 			destination {
 				platform = 'iOS Simulator'
 				name = 'iPhone 4s'
-				os='8.*'
+				os='9.*'
 			}
 		
 		}

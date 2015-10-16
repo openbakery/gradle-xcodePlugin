@@ -18,14 +18,13 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			//url('http://repository.openbakery.org/')
-			url('/Users/rene/workspace/openbakery/xcodePlugin/repository')
+			url('http://repository.openbakery.org/')
 		}
 		mavenCentral()
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.11.+"
+	    classpath "org.openbakery:xcode-plugin:0.12.+"
 	}
 		
 }
