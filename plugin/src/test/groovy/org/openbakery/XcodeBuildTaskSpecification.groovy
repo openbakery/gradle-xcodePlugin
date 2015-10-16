@@ -430,5 +430,21 @@ class XcodeBuildTaskSpecification extends Specification {
 	}
 
 
+	def "xcodebuild fails"() {
+
+		given:
+		project.xcodebuild.target = "Test"
+		commandRunner.run(_,_,_,_) >> {
+			throw new CommandRunnerException()
+		}
+
+		when:
+		xcodeBuildTask.xcodebuild()
+
+		then:
+		thrown(CommandRunnerException)
+
+
+	}
 
 }

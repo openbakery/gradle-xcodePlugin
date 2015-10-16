@@ -58,15 +58,11 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		}
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
-		try {
 
-			ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
-			ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
 
-			commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
-		} catch (CommandRunnerException ex) {
-			logger.lifecycle(getFailureFromLog(outputFile))
-		}
+		commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
 
 		logger.lifecycle("Done")
 	}

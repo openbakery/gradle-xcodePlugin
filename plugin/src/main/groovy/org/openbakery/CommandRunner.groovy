@@ -90,10 +90,10 @@ class CommandRunner {
 		process.waitFor()
 		readerThread.join()
 		if (process.exitValue() > 0) {
-      def lastLines = resultStringBuilder.toString().split('\\n');
-      lastLines = lastLines[0 .. Math.min(lastLines.size(), 10)-1];
+			logger.debug("Exit Code: {}", process.exitValue())
+      def lastLines = resultStringBuilder.toString().split('\\n')
+      lastLines = lastLines[0 .. Math.min(lastLines.size(), 10)-1]
       lastLines = lastLines.join('\n')
-
 			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList)+"\nTail of output:\n"+lastLines)
 		}
 
