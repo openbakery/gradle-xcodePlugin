@@ -20,7 +20,7 @@ Here a brief overview of the features:
 
 ## Note
 
-**With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter
+**With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter**
 
 ## Requirements
 
