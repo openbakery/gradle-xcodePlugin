@@ -1,4 +1,4 @@
-# 0.12.0 (TBA)
+# 0.12.0 (October 16, 2015)
 
 Changes
 * Better Xcode 7 and 7.1 support
