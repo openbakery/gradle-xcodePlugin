@@ -5,9 +5,9 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by Stefan Gugarel on 04/02/15.
@@ -25,7 +25,7 @@ class XcodeBuildArchiveTaskOSXTest {
 	GMockController mockControl
 	CommandRunner commandRunnerMock
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -37,7 +37,7 @@ class XcodeBuildArchiveTaskOSXTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = XcodePlugin.SDK_MACOSX
+		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
@@ -53,8 +53,8 @@ class XcodeBuildArchiveTaskOSXTest {
 	}
 
 
-	@AfterMethod
-	def cleanAfterTest() {
+	@After
+	void cleanAfterTest() {
 
         FileUtils.deleteDirectory(projectDir)
 	}

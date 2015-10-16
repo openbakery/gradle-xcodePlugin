@@ -7,7 +7,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.11.+"
+	    classpath "org.openbakery:xcode-plugin:0.12.+"
 	}
 		
 }
@@ -16,14 +16,12 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
-	//workspace = 'ExampleOSX.xcworkspace'
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
-	sdk = 'macosx'
-	version = '6.2'
+	type = 'OSX'
 }
 
-task release(dependsOn: 'package') {
+task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a release build and signed the created app using the provided sign settings'
 }
 

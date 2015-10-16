@@ -1,17 +1,18 @@
 package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.PlistHelper
+import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
-import org.openbakery.packaging.PackageTask
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.openbakery.stubs.PlistHelperStub
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -33,28 +34,39 @@ class PackageTaskOSXTest {
 	File appDirectory
 	File archiveDirectory
 	File provisionProfile
+	File keychain
 
+	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
-
-	@BeforeMethod
+	@Before
 	void setup() {
+
+
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
 
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		FileUtils.deleteDirectory(projectDir)
+		projectDir.mkdirs()
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = XcodePlugin.SDK_MACOSX
-		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
+		project.xcodebuild.type = Type.OSX
+
+		keychain = new File(projectDir, "gradle.keychain")
+		FileUtils.writeStringToFile(keychain, "dummy");
+
+		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
+		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
+
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
-		packageTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		packageTask.plistHelper = plistHelperStub
 
 		packageTask.setProperty("commandRunner", commandRunnerMock)
 
@@ -68,59 +80,70 @@ class PackageTaskOSXTest {
 		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 	}
 
-	@AfterMethod
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
-	void mockCodesignSwiftCommand(String path) {
-		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
-		File payloadApp = new File(project.xcodebuild.signing.signingDestinationRoot, path)
 
-		def commandList = [
-				"/usr/bin/codesign",
-				"--force",
-				"--sign",
-				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-				"--verbose",
-				payloadApp.absolutePath,
-				"--keychain",
-				"/var/tmp/gradle.keychain"
-
-		]
-		commandRunnerMock.run(commandList)
-	}
-
-	void mockCodesignCommand(String path) {
+	void mockCodesignLibCommand(String path) {
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		File payloadApp = new File(packageTask.outputPath, path)
 
 		def commandList = [
 				"/usr/bin/codesign",
 				"--force",
-				"--preserve-metadata=identifier,entitlements",
 				"--sign",
 				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
 				"--verbose",
 				payloadApp.absolutePath,
 				"--keychain",
-				"/var/tmp/gradle.keychain"
+				keychain.absolutePath
+
+		]
+		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
+	}
+
+	void mockCodesignCommand(String path) {
+		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+		File payloadApp = new File(packageTask.outputPath, path)
+		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test-wildcard-mac-development.plist")
+
+		def commandList = [
+				"/usr/bin/codesign",
+				"--force",
+				"--entitlements",
+				entitlements.absolutePath,
+				"--sign",
+				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+				"--verbose",
+				payloadApp.absolutePath,
+				"--keychain",
+				keychain.absolutePath
 
 		]
 		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
 
 	}
 
-	void mockPlistCommmand(String infoplist, String command) {
-		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", command]
-		commandRunnerMock.run(commandList).atLeastOnce()
-	}
-
-
 	void mockValueFromPlist(String infoplist, String key, String value) {
 		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
 		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
 	}
+
+	void mockEntitlementsFromPlist(File provisioningProfile) {
+		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
+		String result = new File('src/test/Resource/entitlements.plist').text
+		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
+
+		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
+		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
+		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
+		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
+
+		mockValueFromPlist(plist.absolutePath, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
+
+	}
+
 
 	void mockExampleApp(boolean withFramework, boolean withSwift) {
 		String frameworkPath = "Contents/Frameworks/Sparkle.framework"
@@ -147,13 +170,20 @@ class PackageTaskOSXTest {
 		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
 
 
-		mockPlistCommmand(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
+		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
 
 		mockCodesignCommand("Example.app")
 
 		if (withFramework) {
-			mockCodesignCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+			mockCodesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
 		}
+
+		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+
+
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		mockEntitlementsFromPlist(mobileprovision)
 
 		project.xcodebuild.outputPath.mkdirs()
 	}

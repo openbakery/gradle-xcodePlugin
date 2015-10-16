@@ -13,10 +13,12 @@ import org.slf4j.LoggerFactory
 class SimulatorControl {
 
 
+
 	enum Section {
 		DEVICE_TYPE("== Device Types =="),
 		RUNTIMES("== Runtimes =="),
-		DEVICES("== Devices ==")
+		DEVICES("== Devices =="),
+		DEVICE_PAIRS("== Device Pairs ==")
 
 		private final String identifier
 		Section(String identifier) {
@@ -44,8 +46,12 @@ class SimulatorControl {
 
 	ArrayList<SimulatorDeviceType> deviceTypes
 	ArrayList<SimulatorRuntime> runtimes
-	HashMap<SimulatorRuntime, List<SimulatorDevice>> devices;
-	HashMap<String, SimulatorDevice> identifierToDevice;
+	HashMap<SimulatorRuntime, List<SimulatorDevice>> devices
+	HashMap<String, SimulatorDevice> identifierToDevice
+	ArrayList<SimulatorDevicePair> devicePairs
+
+
+
 
 	Project project
 
@@ -58,14 +64,19 @@ class SimulatorControl {
 		devices = new HashMap<>()
 		deviceTypes = new ArrayList<>()
     identifierToDevice = new HashMap<>()
+		devicePairs = new ArrayList<>()
 
-		Section section = null;
+
+		Section section = null
 		String simctlList = simctl("list")
 
 		ArrayList<SimulatorDevice> simulatorDevices = null
+
+		SimulatorDevicePair pair = null
+
 		for (String line in simctlList.split("\n")) {
 
-			Section isSection = Section.isSection(line);
+			Section isSection = Section.isSection(line)
 			if (isSection != null) {
 				section = isSection
 				continue
@@ -99,11 +110,40 @@ class SimulatorControl {
 					}
 
 					break
+				case Section.DEVICE_PAIRS:
+
+
+					if (line ==~ /^\s+Watch.*/) {
+						pair.watch = parseIdentifierFromDevicePairs(line)
+					} else if (line ==~ /^\s+Phone.*/) {
+						pair.phone = parseIdentifierFromDevicePairs(line)
+					} else {
+						// is new device pair
+						pair = new SimulatorDevicePair(line)
+						devicePairs.add(pair)
+					}
+
+					break
 
 
 			}
 		}
 	}
+
+	SimulatorDevice parseIdentifierFromDevicePairs(String line) {
+		def tokenizer = new StringTokenizer(line, "()");
+		if (tokenizer.hasMoreTokens()) {
+			// ignore first token
+			tokenizer.nextToken()
+		}
+		if (tokenizer.hasMoreTokens()) {
+			def identifier =  tokenizer.nextToken().trim()
+			return getDeviceWithIdentifier(identifier)
+		}
+		return null
+
+	}
+
 
 	SimulatorRuntime parseDevicesRuntime(String line) {
 		for (SimulatorRuntime runtime in runtimes) {
@@ -134,6 +174,38 @@ class SimulatorControl {
 		return runtimes
 	}
 
+
+	List<SimulatorRuntime> getRuntimes(String name) {
+		List<SimulatorRuntime> result = []
+		for (SimulatorRuntime runtime in getRuntimes()) {
+			if (runtime.available && runtime.getName().startsWith(name)) {
+				result << runtime
+			}
+		}
+		return result
+	}
+
+
+	SimulatorDevice getDevice(SimulatorRuntime simulatorRuntime, String name) {
+		for (SimulatorDevice device in getDevices(simulatorRuntime)) {
+			if (device.name.equalsIgnoreCase(name)) {
+				return device
+			}
+		}
+		null
+	}
+
+	SimulatorDevice getDeviceWithIdentifier(String identifier) {
+		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry in devices.entrySet()) {
+			for (SimulatorDevice device in entry.value) {
+				if (device.identifier == identifier) {
+					return device
+				}
+			}
+		}
+		return null
+	}
+
 	List <SimulatorDevice> getDevices(SimulatorRuntime runtime) {
 		return getDevices().get(runtime)
 	}
@@ -142,7 +214,7 @@ class SimulatorControl {
 		if (devices == null) {
 			parse()
 		}
-		return devices;
+		return devices
 	}
 
 	List<SimulatorDeviceType> getDeviceTypes() {
@@ -152,16 +224,24 @@ class SimulatorControl {
 		return deviceTypes
 	}
 
+	List<SimulatorDevicePair> getDevicePairs() {
+		if (devicePairs == null) {
+			parse()
+		}
+		return devicePairs
+
+	}
+
 
 	String simctl(String... commands) {
 		if (simctlCommand == null) {
-			simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]);
+			simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", "iphoneos", "-find", "simctl"])
 		}
 
 		ArrayList<String>parameters = new ArrayList<>()
 		parameters.add(simctlCommand)
 		parameters.addAll(commands)
-		return commandRunner.runWithResult(parameters);
+		return commandRunner.runWithResult(parameters)
 	}
 
 
@@ -199,7 +279,34 @@ class SimulatorControl {
 				}
 			}
 		}
+		pair()
 	}
+
+	void pair() {
+		parse() // read the created ids again
+
+		List<SimulatorRuntime> watchRuntimes = getRuntimes("watchOS")
+		List<SimulatorRuntime> iOS9Runtimes = getRuntimes("iOS 9")
+
+
+		for (SimulatorRuntime iOS9Runtime in iOS9Runtimes) {
+			for (SimulatorRuntime watchRuntime in watchRuntimes) {
+
+				SimulatorDevice iPhone6 = getDevice(iOS9Runtime, "iPhone 6")
+				SimulatorDevice watch38 = getDevice(watchRuntime, "Apple Watch - 38mm")
+				simctl("pair", iPhone6.identifier, watch38.identifier)
+
+
+				SimulatorDevice iPhone6Plus = getDevice(iOS9Runtime, "iPhone 6 Plus")
+				SimulatorDevice watch42 = getDevice(watchRuntime, "Apple Watch - 42mm")
+				simctl("pair", iPhone6Plus.identifier, watch42.identifier)
+
+
+			}
+		}
+
+	}
+
 
 	void eraseAll() {
 		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry : getDevices().entrySet()) {
@@ -228,6 +335,29 @@ class SimulatorControl {
 	}
 
 	public void runDevice(SimulatorDevice device) {
-		commandRunner.run("open", "-b", "com.apple.iphonesimulator", "--args", "-CurrentDeviceUDID", device.identifier)
+		SimulatorRuntime runtime = getRuntime(device)
+		if (runtime == null) {
+			throw new IllegalArgumentException("cannot find runtime for device: " + device)
+		}
+
+		try {
+			commandRunner.run([project.xcodebuild.xcodePath + "/Contents/Developer/usr/bin/instruments", "-w", device.name + " (" + runtime.version + " Simulator)"])
+		} catch (CommandRunnerException ex) {
+			// ignore, because the result of this command is a failure, but the simulator should be launched
+		}
+		//commandRunner.run("open", "-b", "com.apple.iphonesimulator", "--args", "-CurrentDeviceUDID", device.identifier)
+	}
+
+	SimulatorRuntime getRuntime(SimulatorDevice simulatorDevice) {
+
+		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> runtime : devices) {
+			for (SimulatorDevice device : runtime.value) {
+				if (device.equals(simulatorDevice)) {
+					return runtime.key
+				}
+			}
+		}
+
+		return null
 	}
 }

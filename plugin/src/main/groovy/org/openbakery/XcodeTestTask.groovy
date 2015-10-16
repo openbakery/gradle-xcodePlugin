@@ -91,8 +91,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		super()
 		dependsOn(
 						XcodePlugin.XCODE_CONFIG_TASK_NAME,
-						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
-						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
@@ -111,7 +109,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		}
 
 
-		if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			simulatorControl.killAll()
 		}
 
@@ -151,36 +149,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	void addIOSSimulatorTargets(ArrayList commandList) {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
+		if (project.xcodebuild.type == Type.OSX) {
 			return
 		}
 
 		for (Destination destination in project.xcodebuild.availableDestinations) {
-
-			def destinationParameters = []
-
-			if (destination.platform != null) {
-				destinationParameters << "platform=" + destination.platform
-			}
-			if (destination.id != null) {
-				destinationParameters << "id=" + destination.id
-			} else {
-				if (destination.name != null) {
-					destinationParameters << "name=" + destination.name
-				}
-				if (destination.arch != null && destination.platform.equals("OS X")) {
-					destinationParameters << "arch=" + destination.arch
-				}
-
-				if (destination.os != null && destination.platform.equals("iOS Simulator")) {
-					destinationParameters << "OS=" + destination.os
-				}
-			}
-
 			commandList.add("-destination")
-			commandList.add(destinationParameters.join(","))
-
-
+			commandList.add(getDestinationCommandParameter(destination))
 		}
 	}
 

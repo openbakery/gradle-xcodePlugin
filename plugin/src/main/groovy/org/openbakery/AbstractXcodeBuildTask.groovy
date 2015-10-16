@@ -3,7 +3,7 @@ package org.openbakery
 import org.apache.commons.io.input.ReversedLinesFileReader
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
-import org.openbakery.signing.ProvisioningProfileIdReader
+import org.openbakery.signing.ProvisioningProfileReader
 
 /**
  * User: rene
@@ -34,6 +34,12 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				commandList.add(project.xcodebuild.workspace)
 			}
 
+			if (project.xcodebuild.type == Type.OSX) {
+				commandList.add("-sdk")
+				commandList.add("macosx")
+			}
+
+			/*
 			if (project.xcodebuild.sdk != null) {
 				commandList.add("-sdk")
 				commandList.add(project.xcodebuild.sdk)
@@ -41,6 +47,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 					commandList.add("ONLY_ACTIVE_ARCH=NO")
 				}
 			}
+			*/
 
 			if (project.xcodebuild.configuration != null) {
 				commandList.add("-configuration")
@@ -51,32 +58,21 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		} else {
 			commandList.add("-configuration")
 			commandList.add(project.xcodebuild.configuration)
-			commandList.add("-sdk")
-			commandList.add(project.xcodebuild.sdk)
+
+			if (project.xcodebuild.type == Type.OSX) {
+				commandList.add("-sdk")
+				commandList.add("macosx")
+			}
+
 			commandList.add("-target")
 			commandList.add(project.xcodebuild.target)
 		}
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
-			if (project.xcodebuild.signing != null && StringUtils.isNotEmpty(project.xcodebuild.signing.identity)) {
-				commandList.add("CODE_SIGN_IDENTITY=" + project.xcodebuild.signing.identity)
-				if (project.xcodebuild.signing.mobileProvisionFile.size() == 1) {
-					ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(project.xcodebuild.signing.mobileProvisionFile.get(0), project)
-					String uuid = provisioningProfileIdReader.getUUID()
-					commandList.add("PROVISIONING_PROFILE=" + uuid)
-				}
-			} else {
-				commandList.add("CODE_SIGN_IDENTITY=")
-				commandList.add("CODE_SIGNING_REQUIRED=NO")
-			}
-		} else if (project.xcodebuild.isSDK(XcodePlugin.SDK_MACOSX)) {
-			// disable signing during xcodebuild for os x, maybe this should be also default for iOS?
+		if (!project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
+			// disable codesign when building for OS X and iOS device
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
-
 		}
-
-
 
 		if (project.xcodebuild.arch != null) {
 			StringBuilder archs = new StringBuilder("ARCHS=");
@@ -97,10 +93,6 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		commandList.add("SYMROOT=" + project.xcodebuild.symRoot.absolutePath)
 		commandList.add("SHARED_PRECOMPS_DIR=" + project.xcodebuild.sharedPrecompsDir.absolutePath)
 
-
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS) && project.xcodebuild.signing.keychainPathInternal.exists()) {
-			commandList.add('OTHER_CODE_SIGN_FLAGS=--keychain=' + project.xcodebuild.signing.keychainPathInternal.path)
-		}
 
 
 		if (project.xcodebuild.additionalParameters instanceof List) {
@@ -147,5 +139,28 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 
 		return builder.toString()
+	}
+
+	protected String getDestinationCommandParameter(Destination destination) {
+		def destinationParameters = []
+
+		if (destination.platform != null) {
+			destinationParameters << "platform=" + destination.platform
+		}
+		if (destination.id != null) {
+			destinationParameters << "id=" + destination.id
+		} else {
+			if (destination.name != null) {
+				destinationParameters << "name=" + destination.name
+			}
+			if (destination.arch != null && destination.platform.equals("OS X")) {
+				destinationParameters << "arch=" + destination.arch
+			}
+
+			if (destination.os != null && destination.platform.equals("iOS Simulator")) {
+				destinationParameters << "OS=" + destination.os
+			}
+		}
+		return destinationParameters.join(",")
 	}
 }

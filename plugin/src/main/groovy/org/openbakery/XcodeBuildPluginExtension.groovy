@@ -19,16 +19,40 @@ import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
-import org.openbakery.signing.ProvisioningProfileIdReader
 import org.openbakery.signing.Signing
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-enum Devices {
+public enum Devices {
 	UNIVERSAL,
 	PHONE,
-	PAD
+	PAD,
+	WATCH
 }
+
+public enum Type {
+	iOS("iOS"),
+	OSX("OSX"),
+	tvOS("tvOS");
+
+
+	String value;
+
+	public Type(String value) {
+		this.value = value;
+	}
+
+	public static Type typeFromString(String string) {
+
+		for (Type type in Type.values()) {
+			if (type.value.equalsIgnoreCase(string)) {
+				return type;
+			}
+		}
+		return iOS;
+	}
+}
+
 
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
@@ -40,7 +64,9 @@ class XcodeBuildPluginExtension {
 	String infoPlist = null
 	String scheme = null
 	String configuration = 'Debug'
-	String sdk = 'iphonesimulator'
+	boolean simulator = true
+	Type type = Type.iOS
+
 	String target = null
 	Object dstRoot
 	Object objRoot
@@ -67,7 +93,11 @@ class XcodeBuildPluginExtension {
 
 	String xcodePath = null
 	CommandRunner commandRunner
-	VariableResolver variableResolver;
+	VariableResolver variableResolver
+	PlistHelper plistHelper
+
+	HashMap<String, BuildConfiguration> projectSettings = new HashMap<>()
+
 
 	/**
 	 * internal parameters
@@ -79,6 +109,7 @@ class XcodeBuildPluginExtension {
 		this.signing = new Signing(project)
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
+		plistHelper = new PlistHelper(this.project, commandRunner)
 
 
 		this.dstRoot = {
@@ -159,14 +190,19 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	boolean isDeviceBuild() {
-		return this.isSDK(XcodePlugin.SDK_IPHONEOS)
+	boolean isSimulatorBuildOf(Type expectedType) {
+		if (type != expectedType) {
+			return false;
+		}
+		return this.simulator;
 	}
 
-	boolean isSimulatorBuild() {
-		return this.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+	boolean isDeviceBuildOf(Type expectedType) {
+		if (type != expectedType) {
+			return false;
+		}
+		return !this.simulator
 	}
-
 
 	void destination(Closure closure) {
 		Destination destination = new Destination()
@@ -251,12 +287,12 @@ class XcodeBuildPluginExtension {
 		def availableDestinations = []
 
 
-		if (isSDK(XcodePlugin.SDK_MACOSX)) {
+		if (type == Type.OSX) {
 			availableDestinations << new Destination("OS X", "OS X", "10.x")
 			return availableDestinations
 		}
 
-		if (isSimulatorBuild()) {
+		if (isSimulatorBuildOf(Type.iOS)) {
 			// filter only on simulator builds
 			for (Destination destination in this.destinations) {
 				availableDestinations.addAll(findMatchingDestinations(destination))
@@ -423,34 +459,82 @@ class XcodeBuildPluginExtension {
 	}
 
 	File getOutputPath() {
-		if (getSdk().startsWith(XcodePlugin.SDK_MACOSX)) {
-			return new File(getSymRoot(), getConfiguration())
+		String path = getConfiguration()
+		if (type == Type.iOS) {
+			if (simulator) {
+				path += "-iphonesimulator"
+			} else {
+				path += "-iphoneos"
+			}
 		}
-		return new File(getSymRoot(), getConfiguration() + "-" + getSdk())
+		return new File(getSymRoot(), path)
 	}
 
+
+	BuildSettings getParent(BuildSettings buildSettings) {
+		BuildSettings result = buildSettings
+		File infoPlist = new File(project.projectDir, buildSettings.infoplist);
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "WKCompanionAppBundleIdentifier")
+		if (bundleIdentifier != null) {
+
+			projectSettings.each { String key, BuildConfiguration buildConfiguration ->
+
+				BuildSettings settings
+				if (configuration.equals("debug")) {
+					settings = buildConfiguration.debug
+				} else {
+					settings = buildConfiguration.release
+				}
+				if (settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
+					result = settings
+					return
+				}
+			}
+		}
+		return result;
+
+	}
+
+
 	File getApplicationBundle() {
+
+		BuildConfiguration buildConfiguration = projectSettings[target]
+		if (buildConfiguration != null) {
+			BuildSettings buildSettings
+			if (configuration.equalsIgnoreCase("release")) {
+				buildSettings = buildConfiguration.release
+			} else {
+				buildSettings = buildConfiguration.debug
+			}
+
+			if (buildSettings.sdkRoot.equalsIgnoreCase("watchos")) {
+				BuildSettings parent = getParent(buildSettings)
+
+				return new File(getOutputPath(), parent.productName + "." + this.productType)
+			}
+		}
 		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
 
 
-	File getArchiveDirectory() {
 
-		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
 
-		if (project.xcodebuild.bundleNameSuffix != null) {
-			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
-		}
-		archiveDirectoryName += ".xcarchive"
 
-		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
-		archiveDirectory.mkdirs()
-		return archiveDirectory
+	void setType(String type) {
+		this.type = Type.typeFromString(type);
 	}
 
 
-	boolean isSDK(String expectedSDK) {
-		return sdk.toLowerCase().startsWith(expectedSDK)
+	void setSdk(String sdk) {
+		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
+	}
+
+
+	boolean getSimulator() {
+		if (type == Type.OSX) {
+			return false
+		}
+		return this.simulator
 	}
 }

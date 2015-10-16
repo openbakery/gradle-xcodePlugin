@@ -49,7 +49,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	def copy(File source, File destination) {
 		logger.debug("Copy '{}' -> '{}'", source, destination);
 
-		// use cp to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
+		// use rsync to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
 		ant.exec(failonerror: "true",
 						executable: 'rsync') {
 			arg(value: '-avz')
@@ -162,24 +162,22 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File appBundle = new File(appPath, applicationBundleName)
 
-
-		File plugins
-
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
-			plugins = new File(appBundle, "PlugIns")
-		} else {
-			plugins = new File(appBundle, "Contents/Frameworks")
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+			addPluginsToAppBundle(appBundle, bundles)
+			addWatchToAppBundle(appBundle, bundles)
 		}
+		bundles.add(appBundle)
+		return bundles;
+	}
 
-
+	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
+		File plugins
+		plugins = new File(appBundle, "PlugIns")
 		if (plugins.exists()) {
-
 			for (File pluginBundle : plugins.listFiles()) {
-
 				if (pluginBundle.isDirectory()) {
 
 					if (pluginBundle.name.endsWith(".framework")) {
-
 						// Frameworks have to be signed with this path
 						bundles.add(new File(pluginBundle, "/Versions/Current"))
 					} else {
@@ -188,10 +186,20 @@ abstract class AbstractXcodeTask extends DefaultTask {
 				}
 			}
 		}
-
-		bundles.add(appBundle)
-
-		return bundles;
-
 	}
+
+	private void addWatchToAppBundle(File appBundle, ArrayList<File> bundles) {
+			File watchDirectory
+			watchDirectory = new File(appBundle, "Watch")
+			if (watchDirectory.exists()) {
+				for (File bundle : watchDirectory.listFiles()) {
+					if (bundle.isDirectory()) {
+						if (bundle.name.endsWith(".app")) {
+							addPluginsToAppBundle(bundle, bundles)
+							bundles.add(bundle)
+						}
+					}
+				}
+			}
+		}
 }

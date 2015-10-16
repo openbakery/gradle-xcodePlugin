@@ -23,7 +23,7 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 			String trimmedKeychain = keychain.replaceAll(/^\s*\"|\"$/, "")
 			if (!trimmedKeychain.equals("/Library/Keychains/System.keychain")) {
 				File keychainFile = new File(trimmedKeychain)
-				if (!keychainFile.name.startsWith(XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE)) {
+				if (keychainFile.exists()) {
 					result.add(trimmedKeychain);
 				}
 			}

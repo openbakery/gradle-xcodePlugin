@@ -30,33 +30,29 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.11.+"
+	    classpath "org.openbakery:xcode-plugin:0.12.+"
 	}
 		
 }
 
 apply plugin: 'org.openbakery.xcode-plugin'
-import org.openbakery.AppExtension;
 
 xcodebuild {
 	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
-
+	version = "7.0"
+	
 	target = 'Example'
 	scheme = 'Example'
-
-	configuration = 'Debug'
-	sdk = 'iphonesimulator'
-
 		
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPad 2'
-		os='8.*'
+		os='9.*'
 	}
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPhone 4s'
-		os='8.*'
+		os='9.*'
 	}	
 }
 
@@ -114,14 +110,13 @@ gradle.taskGraph.whenReady { taskGraph ->
 	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
 		println "Configure sign settings for the integration and release build"
 		xcodebuild {
-			sdk = 'iphoneos'
+			simulator = false
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingMobileProvisionURI , signingMobileProvisionURIWidget ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+				mobileProvisionURI = [ signingMobileProvisionURI, signingMobileProvisionURIWidget, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
-		
 		
 	}
 
@@ -131,7 +126,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 		println "Configure build settings for release or appstore"
 		xcodebuild {
 			configuration = 'Release'
-			sdk = 'iphoneos'
+			simulator = false
 
 			signing {
 				certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'

@@ -5,8 +5,8 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.Before
+import org.junit.Test
 
 /**
  * Created by rene on 17.04.15.
@@ -17,7 +17,7 @@ class SigningTest {
 	Project project
 	File projectDir
 
-	@BeforeMethod
+	@Before
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")

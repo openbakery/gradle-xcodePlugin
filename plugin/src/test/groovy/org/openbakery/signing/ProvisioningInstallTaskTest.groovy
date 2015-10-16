@@ -5,10 +5,11 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 
 /**
@@ -26,7 +27,7 @@ class ProvisioningInstallTaskTest {
 	File projectDir
 
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -37,7 +38,8 @@ class ProvisioningInstallTaskTest {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
+		project.xcodebuild.type = Type.iOS
+		project.xcodebuild.simulator = false
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
@@ -47,7 +49,7 @@ class ProvisioningInstallTaskTest {
 
 	}
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(projectDir)
 	}
@@ -70,7 +72,7 @@ class ProvisioningInstallTaskTest {
 		File testMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-		ProvisioningProfileIdReader provisioningProfileIdReader = new ProvisioningProfileIdReader(testMobileprovision.absolutePath, project)
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunnerMock)
 		String uuid = provisioningProfileIdReader.getUUID()
 		String name =  "gradle-" + uuid + ".mobileprovision";
 
@@ -93,8 +95,8 @@ class ProvisioningInstallTaskTest {
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
 
-		String firstName = "gradle-" + new ProvisioningProfileIdReader(firstMobileprovision.absolutePath, project).getUUID() + ".mobileprovision";
-		String secondName = "gradle-" + new ProvisioningProfileIdReader(secondMobileprovision.absolutePath, project).getUUID() + ".mobileprovision";
+		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".mobileprovision";
+		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".mobileprovision";
 
 		mockLinking(firstName)
 		mockLinking(secondName)

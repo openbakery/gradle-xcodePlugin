@@ -17,6 +17,7 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.InvalidUserDataException
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 
 class KeychainCreateTask extends AbstractKeychainTask {
@@ -29,7 +30,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		dependsOn(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
 
 		this.setOnlyIf {
-			return !project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)
+			return !project.xcodebuild.simulator
 		}
 	}
 
@@ -37,7 +38,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	def create() {
 
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			logger.lifecycle("The simulator build does not need a provisioning profile");
 			return
 		}

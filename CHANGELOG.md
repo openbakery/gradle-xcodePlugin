@@ -1,4 +1,20 @@
-#0.11.6 (September 4, 2015)
+# 0.12.0 (TBA)
+
+Changes
+* Better Xcode 7 and 7.1 support
+* watchOS support. Now iOS Apps with a watchOS App included can be build and signed.
+ * For this the sdk parameter was removed and replaced by the type and simualtor parameter
+* The xcodebuild task does not sign anymore more. 
+ * Signing task only place in the package tasks
+ * The proper entitlements for signing are now read from the provisioning profile
+ * The keychain is created prior to the package task.
+* The package task is not depended to the archive task anymore. The reason is that sometimes you can package archives that aready exists.
+
+Bugfixes
+* xcodebuild task doesn't fail build on compiler errors: Issue #214
+* Build failed because of invalid "simctl delete": Issue #211
+
+# 0.11.6 (September 4, 2015)
 
 Changes
 * Reverted the WatchKit pull request, because of build failure. See Issue #185, #205

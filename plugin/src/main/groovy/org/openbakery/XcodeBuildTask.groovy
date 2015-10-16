@@ -31,11 +31,6 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		dependsOn(
 						XcodePlugin.XCODE_CONFIG_TASK_NAME,
 						XcodePlugin.INFOPLIST_MODIFY_TASK_NAME,
-						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
-						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
-		)
-		finalizedBy(
-						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
 		)
 		this.description = "Builds the Xcode project"
 	}
@@ -48,6 +43,13 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 		def commandList = createCommandList()
 
+
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
+			Destination destination = project.xcodebuild.availableDestinations.last()
+			commandList.add("-destination")
+			commandList.add(getDestinationCommandParameter(destination))
+		}
+
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 		Map<String, String> environment = project.xcodebuild.environment
 
@@ -56,15 +58,11 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		}
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
-		try {
 
-			ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
-			ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
 
-			commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
-		} catch (CommandRunnerException ex) {
-			logger.lifecycle(getFailureFromLog(outputFile))
-		}
+		commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
 
 		logger.lifecycle("Done")
 	}

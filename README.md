@@ -1,26 +1,26 @@
 gradle-xcodePlugin
 ==================
 
-gradle-xcodePlugin makes it easier to build Mac and iOS projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
+The gradle xcode plugin (gxp) makes it easier to build Xcode projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
 
-The gradle-xcodePlugin uses the Apple command line tools (like xcodebuild) to perform the build.
+The gxp uses the Apple command line tools (like xcodebuild) to perform the build.
 
 Here a brief overview of the features:
 
-* Build iOS and Mac projects
-* Override sign settings for iOS builds
+* Build iOS, watchOS and Mac projects
+* Override sign settings for builds
 * Perform unit tests
 * Support for multiple Xcodes (on one machine)
 * [Cocoapods](Cocoapods) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) )
-* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/)
+* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint (Works not with Xcode 7-beta)
 
 
 ## Note
 
-**With version 0.11 the identifier of the plugin has changed to org.openbakery.xcode-plugin see: https://plugins.gradle.org/plugin/org.openbakery.xcode-plugin**
+**With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter
 
 ## Requirements
 
@@ -29,13 +29,11 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.11.6
+### Current stable version is 0.12
 
-0.9.x up to 0.11.x supports Xcode 5, Xcode 6.* and Xcode 7
+0.9.x up to 0.12.x supports Xcode 5, Xcode 6.* and Xcode 7
 
-**Note:**
 
-When you use gradle 1.x you you can use version 0.10.3-gradle1
 
 ## Documentation
 
@@ -50,7 +48,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.11.6"
+  id "org.openbakery.xcode-plugin" version "0.12.0"
 }
 
 xcodebuild {

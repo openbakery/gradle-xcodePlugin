@@ -1,0 +1,108 @@
+/*
+
+If you what to create a for the device than you have to specify for sign sign settings.
+Create a gradle.properties and add the following values: 
+
+	signingIdentity = iPhone Developer: ... 
+	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
+	signingCertificatePassword = password // password to unlock to p12
+	signingMobileProvisionURI = http://../Development.mobileprovision
+	
+	signingMobileProvisionURIWidget = http://../Development.mobileprovision // provisioning profil for the widget
+	
+You can also scroll down and add the values directly (line 115ff).
+
+*/
+
+
+buildscript {
+	repositories {
+		maven {
+			url('http://repository.openbakery.org/')
+		}
+		mavenCentral()
+  }
+
+	dependencies {
+	    classpath "org.openbakery:xcode-plugin:0.12.+"
+	}
+		
+}
+
+apply plugin: 'org.openbakery.xcode-plugin'
+
+xcodebuild {
+	version = "7.0"
+	
+	target = 'ExampleWatchkit WatchKit App'
+	scheme = 'ExampleWatchkit WatchKit App'
+
+		
+	destination {
+		platform = 'iOS Simulator'
+		name = 'iPad 2'
+		os='9.*'
+	}
+	destination {
+		platform = 'iOS Simulator'
+		name = 'iPhone 6s'
+		os='9.*'
+	}	
+}
+
+
+task continuous(dependsOn:'test') {
+	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
+}
+
+
+task release(dependsOn: ['archive', 'package']) {
+	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
+}
+
+task release(dependsOn: ['archive', 'package']) {
+	description = 'Build for the AppStore'
+}
+
+
+
+
+gradle.taskGraph.whenReady { taskGraph ->
+
+	
+	
+	// ------------------------------------------------------------------------------------------
+
+	if (taskGraph.hasTask(release) || taskGraph.hasTask(package)) {
+		println "Configure sign settings for the integration and release build"
+		xcodebuild {
+			configuration = 'Release'
+			simulator = false
+			signing {
+				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = signingCertificatePassword // e.g. 'secret'
+				mobileProvisionURI = [ signingMobileProvisionURI, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------
+
+	if (taskGraph.hasTask(tasks.appstore)) {
+		println "Configure build settings for release or appstore"
+		xcodebuild {
+			configuration = 'Release'
+			simulator = false
+
+			signing {
+				certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'
+				certificatePassword = 'secret'     // e.g. 'secret'
+				mobileProvisionURI = '...'         // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+			}
+		}
+	}
+	
+
+}
+
+

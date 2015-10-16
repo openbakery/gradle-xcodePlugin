@@ -3,10 +3,13 @@ package org.openbakery.packaging
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
-import org.openbakery.signing.ProvisioningProfileIdReader
+import org.openbakery.signing.ProvisioningProfileReader
 
 /**
  * Created by rene on 14.11.14.
@@ -21,29 +24,30 @@ class PackageTask extends AbstractDistributeTask {
 	private List<File> appBundles
 
 	String applicationBundleName
+	StyledTextOutput output
 
 	PackageTask() {
 		super();
 		setDescription("Signs the app bundle that was created by the build and creates the ipa");
 		dependsOn(
-						XcodePlugin.ARCHIVE_TASK_NAME
+						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
+						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
+		finalizedBy(
+						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
+		)
+
+		output = services.get(StyledTextOutputFactory).create(PackageTask)
+
 	}
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONESIMULATOR)) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
 
-		if (project.xcodebuild.signing == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signing configuration");
-		}
-
-		if (project.xcodebuild.signing.identity == null) {
-			throw new IllegalArgumentException("cannot signed with unknown signing identity");
-		}
 
 		File applicationFolder = createApplicationFolder();
 
@@ -70,24 +74,37 @@ class PackageTask extends AbstractDistributeTask {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
 
+		def signSettingsAvailable = true;
+		if (project.xcodebuild.signing.mobileProvisionFile == null) {
+			logger.warn('No mobile provision file provided.')
+			signSettingsAvailable = false;
+		} else if (!project.xcodebuild.signing.keychainPathInternal.exists()) {
+			logger.warn('No certificate or keychain found.')
+			signSettingsAvailable = false;
+		}
 
 		for (File bundle : appBundles) {
 
-			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 				embedProvisioningProfileToBundle(bundle)
 			}
-
+/*
 			if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
 				File embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded.provisionprofile")
 				embeddedProvisionFile.delete()
 			}
+			*/
 
-			logger.lifecycle("codesign path: {}", bundle);
-
-			codesign(bundle)
+			if (signSettingsAvailable) {
+				logger.lifecycle("codesign path: {}", bundle);
+				codesign(bundle)
+			} else {
+				String message = "Bundle not signed: " + bundle
+				output.withStyle(StyledTextOutput.Style.Failure).println(message)
+			}
 		}
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			createIpa(applicationFolder);
 		} else {
 			createPackage(appBundles.last());
@@ -95,34 +112,47 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
-	File getMobileProvisionFileForIdentifier(String bundleIdentifier) {
+	File getProvisionFileForBundle(File bundle) {
+		String bundleIdentifier = getIdentifierForBundle(bundle)
+		return getProvisionFileForIdentifier(bundleIdentifier)
+	}
 
-		def mobileProvisionFileMap = [:]
+	File getProvisionFileForIdentifier(String bundleIdentifier) {
+
+		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileIdReader reader = new ProvisioningProfileIdReader(mobileProvisionFile, project)
-			mobileProvisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner)
+			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 
-		for ( entry in mobileProvisionFileMap ) {
+		logger.debug("provisionFileMap: {}", provisionFileMap)
+
+		for ( entry in provisionFileMap ) {
 			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
 				return entry.value
 			}
 		}
 
 		// match wildcard
-		for ( entry in mobileProvisionFileMap ) {
+		for ( entry in provisionFileMap ) {
 			if (entry.key.equals("*")) {
 				return entry.value
 			}
 
 			if (entry.key.endsWith("*")) {
-				String key = entry.key[0..-2]
+				String key = entry.key[0..-2].toLowerCase()
 				if (bundleIdentifier.toLowerCase().startsWith(key)) {
 					return entry.value
 				}
 			}
 		}
+
+		def output = services.get(StyledTextOutputFactory).create(PackageTask)
+
+		output.withStyle(StyledTextOutput.Style.Failure).println("No provisioning profile found for bundle identifier " + bundleIdentifier)
+		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + provisionFileMap.keySet())
+
 
 		return null
 	}
@@ -167,18 +197,32 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void codesign(File bundle) {
-		logger.lifecycle("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
+		logger.debug("Codesign with Identity: {}", project.xcodebuild.getSigning().getIdentity())
 
 		codeSignFrameworks(bundle)
 
-		logger.lifecycle("Codesign {}", bundle)
+		logger.debug("Codesign {}", bundle)
 
 		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
+
+		String bundleIdentifier = getIdentifierForBundle(bundle)
+		if (bundleIdentifier == null) {
+			logger.debug("bundleIdentifier not found in bundle {}", bundle)
+		}
+		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
+		String basename = FilenameUtils.getBaseName(provisionFile.path)
+		File entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
+		reader.extractEntitlements(entitlementsFile, bundleIdentifier)
+
+		logger.debug("Using entitlementsFile {}", entitlementsFile)
+
 
 		def codesignCommand = [
 						"/usr/bin/codesign",
 						"--force",
-						"--preserve-metadata=identifier,entitlements",
+						"--entitlements",
+						entitlementsFile.absolutePath,
 						"--sign",
 						project.xcodebuild.getSigning().getIdentity(),
 						"--verbose",
@@ -192,7 +236,14 @@ class PackageTask extends AbstractDistributeTask {
 
 	private void codeSignFrameworks(File bundle) {
 
-		File frameworksDirectory = new File(bundle, "Frameworks");
+		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
+
+		File frameworksDirectory
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+			frameworksDirectory = new File(bundle, "Frameworks");
+		} else {
+			frameworksDirectory = new File(bundle, "Contents/Frameworks");
+		}
 
 		if (frameworksDirectory.exists()) {
 
@@ -215,23 +266,26 @@ class PackageTask extends AbstractDistributeTask {
 								"--keychain",
 								project.xcodebuild.signing.keychainPathInternal.absolutePath,
 				]
-				commandRunner.run(codesignCommand)
+				commandRunner.run(codesignCommand, environment)
 			}
 		}
 	}
 
-	private void embedProvisioningProfileToBundle(File bundle) {
-        File infoPlist
+	private String getIdentifierForBundle(File bundle) {
+		File infoPlist
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
 		}
 
 		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
+		return bundleIdentifier
+	}
 
-		File mobileProvisionFile = getMobileProvisionFileForIdentifier(bundleIdentifier);
+	private void embedProvisioningProfileToBundle(File bundle) {
+		File mobileProvisionFile = getProvisionFileForBundle(bundle);
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 
@@ -255,7 +309,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createApplicationFolder() throws IOException {
 
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			return createSigningDestination("Payload")
 		} else {
 			// same folder as signing
@@ -276,7 +330,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private String getAppContentPath(File bundle) {
-		if (project.xcodebuild.isSDK(XcodePlugin.SDK_IPHONEOS)) {
+		if (project.xcodebuild.type == Type.iOS) {
 			return bundle.absolutePath + "/"
 		}
 		return bundle.absolutePath + "/Contents/"

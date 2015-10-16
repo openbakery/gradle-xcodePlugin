@@ -15,9 +15,13 @@
 
   default value: 'Debug'
 
-* _sdk_ - the SDK that should be used (e.g. 'iphonesimulator', 'iphoneos')
+* _type_ - the type of the build. Possible values are iOS, OSX (tvOS will be added in the future). This parameter replaces the sdk parameter. The given values is not case sensitive therefor 'ios', 'iOs', 'IOS' are all correct values.
 
-  default value: 'iphonesimulator'
+  default value: iOS
+	
+* _simulator_ - should perform a simulator build. Possible values are 'true' and 'false'
+
+  default value: true
 
 * _target_ - the xcode build target that should be used
 
@@ -57,9 +61,9 @@
 
 	Note: Make sure that _/usr/bin/codesign_ is allowed to access the certificate in the keychain that is needed to sign.
 
-* _timeout_ - A custom timeout in seconds before the keychain automatically locks. If your build take longer than 5 minutes then set this value so that the keychain remains accessible for signing.
+* _timeout_ - A custom timeout in seconds before the keychain automatically locks.
 
-	default value: empty (= 300 seconds)
+	default value: 3600 seconds (1 hour)
 
 ### Unit Test Settings
 

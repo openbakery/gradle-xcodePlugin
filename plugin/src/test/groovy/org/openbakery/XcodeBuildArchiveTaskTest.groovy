@@ -5,9 +5,9 @@ import org.apache.commons.io.FileUtils
 import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -28,7 +28,7 @@ class XcodeBuildArchiveTaskTest {
 	GMockController mockControl
 	CommandRunner commandRunnerMock
 
-	@BeforeMethod
+	@Before
 	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
@@ -40,7 +40,8 @@ class XcodeBuildArchiveTaskTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONEOS
+		project.xcodebuild.type = Type.iOS
+		project.xcodebuild.simulator = false
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
@@ -48,7 +49,7 @@ class XcodeBuildArchiveTaskTest {
 		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
 
 
-		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphoneos")
 		buildOutputDirectory.mkdirs()
 
 		appDirectory = new File(buildOutputDirectory, "Example.app")
@@ -99,7 +100,7 @@ class XcodeBuildArchiveTaskTest {
 
 	}
 
-	@AfterMethod
+	@After
 	void cleanUp() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
@@ -217,8 +218,8 @@ class XcodeBuildArchiveTaskTest {
 
 	@Test
 	void testZipForSimulatorBuild() {
-		project.xcodebuild.sdk = XcodePlugin.SDK_IPHONESIMULATOR
-		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-" + project.xcodebuild.sdk)
+		project.xcodebuild.simulator = true
+		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphonesimulator")
 		buildOutputDirectory.mkdirs()
 
 		File appDirectory = new File(buildOutputDirectory, "Example.app")

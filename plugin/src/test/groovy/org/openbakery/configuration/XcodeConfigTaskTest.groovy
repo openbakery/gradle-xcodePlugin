@@ -7,11 +7,12 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
+import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
-import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 /**
  * User: rene
@@ -26,8 +27,8 @@ class XcodeConfigTaskTest {
 
 
 
-	@BeforeMethod
-	def setup() {
+	@Before
+	void setup() {
 		mockControl = new GMockController()
 		commandRunnerMock = mockControl.mock(CommandRunner)
 
@@ -45,20 +46,20 @@ class XcodeConfigTaskTest {
 
 	}
 
-	@AfterMethod
-	def cleanup() {
+	@After
+	void cleanup() {
 		FileUtils.deleteDirectory(new File("build/Platforms"))
 		FileUtils.deleteDirectory(new File("build/Contents"))
 	}
 
 
 	void mockFindSimctl() {
-		def commandList = ["xcrun", "-sdk", XcodePlugin.SDK_IPHONEOS, "-find", "simctl"]
+		def commandList = ["xcrun", "-sdk", "iphoneos", "-find", "simctl"]
 		commandRunnerMock.runWithResult(commandList).returns("/Applications/Xcode.app/Contents/Developer/usr/bin/simctl").times(1)
 	}
 
 	void mockSimctlList() {
-		mockSimctlList("src/test/Resource/simctl-output.txt")
+		mockSimctlList("src/test/Resource/simctl-list.txt")
 	}
 
 	void mockSimctlList(String filePath) {
@@ -145,7 +146,7 @@ class XcodeConfigTaskTest {
 	void testCreateDeviceList_parseDevices_withUnavilableDevices() {
 		mockXcodeVersion()
 		mockFindSimctl()
-		mockSimctlList("src/test/Resource/simctl-unavailable-output.txt")
+		mockSimctlList("src/test/Resource/simctl-list-unavailable.txt")
 
 		mockControl.play {
 			xcodeConfigTask.configuration()
@@ -367,12 +368,12 @@ class XcodeConfigTaskTest {
 		mockFindSimctl()
 		mockSimctlList()
 
-		project.xcodebuild.sdk = 'iphoneos'
+		project.xcodebuild.type = Type.iOS
 
 		project.xcodebuild.destination {
-			platform = 'iphoneos'
+			platform = 'iOS Simulator'
 			name = 'iPhone 5s'
-			id = '60B5BBDA-6485-44B4-AB87-9C0421EF5D8F'
+			id = '1124FAA3-9BE1-4234-B704-0741A30722F3'
 		}
 
 
@@ -383,8 +384,7 @@ class XcodeConfigTaskTest {
 
 		assert project.xcodebuild.availableDestinations.size() == 1 : "expected 1 elements in the availableSimulators list but was: " + project.xcodebuild.availableDestinations.size()
 
-
-		assert project.xcodebuild.availableDestinations.asList()[0].id.equals("60B5BBDA-6485-44B4-AB87-9C0421EF5D8F")
+		assert project.xcodebuild.availableDestinations.asList()[0].id.equals('1124FAA3-9BE1-4234-B704-0741A30722F3')
 
 	}
 
