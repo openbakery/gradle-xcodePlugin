@@ -60,7 +60,7 @@ task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
 }
 
-task release(dependsOn: ['archive', 'package']) {
+task appstore(dependsOn: ['archive', 'package']) {
 	description = 'Build for the AppStore'
 }
 
