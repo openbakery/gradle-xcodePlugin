@@ -180,7 +180,15 @@ abstract class AbstractXcodeTask extends DefaultTask {
 					if (pluginBundle.name.endsWith(".framework")) {
 						// Frameworks have to be signed with this path
 						bundles.add(new File(pluginBundle, "/Versions/Current"))
-					} else {
+					}	else if (pluginBundle.name.endsWith(".appex")) {
+
+						for (File appexBundle : pluginBundle.listFiles()) {
+							if (appexBundle.isDirectory() && appexBundle.name.endsWith(".app")) {
+								bundles.add(appexBundle)
+							}
+						}
+						bundles.add(pluginBundle)
+					} else if (pluginBundle.name.endsWith(".app")) {
 						bundles.add(pluginBundle)
 					}
 				}

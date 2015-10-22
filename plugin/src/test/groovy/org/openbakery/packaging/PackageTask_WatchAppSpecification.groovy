@@ -1,6 +1,7 @@
 package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
@@ -11,9 +12,9 @@ import org.openbakery.stubs.PlistHelperStub
 import spock.lang.Specification
 
 /**
- * Created by rene on 22.10.15.
+ * Created by rene on 09.10.15.
  */
-class PackageTask_WatchKitSpecification extends Specification {
+class PackageTask_WatchAppSpecification extends Specification {
 
 
 	Project project
@@ -37,7 +38,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
-		project.xcodebuild.productName = 'Example'
+		project.xcodebuild.productName = 'ExampleWatchKit'
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.simulator = false
@@ -54,7 +55,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
 		File payloadDirectory = new File(packageTask.outputPath, "Payload")
-		payloadAppDirectory = new File(payloadDirectory, "Example.app");
+		payloadAppDirectory = new File(payloadDirectory, "ExampleWatchKit.app");
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 		keychain = new File(projectDir, "gradle.keychain")
@@ -70,31 +71,37 @@ class PackageTask_WatchKitSpecification extends Specification {
 
 	void createExampleApp() {
 
-		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
+		def applicationBundle = new File(archiveDirectory, "Products/Applications/ExampleWatchKit.app")
 
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
 			appDirectory.mkdirs();
 		}
 
-		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
+		FileUtils.writeStringToFile(new File(appDirectory, "ExampleWatchKit"), "dummy");
 		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
 		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 
-		String watchkitExtensionPath = "PlugIns/Example WatchKit Extension.appex"
+		String watchkitAppPath = "Watch/ExampleWatchkit WatchKit App.app"
+		File watchkitDirectory = new File(applicationBundle, watchkitAppPath)
+		FileUtils.writeStringToFile(new File(watchkitDirectory, "ExampleWatchkit WatchKit App"), "dummy");
+
+		File infoPlistWatchkit = new File(payloadAppDirectory, watchkitAppPath + "/Info.plist");
+		plistHelperStub.setValueForPlist(infoPlistWatchkit.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp")
+
+
+		String watchkitExtensionPath = "Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex"
 		File watchkitExtensionDirectory = new File(applicationBundle, watchkitExtensionPath)
-		FileUtils.writeStringToFile(new File(watchkitExtensionDirectory, "Example WatchKit App.app/Example WatchKit App"), "dummy");
-		FileUtils.writeStringToFile(new File(watchkitExtensionDirectory, "Example WatchKit Extension"), "dummy");
-		File infoPlistWatchkit = new File(payloadAppDirectory, watchkitExtensionPath + "/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWatchkit.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp.watchkitextension")
+		FileUtils.writeStringToFile(new File(watchkitExtensionDirectory, "ExampleWatchkit WatchKit Extension"), "dummy");
 
+		File infoPlistWatchkitExtension = new File(payloadAppDirectory, watchkitExtensionPath + "/Info.plist");
+		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp.watchkitextension")
 
-		File infoPlistWatchkitExtension = new File(payloadAppDirectory, watchkitExtensionPath + "/Example WatchKit App.app/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp")
-
+		//File infoPlist = new File(payloadAppDirectory, "Info.plist")
+		//		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 		project.xcodebuild.outputPath.mkdirs()
 
@@ -147,9 +154,9 @@ class PackageTask_WatchKitSpecification extends Specification {
 
 	def "codesign watchkit app"() {
 		//def commandList
-		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
-		def codesignWatchKitAppCommand = codesignCommand("Payload/Example.app/PlugIns/Example WatchKit Extension.appex/Example WatchKit App.app", "entitlements_exampleWatchkit.plist")
-		def codesignWatchKitExtensionCommand = codesignCommand("Payload/Example.app/PlugIns/Example WatchKit Extension.appex", "entitlements_exampleWatchkitExtension.plist")
+		def codesignAppCommand = codesignCommand("Payload/ExampleWatchKit.app", "entitlements_test.plist")
+		def codesignWatchKitAppCommand = codesignCommand("Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app", "entitlements_exampleWatchkit.plist")
+		def codesignWatchKitExtensionCommand = codesignCommand("Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex", "entitlements_exampleWatchkitExtension.plist")
 
 		given:
 		createExampleApp()
@@ -161,26 +168,8 @@ class PackageTask_WatchKitSpecification extends Specification {
 		1 * commandRunner.run(codesignAppCommand, _)
 		1 * commandRunner.run(codesignWatchKitAppCommand, _)
 		1 * commandRunner.run(codesignWatchKitExtensionCommand, _)
-
 		//1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
 		//commandList == codesignWatchKitExtensionCommand
-
-
 	}
 
-
-	def "embed provisioning profiles"() {
-
-		given:
-		createExampleApp()
-
-		when:
-		packageTask.packageApplication()
-
-		then:
-		new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision").exists()
-		new File(packageTask.outputPath, "Payload/Example.app/PlugIns/Example WatchKit Extension.appex/Example WatchKit App.app/embedded.mobileprovision").exists()
-		new File(packageTask.outputPath, "Payload/Example.app/PlugIns/Example WatchKit Extension.appex/embedded.mobileprovision").exists()
-
-	}
 }
