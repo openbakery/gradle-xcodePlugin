@@ -51,54 +51,62 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
-	HashMap<String, BuildConfiguration> createProjectSettings() {
-		HashMap<String, BuildConfiguration> result = new HashMap<>()
+	HashMap<String, BuildTargetConfiguration> createProjectSettings() {
+		HashMap<String, BuildTargetConfiguration> result = new HashMap<>()
 
-		BuildConfiguration appConfiguration = new BuildConfiguration();
-		appConfiguration.release = new BuildSettings();
-		appConfiguration.debug = new BuildSettings();
+		BuildTargetConfiguration appConfiguration = new BuildTargetConfiguration();
+		BuildConfiguration release = new BuildConfiguration();
+		BuildConfiguration debug = new BuildConfiguration();
+		appConfiguration.buildSettings["Release"] = release
+		appConfiguration.buildSettings["Debug"] = debug
 
-		appConfiguration.debug.infoplist = "ExampleWatchkit/Info.plist"
-		appConfiguration.debug.bundleIdentifier = "org.openbakery.Example"
-		appConfiguration.debug.productName = "ExampleWatchkit"
-		appConfiguration.debug.sdkRoot = "iphoneos"
-		appConfiguration.release.infoplist = "ExampleWatchkit/Info.plist"
-		appConfiguration.release.bundleIdentifier = "org.openbakery.Example"
-		appConfiguration.release.productName = "ExampleWatchkit"
-		appConfiguration.release.sdkRoot = "iphoneos"
-		appConfiguration.release.devices = Devices.UNIVERSAL
+		debug.infoplist = "ExampleWatchkit/Info.plist"
+		debug.bundleIdentifier = "org.openbakery.Example"
+		debug.productName = "ExampleWatchkit"
+		debug.sdkRoot = "iphoneos"
+		release.infoplist = "ExampleWatchkit/Info.plist"
+		release.bundleIdentifier = "org.openbakery.Example"
+		release.productName = "ExampleWatchkit"
+		release.sdkRoot = "iphoneos"
+		release.devices = Devices.UNIVERSAL
 
 
-		BuildConfiguration watchAppConfiguration = new BuildConfiguration();
-		watchAppConfiguration.release = new BuildSettings();
-		watchAppConfiguration.debug = new BuildSettings();
-		watchAppConfiguration.debug.infoplist = "ExampleWatchkit WatchKit App/Info.plist"
-		watchAppConfiguration.debug.bundleIdentifier = "org.openbakery.Example.watchkitapp"
-		watchAppConfiguration.debug.productName = "ExampleWatchkit WatchKit App"
-		watchAppConfiguration.debug.sdkRoot = "watchos"
-		watchAppConfiguration.release.infoplist = "ExampleWatchkit WatchKit App/Info.plist"
-		watchAppConfiguration.release.bundleIdentifier = "org.openbakery.Example.watchkitapp"
-		watchAppConfiguration.release.productName = "ExampleWatchkit WatchKit App"
-		watchAppConfiguration.release.sdkRoot = "watchos"
-		watchAppConfiguration.release.devices = Devices.WATCH
+		BuildTargetConfiguration watchAppConfiguration = new BuildTargetConfiguration();
+		BuildConfiguration watchAppConfigurationRelease = new BuildConfiguration();
+		BuildConfiguration watchAppConfigurationDebug = new BuildConfiguration();
+		watchAppConfiguration.buildSettings["Release"] = watchAppConfigurationRelease
+		watchAppConfiguration.buildSettings["Debug"] = watchAppConfigurationDebug
 
-		BuildConfiguration extenstionConfiguration = new BuildConfiguration();
-		extenstionConfiguration.release = new BuildSettings();
-		extenstionConfiguration.debug = new BuildSettings();
-		extenstionConfiguration.debug.infoplist = "ExampleWatchkit WatchKit Extension/Info.plist"
-		extenstionConfiguration.debug.bundleIdentifier = "org.openbakery.Example.watchkitapp.watchkitextension"
-		extenstionConfiguration.debug.productName = "ExampleWatchkit WatchKit Extension"
-		extenstionConfiguration.debug.sdkRoot = "watchos"
-		extenstionConfiguration.release.infoplist = "ExampleWatchkit WatchKit Extension/Info.plist"
-		extenstionConfiguration.release.bundleIdentifier = "org.openbakery.Example.watchkitapp.watchkitextension"
-		extenstionConfiguration.release.productName = "ExampleWatchkit WatchKit Extension"
-		extenstionConfiguration.release.sdkRoot = "watchos"
-		extenstionConfiguration.release.devices = Devices.WATCH
+		watchAppConfigurationDebug.infoplist = "ExampleWatchkit WatchKit App/Info.plist"
+		watchAppConfigurationDebug.bundleIdentifier = "org.openbakery.Example.watchkitapp"
+		watchAppConfigurationDebug.productName = "ExampleWatchkit WatchKit App"
+		watchAppConfigurationDebug.sdkRoot = "watchos"
+		watchAppConfigurationRelease.infoplist = "ExampleWatchkit WatchKit App/Info.plist"
+		watchAppConfigurationRelease.bundleIdentifier = "org.openbakery.Example.watchkitapp"
+		watchAppConfigurationRelease.productName = "ExampleWatchkit WatchKit App"
+		watchAppConfigurationRelease.sdkRoot = "watchos"
+		watchAppConfigurationRelease.devices = Devices.WATCH
+
+		BuildTargetConfiguration extensionConfiguration = new BuildTargetConfiguration();
+		BuildConfiguration extenstionConfigurationRelease = new BuildConfiguration();
+		BuildConfiguration extenstionConfigurationDebug = new BuildConfiguration();
+		extensionConfiguration.buildSettings["Release"] = extenstionConfigurationRelease
+		extensionConfiguration.buildSettings["Debug"] = extenstionConfigurationDebug
+
+		extenstionConfigurationDebug.infoplist = "ExampleWatchkit WatchKit Extension/Info.plist"
+		extenstionConfigurationDebug.bundleIdentifier = "org.openbakery.Example.watchkitapp.watchkitextension"
+		extenstionConfigurationDebug.productName = "ExampleWatchkit WatchKit Extension"
+		extenstionConfigurationDebug.sdkRoot = "watchos"
+		extenstionConfigurationRelease.infoplist = "ExampleWatchkit WatchKit Extension/Info.plist"
+		extenstionConfigurationRelease.bundleIdentifier = "org.openbakery.Example.watchkitapp.watchkitextension"
+		extenstionConfigurationRelease.productName = "ExampleWatchkit WatchKit Extension"
+		extenstionConfigurationRelease.sdkRoot = "watchos"
+		extenstionConfigurationRelease.devices = Devices.WATCH
 
 
 		result.put("ExampleWatchkit", appConfiguration);
 		result.put("ExampleWatchkit WatchKit App", watchAppConfiguration);
-		result.put("ExampleWatchkit WatchKit Extension", extenstionConfiguration);
+		result.put("ExampleWatchkit WatchKit Extension", extensionConfiguration);
 
 		return result
 	}
@@ -244,7 +252,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.simulator = false
 
 
-		BuildSettings parent = extension.getParent(extension.projectSettings["ExampleWatchkit WatchKit App"].debug)
+		BuildConfiguration parent = extension.getParent(extension.projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Debug"])
 
 		then:
 		parent.bundleIdentifier == "org.openbakery.Example"

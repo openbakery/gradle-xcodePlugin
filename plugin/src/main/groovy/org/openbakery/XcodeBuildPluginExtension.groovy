@@ -96,7 +96,7 @@ class XcodeBuildPluginExtension {
 	VariableResolver variableResolver
 	PlistHelper plistHelper
 
-	HashMap<String, BuildConfiguration> projectSettings = new HashMap<>()
+	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 
 
 	/**
@@ -484,21 +484,16 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	BuildSettings getParent(BuildSettings buildSettings) {
-		BuildSettings result = buildSettings
+	BuildConfiguration getParent(BuildConfiguration buildSettings) {
+		BuildConfiguration result = buildSettings
 		File infoPlist = new File(project.projectDir, buildSettings.infoplist);
 		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "WKCompanionAppBundleIdentifier")
 		if (bundleIdentifier != null) {
 
-			projectSettings.each { String key, BuildConfiguration buildConfiguration ->
+			projectSettings.each { String key, BuildTargetConfiguration buildConfiguration ->
 
-				BuildSettings settings
-				if (configuration.equals("debug")) {
-					settings = buildConfiguration.debug
-				} else {
-					settings = buildConfiguration.release
-				}
-				if (settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
+				BuildConfiguration settings = buildConfiguration.buildSettings[configuration];
+				if (settings != null && settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
 					result = settings
 					return
 				}
@@ -511,18 +506,11 @@ class XcodeBuildPluginExtension {
 
 	File getApplicationBundle() {
 
-		BuildConfiguration buildConfiguration = projectSettings[target]
+		BuildTargetConfiguration buildConfiguration = projectSettings[target]
 		if (buildConfiguration != null) {
-			BuildSettings buildSettings
-			if (configuration.equalsIgnoreCase("release")) {
-				buildSettings = buildConfiguration.release
-			} else {
-				buildSettings = buildConfiguration.debug
-			}
-
-			if (buildSettings.sdkRoot.equalsIgnoreCase("watchos")) {
-				BuildSettings parent = getParent(buildSettings)
-
+			BuildConfiguration buildSettings = buildConfiguration.buildSettings[configuration];
+			if (buildSettings != null && buildSettings.sdkRoot.equalsIgnoreCase("watchos")) {
+				BuildConfiguration parent = getParent(buildSettings)
 				return new File(getOutputPath(), parent.productName + "." + this.productType)
 			}
 		}

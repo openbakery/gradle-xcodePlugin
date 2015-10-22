@@ -5,19 +5,19 @@ package org.openbakery
  */
 
 
-class BuildSettings {
+class BuildConfiguration {
 	String infoplist
 	String bundleIdentifier
 	String productName
 	String sdkRoot
 	Devices devices
 
-	BuildSettings parent;
+	BuildConfiguration parent;
 
-	public BuildSettings() {
+	public BuildConfiguration() {
 	}
 
-	public BuildSettings(BuildSettings parent) {
+	public BuildConfiguration(BuildConfiguration parent) {
 		this.parent = parent;
 	}
 
@@ -62,10 +62,9 @@ class BuildSettings {
 	}
 }
 
-class BuildConfiguration {
+class BuildTargetConfiguration {
 
-	BuildSettings debug
-	BuildSettings release
+	HashMap<String, BuildConfiguration> buildSettings = new HashMap<>()
 
 
 }

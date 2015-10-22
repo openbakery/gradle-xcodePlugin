@@ -57,11 +57,13 @@ class XcodeProjectFile {
 		rootObjectKey = getString("rootObject")
 	}
 
-	HashMap<String, BuildConfiguration> getProjectSettings() {
+	HashMap<String, BuildTargetConfiguration> getProjectSettings() {
 		loadConfig()
-		BuildConfiguration projectBuildConfiguration = createProjectBuildConfiguration(rootObjectKey)
+		List<String> buildConfigurationNames = getBuildConfigurationNames(rootObjectKey)
 
-		HashMap<String, BuildConfiguration> projectSettings = new HashMap<>()
+		BuildTargetConfiguration projectBuildConfiguration = createProjectBuildConfiguration(rootObjectKey, buildConfigurationNames)
+
+		HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 		getTargets().each { String targetName, String target ->
 			projectSettings.put(targetName, createBuildConfiguration(target, targetName, projectBuildConfiguration));
 		}
@@ -142,7 +144,7 @@ class XcodeProjectFile {
 		return targets;
 	}
 
-	void updateBuildSettings(BuildSettings buildSettings, String config, String target, String targetName) {
+	void updateBuildSettings(BuildConfiguration buildSettings, String config, String target, String targetName) {
 
 		String buildConfiguration = getBuildConfiguration(target, config)
 		buildSettings.infoplist = getBuildSetting(buildConfiguration, target, "INFOPLIST_FILE")
@@ -167,22 +169,25 @@ class XcodeProjectFile {
 	}
 
 
-	BuildConfiguration createProjectBuildConfiguration(String target) {
-		BuildConfiguration result = new BuildConfiguration()
-		result.debug = new BuildSettings();
-		updateBuildSettings(result.debug, "debug", target, "");
-		result.release = new BuildSettings();
-		updateBuildSettings(result.release, "release", target, "");
+	BuildTargetConfiguration createProjectBuildConfiguration(String target, List<String> buildConfigurationNames) {
+		BuildTargetConfiguration result = new BuildTargetConfiguration()
+
+		for (String configurationName : buildConfigurationNames) {
+			BuildConfiguration buildConfiguration = new BuildConfiguration();
+			updateBuildSettings(buildConfiguration, configurationName, target, "");
+			result.buildSettings[configurationName] = buildConfiguration;
+		}
 		return result
 	}
 
-	BuildConfiguration createBuildConfiguration(String target, String targetName, BuildConfiguration projectBuildConfiguration) {
-		BuildConfiguration result = new BuildConfiguration()
+	BuildTargetConfiguration createBuildConfiguration(String target, String targetName, BuildTargetConfiguration projectBuildConfiguration) {
+		BuildTargetConfiguration result = new BuildTargetConfiguration()
 
-		result.debug = new BuildSettings(projectBuildConfiguration.debug);
-		updateBuildSettings(result.debug, "debug", target, targetName);
-		result.release = new BuildSettings(projectBuildConfiguration.release);
-		updateBuildSettings(result.release, "release", target, targetName);
+		projectBuildConfiguration.buildSettings.each { buildConfigurationName, buildConfiguration ->
+			BuildConfiguration configuration = new BuildConfiguration(buildConfiguration)
+			updateBuildSettings(configuration, buildConfigurationName, target, targetName)
+			result.buildSettings[buildConfigurationName] = configuration
+		}
 
 		return result
 	}
@@ -215,6 +220,18 @@ class XcodeProjectFile {
 
 	}
 
+
+	List<String> getBuildConfigurationNames(String target) {
+
+		ArrayList<String> result = new ArrayList<>()
+		String buildConfigurationList = getString("objects." + target + ".buildConfigurationList")
+		def buildConfigurations = getList("objects." + buildConfigurationList + ".buildConfigurations")
+		for (buildConfigurationsItem in buildConfigurations) {
+			def buildName = getString("objects." + buildConfigurationsItem + ".name")
+			result.add(buildName)
+		}
+		return result
+	}
 
 	String getBuildConfiguration(String target, String configuration) {
 
