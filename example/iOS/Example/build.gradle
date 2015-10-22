@@ -24,7 +24,7 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://repository.openbakery.org/')
+			url('http://openbakery.org/repository.')
 		}
 		mavenCentral()
   }
@@ -39,10 +39,11 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 xcodebuild {
 	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
-	version = "7.0"
+	version = "6.4"
 	
 	target = 'Example'
 	scheme = 'Example'
+	configuration = 'Test'	
 		
 	destination {
 		platform = 'iOS Simulator'
@@ -68,17 +69,17 @@ task continuous(dependsOn:'test') {
 }
 
 
-task integration(dependsOn: ['package', 'hockeyapp']) {
+task integration(dependsOn: ['archive', 'package', 'hockeyapp']) {
 	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
 }
 
 tasks.hockeyapp.mustRunAfter tasks.package
 
-task release(dependsOn: 'package') {
+task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
 }
 
-task appstore(dependsOn: 'package') {
+task appstore(dependsOn: ['archive', 'package']) {
 	description = 'Build for the AppStore'
 }
 

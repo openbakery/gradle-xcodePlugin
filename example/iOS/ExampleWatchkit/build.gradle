@@ -32,7 +32,7 @@ buildscript {
 apply plugin: 'org.openbakery.xcode-plugin'
 
 xcodebuild {
-	version = "7.0"
+	version = "6.4"
 	
 	target = 'ExampleWatchkit WatchKit App'
 	scheme = 'ExampleWatchkit WatchKit App'

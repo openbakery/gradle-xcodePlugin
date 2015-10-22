@@ -350,5 +350,68 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+	Destination createDestination(String id, String name, String osVersion) {
+		Destination destination = new Destination()
+		destination.platform = "iOS Simulator"
+		destination.name = name
+		destination.arch = "i386"
+		destination.id = id
+		destination.os = osVersion
+		return destination
+	}
+
+	def "available destinations default"() {
+		given:
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
+
+
+		when:
+		def destinations = extension.getAvailableDestinations()
+
+		then:
+		destinations.size() == 2
+
+	}
+
+
+	def "available destinations match"() {
+		given:
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
+
+		extension.destination {
+			platform = 'iOS Simulator'
+			name = 'iPad Air'
+			os = "9.0"
+		}
+
+		when:
+		def destinations = extension.getAvailableDestinations()
+
+		then:
+		destinations.size() == 1
+
+	}
+
+
+	def "available destinations not match"() {
+		given:
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
+		extension.destination {
+			platform = 'iOS Simulator'
+			name = 'iPad Air'
+			os = "8.0"
+		}
+
+
+		when:
+		extension.getAvailableDestinations()
+
+		then:
+		thrown(IllegalStateException)
+
+	}
 
 }
