@@ -24,7 +24,8 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://openbakery.org/repository.')
+			url('http://repository.openbakery.org')
+			//url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -48,12 +49,12 @@ xcodebuild {
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPad 2'
-		os='9.*'
+		os='8.*'
 	}
 	destination {
 		platform = 'iOS Simulator'
 		name = 'iPhone 4s'
-		os='9.*'
+		os='8.*'
 	}	
 }
 

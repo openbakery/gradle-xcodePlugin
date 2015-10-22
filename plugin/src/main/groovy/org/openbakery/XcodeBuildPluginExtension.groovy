@@ -284,6 +284,8 @@ class XcodeBuildPluginExtension {
 	}
 
 	List<Destination> getAvailableDestinations() {
+
+		logger.debug("getAvailableDestinations")
 		def availableDestinations = []
 
 
@@ -295,40 +297,40 @@ class XcodeBuildPluginExtension {
 		if (isSimulatorBuildOf(Type.iOS)) {
 			// filter only on simulator builds
 
+			logger.debug("is a simulator build")
 			if (this.destinations != null) {
 
+				logger.debug("checking destinations if they are available: {}", this.destinations)
 				for (Destination destination in this.destinations) {
 					availableDestinations.addAll(findMatchingDestinations(destination))
 				}
-
 
 				if (availableDestinations.isEmpty()) {
 					logger.error("No matching simulators found for specified destinations: {}", this.destinations)
 					throw new IllegalStateException("No matching simulators found!")
 				}
 			} else {
-				if (availableDestinations.isEmpty()) {
 
-					logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
+				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
-					switch (this.devices) {
-						case Devices.PHONE:
-							availableDestinations = availableSimulators.findAll {
-								d -> d.name.contains("iPhone");
-							};
-							break;
-						case Devices.PAD:
-							availableDestinations = availableSimulators.findAll {
-								d -> d.name.contains("iPad");
-							};
-							break;
-						default:
-							availableDestinations.addAll(availableSimulators);
-							break;
-					}
+				switch (this.devices) {
+					case Devices.PHONE:
+						availableDestinations = availableSimulators.findAll {
+							d -> d.name.contains("iPhone");
+						};
+						break;
+					case Devices.PAD:
+						availableDestinations = availableSimulators.findAll {
+							d -> d.name.contains("iPad");
+						};
+						break;
+					default:
+						availableDestinations.addAll(availableSimulators);
+						break;
 				}
 			}
 		} else if (this.destinations != null) {
+			logger.debug("is a device build so add all given device destinations")
 			// on the device build add the given destinations
 			availableDestinations.addAll(this.destinations)
 		}
