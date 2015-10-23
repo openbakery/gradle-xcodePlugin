@@ -90,7 +90,7 @@ class PackageTask extends AbstractDistributeTask {
 			}
 
 			if (signSettingsAvailable) {
-				logger.lifecycle("codesign path: {}", bundle);
+				logger.info("Codesign app: {}", bundle);
 				codesign(bundle)
 			} else {
 				String message = "Bundle not signed: " + bundle
@@ -215,7 +215,7 @@ class PackageTask extends AbstractDistributeTask {
 			String basename = FilenameUtils.getBaseName(provisionFile.path)
 			entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
 			reader.extractEntitlements(entitlementsFile, bundleIdentifier)
-			logger.debug("Using entitlementsFile {}", entitlementsFile)
+			logger.info("Using entitlementsFile {}", entitlementsFile)
 		}
 
 		performCodesign(bundle, entitlementsFile)
@@ -241,13 +241,14 @@ class PackageTask extends AbstractDistributeTask {
 			};
 
 			for (File file in frameworksDirectory.listFiles(filter)) {
-				logger.lifecycle("Codesign {}", file)
 				performCodesign(file, null)
 			}
 		}
 	}
 
 	private void performCodesign(File bundle, File entitlements) {
+		logger.info("performCodesign {}", bundle)
+
 		def codesignCommand = []
 		codesignCommand << "/usr/bin/codesign"
 		codesignCommand << "--force"
@@ -290,7 +291,7 @@ class PackageTask extends AbstractDistributeTask {
 			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
 			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
 
-			logger.lifecycle("provision profile - {}", embeddedProvisionFile);
+			logger.info("provision profile - {}", embeddedProvisionFile);
 
 			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile);
 		}
