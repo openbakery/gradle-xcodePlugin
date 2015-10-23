@@ -15,7 +15,7 @@
  */
 package org.openbakery
 
-
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 
@@ -175,7 +175,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	def addEmbeddedAppToBundle(File appPath, ArrayList<File> appBundle) {
 
 		appPath.listFiles().each { File file ->
-			if (file.isDirectory()) {
+			if (file.isDirectory() && !FileUtils.isSymlink(file)) {
 				addEmbeddedAppToBundle(file, appBundle)
 				if (file.name.endsWith(".app")) {
 					appBundle.add(file)

@@ -31,6 +31,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	File archiveDirectory
 	File provisionProfile
 	File keychain
+	File applicationBundle
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
@@ -119,7 +120,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	void mockExampleApp(String frameworkPath) {
 		// create dummy app
 
-		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
+		applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
 
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
@@ -261,8 +262,6 @@ class PackageTask_OSXSpecification  extends Specification {
 		then:
 		1 * commandRunner.run(expectedCodesignCommand, _)
 
-
-
 	}
 
 	def "codesign Mac App with with embedded app"() {
@@ -282,6 +281,42 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		then:
 		1 * commandRunner.run(expectedCodesignCommandApp, _)
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommand, _)
+
+	}
+
+	def "codesign Mac App with framework that contains an app with symlink"() {
+		def commandList
+		def expectedCodesignCommand = codesignCommand("Example.app")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
+		def expectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
+		def unexpectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
+
+		given:
+		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
+
+		File sourceFile = new File(packageTask.outputPath, "Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
+		File symLinkTo = new File(packageTask.outputPath, "Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/")
+		symLinkTo.mkdirs()
+		CommandRunner c = new CommandRunner()
+
+		c.run("ln", "-s", sourceFile.absolutePath, symLinkTo.absolutePath)
+
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		0 * commandRunner.run(unexpectedCodesignCommandLibApp, _)
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommandLibApp, _)
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommandLib, _)
 
 		then:
 		1 * commandRunner.run(expectedCodesignCommand, _)
