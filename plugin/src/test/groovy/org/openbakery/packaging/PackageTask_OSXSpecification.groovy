@@ -2,31 +2,27 @@ package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import org.openbakery.stubs.PlistHelperStub
+import spock.lang.Specification
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 /**
- * Created by Stefan Gugarel on 10/02/15.
+ * Created by rene on 23.10.15.
  */
-class PackageTaskOSXTest {
+class PackageTask_OSXSpecification  extends Specification {
 
 	Project project
 	PackageTask packageTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	File provisionLibraryPath
 	File projectDir
@@ -38,14 +34,8 @@ class PackageTaskOSXTest {
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
-	@Before
+
 	void setup() {
-
-
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
-
-
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		FileUtils.deleteDirectory(projectDir)
@@ -68,7 +58,7 @@ class PackageTaskOSXTest {
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
 		packageTask.plistHelper = plistHelperStub
 
-		packageTask.setProperty("commandRunner", commandRunnerMock)
+		packageTask.commandRunner = commandRunner
 
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
@@ -78,6 +68,7 @@ class PackageTaskOSXTest {
 		appDirectory = new File(packageTask.outputPath, "Example.app");
 
 		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+
 	}
 
 	def cleanup() {
@@ -85,70 +76,46 @@ class PackageTaskOSXTest {
 	}
 
 
-	void mockCodesignLibCommand(String path) {
-		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+	List<String> codesignLibCommand(String path) {
 		File payloadApp = new File(packageTask.outputPath, path)
 
 		def commandList = [
-				"/usr/bin/codesign",
-				"--force",
-				"--sign",
-				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-				"--verbose",
-				payloadApp.absolutePath,
-				"--keychain",
-				keychain.absolutePath
-
+						"/usr/bin/codesign",
+						"--force",
+						"--sign",
+						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+						"--verbose",
+						payloadApp.absolutePath,
+						"--keychain",
+						keychain.absolutePath
 		]
-		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
+
+		return commandList
 	}
 
-	void mockCodesignCommand(String path) {
-		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
+	List<String> codesignCommand(String path) {
 		File payloadApp = new File(packageTask.outputPath, path)
 		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test-wildcard-mac-development.plist")
 
 		def commandList = [
-				"/usr/bin/codesign",
-				"--force",
-				"--entitlements",
-				entitlements.absolutePath,
-				"--sign",
-				"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-				"--verbose",
-				payloadApp.absolutePath,
-				"--keychain",
-				keychain.absolutePath
-
+						"/usr/bin/codesign",
+						"--force",
+						"--entitlements",
+						entitlements.absolutePath,
+						"--sign",
+						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+						"--verbose",
+						payloadApp.absolutePath,
+						"--keychain",
+						keychain.absolutePath
 		]
-		commandRunnerMock.run(commandList, ['DEVELOPER_DIR':'/Applications/Xcode.app/Contents/Developer/'])
 
+		return commandList
 	}
-
-	void mockValueFromPlist(String infoplist, String key, String value) {
-		def commandList = ["/usr/libexec/PlistBuddy", infoplist, "-c", "Print :" + key]
-		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
-	}
-
-	void mockEntitlementsFromPlist(File provisioningProfile) {
-		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
-		String result = new File('src/test/Resource/entitlements.plist').text
-		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
-
-		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
-		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
-		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
-		commandRunnerMock.runWithResult(commandList).returns(result).atLeastOnce()
-
-		mockValueFromPlist(plist.absolutePath, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
-
-	}
-
 
 	void mockExampleApp(boolean withFramework, boolean withSwift) {
 		String frameworkPath = "Contents/Frameworks/Sparkle.framework"
 		// create dummy app
-
 
 		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
 
@@ -168,118 +135,138 @@ class PackageTaskOSXTest {
 		}
 
 		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
-
+		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
-
-		mockCodesignCommand("Example.app")
-
-		if (withFramework) {
-			mockCodesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
-		}
-
 		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 
 		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
-		mockEntitlementsFromPlist(mobileprovision)
+
+		String basename = FilenameUtils.getBaseName(mobileprovision.path)
+		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
+		plistHelperStub.setValueForPlist(plist.absolutePath, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
+
 
 		project.xcodebuild.outputPath.mkdirs()
 	}
 
-	@Test
-	void testCreatePackagePath() {
+
+	def "create package path"() {
+		given:
 		mockExampleApp(false, false)
 
-		mockControl.play {
-			packageTask.packageApplication()
-		}
+		when:
+		packageTask.packageApplication()
 
+		then:
 		// has to be same folder as signing for MacOSX
-		assert packageTask.outputPath.exists()
+		packageTask.outputPath.exists()
 	}
 
-	@Test
-	void testCopyApp() {
 
+	def "copy app"() {
+		given:
 		mockExampleApp(false, false)
 
-		mockControl.play {
-			packageTask.packageApplication()
-		}
-		assert appDirectory.exists()
+		when:
+		packageTask.packageApplication()
+
+		then:
+		appDirectory.exists()
 	}
 
-	@Test
-	void removeResourceRules() {
 
+
+	def "remove ResourceRules"() {
+		given:
 		mockExampleApp(false, false)
 
-		mockControl.play {
-			packageTask.packageApplication()
-		}
+		when:
+		packageTask.packageApplication()
 
-		assert !(new File(appDirectory, "ResourceRules.plist")).exists()
+		then:
+		!(new File(appDirectory, "ResourceRules.plist")).exists()
 	}
 
-	@Test
-	void codesignMacAppOnly() {
 
+	def "codesign MacApp only"() {
+		def expectedCodesignCommand = codesignCommand("Example.app")
+
+		given:
 		mockExampleApp(false, false)
 
+		when:
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		packageTask.packageApplication()
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommand, _)
+		/*
+		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
+		commandList == expectedCodesignCommand
+*/
+	}
+
+
+
+
+	def "codesign MacAppWith Framework"() {
+		def commandList
+		def expectedCodesignCommand = codesignCommand("Example.app")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
+
+		given:
+		mockExampleApp(true, false)
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommand, _)
+
+		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
+		commandList == expectedCodesignCommandLib
+
+
+	}
+
+
+
+	def "embed ProvisioningProfile"() {
+		given:
+		mockExampleApp(false, false)
 
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
-		mockControl.play {
-			packageTask.packageApplication()
-		}
+		when:
+		packageTask.packageApplication()
+		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
+
+		then:
+		!embedProvisioningProfile.exists()
+
 	}
 
-	@Test
-	void codesignMacAppWithFramework() {
 
+	def "embed ProvisioningProfile with Framework"() {
+		given:
 		mockExampleApp(true, false)
 
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
-		mockControl.play {
-			packageTask.packageApplication()
-		}
-	}
-
-
-	@Test
-	void embedProvisioningProfile() {
-
-		mockExampleApp(false, false)
-
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
-
-		mockControl.play {
-			packageTask.packageApplication()
-		}
+		when:
+		packageTask.packageApplication()
 
 		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
-		assert !embedProvisioningProfile.exists()
+
+		then:
+		!embedProvisioningProfile.exists()
 
 	}
 
-	@Test
-	void embedProvisioningProfileWithFramework() {
-
-		mockExampleApp(true, false)
-
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
-
-		mockControl.play {
-			packageTask.packageApplication()
-		}
-
-		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
-		assert !embedProvisioningProfile.exists()
-
-	}
 
 
 	List<String> getZipEntries(File file) {
@@ -292,22 +279,21 @@ class PackageTaskOSXTest {
 		return entries;
 	}
 
-	@Test
-	void outputFile() {
-		mockExampleApp(true, false)
+	def "output file"() {
+		List<String> zipEntries
 
+		given:
+		mockExampleApp(true, false)
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
-		mockControl.play {
-			packageTask.packageApplication()
-		}
+		when:
+		packageTask.packageApplication()
 
 		File outputFile = new File(packageTask.outputPath, "Example.zip")
-		assert outputFile.exists();
+		zipEntries = getZipEntries(outputFile)
 
-		List<String> zipEntries = getZipEntries(outputFile);
-
-		assert zipEntries.contains("Example.app/Example")
-
+		then:
+		zipEntries.contains("Example.app/Example")
 	}
+
 }

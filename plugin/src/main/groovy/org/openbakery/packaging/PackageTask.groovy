@@ -116,7 +116,7 @@ class PackageTask extends AbstractDistributeTask {
 		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner)
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner, this.plistHelper)
 			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 

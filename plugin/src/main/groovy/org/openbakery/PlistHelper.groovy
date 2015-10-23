@@ -39,6 +39,10 @@ class PlistHelper {
 					"-c",
 					"Print :" + key])
 
+			if (result == null) {
+				return null
+			}
+
 			if (result.startsWith("Array {")) {
 
 				ArrayList<String> resultArray = new ArrayList<String>();
@@ -48,7 +52,7 @@ class PlistHelper {
 				for (int i = 1; i < tokens.length - 1; i++) {
 					resultArray.add(tokens[i].trim());
 				}
-				return resultArray;
+				return resultArray
 			}
 			return result;
 		} catch (IllegalStateException ex) {
