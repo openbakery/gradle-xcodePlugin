@@ -197,40 +197,33 @@ class PackageTask extends AbstractDistributeTask {
 
 		logger.debug("Codesign {}", bundle)
 
-		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
-
 		String bundleIdentifier = getIdentifierForBundle(bundle)
 		if (bundleIdentifier == null) {
 			logger.debug("bundleIdentifier not found in bundle {}", bundle)
 		}
 		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
-		String basename = FilenameUtils.getBaseName(provisionFile.path)
-		File entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
-		reader.extractEntitlements(entitlementsFile, bundleIdentifier)
 
-		logger.debug("Using entitlementsFile {}", entitlementsFile)
+		File entitlementsFile = null;
 
+		if (provisionFile == null) {
+			if (project.xcodebuild.type == Type.iOS) {
+				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
+			}
+			// on OS X this is valid
+		} else {
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
+			String basename = FilenameUtils.getBaseName(provisionFile.path)
+			entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
+			reader.extractEntitlements(entitlementsFile, bundleIdentifier)
+			logger.debug("Using entitlementsFile {}", entitlementsFile)
+		}
 
-		def codesignCommand = [
-						"/usr/bin/codesign",
-						"--force",
-						"--entitlements",
-						entitlementsFile.absolutePath,
-						"--sign",
-						project.xcodebuild.getSigning().getIdentity(),
-						"--verbose",
-						bundle.absolutePath,
-						"--keychain",
-						project.xcodebuild.signing.keychainPathInternal.absolutePath,
-		]
-		commandRunner.run(codesignCommand, environment)
+		performCodesign(bundle, entitlementsFile)
+
 
 	}
 
 	private void codeSignFrameworks(File bundle) {
-
-		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
 
 		File frameworksDirectory
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -247,22 +240,33 @@ class PackageTask extends AbstractDistributeTask {
 				}
 			};
 
-
 			for (File file in frameworksDirectory.listFiles(filter)) {
 				logger.lifecycle("Codesign {}", file)
-				def codesignCommand = [
-								"/usr/bin/codesign",
-								"--force",
-								"--sign",
-								project.xcodebuild.getSigning().getIdentity(),
-								"--verbose",
-								file.absolutePath,
-								"--keychain",
-								project.xcodebuild.signing.keychainPathInternal.absolutePath,
-				]
-				commandRunner.run(codesignCommand, environment)
+				performCodesign(file, null)
 			}
 		}
+	}
+
+	private void performCodesign(File bundle, File entitlements) {
+		def codesignCommand = []
+		codesignCommand << "/usr/bin/codesign"
+		codesignCommand << "--force"
+
+		if (entitlements != null) {
+			codesignCommand << "--entitlements"
+			codesignCommand << entitlements.absolutePath
+		}
+
+		codesignCommand << "--sign"
+		codesignCommand << project.xcodebuild.getSigning().getIdentity()
+		codesignCommand << "--verbose"
+		codesignCommand << bundle.absolutePath
+		codesignCommand << "--keychain"
+		codesignCommand << project.xcodebuild.signing.keychainPathInternal.absolutePath
+
+		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
+		commandRunner.run(codesignCommand, environment)
+
 	}
 
 	private String getIdentifierForBundle(File bundle) {

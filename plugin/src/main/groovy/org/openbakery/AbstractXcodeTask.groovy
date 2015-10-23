@@ -165,9 +165,24 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			addPluginsToAppBundle(appBundle, bundles)
 			addWatchToAppBundle(appBundle, bundles)
+		} else if (project.xcodebuild.type == Type.OSX) {
+			addEmbeddedAppToBundle(appBundle, bundles)
 		}
 		bundles.add(appBundle)
 		return bundles;
+	}
+
+	def addEmbeddedAppToBundle(File appPath, ArrayList<File> appBundle) {
+
+		appPath.listFiles().each { File file ->
+			if (file.isDirectory()) {
+				addEmbeddedAppToBundle(file, appBundle)
+				if (file.name.endsWith(".app")) {
+					appBundle.add(file)
+				}
+			}
+		}
+
 	}
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {

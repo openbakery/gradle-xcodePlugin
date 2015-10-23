@@ -60,7 +60,6 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		packageTask.commandRunner = commandRunner
 
-
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
@@ -113,8 +112,11 @@ class PackageTask_OSXSpecification  extends Specification {
 		return commandList
 	}
 
-	void mockExampleApp(boolean withFramework, boolean withSwift) {
-		String frameworkPath = "Contents/Frameworks/Sparkle.framework"
+	void mockExampleApp() {
+		mockExampleApp(null)
+	}
+
+	void mockExampleApp(String frameworkPath) {
 		// create dummy app
 
 		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
@@ -128,10 +130,9 @@ class PackageTask_OSXSpecification  extends Specification {
 		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy");
 		FileUtils.writeStringToFile(new File(appDirectory, "Contents/Info.plist"), "dummy");
 
-		if (withFramework) {
-			File framworkFile = new File(appDirectory, frameworkPath)
-
-			framworkFile.mkdirs()
+		if (frameworkPath != null) {
+			File frameworkFile = new File(appDirectory, frameworkPath)
+			frameworkFile.mkdirs()
 		}
 
 		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
@@ -149,13 +150,14 @@ class PackageTask_OSXSpecification  extends Specification {
 		plistHelperStub.setValueForPlist(plist.absolutePath, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
 
 
+
 		project.xcodebuild.outputPath.mkdirs()
 	}
 
 
 	def "create package path"() {
 		given:
-		mockExampleApp(false, false)
+		mockExampleApp()
 
 		when:
 		packageTask.packageApplication()
@@ -168,7 +170,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 	def "copy app"() {
 		given:
-		mockExampleApp(false, false)
+		mockExampleApp()
 
 		when:
 		packageTask.packageApplication()
@@ -181,7 +183,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 	def "remove ResourceRules"() {
 		given:
-		mockExampleApp(false, false)
+		mockExampleApp()
 
 		when:
 		packageTask.packageApplication()
@@ -195,7 +197,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		def expectedCodesignCommand = codesignCommand("Example.app")
 
 		given:
-		mockExampleApp(false, false)
+		mockExampleApp()
 
 		when:
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
@@ -212,13 +214,14 @@ class PackageTask_OSXSpecification  extends Specification {
 
 
 
-	def "codesign MacAppWith Framework"() {
+	def "codesign MacApp with Framework"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
 		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
 
 		given:
-		mockExampleApp(true, false)
+
+		mockExampleApp("Contents/Frameworks/Sparkle.framework")
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		when:
@@ -234,10 +237,61 @@ class PackageTask_OSXSpecification  extends Specification {
 	}
 
 
+	def "codesign Mac App with framework that contains an app"() {
+		def commandList
+		def expectedCodesignCommand = codesignCommand("Example.app")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
+		def expectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
+
+		given:
+		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+
+		when:
+		packageTask.packageApplication()
+
+
+		then:
+		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
+		commandList == expectedCodesignCommandLibApp
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommandLib, _)
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommand, _)
+
+
+
+	}
+
+	def "codesign Mac App with with embedded app"() {
+		def expectedCodesignCommand = codesignCommand("Example.app")
+		def expectedCodesignCommandApp = codesignLibCommand("Example.app/Contents/Resources/Autoupdate.app")
+		def expectedCodesignCommandSecondApp = codesignLibCommand("Example.app/Contents/Resources/Autoupdate.app/Contents/Resources/AnotherApp.app")
+
+		given:
+		mockExampleApp("Contents/Resources/Autoupdate.app/Contents/Resources/AnotherApp.app")
+		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommandSecondApp, _)
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommandApp, _)
+
+		then:
+		1 * commandRunner.run(expectedCodesignCommand, _)
+
+	}
+
 
 	def "embed ProvisioningProfile"() {
 		given:
-		mockExampleApp(false, false)
+		mockExampleApp()
 
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
@@ -253,7 +307,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 	def "embed ProvisioningProfile with Framework"() {
 		given:
-		mockExampleApp(true, false)
+		mockExampleApp("Contents/Frameworks/Sparkle.framework")
 
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
@@ -264,8 +318,8 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		then:
 		!embedProvisioningProfile.exists()
-
 	}
+
 
 
 
@@ -283,7 +337,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		List<String> zipEntries
 
 		given:
-		mockExampleApp(true, false)
+		mockExampleApp("Contents/Frameworks/Sparkle.framework")
 		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
 
 		when:
