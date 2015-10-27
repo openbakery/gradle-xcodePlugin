@@ -50,12 +50,26 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		logger.debug("Copy '{}' -> '{}'", source, destination);
 
 		// use rsync to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
+		/*
 		ant.exec(failonerror: "true",
 						executable: 'rsync') {
 			arg(value: '-avz')
 			arg(value: source.absolutePath)
 			arg(value: destination.absolutePath)
 		}
+		*/
+
+
+		File destinationPath = new File(destination, source.getName())
+
+
+		ant.exec(failonerror: "true",
+								executable: 'ditto') {
+			arg(value: source.absolutePath)
+			arg(value: destinationPath.absolutePath)
+		}
+
+		//commandRunner.run("ditto", source.absolutePath, destinationPath.absolutePath)
 	}
 
 	/**
