@@ -218,7 +218,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	def "codesign MacApp with Framework"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
 
 		given:
 
@@ -238,36 +238,11 @@ class PackageTask_OSXSpecification  extends Specification {
 	}
 
 
-	def "codesign Mac App with framework that contains an app"() {
-		def commandList
-		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
-		def expectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
-
-		given:
-		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
-
-		when:
-		packageTask.packageApplication()
-
-
-		then:
-		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
-		commandList == expectedCodesignCommandLibApp
-
-		then:
-		1 * commandRunner.run(expectedCodesignCommandLib, _)
-
-		then:
-		1 * commandRunner.run(expectedCodesignCommand, _)
-
-	}
 
 	def "codesign Mac App with with embedded app"() {
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandApp = codesignLibCommand("Example.app/Contents/Resources/Autoupdate.app")
-		def expectedCodesignCommandSecondApp = codesignLibCommand("Example.app/Contents/Resources/Autoupdate.app/Contents/Resources/AnotherApp.app")
+		def unexpectedCodesignCommandApp = codesignLibCommand("Example.app/Contents/Resources/Autoupdate.app")
+		def unexpectedCodesignCommandSecondApp = codesignLibCommand("Example.app/Contents/Resources/Autoupdate.app/Contents/Resources/AnotherApp.app")
 
 		given:
 		mockExampleApp("Contents/Resources/Autoupdate.app/Contents/Resources/AnotherApp.app")
@@ -277,10 +252,10 @@ class PackageTask_OSXSpecification  extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		1 * commandRunner.run(expectedCodesignCommandSecondApp, _)
+		0 * commandRunner.run(unexpectedCodesignCommandSecondApp, _)
 
 		then:
-		1 * commandRunner.run(expectedCodesignCommandApp, _)
+		0 * commandRunner.run(unexpectedCodesignCommandApp, _)
 
 		then:
 		1 * commandRunner.run(expectedCodesignCommand, _)
@@ -290,9 +265,9 @@ class PackageTask_OSXSpecification  extends Specification {
 	def "codesign Mac App with framework that contains an app with symlink"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
-		def expectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
-		def unexpectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+		def unexpectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
+		def unexpectedCodesignCommandLibAppWithSymlink = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
 
 		given:
 		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
@@ -310,10 +285,10 @@ class PackageTask_OSXSpecification  extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		0 * commandRunner.run(unexpectedCodesignCommandLibApp, _)
+		0 * commandRunner.run(unexpectedCodesignCommandLibAppWithSymlink, _)
 
 		then:
-		1 * commandRunner.run(expectedCodesignCommandLibApp, _)
+		0 * commandRunner.run(unexpectedCodesignCommandLibApp, _)
 
 		then:
 		1 * commandRunner.run(expectedCodesignCommandLib, _)

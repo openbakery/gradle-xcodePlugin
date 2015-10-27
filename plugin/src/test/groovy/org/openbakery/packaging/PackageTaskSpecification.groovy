@@ -424,7 +424,7 @@ class PackageTaskSpecification extends Specification {
 
 	def "codesign Framework"() {
 		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
-		def codesignFramework = codesignLibCommand("Payload/Example.app/Frameworks/My.framework")
+		def codesignFramework = codesignLibCommand("Payload/Example.app/Frameworks/My.framework/Versions/Current")
 
 		given:
 		mockExampleApp(false, true, true)

@@ -227,7 +227,7 @@ class XcodeTestTaskSpecification extends Specification {
 		xcodeTestTask.numberErrors() == 0
 	}
 
-
+/*
 	def "compile error test"() {
 
 		when:
@@ -238,7 +238,7 @@ class XcodeTestTaskSpecification extends Specification {
 		result.split("\n").length == 8
 
 	}
-
+*/
 
 
 	def "parse success result for tests written in swift using Xcode 6.1"() {

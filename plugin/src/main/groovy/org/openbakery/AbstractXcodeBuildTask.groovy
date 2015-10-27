@@ -1,6 +1,5 @@
 package org.openbakery
 
-import org.apache.commons.io.input.ReversedLinesFileReader
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
 import org.openbakery.signing.ProvisioningProfileReader
@@ -108,7 +107,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		return commandList;
 	}
 
-
+/*
 	String getFailureFromLog(File outputFile) {
 
 		ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(outputFile);
@@ -140,6 +139,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 		return builder.toString()
 	}
+	*/
 
 	protected String getDestinationCommandParameter(Destination destination) {
 		def destinationParameters = []

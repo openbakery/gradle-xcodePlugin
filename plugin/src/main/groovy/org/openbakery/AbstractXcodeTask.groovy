@@ -15,7 +15,7 @@
  */
 package org.openbakery
 
-import org.apache.commons.io.FileUtils
+
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 
@@ -165,24 +165,9 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 			addPluginsToAppBundle(appBundle, bundles)
 			addWatchToAppBundle(appBundle, bundles)
-		} else if (project.xcodebuild.type == Type.OSX) {
-			addEmbeddedAppToBundle(appBundle, bundles)
 		}
 		bundles.add(appBundle)
 		return bundles;
-	}
-
-	def addEmbeddedAppToBundle(File appPath, ArrayList<File> appBundle) {
-
-		appPath.listFiles().each { File file ->
-			if (file.isDirectory() && !FileUtils.isSymlink(file)) {
-				addEmbeddedAppToBundle(file, appBundle)
-				if (file.name.endsWith(".app")) {
-					appBundle.add(file)
-				}
-			}
-		}
-
 	}
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
