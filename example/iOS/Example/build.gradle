@@ -8,7 +8,6 @@ Create a gradle.properties and add the following values:
 	deploygateApiToken = ""
 	deploygateUserName = ""
 
-	signingIdentity = iPhone Developer: ... 
 	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
 	signingCertificatePassword = password // password to unlock to p12
 	signingMobileProvisionURI = http://../Development.mobileprovision

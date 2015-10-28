@@ -1,3 +1,12 @@
+# 0.12.1 (October 28, 2015)
+
+Changes
+* Watchkit support. Project with Xcode 6 and Watchkit can now be build and is properly signed
+
+Bugfixes
+* Build failes if the specified simualtor is not found: Issue #219
+* All build configurations are now processed: Issue #218x
+
 # 0.12.0 (October 16, 2015)
 
 Changes

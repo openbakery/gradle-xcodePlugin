@@ -22,6 +22,15 @@ Here a brief overview of the features:
 
 **With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter**
 
+Here a table of the values for the migration to 0.12:
+
+| sdk (old)         | type (new)    | simulator (new)         |
+| ----------------- | ------------- | ------------------------|
+| iphonesimulator   | iOS           | true                    |
+| iphoneos          | iOS           | false                   |
+| macosx            | OSX           | (this value is ignored) |
+
+
 ## Requirements
 
 * Xcode 5 or greater
@@ -29,9 +38,9 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.12
+### Current stable version is 0.12.1
 
-0.9.x up to 0.12.x supports Xcode 5, Xcode 6.* and Xcode 7
+0.9.x up to 0.12.x supports Xcode 5, Xcode 6.+ and Xcode 7.+
 
 
 
@@ -48,7 +57,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.12.0"
+  id "org.openbakery.xcode-plugin" version "0.12.1"
 }
 
 xcodebuild {
