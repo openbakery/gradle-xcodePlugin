@@ -242,11 +242,7 @@ class PackageTask extends AbstractDistributeTask {
 
 			for (File file in frameworksDirectory.listFiles(filter)) {
 
-				if (file.name.endsWith(".framework")) {
-					performCodesign(new File(file, "Versions/Current"), null)
-				} else {
-					performCodesign(file, null)
-				}
+				performCodesign(file, null)
 
 			}
 		}

@@ -1,3 +1,8 @@
+# 0.12.2 (October 28, 2015)
+
+Bugfixes
+* Codesigning failed with some projects that contains frameworks
+
 # 0.12.1 (October 28, 2015)
 
 Changes

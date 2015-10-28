@@ -218,7 +218,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	def "codesign MacApp with Framework"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
 
 		given:
 
@@ -265,7 +265,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	def "codesign Mac App with framework that contains an app with symlink"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
 		def unexpectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
 		def unexpectedCodesignCommandLibAppWithSymlink = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
 
