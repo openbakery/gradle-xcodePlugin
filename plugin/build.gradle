@@ -11,7 +11,7 @@ buildscript {
 
 
 
-def versionNumber = '0.12.1-TEST'
+def versionNumber = '0.12.2'
 def publishURL
 def publishUser
 def publishPassword
