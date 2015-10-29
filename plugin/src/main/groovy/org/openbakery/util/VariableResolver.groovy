@@ -1,4 +1,4 @@
-package org.openbakery
+package org.openbakery.util
 
 import org.gradle.api.Project
 import org.slf4j.Logger

@@ -16,7 +16,6 @@
 package org.openbakery.hockeykit
 
 import org.openbakery.AbstractDistributeTask
-import org.openbakery.PlistHelper
 
 /**
  *

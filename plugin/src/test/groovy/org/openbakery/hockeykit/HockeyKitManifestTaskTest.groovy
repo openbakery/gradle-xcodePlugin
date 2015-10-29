@@ -5,7 +5,7 @@ import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.PlistHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
 import org.junit.After
 import org.junit.Before

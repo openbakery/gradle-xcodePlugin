@@ -18,6 +18,7 @@ package org.openbakery
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
+import org.openbakery.util.PlistHelper
 
 import java.text.SimpleDateFormat
 

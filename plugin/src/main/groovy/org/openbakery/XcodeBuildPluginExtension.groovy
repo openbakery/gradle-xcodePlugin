@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
+import org.openbakery.util.PlistHelper
+import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -30,10 +32,39 @@ public enum Devices {
 	WATCH
 }
 
+/*
+
+^
+should be migrated to this -> and renamed to Device
+
+enum Devices {
+	PHONE(1<<0),
+	PAD(1<<1),
+	WATCH(1<<2),
+	TV(1<<3)
+
+	private final int value;
+
+	Devices(int value) {
+		this.value = value
+	}
+
+	public int getValue() {
+		return value
+	}
+
+	public boolean is(Devices device) {
+		return (this.value & device.value) > 0
+	}
+
+}
+ */
+
 public enum Type {
 	iOS("iOS"),
 	OSX("OSX"),
-	tvOS("tvOS");
+	tvOS("tvOS"),
+	watchOS("watchOS")
 
 
 	String value;
@@ -43,9 +74,11 @@ public enum Type {
 	}
 
 	public static Type typeFromString(String string) {
-
+		if (string == null) {
+			return iOS;
+		}
 		for (Type type in Type.values()) {
-			if (type.value.equalsIgnoreCase(string)) {
+			if (string.toLowerCase().startsWith(type.value.toLowerCase())) {
 				return type;
 			}
 		}

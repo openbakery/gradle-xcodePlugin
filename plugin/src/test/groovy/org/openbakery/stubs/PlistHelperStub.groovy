@@ -1,6 +1,6 @@
 package org.openbakery.stubs
 
-import org.openbakery.PlistHelper
+import org.openbakery.util.PlistHelper
 
 /**
  * Created by rene on 01.09.15.

@@ -2,36 +2,37 @@ package org.openbakery.simulators
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 
 class SimulatorsStartTask extends DefaultTask {
-  SimulatorControl simulatorControl
+	SimulatorControl simulatorControl
 
-  public SimulatorsStartTask() {
-    setDescription("Start iOS Simulators")
-    dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
-    simulatorControl = new SimulatorControl(project)
-  }
+	public SimulatorsStartTask() {
+		setDescription("Start iOS Simulators")
+		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
+		simulatorControl = new SimulatorControl(project)
+	}
 
-  @TaskAction
-  void run() {
-    List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-    if (runtimes.size() == 0) {
-      logger.lifecycle("No simulator runtime found")
-      return
-    }
+	@TaskAction
+	void run() {
 
-    SimulatorRuntime runtime = runtimes.get(0)
-    List<SimulatorDevice> deviceList = simulatorControl.getDevices(runtime)
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
 
-    if (deviceList.size() == 0) {
-      logger.lifecycle("No device for for runtime {}", runtime)
-      return
-    }
-    def device = deviceList.get(0);
+		if (runtime == null) {
+			throw new IllegalStateException("No simulator runtime found for " + Type.iOS)
+		}
 
-    simulatorControl.killAll()
-    simulatorControl.runDevice(device)
-    simulatorControl.waitForDevice(device)
-  }
+		List<SimulatorDevice> deviceList = simulatorControl.getDevices(runtime)
+
+		if (deviceList == null || deviceList.size() == 0) {
+			throw new IllegalStateException("No device found runtime " + runtime)
+		}
+
+		def device = deviceList.get(0)
+
+		simulatorControl.killAll()
+		simulatorControl.runDevice(device)
+		simulatorControl.waitForDevice(device)
+	}
 }

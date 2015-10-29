@@ -1,4 +1,4 @@
-package org.openbakery
+package org.openbakery.util
 
 /**
  * Created by rene on 23.10.15.

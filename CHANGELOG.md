@@ -1,3 +1,9 @@
+# 0.12.3 (TBA)
+
+Bugfixes
+* simulatorStart works now
+* simulatorRunApp starts now the configured app in the simulator
+
 # 0.12.2 (October 28, 2015)
 
 Bugfixes

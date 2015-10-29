@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.Type
+import org.openbakery.Version
 import spock.lang.Specification
 
 /**
@@ -61,13 +63,52 @@ class SimulatorControlSpecification extends Specification {
 
 		SimulatorRuntime runtime = runtimes.get(0)
 		runtime.name.equals("iOS 7.1")
-		runtime.version.equals("7.1")
+		runtime.version.toString().equals("7.1")
 		runtime.buildNumber.equals("11D167")
 		runtime.identifier.equals("com.apple.CoreSimulator.SimRuntime.iOS-7-1")
 	}
 
 
+	def "get most recent iOS runtime"() {
 
+		given:
+		mockXcode7()
+
+		when:
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
+
+		then:
+		runtime != null
+		runtime.version == new Version("9.0")
+	}
+
+	def "get most recent iOS runtime 7.1"() {
+
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+
+		when:
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
+
+		then:
+		runtime != null
+		runtime.version == new Version("9.1")
+	}
+
+	def "get most recent tvOS runtime 7.1"() {
+
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+
+		when:
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.tvOS)
+
+		then:
+		runtime != null
+		runtime.version == new Version("9.0")
+	}
 
 	def "launch simulator"() {
 		given:
@@ -79,7 +120,7 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.runDevice(devices.get(0))
 
 		then:
-		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "iPhone 4s (7.1 Simulator)"])
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "73C126C8-FD53-44EA-80A3-84F5F19508C0"])
 
 	}
 
@@ -235,7 +276,7 @@ class SimulatorControlSpecification extends Specification {
 
 
 		then:
-		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "iPhone 4s (7.1 Simulator)"])
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "73C126C8-FD53-44EA-80A3-84F5F19508C0"])
 	}
 
 

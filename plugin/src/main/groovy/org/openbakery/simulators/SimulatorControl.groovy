@@ -3,6 +3,7 @@ package org.openbakery.simulators
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
+import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -185,6 +186,26 @@ class SimulatorControl {
 		return result
 	}
 
+	SimulatorRuntime getMostRecentRuntime(Type type) {
+
+		SimulatorRuntime result = null;
+
+		for (SimulatorRuntime runtime in getRuntimes()) {
+			if (runtime.type != type) {
+				continue
+			}
+			if (result != null &&
+							runtime.getVersion().compareTo(result.version) > 0) {
+				result = runtime;
+			} else {
+				result = runtime;
+			}
+
+		}
+		return result
+	}
+
+
 
 	SimulatorDevice getDevice(SimulatorRuntime simulatorRuntime, String name) {
 		for (SimulatorDevice device in getDevices(simulatorRuntime)) {
@@ -341,7 +362,7 @@ class SimulatorControl {
 		}
 
 		try {
-			commandRunner.run([project.xcodebuild.xcodePath + "/Contents/Developer/usr/bin/instruments", "-w", device.name + " (" + runtime.version + " Simulator)"])
+			commandRunner.run([project.xcodebuild.xcodePath + "/Contents/Developer/usr/bin/instruments", "-w", device.identifier])
 		} catch (CommandRunnerException ex) {
 			// ignore, because the result of this command is a failure, but the simulator should be launched
 		}

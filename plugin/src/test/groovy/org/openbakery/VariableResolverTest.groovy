@@ -4,6 +4,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.Test
+import org.openbakery.util.VariableResolver
 
 /**
  * Created by rene on 16.02.15.

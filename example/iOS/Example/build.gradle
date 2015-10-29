@@ -23,8 +23,8 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://repository.openbakery.org')
-			//url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
+			//url('http://repository.openbakery.org')
+			url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }

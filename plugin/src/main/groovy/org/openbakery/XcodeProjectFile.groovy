@@ -3,6 +3,7 @@ package org.openbakery
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
+import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

@@ -7,6 +7,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.openbakery.util.PlistHelper
 
 /**
  * Created by rene on 25.07.14.
