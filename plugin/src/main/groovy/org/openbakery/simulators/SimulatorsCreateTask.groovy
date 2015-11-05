@@ -2,6 +2,7 @@ package org.openbakery.simulators
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 
 /**
@@ -14,7 +15,7 @@ class SimulatorsCreateTask extends DefaultTask {
 	public SimulatorsCreateTask() {
 		setDescription("Delete and creates all iOS Simulators");
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		simulatorControl = new SimulatorControl(project)
+		simulatorControl = new SimulatorControl(project, new CommandRunner())
 
 	}
 

@@ -2,6 +2,7 @@ package org.openbakery.simulators
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.CommandRunnerException
 
@@ -12,7 +13,7 @@ class SimulatorsInstallAppTask extends DefaultTask {
     setDescription("Install app on iOS Simulators")
     dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
     dependsOn(XcodePlugin.SIMULATORS_START_TASK_NAME)
-    simulatorControl = new SimulatorControl(project)
+    simulatorControl = new SimulatorControl(project, new CommandRunner())
   }
 
   @TaskAction

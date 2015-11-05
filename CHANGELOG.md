@@ -3,6 +3,7 @@
 Bugfixes
 * simulatorStart works now
 * simulatorRunApp starts now the configured app in the simulator
+* simpler destination syntax for specifing the simulators to use
 
 # 0.12.2 (October 28, 2015)
 

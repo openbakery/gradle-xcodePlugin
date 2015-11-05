@@ -94,7 +94,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
-		this.simulatorControl = new SimulatorControl(project)
+		this.simulatorControl = new SimulatorControl(project, this.commandRunner)
 	}
 
 	@TaskAction

@@ -75,7 +75,32 @@
 	Therefor you can specify destinations to limit on which simulator destinations the unit tests are performed.
 	You also can specify a regular expression for the value and all available simulator devices are included that match these value: e.g. name = 'iPhone.*'
 
-	* _platform_ - Platform, e.g. 'iOS' or 'OS X'
+	_Simple syntax:_
+	
+	```
+	destination = "iPhone 4s"
+	```
+	or 
+	```
+	destination = ['iPhone 4s', 'iPad Air']
+	```
+	
+	Here the simulator device of the most recent runtime is used for iPhone 4s and iPad Air
+	
+
+	_Full syntax:_
+	
+	```
+	destination {
+		platform = 'iOS Simulator'
+		name = 'iPad Air'
+		os = '9.1'
+	}
+	```
+	
+	This closure can be defined multiple times for multipe devices
+
+	* _platform_ - Platform, e.g. 'iOS', 'OS X' or 'iOS Simulator'
 
 	default value: empty
 
@@ -88,6 +113,8 @@
 	The arch can a single value e.g. 'i386' or a list of values e.g. [ 'armv7', 'armv7s' ]
 
 	default value: empty
+	
+
 
 ### Other Settings
 

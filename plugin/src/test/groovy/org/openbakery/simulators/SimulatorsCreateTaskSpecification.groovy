@@ -6,19 +6,19 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
 import org.junit.Before
 import org.junit.Test
+import spock.lang.Specification
 
 /**
  * Created by rene on 30.04.15.
  */
-class SimulatorsCreateTaskTest {
+class SimulatorsCreateTaskSpecification extends Specification {
 
 
 	SimulatorsCreateTask task
 	Project project
 	File projectDir
 
-	@Before
-	void setup() {
+	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -29,32 +29,29 @@ class SimulatorsCreateTaskTest {
 	}
 
 
-	@Test
-	void create() {
-		assert task instanceof SimulatorsCreateTask
-		assert task.simulatorControl instanceof SimulatorControl
+	def "create"() {
+		expect:
+		task instanceof SimulatorsCreateTask
+		task.simulatorControl instanceof SimulatorControl
 	}
 
-	@Test
-	void dependsOn() {
+	def "depends on"() {
+		when:
 		def dependsOn  = task.getDependsOn()
-		assert dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		then:
+		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
-	@Test
-	void run() {
+	def "run"() {
+		given:
+		SimulatorControl simulatorControl = Mock(SimulatorControl)
+		task.simulatorControl = simulatorControl
 
-		def mock = new MockFor(SimulatorControl)
-		mock.demand.deleteAll{}
-		mock.demand.createAll{}
-
-		task.simulatorControl = mock.proxyInstance()
-
-
+		when:
 		task.run()
 
-		mock.verify task.simulatorControl
-
-
+		then:
+		1 * simulatorControl.deleteAll()
+		1 * simulatorControl.createAll()
 	}
 }

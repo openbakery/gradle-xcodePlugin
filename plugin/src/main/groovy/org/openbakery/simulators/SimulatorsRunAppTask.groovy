@@ -13,7 +13,7 @@ class SimulatorsRunAppTask extends AbstractXcodeTask {
     setDescription("Install app on iOS Simulators")
     dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
     dependsOn(XcodePlugin.SIMULATORS_INSTALL_APP_TASK_NAME)
-    simulatorControl = new SimulatorControl(project)
+    simulatorControl = new SimulatorControl(project, this.commandRunner)
   }
 
   private File getInfoPlistFile(List<File> appBundles) {

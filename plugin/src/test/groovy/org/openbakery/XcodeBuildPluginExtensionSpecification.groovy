@@ -3,6 +3,8 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.simulators.SimulatorControl
+import org.openbakery.stubs.SimulatorControlStub
 import spock.lang.Specification
 
 /**
@@ -419,6 +421,48 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 		then:
 		thrown(IllegalStateException)
+
+	}
+
+
+
+	def "available destinations match simple single"() {
+		given:
+		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "7.0")
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "8.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
+
+		extension.destination = 'iPad Air'
+
+		when:
+		def destinations = extension.getAvailableDestinations()
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == "iPad Air"
+		destinations[0].os == "9.0"
+
+	}
+
+	def "available destinations match simple multiple"() {
+		given:
+		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "7.0")
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
+		extension.availableSimulators << createDestination("iPad", "iPad Air", "8.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 5s", "9.0")
+		extension.availableSimulators << createDestination("iPhone", "iPhone 6s", "9.0")
+
+		extension.destination = ['iPad Air', 'iPhone 4s']
+
+		when:
+		def destinations = extension.getAvailableDestinations()
+
+		then:
+		destinations.size() == 2
 
 	}
 

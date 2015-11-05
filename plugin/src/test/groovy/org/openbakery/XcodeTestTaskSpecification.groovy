@@ -327,8 +327,7 @@ class XcodeTestTaskSpecification extends Specification {
 		def expectedCommandList
 
 		given:
-		SimulatorControl simulatorControl = new SimulatorControl(project)
-		simulatorControl.commandRunner = commandRunner
+		SimulatorControl simulatorControl = new SimulatorControl(project, commandRunner)
 		xcodeTestTask.simulatorControl = simulatorControl
 
 		commandRunner.run("killall", "iOS Simulator") >>  { throw new CommandRunnerException("failed") }

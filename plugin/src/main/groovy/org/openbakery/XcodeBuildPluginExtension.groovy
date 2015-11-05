@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
+import org.openbakery.simulators.SimulatorControl
+import org.openbakery.simulators.SimulatorRuntime
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
@@ -128,6 +130,7 @@ class XcodeBuildPluginExtension {
 	CommandRunner commandRunner
 	VariableResolver variableResolver
 	PlistHelper plistHelper
+	SimulatorControl simulatorControl
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 
@@ -143,7 +146,7 @@ class XcodeBuildPluginExtension {
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(this.project, commandRunner)
-
+		simulatorControl = new SimulatorControl(this.project, commandRunner)
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -245,16 +248,27 @@ class XcodeBuildPluginExtension {
 		}
 
 		destinations << destination
+	}
 
-/*
-		if (isSimulatorBuild()) {
-			// filter only on simulator builds
-			destinations.addAll(findMatchingDestinations(destination))
-		} else {
-			destinations << destination
+	void setDestination(def destination) {
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
+
+		if (destination instanceof List) {
+
+			destination.each { singleDestination ->
+				this.destination {
+					name = singleDestination.toString()
+					os = runtime.version.toString()
+				}
+			}
+
+			return
 		}
 
-		*/
+		this.destination {
+			name = destination.toString()
+			os = runtime.version.toString()
+		}
 	}
 
 	boolean matches(String first, String second) {
@@ -571,4 +585,5 @@ class XcodeBuildPluginExtension {
 		}
 		return this.simulator
 	}
+
 }

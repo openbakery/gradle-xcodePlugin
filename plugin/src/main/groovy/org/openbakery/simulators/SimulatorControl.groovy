@@ -41,7 +41,7 @@ class SimulatorControl {
 
 	private static Logger logger = LoggerFactory.getLogger(SimulatorControl.class)
 
-	CommandRunner commandRunner = new CommandRunner()
+	CommandRunner commandRunner
 
 	String simctlCommand
 
@@ -56,8 +56,9 @@ class SimulatorControl {
 
 	Project project
 
-	public SimulatorControl(Project project) {
+	public SimulatorControl(Project project, CommandRunner commandRunner) {
 		this.project = project
+		this.commandRunner = commandRunner
 	}
 
 	void parse() {

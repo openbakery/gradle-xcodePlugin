@@ -30,8 +30,7 @@ class SimulatorControlSpecification extends Specification {
 
 		projectDir.mkdirs()
 
-		simulatorControl = new SimulatorControl(project)
-		simulatorControl.commandRunner = commandRunner
+		simulatorControl = new SimulatorControl(project, commandRunner)
 
 	}
 
