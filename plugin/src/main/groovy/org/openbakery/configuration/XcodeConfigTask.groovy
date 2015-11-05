@@ -47,17 +47,19 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		boolean isXcode5 = version.startsWith("Xcode 5");
 		logger.debug("isXcode5 {}", isXcode5);
 
-
+/*
 		if (isXcode5) {
 			createXcode5DeviceList()
 		} else {
 			createDeviceList()
 		}
+		*/
 
 		logger.debug("availableSimulators: {}", project.xcodebuild.availableSimulators)
 
 	}
 
+	/*
 	void createXcode5DeviceList() {
 
 		//logger.debug("xcodePath is {}", project.xcodebuild.xcodePath);
@@ -101,8 +103,9 @@ class XcodeConfigTask extends AbstractXcodeTask {
 			}
 		}
 	}
+	*/
 
-
+/*
 	void createDeviceList() {
 		String simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", "iphoneos", "-find", "simctl"]);
 		String simctlList = commandRunner.runWithResult([simctlCommand, "list"]);
@@ -138,6 +141,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		}
 	}
 
+
 	boolean hasNewerEquivalentDevice(File infoPlistFile) {
 		try {
 			commandRunner.runWithResult([
@@ -153,6 +157,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		}
 	}
 
-
+	*/
 
 }

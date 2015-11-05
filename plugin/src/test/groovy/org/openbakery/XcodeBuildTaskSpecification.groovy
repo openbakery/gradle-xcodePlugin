@@ -2,6 +2,7 @@ package org.openbakery
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.stubs.SimulatorControlStub
 import spock.lang.Specification
 
 
@@ -38,10 +39,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
-
-
-		project.xcodebuild.availableSimulators << createDestination("iPhone", "iPhone 4s")
-		project.xcodebuild.availableSimulators << createDestination("iPad", "iPad Air")
+		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 
 	}
@@ -131,7 +129,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
 														 "SYMROOT=" + new File("build/mySym").absolutePath,
 														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
-														 "-destination", "platform=iphonesimulator,id=iPad Air"
+														 "-destination", "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 			]
 		}
 		commandList == expectedCommandList
@@ -157,7 +155,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 														]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 		}
 		commandList == expectedCommandList
 
@@ -243,7 +241,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "ARCHS=myarch"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 
 		}
 		commandList == expectedCommandList
@@ -302,7 +300,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", "Debug",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 
 		}
 		commandList == expectedCommandList
@@ -329,7 +327,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 		}
 		commandList == expectedCommandList
 
@@ -356,7 +354,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 		}
 		commandList == expectedCommandList
 	}
@@ -385,7 +383,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "ARCHS=i386"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 		}
 		commandList == expectedCommandList
 	}
@@ -414,7 +412,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iphonesimulator,id=iPad Air"
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,name=iPad Air 2,OS=9.0"
 		}
 		commandList == expectedCommandList
 	}

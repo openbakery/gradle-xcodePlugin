@@ -6,10 +6,10 @@ import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.CommandRunnerException
 
-class SimulatorsInstallAppTask extends DefaultTask {
+class SimulatorInstallAppTask extends DefaultTask {
   SimulatorControl simulatorControl
 
-  public SimulatorsInstallAppTask() {
+  public SimulatorInstallAppTask() {
     setDescription("Install app on iOS Simulators")
     dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
     dependsOn(XcodePlugin.SIMULATORS_START_TASK_NAME)
@@ -19,6 +19,7 @@ class SimulatorsInstallAppTask extends DefaultTask {
   @TaskAction
   void run() {
     try {
+      logger.lifecycle("Installing " + project.xcodebuild.applicationBundle.absolutePath);
       simulatorControl.simctl("install", "booted", project.xcodebuild.applicationBundle.absolutePath)
     } catch (CommandRunnerException ex) {
       println "Unable to install" + project.xcodebuild.applicationBundle.absolutePath

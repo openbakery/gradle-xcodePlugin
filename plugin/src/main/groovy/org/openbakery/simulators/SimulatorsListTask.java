@@ -44,7 +44,7 @@ public class SimulatorsListTask extends DefaultTask {
 
 		XcodeBuildPluginExtension xcodebuild = getProject().getExtensions().findByType(XcodeBuildPluginExtension.class);
 
-		List<Destination> availableSimulators = xcodebuild.getAvailableSimulators();
+		List<Destination> availableSimulators = xcodebuild.getAllDestinations();
 
 		Collections.sort(availableSimulators, new Comparator<Destination>() {
 			@Override

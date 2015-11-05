@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
+import org.openbakery.stubs.SimulatorControlStub
 import spock.lang.Specification
 
 /**
@@ -23,16 +24,6 @@ class XcodeTestTaskSpecification extends Specification {
 	Destination destinationPhone
 
 
-	Destination createDestination(String name, String id) {
-		Destination destination = new Destination()
-		destination.platform = XcodePlugin.SDK_IPHONESIMULATOR
-		destination.name = name
-		destination.arch = "i386"
-		destination.id = id
-		destination.os = "iOS"
-		return destination
-	}
-
 	def setup() {
 
 		project = ProjectBuilder.builder().build()
@@ -46,16 +37,14 @@ class XcodeTestTaskSpecification extends Specification {
 		xcodeTestTask.commandRunner = commandRunner
 		xcodeTestTask.simulatorControl = simulatorControl
 
-		destinationPad = createDestination("iPad", "iPad Air")
-		destinationPhone = createDestination("iPhone", "iPhone 4s")
-		project.xcodebuild.availableSimulators << destinationPad
-		project.xcodebuild.availableSimulators << destinationPhone
+		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+
 
 		project.xcodebuild.destination {
-			name = destinationPad.name
+			name = "iPad 2"
 		}
 		project.xcodebuild.destination {
-			name = destinationPhone.name
+			name = "iPhone 4s"
 		}
 
 		outputDirectory = new File(project.buildDir, "test");
@@ -162,7 +151,8 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse with no result"() {
 		def allResults = [:]
-		allResults.put(destinationPad, null)
+		def destination = project.xcodebuild.getAllDestinations()[0]
+		allResults.put(destination, null)
 		xcodeTestTask.allResults = allResults
 		when:
 		xcodeTestTask.store()
@@ -313,8 +303,8 @@ class XcodeTestTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList << "-destination" << "platform=iphonesimulator,id=iPad Air"
-			expectedCommandList << "-destination" << "platform=iphonesimulator,id=iPhone 4s"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPad 2,OS=9.0"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPhone 4s,OS=9.0"
 			expectedCommandList << "test"
 		}
 		commandList == expectedCommandList
@@ -354,8 +344,8 @@ class XcodeTestTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList << "-destination" << "platform=iphonesimulator,id=iPad Air"
-			expectedCommandList << "-destination" << "platform=iphonesimulator,id=iPhone 4s"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPad 2,OS=9.0"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPhone 4s,OS=9.0"
 			expectedCommandList << "test"
 		}
 		commandList == expectedCommandList

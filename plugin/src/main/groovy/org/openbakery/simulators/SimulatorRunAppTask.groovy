@@ -6,10 +6,10 @@ import org.openbakery.XcodePlugin
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 
-class SimulatorsRunAppTask extends AbstractXcodeTask {
+class SimulatorRunAppTask extends AbstractXcodeTask {
   SimulatorControl simulatorControl
 
-  public SimulatorsRunAppTask() {
+  public SimulatorRunAppTask() {
     setDescription("Install app on iOS Simulators")
     dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
     dependsOn(XcodePlugin.SIMULATORS_INSTALL_APP_TASK_NAME)

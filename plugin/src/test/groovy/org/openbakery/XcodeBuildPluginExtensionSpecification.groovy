@@ -30,6 +30,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunner
 		extension.infoPlist = "Info.plist";
+		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 
 		xcodebuild6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
@@ -371,24 +372,18 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	}
 
 	def "available destinations default"() {
-		given:
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
 
 
 		when:
 		def destinations = extension.getAvailableDestinations()
 
 		then:
-		destinations.size() == 2
+		destinations.size() == 11
 
 	}
 
 
 	def "available destinations match"() {
-		given:
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
 
 		extension.destination {
 			platform = 'iOS Simulator'
@@ -407,8 +402,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "available destinations not match"() {
 		given:
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
 		extension.destination {
 			platform = 'iOS Simulator'
 			name = 'iPad Air'
@@ -428,12 +421,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "available destinations match simple single"() {
 		given:
-		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "7.0")
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "8.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
-
 		extension.destination = 'iPad Air'
 
 		when:
@@ -448,13 +435,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "available destinations match simple multiple"() {
 		given:
-		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "7.0")
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "9.0")
-		extension.availableSimulators << createDestination("iPad", "iPad Air", "8.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 4s", "9.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 5s", "9.0")
-		extension.availableSimulators << createDestination("iPhone", "iPhone 6s", "9.0")
 
 		extension.destination = ['iPad Air', 'iPhone 4s']
 

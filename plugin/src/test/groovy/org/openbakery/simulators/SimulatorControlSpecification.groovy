@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.Version
 import spock.lang.Specification
@@ -381,6 +382,58 @@ class SimulatorControlSpecification extends Specification {
 
 	}
 
+
+	def "get device for destination"() {
+		given:
+		mockXcode7()
+		Destination destination = new Destination()
+		destination.name = "iPhone 4s"
+		destination.platform = 'iOS Simulator'
+		destination.os = '9.0'
+
+		when:
+		SimulatorDevice device = simulatorControl.getDevice(destination)
+
+		then:
+		device.name == "iPhone 4s"
+		device.identifier == "5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+	}
+
+	def "get 8.4 device for destination xcode 7.1"() {
+		given:
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		Destination destination = new Destination()
+		destination.name = "iPad 2"
+		destination.platform = 'iOS Simulator'
+		destination.os = '8.4'
+
+		when:
+		SimulatorDevice device = simulatorControl.getDevice(destination)
+
+		then:
+		device.name == "iPad 2"
+		device.identifier == "E5089648-1CE4-40D5-8295-8E026BDDFF52"
+	}
+
+	def "get 9.1 device for destination xcode 7.1"() {
+		given:
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		Destination destination = new Destination()
+		destination.name = "iPad 2"
+		destination.platform = 'iOS Simulator'
+		destination.os = '9.1'
+
+		when:
+		SimulatorDevice device = simulatorControl.getDevice(destination)
+
+		then:
+		device.name == "iPad 2"
+		device.identifier == "D72F7CC6-8426-4E0A-A234-34747B1F30DD"
+	}
 }
 
 

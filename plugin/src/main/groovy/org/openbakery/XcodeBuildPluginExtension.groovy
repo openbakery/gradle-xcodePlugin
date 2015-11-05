@@ -21,6 +21,7 @@ import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
 import org.openbakery.simulators.SimulatorControl
+import org.openbakery.simulators.SimulatorDevice
 import org.openbakery.simulators.SimulatorRuntime
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
@@ -122,7 +123,6 @@ class XcodeBuildPluginExtension {
 	String ipaFileName = null
 
 	Devices devices = Devices.UNIVERSAL;
-	List<Destination> availableSimulators = []
 
 	Set<Destination> destinations = null
 
@@ -298,7 +298,7 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("finding matching destination for: {}", destination)
 
-		for (Destination device in availableSimulators) {
+		for (Destination device in getAllDestinations()) {
 			if (!matches(destination.platform, device.platform)) {
 				//logger.debug("{} does not match {}", device.platform, destination.platform);
 				continue
@@ -362,17 +362,17 @@ class XcodeBuildPluginExtension {
 
 				switch (this.devices) {
 					case Devices.PHONE:
-						availableDestinations = availableSimulators.findAll {
+						availableDestinations = getAllDestinations().findAll {
 							d -> d.name.contains("iPhone");
 						};
 						break;
 					case Devices.PAD:
-						availableDestinations = availableSimulators.findAll {
+						availableDestinations = getAllDestinations().findAll {
 							d -> d.name.contains("iPad");
 						};
 						break;
 					default:
-						availableDestinations.addAll(availableSimulators);
+						availableDestinations.addAll(getAllDestinations());
 						break;
 				}
 			}
@@ -586,4 +586,23 @@ class XcodeBuildPluginExtension {
 		return this.simulator
 	}
 
+	List<Destination> getAllDestinations() {
+		// returns all iOS destinations
+		def allDestinations = []
+
+		simulatorControl.getDevices().each { runtime, deviceList ->
+
+			if (runtime.type == Type.iOS) {
+				deviceList.each() { device ->
+					Destination destination = new Destination();
+					destination.platform = 'iOS Simulator'
+					destination.name = device.name
+					destination.os = runtime.version.toString()
+					allDestinations << destination
+				}
+			}
+
+		}
+		return allDestinations;
+	}
 }

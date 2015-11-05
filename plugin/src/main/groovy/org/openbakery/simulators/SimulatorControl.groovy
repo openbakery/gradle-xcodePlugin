@@ -3,7 +3,9 @@ package org.openbakery.simulators
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
+import org.openbakery.Destination
 import org.openbakery.Type
+import org.openbakery.Version
 import org.openbakery.XcodePlugin
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -217,6 +219,29 @@ class SimulatorControl {
 		null
 	}
 
+
+	SimulatorRuntime getRuntime(Destination destination) {
+		for (SimulatorRuntime runtime in getRuntimes()) {
+			if (runtime.type == Type.iOS && runtime.version.equals(new Version(destination.os))) {
+				return runtime;
+			}
+		}
+		return null;
+	}
+
+	SimulatorDevice getDevice(Destination destination) {
+		SimulatorRuntime runtime = getRuntime(destination);
+		if (runtime != null) {
+
+			for (SimulatorDevice device in getDevices(runtime)) {
+				if (device.name.equalsIgnoreCase(destination.name)) {
+					return device
+				}
+			}
+		}
+		return null
+	}
+
 	SimulatorDevice getDeviceWithIdentifier(String identifier) {
 		for (Map.Entry<SimulatorRuntime, List<SimulatorDevice>> entry in devices.entrySet()) {
 			for (SimulatorDevice device in entry.value) {
@@ -231,6 +256,10 @@ class SimulatorControl {
 	List <SimulatorDevice> getDevices(SimulatorRuntime runtime) {
 		return getDevices().get(runtime)
 	}
+
+
+
+
 
 	HashMap<SimulatorRuntime, List<SimulatorDevice>> getDevices() {
 		if (devices == null) {

@@ -3,13 +3,14 @@ package org.openbakery.simulators
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.CommandRunner
+import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
 
-class SimulatorsStartTask extends DefaultTask {
+class SimulatorStartTask extends DefaultTask {
 	SimulatorControl simulatorControl
 
-	public SimulatorsStartTask() {
+	public SimulatorStartTask() {
 		setDescription("Start iOS Simulators")
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		simulatorControl = new SimulatorControl(project, new CommandRunner())
@@ -18,6 +19,7 @@ class SimulatorsStartTask extends DefaultTask {
 	@TaskAction
 	void run() {
 
+		/*
 		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
 
 		if (runtime == null) {
@@ -31,6 +33,10 @@ class SimulatorsStartTask extends DefaultTask {
 		}
 
 		def device = deviceList.get(0)
+		*/
+		Destination destination = project.xcodebuild.availableDestinations.first()
+
+		SimulatorDevice device = simulatorControl.getDevice(destination)
 
 		simulatorControl.killAll()
 		simulatorControl.runDevice(device)

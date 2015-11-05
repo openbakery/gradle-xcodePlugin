@@ -9,6 +9,8 @@ import org.openbakery.XcodePlugin
 import org.openbakery.stubs.ProgressLoggerStub
 import org.junit.Test
 import org.junit.Before
+import org.openbakery.stubs.SimulatorControlStub
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -47,29 +49,13 @@ class TestBuildOutputAppenderTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		Destination destinationPad = new Destination()
-		destinationPad.platform = XcodePlugin.SDK_IPHONESIMULATOR
-		destinationPad.name = "iPad"
-		destinationPad.arch = "i386"
-		destinationPad.id = "iPad Air"
-		destinationPad.os = "iOS"
-
-		Destination destinationPhone = new Destination()
-		destinationPhone.platform = XcodePlugin.SDK_IPHONESIMULATOR
-		destinationPhone.name = "iPhone"
-		destinationPhone.arch = "i386"
-		destinationPhone.id = "iPhone 4s"
-		destinationPhone.os = "iOS"
-
-
-		project.xcodebuild.availableSimulators << destinationPad
-		project.xcodebuild.availableSimulators << destinationPhone
+		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 		project.xcodebuild.destination {
-			name = "iPad"
+			name = "iPad 2"
 		}
 		project.xcodebuild.destination {
-			name = "iPhone"
+			name = "iPhone 4s"
 		}
 
 	}
@@ -96,7 +82,7 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n"
+		String expected = "\nRun tests for: iPad 2/iOS Simulator/9.0\n"
 		assertThat(output.toString(), is(equalTo(expected)))
 	}
 
@@ -114,9 +100,9 @@ class TestBuildOutputAppenderTest {
 		for (String line in successTestOutput.split("\n")) {
 				appender.append(line)
 		}
-		String expected = "\nRun tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS\n\n\n"
+		String expected = "\nRun tests for: iPad 2/iOS Simulator\n\n\n"
 		String outputString = output.toString()
-		assertThat(outputString, containsString("Run tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
+		assertThat(outputString, containsString("Run tests for: iPad 2/iOS Simulator"))
 		assertThat(outputString, containsString("      OK -[DTActionPanelTest_iPhone testCollapsed] - (0.005 seconds)"))
 	}
 
@@ -151,7 +137,7 @@ class TestBuildOutputAppenderTest {
 		assertThat(progress.progress, hasItem("1 tests completed, running 'TestGoogleWebStreetViewProvider'"))
 		assertThat(progress.progress, hasItem("4 tests completed, running 'TestGoogleWebStreetViewProvider'"))
 		assertThat(progress.progress, hasItem("5 tests completed, running 'TestMapFeatureProviderUtil'"))
-		assertThat(progress.progress, hasItem("Tests finished: iPad/iphonesimulator/iOS"))
+		assertThat(progress.progress, hasItem("Tests finished: iPhone 4s/iOS Simulator/9.0"))
 
 		assertThat(output.toString(), containsString("30 tests completed"))
 		int matches = StringUtils.countMatches(output.toString(), "30 tests completed");
@@ -191,7 +177,7 @@ class TestBuildOutputAppenderTest {
 		//assert output.toString().equals(expected) : "Expected '" + expected + "' but was: " + output.toString()
 		String outputString = output.toString()
 
-		assertThat(outputString, containsString("Run tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
+		assertThat(outputString, containsString("Run tests for: iPad 2/iOS Simulator"))
 		assertThat(outputString, containsString("FAILED -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] - (0.026 seconds)"))
 		assertThat(outputString, containsString("/Users/dummy/poject/UnitTests/iPhone/DTPopoverController/DTActionPanelTest_iPhone.m:85: error: -[DTActionPanelTest_iPhone testActionPanelSizeDidChangeDelegate] : Expected 2 matching invocations, but received 0\n"))
 	}
@@ -240,8 +226,8 @@ class TestBuildOutputAppenderTest {
 		for (String line : simctlOutput.split("\n")) {
 			appender.append(line);
 		}
-		assertThat(output.toString(), containsString("Run tests for: iPad/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
-		assertThat(output.toString(), containsString("Run tests for: iPhone/" + XcodePlugin.SDK_IPHONESIMULATOR + "/iOS"))
+		assertThat(output.toString(), containsString("Run tests for: iPad 2/iOS Simulator"))
+		assertThat(output.toString(), containsString("Run tests for: iPhone 4s/iOS Simulator"))
 	}
 
 

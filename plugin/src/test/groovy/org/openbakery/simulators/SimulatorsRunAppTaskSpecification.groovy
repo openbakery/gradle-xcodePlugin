@@ -1,24 +1,18 @@
 package org.openbakery.simulators
 
-import groovy.mock.interceptor.MockFor
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.PlistHelperStub
-import org.junit.Before
-import org.junit.Test
 import spock.lang.Specification
-
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.*
 
 /**
  * Created by rene on 01.09.15.
  */
 class SimulatorsRunAppTaskSpecification extends Specification {
 
-	SimulatorsRunAppTask task
+	SimulatorRunAppTask task
 	Project project
 	File projectDir
 
@@ -36,7 +30,7 @@ class SimulatorsRunAppTaskSpecification extends Specification {
 
 	def create() {
 		expect:
-		task instanceof SimulatorsRunAppTask
+		task instanceof SimulatorRunAppTask
 		task.simulatorControl instanceof SimulatorControl
 	}
 

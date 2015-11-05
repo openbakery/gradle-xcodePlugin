@@ -85,4 +85,12 @@ class Version implements Comparable<Version> {
 
 		return builder.toString();
 	}
+
+	@Override
+	boolean equals(Object other) {
+		if (other instanceof Version) {
+			return this.compareTo(other) == 0
+		}
+		return false
+	}
 }

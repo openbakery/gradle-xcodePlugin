@@ -3,8 +3,10 @@ package org.openbakery.simulators
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
+import org.openbakery.stubs.SimulatorControlStub
 import spock.lang.Specification
 
 /**
@@ -15,14 +17,8 @@ class SimulatorStartTaskSpecification extends Specification {
 	Project project
 	File projectDir
 	SimulatorControl simulatorControl = Mock(SimulatorControl)
-	SimulatorsStartTask task
+	SimulatorStartTask task
 
-	def runtimes = [
-					new SimulatorRuntime("iOS 8.4 (8.4 - 12H141) (com.apple.CoreSimulator.SimRuntime.iOS-8-4)"),
-					new SimulatorRuntime("iOS 9.1 (9.1 - 13B5110e) (com.apple.CoreSimulator.SimRuntime.iOS-9-1)"),
-					new SimulatorRuntime("tvOS 9.0 (9.0 - 13T5347l) (com.apple.CoreSimulator.SimRuntime.tvOS-9-0)"),
-					new SimulatorRuntime("watchOS 2.0 (2.0 - 13S343) (com.apple.CoreSimulator.SimRuntime.watchOS-2-0)")
-	]
 
 	def devices9_1 = [
 					new SimulatorDevice("iPhone 4s (8C8C43D3-B53F-4091-8D7C-6A4B38051389) (Shutdown)"),
@@ -54,6 +50,8 @@ class SimulatorStartTaskSpecification extends Specification {
 		task = project.tasks.findByName(XcodePlugin.SIMULATORS_START_TASK_NAME)
 		task.simulatorControl = simulatorControl
 
+
+
 	}
 
 	def cleanup() {
@@ -63,16 +61,14 @@ class SimulatorStartTaskSpecification extends Specification {
 
 	def "create"() {
 		expect:
-		task instanceof SimulatorsStartTask
+		task instanceof SimulatorStartTask
 		task.simulatorControl instanceof SimulatorControl
 	}
 
 
 	def "run"() {
 		given:
-		simulatorControl.getMostRecentRuntime(Type.iOS) >> runtimes[1]
-		simulatorControl.getDevices(runtimes[1]) >> devices9_1
-
+		simulatorControl.getDevice(_) >> devices9_1[0]
 
 		when:
 		task.run()
@@ -85,27 +81,24 @@ class SimulatorStartTaskSpecification extends Specification {
 
 	}
 
-	def "has no runtime"() {
+
+	def "run with specified device"() {
 		given:
-		simulatorControl.getMostRecentRuntime(Type.iOS) >> null
+		def destination
+		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
+		project.xcodebuild.destination = 'iPhone 6s'
 
 		when:
 		task.run()
 
 		then:
-		thrown(IllegalStateException)
-	}
-
-	def "has no device"() {
-		given:
-		simulatorControl.getMostRecentRuntime(Type.iOS) >> runtimes[1]
-		simulatorControl.getDevices(_) >> null
-
-		when:
-		task.run()
-
-		then:
-		thrown(IllegalStateException)
+		1 *simulatorControl.getDevice((Destination)_) >> {	arguments ->
+			destination = arguments[0]
+			return devices9_1[0]
+		}
+		destination != null
+		destination.name == 'iPhone 6s'
 
 	}
+
 }
