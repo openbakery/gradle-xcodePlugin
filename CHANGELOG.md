@@ -1,5 +1,8 @@
 # 0.12.3 (TBA)
 
+Changes
+* Removed Xcode 5 support
+
 Bugfixes
 * simulatorStart works now
 * simulatorRunApp starts now the configured app in the simulator

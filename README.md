@@ -33,7 +33,7 @@ Here a table of the values for the migration to 0.12:
 
 ## Requirements
 
-* Xcode 5 or greater
+* Xcode 6 or greater
 * [Gradle](http://gradle.org) 2.0 or greater
 * Java 1.6 or greater
 
