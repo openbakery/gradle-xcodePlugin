@@ -149,6 +149,14 @@ class XcodeTestTaskSpecification extends Specification {
 	*/
 
 
+	def "depends on"() {
+		when:
+		def dependsOn  = xcodeTestTask.getDependsOn()
+		then:
+		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		dependsOn.contains(XcodePlugin.SIMULATORS_KILL_TASK_NAME)
+	}
+
 	def "parse with no result"() {
 		def allResults = [:]
 		def destination = project.xcodebuild.getAllDestinations()[0]
@@ -293,7 +301,6 @@ class XcodeTestTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-		1 * simulatorControl.killAll()
 
 		interaction {
 			expectedCommandList = ['script', '-q', '/dev/null',
@@ -311,46 +318,6 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
-
-	def "test command for iOS kill failed"() {
-		def commandList
-		def expectedCommandList
-
-		given:
-		SimulatorControl simulatorControl = new SimulatorControl(project, commandRunner)
-		xcodeTestTask.simulatorControl = simulatorControl
-
-		commandRunner.run("killall", "iOS Simulator") >>  { throw new CommandRunnerException("failed") }
-		commandRunner.run("killall", "Simulator")
-
-
-		project.xcodebuild.type = Type.iOS
-		project.xcodebuild.target = 'Test';
-		project.xcodebuild.scheme = 'myscheme'
-		project.xcodebuild.workspace = 'myworkspace'
-
-		when:
-		xcodeTestTask.test()
-
-		then:
-		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-
-
-		interaction {
-			expectedCommandList = ['script', '-q', '/dev/null',
-														 "xcodebuild",
-														 "-scheme", 'myscheme',
-														 "-workspace", "myworkspace",
-														 "-configuration", 'Debug',
-			]
-			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPad 2,OS=9.0"
-			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPhone 4s,OS=9.0"
-			expectedCommandList << "test"
-		}
-		commandList == expectedCommandList
-
-	}
 
 
 }

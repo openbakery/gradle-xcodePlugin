@@ -90,7 +90,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	XcodeTestTask() {
 		super()
 		dependsOn(
-						XcodePlugin.XCODE_CONFIG_TASK_NAME,
+				XcodePlugin.XCODE_CONFIG_TASK_NAME,
+				XcodePlugin.SIMULATORS_KILL_TASK_NAME
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
@@ -106,11 +107,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		outputDirectory = new File(project.getBuildDir(), "test");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
-		}
-
-
-		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			simulatorControl.killAll()
 		}
 
 		def commandList = createCommandList()
