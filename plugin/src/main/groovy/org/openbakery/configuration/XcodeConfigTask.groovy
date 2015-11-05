@@ -55,7 +55,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		}
 		*/
 
-		logger.debug("availableSimulators: {}", project.xcodebuild.availableSimulators)
+		logger.debug("all destinations: {}", project.xcodebuild.getAllDestinations())
 
 	}
 
