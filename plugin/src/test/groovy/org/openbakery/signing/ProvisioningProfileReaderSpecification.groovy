@@ -11,6 +11,7 @@ import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
 import org.junit.Before
 import org.junit.Test
+import spock.lang.Specification
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
@@ -19,7 +20,7 @@ import static org.hamcrest.Matchers.*
 /**
  * Created by Stefan Gugarel on 05/02/15.
  */
-class ProvisioningProfileReaderTest {
+class ProvisioningProfileReaderSpecification extends Specification {
 
 	Project project
 
@@ -29,9 +30,7 @@ class ProvisioningProfileReaderTest {
 	File buildOutputDirectory
 	File appDirectory
 
-	@Before
-	void setup() {
-
+	def setup() {
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
@@ -55,93 +54,101 @@ class ProvisioningProfileReaderTest {
 		FileUtils.copyFile(infoPlist, new File(appDirectory, "" + "Contents/Info.plist"))
 	}
 
-	@After
-	void cleanup() {
+	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
-	@Test
-	void readUUIDFromFile() {
+	def "read UUID from file"() {
+		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
-		assertThat(reader.getUUID(), is(equalTo("FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")))
+
+		then:
+		reader.getUUID() == "FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF"
 	}
 
-	@Test
-	void readApplicationIdentifierPrefix() {
+	def "read application identifier prefix"() {
+		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
-		assertThat(reader.getApplicationIdentifierPrefix(), is(equalTo("AAAAAAAAAAA")))
-	}
-
-
-	@Test
-	void readApplicationIdentifier() {
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
-		assertThat(reader.getApplicationIdentifier(), is(equalTo("org.openbakery.Example")))
+		then:
+		reader.getApplicationIdentifierPrefix().equals("AAAAAAAAAAA")
 	}
 
 
-	@Test(expected = IllegalArgumentException.class)
-	void readProfileHasExpired() {
+	def "read application identifier"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
+		then:
+		reader.getApplicationIdentifier() == "org.openbakery.Example"
+	}
+
+
+	def "profile has expired" () {
+		when:
 		new ProvisioningProfileReader("src/test/Resource/expired.mobileprovision", project, new CommandRunner())
+
+		then:
+		thrown(IllegalArgumentException.class)
 	}
 
-	// OSX Tests
+	def "read Mac Provisioning Profile"() {
 
-	@Test
-	void readMacProvisioningProfile() {
-
+		given:
 		File wildcardMacProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 
-		assert wildcardMacProfile.exists()
-
+		when:
 		ProvisioningProfileReader provisioningProfileReader = new ProvisioningProfileReader(wildcardMacProfile, project, new CommandRunner())
 
 		def applicationIdentifier = provisioningProfileReader.getApplicationIdentifier()
+
+		then:
 
 		assertThat(applicationIdentifier, is(equalTo("*")))
 
 	}
 
-	@Test
-	void extractEntitlements() {
+	def "extract Entitlements"() {
+		given:
+		String expectedContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+				"<plist version=\"1.0\">\n" +
+				"<dict>\n" +
+				"\t<key>com.apple.application-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<key>com.apple.developer.aps-environment</key>\n" +
+				"\t<string>development</string>\n" +
+				"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.icloud-container-environment</key>\n" +
+				"\t<array>\n" +
+				"\t\t<string>Development</string>\n" +
+				"\t\t<string>Production</string>\n" +
+				"\t</array>\n" +
+				"\t<key>com.apple.developer.icloud-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.icloud-services</key>\n" +
+				"\t<string>*</string>\n" +
+				"\t<key>com.apple.developer.team-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45</string>\n" +
+				"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<key>keychain-access-groups</key>\n" +
+				"\t<array>\n" +
+				"\t\t<string>Z7L2YCUH45.*</string>\n" +
+				"\t</array>\n" +
+				"</dict>\n" +
+				"</plist>\n"
 
+		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
 
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
 		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example")
 
-		assertThat(entitlementsFile.exists(), is(true));
-
-		String expectedContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-						"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-						"<plist version=\"1.0\">\n" +
-						"<dict>\n" +
-						"\t<key>com.apple.application-identifier</key>\n" +
-						"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
-						"\t<key>com.apple.developer.aps-environment</key>\n" +
-						"\t<string>development</string>\n" +
-						"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
-						"\t<array/>\n" +
-						"\t<key>com.apple.developer.icloud-container-environment</key>\n" +
-						"\t<array>\n" +
-						"\t\t<string>Development</string>\n" +
-						"\t\t<string>Production</string>\n" +
-						"\t</array>\n" +
-						"\t<key>com.apple.developer.icloud-container-identifiers</key>\n" +
-						"\t<array/>\n" +
-						"\t<key>com.apple.developer.icloud-services</key>\n" +
-						"\t<string>*</string>\n" +
-						"\t<key>com.apple.developer.team-identifier</key>\n" +
-						"\t<string>Z7L2YCUH45</string>\n" +
-						"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
-						"\t<array/>\n" +
-						"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
-						"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
-						"</dict>\n" +
-						"</plist>\n"
-
-		assertThat(entitlementsFile.text, is(equalTo(expectedContents)));
-
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text == expectedContents
 	}
 }

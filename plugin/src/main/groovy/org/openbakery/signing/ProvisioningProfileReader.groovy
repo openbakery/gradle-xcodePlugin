@@ -171,7 +171,7 @@ class ProvisioningProfileReader {
 
 		// the keychain-access-groups were removed from the entitlements on the xcode export step
 		// therefor I also remove this here. Maybe this is wrong, but I hope the future will clarify this.
-		plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
+		//plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 
 
 

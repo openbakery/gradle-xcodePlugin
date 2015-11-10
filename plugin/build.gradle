@@ -73,7 +73,7 @@ dependencies {
 	testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 	testCompile 'cglib:cglib-nodep:3.1'
-  deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
+  deployerJars "org.apache.maven.wagon:wagon-ssh:2.10"
 	
 }
 

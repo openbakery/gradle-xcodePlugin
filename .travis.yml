@@ -1,0 +1,8 @@
+language: objective-c
+
+sudo: false
+
+before_script: cd plugin
+
+script:
+    - ./gradlew test 
