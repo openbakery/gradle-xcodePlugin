@@ -68,7 +68,6 @@ dependencies {
 	compile 'org.pegdown:pegdown:1.5.+'
 	compile 'ch.qos.logback:logback-core:1.1.+'
 	testCompile 'junit:junit:4.12'
-	testCompile 'org.gmock:gmock:0.8.+'
 	testCompile 'org.hamcrest:hamcrest-all:1.3'
 	testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
