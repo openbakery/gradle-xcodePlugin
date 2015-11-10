@@ -1,6 +1,8 @@
 gradle-xcodePlugin
 ==================
 
+![Build Status](https://travis-ci.org/openbakery/gradle-xcodePlugin.svg?branch=master)
+
 The gradle xcode plugin (gxp) makes it easier to build Xcode projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
 
 The gxp uses the Apple command line tools (like xcodebuild) to perform the build.
