@@ -1,0 +1,8 @@
+language: java
+
+env:
+    global:
+        - CI_HOME=`pwd`/plugin
+
+script:
+    - ./gradlew test 
