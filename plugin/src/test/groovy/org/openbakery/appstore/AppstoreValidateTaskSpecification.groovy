@@ -1,35 +1,27 @@
 package org.openbakery.appstore
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
-import static org.hamcrest.Matchers.anything
 
 /**
  * Created by rene on 08.01.15.
  */
-class AppstoreValidateTaskTest {
+class AppstoreValidateTaskSpecification extends Specification {
 
 
 	Project project
 	AppstoreValidateTask task
 	File infoPlist
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 	File ipaBundle;
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -40,7 +32,7 @@ class AppstoreValidateTaskTest {
 
 		task = project.getTasks().getByPath(XcodePlugin.APPSTORE_VALIDATE_TASK_NAME)
 
-		task.setProperty("commandRunner", commandRunnerMock)
+		task.commandRunner = commandRunner
 
 
 		ipaBundle = new File(project.buildDir, "package/Test.ipa")
@@ -48,52 +40,53 @@ class AppstoreValidateTaskTest {
 
 	}
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
-	@Test(expected = IllegalStateException.class)
-	void ipaMissing() {
+	def "ipa missing"() {
+		given:
 		FileUtils.deleteDirectory(project.projectDir)
 
+		when:
 		task.validate()
 
+		then:
+		thrown(IllegalStateException)
 	}
 
-	@Test
-	void testValidate() {
 
+	def "test validate"() {
+		given:
 		project.appstore.username = "me@example.com"
 		project.appstore.password = "1234"
 
 		def command = "/Application/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 
-		List<String> commandList
-		commandList?.clear()
-		commandList = [command, "--validate-app", "--username", "me@example.com", "--password", "1234", "--file", ipaBundle.absolutePath]
-		commandRunnerMock.run(commandList, anything()).times(1)
+		when:
+		task.validate()
 
-
-		mockControl.play {
-			task.validate()
-		}
+		then:
+		1 * commandRunner.run([command, "--validate-app", "--username", "me@example.com", "--password", "1234", "--file", ipaBundle.absolutePath], _)
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	void testPasswordMissing() {
+
+	def "password missing"() {
+		given:
 		project.appstore.username = "me@example.com"
 
-		mockControl.play {
-			task.validate()
-		}
+		when:
+		task.validate()
+
+		then:
+		thrown(IllegalArgumentException.class)
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	void testUsernameMissing() {
+	def "username missing"() {
+		when:
+		task.validate()
 
-		mockControl.play {
-			task.validate()
-		}
+		then:
+		thrown(IllegalArgumentException.class)
 	}
 }
