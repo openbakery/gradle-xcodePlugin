@@ -1,36 +1,29 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
 
 /**
  * Created by rene on 13.11.14.
  */
-class ProvisioningInstallTaskTest {
+class ProvisioningInstallTaskSpecification extends Specification {
 
 	Project project
 	ProvisioningInstallTask provisioningInstallTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	File provisionLibraryPath
 	File projectDir
 
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -43,53 +36,41 @@ class ProvisioningInstallTaskTest {
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
-		provisioningInstallTask.setProperty("commandRunner", commandRunnerMock)
+		provisioningInstallTask.commandRunner = commandRunner
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 	}
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
 
-	void mockLinking(String name) {
-
-
-		File source = new File(projectDir, "build/provision/" + name)
-		File destination = new File(provisionLibraryPath, name)
-
-		def commandList = ["/bin/ln", "-s", source.absolutePath , destination.absolutePath]
-		commandRunnerMock.run(commandList)
-
-	}
-
-	@Test
-	void singleProvisioningProfile() {
+	def "single ProvisioningProfile"() {
 
 		File testMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunnerMock)
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunner)
 		String uuid = provisioningProfileIdReader.getUUID()
 		String name =  "gradle-" + uuid + ".mobileprovision";
 
-		mockLinking(name)
-
-		mockControl.play {
-			provisioningInstallTask.install()
-		}
-
+		File source = new File(projectDir, "build/provision/" + name)
+		File destination = new File(provisionLibraryPath, name)
 
 		File sourceFile = new File(projectDir, "build/provision/" + name)
-		assert sourceFile.exists()
+
+		when:
+		provisioningInstallTask.install()
+
+		then:
+		sourceFile.exists()
+		1 * commandRunner.run(["/bin/ln", "-s", source.absolutePath , destination.absolutePath])
 
 	}
 
-	@Test
-	void multipleProvisioningProfiles() {
+	def "multiple ProvisioningProfiles"() {
 
 		File firstMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
@@ -98,19 +79,24 @@ class ProvisioningInstallTaskTest {
 		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".mobileprovision";
 		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".mobileprovision";
 
-		mockLinking(firstName)
-		mockLinking(secondName)
+		File firstSource = new File(projectDir, "build/provision/" + firstName)
+		File firstDestination = new File(provisionLibraryPath, firstName)
 
-		mockControl.play {
-			provisioningInstallTask.install()
-		}
-
+		File secondSource = new File(projectDir, "build/provision/" + secondName)
+		File secondDestination = new File(provisionLibraryPath, secondName)
 
 		File firstFile = new File(projectDir, "build/provision/" + firstName)
-		assert firstFile.exists()
-
 		File secondFile = new File(projectDir, "build/provision/" + secondName)
-		assert secondFile.exists()
+
+		when:
+			provisioningInstallTask.install()
+
+
+		then:
+		firstFile.exists()
+		secondFile.exists()
+		1 * commandRunner.run(["/bin/ln", "-s", firstSource.absolutePath, firstDestination.absolutePath])
+		1 * commandRunner.run(["/bin/ln", "-s", secondSource.absolutePath, secondDestination.absolutePath])
 
 
 	}

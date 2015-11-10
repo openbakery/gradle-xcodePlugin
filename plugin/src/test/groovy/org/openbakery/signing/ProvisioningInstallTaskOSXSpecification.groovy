@@ -1,35 +1,28 @@
 package org.openbakery.signing
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
 /**
  * Created by Stefan Gugarel on 26/02/15.
  */
-class ProvisioningInstallTaskOSXTest {
+class ProvisioningInstallTaskOSXSpecification extends Specification {
 
 	Project project
 	ProvisioningInstallTask provisioningInstallTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	File provisionLibraryPath
 	File projectDir
 
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -41,69 +34,68 @@ class ProvisioningInstallTaskOSXTest {
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
-		provisioningInstallTask.setProperty("commandRunner", commandRunnerMock)
+		provisioningInstallTask.commandRunner = commandRunner
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 	}
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
 
-	void mockLinking(String name) {
+	def "single ProvisioningProfile"() {
 
+		given:
+		File testMobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
+
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunner)
+		String uuid = provisioningProfileIdReader.getUUID()
+		String name = "gradle-" + uuid + ".provisionprofile";
 
 		File source = new File(projectDir, "build/provision/" + name)
 		File destination = new File(provisionLibraryPath, name)
 
-		def commandList = ["/bin/ln", "-s", source.absolutePath , destination.absolutePath]
-		commandRunnerMock.run(commandList)
-	}
-
-	@Test
-	void singleProvisioningProfile() {
-
-		File testMobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
-
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunnerMock)
-		String uuid = provisioningProfileIdReader.getUUID()
-		String name =  "gradle-" + uuid + ".provisionprofile";
-
-		mockLinking(name)
-
-		mockControl.play {
-			provisioningInstallTask.install()
-		}
+		when:
+		provisioningInstallTask.install()
 
 		File sourceFile = new File(projectDir, "build/provision/" + name)
-		assert sourceFile.exists()
+
+		then:
+		sourceFile.exists()
+		1 * commandRunner.run(["/bin/ln", "-s", source.absolutePath , destination.absolutePath])
 	}
 
-	@Test
-	void multipleProvisioningProfiles() {
-
+	def "multiple ProvisioningProfiles"() {
+		given:
 		File firstMobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 		File secondMobileprovision = new File("src/test/Resource/openbakery-example.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
+		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString()]
 
 		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".provisionprofile";
 		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".provisionprofile";
 
-		mockLinking(firstName)
-		mockLinking(secondName)
-
-		mockControl.play {
-			provisioningInstallTask.install()
-		}
-
 		File firstFile = new File(projectDir, "build/provision/" + firstName)
-		assert firstFile.exists()
-
 		File secondFile = new File(projectDir, "build/provision/" + secondName)
-		assert secondFile.exists()
+
+		File firstSource = new File(projectDir, "build/provision/" + firstName)
+		File firstDestination = new File(provisionLibraryPath, firstName)
+
+		File secondSource = new File(projectDir, "build/provision/" + secondName)
+		File secondDestination = new File(provisionLibraryPath, secondName)
+
+		when:
+		provisioningInstallTask.install()
+
+		then:
+		firstFile.exists()
+		secondFile.exists()
+
+		1 * commandRunner.run(["/bin/ln", "-s", firstSource.absolutePath, firstDestination.absolutePath])
+		1 * commandRunner.run(["/bin/ln", "-s", secondSource.absolutePath, secondDestination.absolutePath])
+
 	}
+
 }

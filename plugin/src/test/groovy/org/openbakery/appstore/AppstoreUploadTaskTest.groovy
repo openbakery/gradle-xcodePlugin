@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.anything
 /**
  * Created by rene on 08.01.15.
  */
-class AppstoreUploadTaskTest {
+class  AppstoreUploadTaskTest {
 
 	Project project
 	AppstoreUploadTask task
