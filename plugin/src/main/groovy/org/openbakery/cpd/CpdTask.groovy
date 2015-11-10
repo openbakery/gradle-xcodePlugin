@@ -59,7 +59,10 @@ class CpdTask extends AbstractXcodeTask {
 		def pmdLibDir = new File(destinationDirectory, "tools/pmd-${PMD_VERSION}/lib")
 		def obcJarFile = new File(destinationDirectory, "ObjCLanguage-${OBJC_LANG_VERSION}.jar")
 
-		pmdLibDir.listFiles()*.absolutePath + [obcJarFile.absolutePath]
+		if (pmdLibDir.listFiles()) {
+			return pmdLibDir.listFiles()*.absolutePath + [obcJarFile.absolutePath]
+		}
+		return []
 	}
 
 	private void downloadObjcGrammar(File destinationDirectory) {

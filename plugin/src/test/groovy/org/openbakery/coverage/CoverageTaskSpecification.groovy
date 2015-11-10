@@ -1,14 +1,10 @@
 package org.openbakery.coverage
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.openbakery.util.AntBuilderStub
+import org.openbakery.stubs.AntBuilderStub
 import spock.lang.Specification
 
 /**
@@ -63,8 +59,8 @@ class CoverageTaskSpecification extends Specification {
 								outputFile.absolutePath])
 
 
-		antBuilder.commands["get"]["src"] == "https://github.com/gcovr/gcovr/archive/3.2.zip"
-		antBuilder.commands["unzip"]["src"].name == "3.2.zip"
+		antBuilder.get.src == ["https://github.com/gcovr/gcovr/archive/3.2.zip"]
+		antBuilder.unzip.src[0].name == "3.2.zip"
 	}
 
 

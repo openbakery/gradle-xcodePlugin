@@ -11,6 +11,7 @@ class AntBuilderStub extends AntBuilder {
 	def get = []
 	def gunzip = []
 	def untar = []
+	def unzip = []
 
 	public get(def parameters) {
 		get << parameters
@@ -24,6 +25,9 @@ class AntBuilderStub extends AntBuilder {
 		untar << parameters
 	}
 
+	public unzip(def parameters) {
+		unzip << parameters
+	}
 
 	Map<String, Object> getProperties() {
 		return null

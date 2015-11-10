@@ -1,36 +1,20 @@
 package org.openbakery.cpd
 
-import groovy.mock.interceptor.MockFor
 import org.apache.commons.io.FileUtils
-import org.gmock.GMock
-import org.gmock.GMockController
-import org.gradle.api.AntBuilder
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.stubs.AntBuilderStub
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*
-
-/**
- * Created by rahul on 7/22/15.
- */
-class CpdTaskTest {
+class CpdTaskSpecification extends Specification {
 	Project project
 	CpdTask cpdTask
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -43,11 +27,10 @@ class CpdTaskTest {
 		antBuilderStub = new AntBuilderStub()
 		project.ant = antBuilderStub
 
-		cpdTask.setProperty("commandRunner", commandRunnerMock)
+		cpdTask.commandRunner = commandRunner
 	}
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
@@ -87,25 +70,21 @@ class CpdTaskTest {
 
     }*/
 
-
-	@Test
-	void testCreateDestinationDirectory() {
-		try {
-			cpdTask.cpd()
-		} catch (Exception ex) {
-			// ignore
-		}
+	def "create destination directory"() {
+		when:
+		cpdTask.cpd()
 
 		File destinationDirectory = new File(project.gradle.gradleUserHomeDir, "/caches/gxp")
-		assertThat(destinationDirectory.exists(), is(true))
+
+		then:
+		destinationDirectory.exists()
 	}
 
 
-	@Test
-	void testRunWithoutDownload() {
+	def "run without download"() {
+		given:
 
 		def destDir = project.gradle.gradleUserHomeDir.absolutePath + "/caches/gxp"
-
 		new File("${destDir}").mkdirs()
 		new File("${destDir}/pmd-bin-4.2.5.zip").text = ""
 		new File("${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar").text = ""
@@ -114,8 +93,13 @@ class CpdTaskTest {
 		new File("${destDir}/tools/pmd-4.2.5/lib/b.jar").text = ""
 		new File("${destDir}/tools/pmd-4.2.5/lib/c.jar").text = ""
 
-		commandRunnerMock.setOutputFile(new File("${project.buildDir}/cpd.xml")).times(1)
-		commandRunnerMock.run([
+
+		when:
+		cpdTask.cpd()
+
+		then:
+		1 * commandRunner.setOutputFile(new File("${project.buildDir}/cpd.xml"))
+		1 * commandRunner.run([
 						'java', '-Xmx512m',
 						'-cp', "\"${destDir}/tools/pmd-4.2.5/lib/a.jar:${destDir}/tools/pmd-4.2.5/lib/b.jar:${destDir}/tools/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",
 						'net.sourceforge.pmd.cpd.CPD',
@@ -124,13 +108,8 @@ class CpdTaskTest {
 						'--language', 'ObjectiveC',
 						'--encoding', 'UTF-8',
 						'--format', 'net.sourceforge.pmd.cpd.XMLRenderer'
-		]).times(1)
-
-		mockControl.play {
-			cpdTask.cpd()
-		}
+		])
 
 	}
-
 
 }
