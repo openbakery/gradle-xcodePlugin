@@ -482,9 +482,8 @@ class PackageTaskSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		plistHelperStub.plistCommands.size() == 2
+		plistHelperStub.plistCommands.size() == 1
 		plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
-		plistHelperStub.plistCommands.get(1).equals("Delete keychain-access-groups")
 	}
 
 
