@@ -1,34 +1,27 @@
 package org.openbakery.hockeykit
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.util.PlistHelper
 import org.openbakery.XcodeBuildArchiveTask
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
 /**
  * User: rene
  * Date: 11/11/14
  */
-class HockeyKitArchiveTaskTest {
+class HockeyKitArchiveTaskSpecification extends Specification {
 
 	Project project
 	HockeyKitArchiveTask hockeyKitArchiveTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	File infoPlist
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -39,10 +32,8 @@ class HockeyKitArchiveTaskTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 
 		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykitArchive')
-		hockeyKitArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
-		hockeyKitArchiveTask.setProperty("commandRunner", commandRunnerMock)
-		//PlistHelper.commandRunner = commandRunnerMock
-
+		hockeyKitArchiveTask.plistHelper = new PlistHelper(project, commandRunner)
+		hockeyKitArchiveTask.commandRunner = commandRunner
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")
@@ -53,52 +44,44 @@ class HockeyKitArchiveTaskTest {
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
 		infoPlist.parentFile.mkdirs();
 		FileUtils.writeStringToFile(infoPlist, "dummy")
-
-
 	}
 
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
 
-	@Test
-	void testArchive() {
-
+	def "archive"() {
+		given:
 		project.hockeykit.versionDirectoryName = "123"
 
 		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :CFBundleIdentifier"]
-		commandRunnerMock.runWithResult(commandList).returns("com.example.Test")
+		commandRunner.runWithResult(commandList) >> "com.example.Test"
 
-		mockControl.play {
-			hockeyKitArchiveTask.archive()
-		}
-
+		when:
 		hockeyKitArchiveTask.archive()
 
 		File expectedIpa = new File(project.buildDir, "hockeykit/com.example.test/123/Test.ipa")
-		assert expectedIpa.exists()
 
+		then:
+		expectedIpa.exists()
 	}
 
-	@Test
-	void testArchiveWithBundleSuffix() {
-
+	def "archive with BundleSuffix"() {
+		given:
 		project.xcodebuild.bundleNameSuffix = '-SUFFIX'
-
 		project.hockeykit.versionDirectoryName = "123"
 
 		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :CFBundleIdentifier"]
-		commandRunnerMock.runWithResult(commandList).returns("com.example.Test")
+		commandRunner.runWithResult(commandList) >> "com.example.Test"
 
-		mockControl.play {
-			hockeyKitArchiveTask.archive()
-		}
+		when:
+		hockeyKitArchiveTask.archive()
 
 		File expectedIpa = new File(project.buildDir, "hockeykit/com.example.test/123/Test-SUFFIX.ipa")
-		assert expectedIpa.exists()
 
+		then:
+		expectedIpa.exists()
 	}
 }

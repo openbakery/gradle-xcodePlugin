@@ -1,13 +1,10 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import org.openbakery.util.PlistHelper
+import spock.lang.Specification
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -16,21 +13,16 @@ import java.util.zip.ZipFile
 /**
  * Created by rene on 01.12.14.
  */
-class AbstractXcodeTaskTest {
+class AbstractXcodeTaskSpecification extends Specification{
 
 	Project project
 	AbstractXcodeTask xcodeTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	File projectDir
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -39,64 +31,60 @@ class AbstractXcodeTaskTest {
 
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
-		xcodeTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		xcodeTask.plistHelper = new PlistHelper(project, commandRunner)
 	}
 
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
 
-	@Test
-	void getInfoListValue() {
+	def getInfoListValue() {
+		given:
 		def commandList = ["/usr/libexec/PlistBuddy", "Info.plist", "-c", "Print :CFBundleIdentifier"]
-		commandRunnerMock.runWithResult(commandList).returns("com.example.Example")
+		commandRunner.runWithResult(commandList) >> "com.example.Example"
 
+		when:
 		String result;
-		mockControl.play {
-			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
-		}
+		result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
 
-		assert result.equals("com.example.Example");
+		then:
+		result.equals("com.example.Example");
 	}
 
-
-
-	@Test
-	void getArrayFromInfoListValue() {
+	def "getArrayFromInfoListValue"() {
+		given:
 		def commandList = ["/usr/libexec/PlistBuddy", "Info.plist", "-c", "Print :CFBundleIdentifier"]
-		commandRunnerMock.runWithResult(commandList).returns("Array {\n" +
+		commandRunner.runWithResult(commandList) >> "Array {\n" +
 						"    AppIcon29x29\n" +
 						"    AppIcon40x40\n" +
 						"    AppIcon57x57\n" +
 						"    AppIcon60x60\n" +
-						"}")
+						"}"
 
-		def result;
-		mockControl.play {
-			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
-		}
+		when:
+		def result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
 
-
-		assert result instanceof List
-		assert result.size() == 4
-		assert result.get(0).equals("AppIcon29x29")
+		then:
+		result instanceof List
+		result.size() == 4
+		result.get(0).equals("AppIcon29x29")
 	}
 
 
-	@Test
-	void getInfoPlistValue_Missing() {
+	def "InfoPlist Value Missing"() {
+		given:
 		def commandList = ["/usr/libexec/PlistBuddy", "Info.plist", "-c", "Print :CFBundleIconFiles"]
-		commandRunnerMock.runWithResult(commandList).raises(new CommandRunnerException())
+		commandRunner.runWithResult(commandList) >> { throw new CommandRunnerException() }
 
-		def result;
-		mockControl.play {
-			result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIconFiles")
-		}
-		assert result == null
+		when:
+		def result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIconFiles")
+
+		then:
+		result == null
 	}
+
 
 	List<String> getZipEntries(File file) {
 		ZipFile zipFile = new ZipFile(file);
@@ -108,26 +96,25 @@ class AbstractXcodeTaskTest {
 		return entries;
 	}
 
-	@Test
-	void testZip() {
+	def "zip"() {
+		given:
 		File tmpFile = new File(projectDir, "FileToZip.txt")
 		FileUtils.writeStringToFile(tmpFile, "dummy")
 
+		when:
 		xcodeTask.createZip(tmpFile)
 
 		File zipFile = new File(projectDir, "FileToZip.zip")
-
-		assert zipFile.exists()
-
 		List<String> zipEntries = getZipEntries(zipFile);
 
-		assert zipEntries.contains("FileToZip.txt")
+		then:
+		zipEntries.contains("FileToZip.txt")
 
 
 	}
 
-	@Test
-	void testZipDirectory() {
+	def "Zip Directory"() {
+		given:
 		File tmpDirectory = new File(projectDir, "DirectroyToZip")
 		tmpDirectory.mkdirs()
 
@@ -137,21 +124,20 @@ class AbstractXcodeTaskTest {
 
 		File zipFile = new File(projectDir, "Test.zip")
 
+		when:
 		xcodeTask.createZip(zipFile, zipFile.parentFile,  tmpDirectory)
-
-		assert zipFile.exists()
 
 		List<String> zipEntries = getZipEntries(zipFile);
 
-		assert zipEntries.contains("DirectroyToZip/first.txt")
-		assert zipEntries.contains("DirectroyToZip/second.txt")
+		then:
+		zipEntries.contains("DirectroyToZip/first.txt")
+		zipEntries.contains("DirectroyToZip/second.txt")
 
 	}
 
 
-
-	@Test
-	void testZipMultipleFiles() {
+	def "Zip Multiple Files"() {
+		given:
 		File firstFile = new File(projectDir, "first.txt")
 		FileUtils.writeStringToFile(firstFile, "dummy")
 		File secondFile = new File(projectDir, "second.txt")
@@ -159,14 +145,14 @@ class AbstractXcodeTaskTest {
 
 		File zipFile = new File(projectDir, "MultipleTest.zip")
 
+		when:
 		xcodeTask.createZip(zipFile, zipFile.parentFile,  firstFile, secondFile)
-
-		assert zipFile.exists()
 
 		List<String> zipEntries = getZipEntries(zipFile);
 
-		assert zipEntries.contains("first.txt")
-		assert zipEntries.contains("second.txt")
+		then:
+		zipEntries.contains("first.txt")
+		zipEntries.contains("second.txt")
 
 	}
 }

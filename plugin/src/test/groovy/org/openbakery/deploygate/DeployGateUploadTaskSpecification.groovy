@@ -1,30 +1,23 @@
 package org.openbakery.deploygate
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodeBuildArchiveTask
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
 /**
  * User: rene
  * Date: 11/11/14
  */
-class DeployGateUploadTaskTest {
+class DeployGateUploadTaskSpecification extends Specification {
 
 	Project project
 	DeployGateUploadTask deployGateUploadTask;
 
-	GMockController mockControl
-
 	File infoPlist
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
+	def setup() {
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -44,37 +37,31 @@ class DeployGateUploadTaskTest {
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
 		infoPlist.parentFile.mkdirs();
 
-
 	}
 
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
-	@Test
-	void testArchive() {
-
-		mockControl.play {
-			deployGateUploadTask.prepare()
-		}
-
+	def "archive"() {
+		when:
+		deployGateUploadTask.prepare()
 		File expectedIpa = new File(project.buildDir, "deploygate/Test.ipa")
-		assert expectedIpa.exists()
+
+		then:
+		expectedIpa.exists()
 	}
 
-	@Test
-	void testArchiveWithSuffix() {
-
+	def "archive with suffix"() {
+		given:
 		project.xcodebuild.bundleNameSuffix = '-SUFFIX'
 
-
-		mockControl.play {
-			deployGateUploadTask.prepare()
-		}
-
+		when:
+		deployGateUploadTask.prepare()
 		File expectedIpa = new File(project.buildDir, "deploygate/Test-SUFFIX.ipa")
-		assert expectedIpa.exists()
+
+		then:
+		expectedIpa.exists()
 	}
 }

@@ -1,34 +1,29 @@
 package org.openbakery.hockeykit
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.util.PlistHelper
+import org.openbakery.stubs.PlistHelperStub
 import org.openbakery.XcodeBuildArchiveTask
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
 /**
  * Created by rene on 12.11.14.
  */
-class HockeyKitManifestTaskTest {
+class HockeyKitManifestTaskSpecification extends Specification {
 
 
 	Project project
 	HockeyKitManifestTask hockeyKitManifestTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
+
+	PlistHelperStub plistHelper = new PlistHelperStub()
 
 	File infoPlist
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
@@ -39,10 +34,9 @@ class HockeyKitManifestTaskTest {
 		project.xcodebuild.infoPlist = 'Info.plist'
 
 		hockeyKitManifestTask = project.getTasks().getByPath('hockeykitManifest')
-		hockeyKitManifestTask.plistHelper = new PlistHelper(project, commandRunnerMock)
+		hockeyKitManifestTask.plistHelper = plistHelper
 
-		hockeyKitManifestTask.setProperty("commandRunner", commandRunnerMock)
-
+		hockeyKitManifestTask.commandRunner = commandRunner
 
 		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
 		archiveDirectory.mkdirs()
@@ -53,40 +47,31 @@ class HockeyKitManifestTaskTest {
 
 	}
 
-	void mockValueFromPlist(String key, String value) {
-		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :" + key]
-		commandRunnerMock.runWithResult(commandList).returns(value).atLeastOnce()
 
-	}
-
-
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
-	@Test
-	void createManifest() {
-
+	def "create Manifest"() {
+		given:
 		project.xcodebuild.bundleNameSuffix = '-b1234'
 		project.hockeykit.versionDirectoryName = "1234"
 
+		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "com.example.Test")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleDisplayName", "Test")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "1.0.0-b1234")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "1.0.0")
 
-		mockValueFromPlist("CFBundleIdentifier", "com.example.Test")
-		mockValueFromPlist("CFBundleDisplayName", "Test")
-		mockValueFromPlist("CFBundleVersion", "1.0.0-b1234")
-		mockValueFromPlist("CFBundleShortVersionString", "1.0.0")
-
-		mockControl.play {
-			hockeyKitManifestTask.createManifest()
-		}
+			when:
+		hockeyKitManifestTask.createManifest()
 
 		File manifestFile = new File(project.buildDir, "hockeykit/com.example.Test/1234/Test-b1234.plist")
-		assert manifestFile.exists()
-
 		String xmlContent = FileUtils.readFileToString(manifestFile, "UTF-8")
-		assert xmlContent.contains("com.example.Test")
-		assert xmlContent.contains("1.0.0-b1234")
+
+		then:
+		manifestFile.exists()
+		xmlContent.contains("com.example.Test")
+		xmlContent.contains("1.0.0-b1234")
 
 	}
 

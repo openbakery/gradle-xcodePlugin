@@ -1,33 +1,25 @@
 package org.openbakery.hockeyapp
 
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildArchiveTask
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Specification
 
 /**
  * User: rene
  * Date: 11/11/14
  */
-class HockeyAppTaskTest {
+class HockeyAppTaskSpecification extends Specification {
 	Project project
 	HockeyAppUploadTask hockeyAppUploadTask;
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	File infoPlist
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
-
+	def setup() {
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -38,7 +30,7 @@ class HockeyAppTaskTest {
 
 		hockeyAppUploadTask = project.getTasks().getByPath('hockeyapp')
 
-		hockeyAppUploadTask.setProperty("commandRunner", commandRunnerMock)
+		hockeyAppUploadTask.commandRunner = commandRunner
 
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
@@ -50,45 +42,42 @@ class HockeyAppTaskTest {
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
 		infoPlist.parentFile.mkdirs();
 
-
 		File dsymBundle = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
 		FileUtils.writeStringToFile(dsymBundle, "dummy")
 
 	}
 
 
-	@After
-	void cleanUp() {
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
 
-	@Test
-	void testArchive() {
-
+	def "archive"() {
+		when:
 		hockeyAppUploadTask.prepare()
 
 		File expectedIpa = new File(project.buildDir, "hockeyapp/Test.ipa")
-		assert expectedIpa.exists()
-
 		File expectedDSYM = new File(project.buildDir, "hockeyapp/Test.app.dSYM.zip")
-		assert expectedDSYM.exists()
 
-
+		then:
+		expectedIpa.exists()
+		expectedDSYM.exists()
 	}
 
-	@Test
-	void testArchiveWithBundleSuffix() {
-
+	def "archive with bundleSuffix"() {
+		given:
 		project.xcodebuild.bundleNameSuffix = '-SUFFIX'
 
+		when:
 		hockeyAppUploadTask.prepare()
 
 		File expectedIpa = new File(project.buildDir, "hockeyapp/Test-SUFFIX.ipa")
-		assert expectedIpa.exists()
-
 		File expectedZip = new File(project.buildDir, "hockeyapp/Test-SUFFIX.app.dSYM.zip")
-		assert expectedZip.exists()
+
+		then:
+		expectedIpa.exists()
+		expectedZip.exists()
 
 	}
 }
