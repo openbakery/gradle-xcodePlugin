@@ -2,13 +2,11 @@ package org.openbakery
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
-import org.gmock.GMockController
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.openbakery.stubs.PlistHelperStub
 import org.openbakery.util.PlistHelper
+import spock.lang.Specification
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -16,7 +14,7 @@ import java.util.zip.ZipFile
 /**
  * Created by rene on 01.12.14.
  */
-class XcodeBuildArchiveTaskTest {
+class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Project project
 
@@ -26,13 +24,10 @@ class XcodeBuildArchiveTaskTest {
 	File buildOutputDirectory
 	File appDirectory
 
-	GMockController mockControl
-	CommandRunner commandRunnerMock
+	CommandRunner commandRunner = Mock(CommandRunner)
+	PlistHelperStub plistHelper = new PlistHelperStub()
 
-	@Before
-	void setup() {
-		mockControl = new GMockController()
-		commandRunnerMock = mockControl.mock(CommandRunner)
+	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -46,8 +41,8 @@ class XcodeBuildArchiveTaskTest {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunnerMock)
-		xcodeBuildArchiveTask.setProperty("commandRunner", commandRunnerMock)
+		xcodeBuildArchiveTask.plistHelper = plistHelper
+		xcodeBuildArchiveTask.commandRunner = commandRunner
 
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphoneos")
@@ -101,124 +96,117 @@ class XcodeBuildArchiveTaskTest {
 
 	}
 
-	@After
-	void cleanUp() {
+
+	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
-	@Test
-	void archiveDirectory() {
+	def "archiveDirectory"() {
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File archiveDirectory = new File(projectDir, "build/archive/Example.xcarchive")
-		assert archiveDirectory.exists() : "Archive directory does not exist: " + archiveDirectory.absolutePath
 
-		assert archiveDirectory.isDirectory() : "Archive directory is not a directory"
+		then:
+		archiveDirectory.exists()
+		archiveDirectory.isDirectory()
 	}
 
-	@Test
-	void archiveDirectoryWithBundleSuffix() {
+	def "archive directory with BundleSuffix"() {
+		given:
 		project.xcodebuild.bundleNameSuffix = "-1.2.3"
 
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File archiveDirectory = new File(projectDir, "build/archive/Example-1.2.3.xcarchive")
-		assert archiveDirectory.exists() : "Archive directory does not exist: " + archiveDirectory.absolutePath
 
-		assert archiveDirectory.isDirectory() : "Archive directory is not a directory"
+		then:
+		archiveDirectory.exists()
+		archiveDirectory.isDirectory()
 	}
 
 
-	@Test
-	void applicationsFolder() {
-
+	def applicationsFolder() {
+		when:
 		xcodeBuildArchiveTask.archive()
-
 		File applicationsDirectory = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications")
-		assert applicationsDirectory.exists(): "Applications directory does not exist: " + applicationsDirectory.absolutePath
 
-
+		then:
+		applicationsDirectory.exists()
 	}
 
-	@Test
-	void copyApp() {
 
+	def "copy App"() {
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Example")
 
-		assert appFile.exists(): "App file does not exist: " + appFile.absolutePath
-
+		then:
+		appFile.exists()
 	}
 
-	@Test
-	void copyDsym() {
+	def "copy Dsym"() {
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File dsymFile = new File(projectDir, "build/archive/Example.xcarchive/dSYMs/Example.app.dSYM")
 
-		assert dsymFile.exists(): "App file does not exist: " + dsymFile.absolutePath
-
+		then:
+		dsymFile.exists()
 	}
 
-	@Test
-	void copyMultipleDsyms() {
 
+	def copyMultipleDsyms() {
+		given:
 		File extensionDirectory = new File(buildOutputDirectory, "Example.app/PlugIns/ExampleTodayWidget.appex")
 		extensionDirectory.mkdirs()
 
 		File dSymDirectory = new File(buildOutputDirectory, "ExampleTodayWidget.appex.dSYM")
 		dSymDirectory.mkdirs()
 
+		when:
 		xcodeBuildArchiveTask.archive()
 
-		File dsymFile = new File(projectDir, "build/archive/Example.xcarchive/dSYMs/ExampleTodayWidget.appex.dSYM")
-
-		assert dsymFile.exists(): "App file does not exist: " + dsymFile.absolutePath
-
-
-		dsymFile = new File(projectDir, "build/archive/Example.xcarchive/dSYMs/Example.app.dSYM")
-		assert dsymFile.exists(): "App file does not exist: " + dsymFile.absolutePath
+		then:
+		new File(projectDir, "build/archive/Example.xcarchive/dSYMs/ExampleTodayWidget.appex.dSYM").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/dSYMs/Example.app.dSYM").exists()
 	}
 
 
-	@Test
-	void createInfoPlist() {
-
+	def createInfoPlist() {
+		given:
 		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, new CommandRunner())
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File infoPlist = new File(projectDir, "build/archive/Example.xcarchive/Info.plist")
 
-		assert infoPlist.exists(): "file does not exist: " + infoPlist.absolutePath
-
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(infoPlist)
-
-		assert config.getString("ApplicationProperties.ApplicationPath").equals("Applications/Example.app")
-		assert config.getString("ApplicationProperties.CFBundleIdentifier").equals("org.openbakery.Example")
-		assert config.getString("ApplicationProperties.CFBundleShortVersionString").equals("1.0")
-		assert config.getString("ApplicationProperties.CFBundleVersion").equals("1.0")
-		assert config.getString("ApplicationProperties.SigningIdentity").equals("iPhone Developer: Firstname Surename (AAAAAAAAAA)")
-
-
 		List icons = config.getList("ApplicationProperties.IconPaths");
-		assert icons.size() == 2
 
-		assert icons.get(0).equals("Applications/Example.app/Icon-72.png")
-		assert icons.get(1).equals("Applications/Example.app/Icon.png")
+		then:
+		infoPlist.exists()
+		config.getString("ApplicationProperties.ApplicationPath") == "Applications/Example.app"
+		config.getString("ApplicationProperties.CFBundleIdentifier") == "org.openbakery.Example"
+		config.getString("ApplicationProperties.CFBundleShortVersionString") == "1.0"
+		config.getString("ApplicationProperties.CFBundleVersion") == "1.0"
+		config.getString("ApplicationProperties.SigningIdentity") == "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
-
-		assert config.getString("Name").equals("Example")
-		assert config.getString("SchemeName").equals("Example")
-
+		icons.size() == 2
+		icons.get(0).equals("Applications/Example.app/Icon-72.png")
+		icons.get(1).equals("Applications/Example.app/Icon.png")
+		config.getString("Name").equals("Example")
+		config.getString("SchemeName").equals("Example")
 
 	}
 
-	@Test
-	void testZipForSimulatorBuild() {
+	def "Zip for simulator build"() {
+		given:
 		project.xcodebuild.simulator = true
 		def buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphonesimulator")
 		buildOutputDirectory.mkdirs()
@@ -228,97 +216,80 @@ class XcodeBuildArchiveTaskTest {
 		File app = new File(appDirectory, "Example")
 		FileUtils.writeStringToFile(app, "dummy")
 
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File zipFile = new File(projectDir, "build/archive/Example.zip");
-		assert zipFile.exists() : "Zipfile does not exist: " + zipFile.absolutePath
-
-
 		ZipFile zip = new ZipFile(zipFile);
-
 		List<String> entries = new ArrayList<String>()
-
 		for (ZipEntry entry : zip.entries()) {
 			entries.add(entry.getName())
 		}
 
-		assert entries.contains("Example.app/Example")
+		then:
+		zipFile.exists()
+		entries.contains("Example.app/Example")
 
 	}
 
 
-
-
-	@Test
-	void swiftFrameworkInApp() {
+	def "swift framework in App"() {
+		given:
 		mockSwiftLibs()
+
+		when:
 		xcodeBuildArchiveTask.archive()
 
 		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
-
-		assert libswiftCore.exists(): "libswiftCore file does not exist: " + libswiftCore.absolutePath
-
-
 		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/")
-
-		assert supportLibswiftDirectory.list().length == 5
-
 		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
 
-		assert supportLibswiftCore.exists(): "libswiftCore file does not exist: " + supportLibswiftCore.absolutePath
-
-		assert FileUtils.readFileToString(supportLibswiftCore).equals("bar")
+		then:
+		libswiftCore.exists()
+		supportLibswiftDirectory.list().length == 5
+		supportLibswiftCore.exists()
+		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
 	}
 
 
-	void mockGetPlistValues(File plist, String key, String value) {
-
-		def commandList = ["/usr/libexec/PlistBuddy", plist.absolutePath, "-c", "Print :" + key]
-		commandRunnerMock.runWithResult(commandList).returns(value);
-
-	}
-
-	@Test
-	void convertInfoPlistToBinary() {
+	def "convert Info Plist to binary"() {
+		given:
 
 		File infoPlist = new File(appDirectory, "Info.plist")
-		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");
-		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
-		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "");
 
 		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
 
-		List<String> commandList
-		commandList?.clear()
-		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
-		commandRunnerMock.run(commandList).times(1)
+		when:
+		xcodeBuildArchiveTask.archive()
 
-
-		mockControl.play {
-			xcodeBuildArchiveTask.archive()
-		}
+		then:
+		1 * commandRunner.run(["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath])
 	}
 
 
-	@Test
-	void convertInfoPlistToBinaryError() {
+
+	def "convert InfoPlist to binary with error"() {
+		given:
 
 		File infoPlist = new File(appDirectory, "Info.plist")
-		mockGetPlistValues(infoPlist, "CFBundleIdentifier", "");
-		mockGetPlistValues(infoPlist, "CFBundleShortVersionString", "");
-		mockGetPlistValues(infoPlist, "CFBundleVersion", "");
+
+		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "");
 
 		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
 
-		List<String> commandList
-		commandList?.clear()
-		commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
-		commandRunnerMock.run(commandList).raises(new CommandRunnerException("Permission Denied!"))
+		def commandList = ["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath]
+		commandRunner.run(commandList) >> { throw new CommandRunnerException("Permission Denied!") }
 
+		when:
+		xcodeBuildArchiveTask.archive()
 
-		mockControl.play {
-			// should not fail!!!
-			xcodeBuildArchiveTask.archive()
-		}
+		then:
+		true
+		// should not fail!
 	}
 }
