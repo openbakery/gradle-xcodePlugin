@@ -17,7 +17,7 @@ Here a brief overview of the features:
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) )
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
-* OCLint (Works not with Xcode 7-beta)
+* OCLint
 
 
 ## Note
@@ -40,10 +40,9 @@ Here a table of the values for the migration to 0.12:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.12.2
+### Current stable version is 0.12.3
 
-0.9.x up to 0.12.x supports Xcode 5, Xcode 6.+ and Xcode 7.+
-
+0.12.x supports Xcode 6.+ and Xcode 7.+
 
 
 ## Documentation
@@ -59,7 +58,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.12.2"
+  id "org.openbakery.xcode-plugin" version "0.12.3"
 }
 
 xcodebuild {

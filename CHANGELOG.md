@@ -1,4 +1,4 @@
-# 0.12.3 (TBA)
+# 0.12.3 (November 11, 2015)
 
 Changes
 * Removed Xcode 5 support
@@ -6,7 +6,8 @@ Changes
 Bugfixes
 * simulatorStart works now
 * simulatorRunApp starts now the configured app in the simulator
-* simpler destination syntax for specifing the simulators to use
+* simpler destination syntax for specifing the simulators
+* Fixed that the keychain-access-group is not removed from the entitlements during signing: Issue #220
 
 # 0.12.2 (October 28, 2015)
 
