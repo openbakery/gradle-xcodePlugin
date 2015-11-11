@@ -12,9 +12,9 @@ buildscript {
 
 
 def versionNumber = '0.12.3'
-def publishURL
-def publishUser
-def publishPassword
+def publishURL = System.getenv("PUBLISH_URL")
+def publishUser = System.getenv("PUBLISH_USER")
+def publishPassword = System.getenv("PUBLISH_PASSWORD")
 
 if (project.hasProperty("publishURL")) {
 	publishURL = project.publishURL
