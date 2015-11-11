@@ -1,12 +1,12 @@
 buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
-  }
+	repositories {
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
+	}
 }
 
 
@@ -45,11 +45,11 @@ sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+	gradleVersion = '2.4'
 }
 
 configurations {
-    deployerJars
+	deployerJars
 }
 
 repositories {
@@ -72,8 +72,7 @@ dependencies {
 	testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 	testCompile 'cglib:cglib-nodep:3.1'
-  deployerJars "org.apache.maven.wagon:wagon-ssh:2.10"
-	
+	deployerJars "org.apache.maven.wagon:wagon-ssh:2.10"
 }
 
 
@@ -84,7 +83,7 @@ dependencies {
 uploadArchives {
 	repositories {
 		mavenDeployer {
-      configuration = configurations.deployerJars
+			configuration = configurations.deployerJars
 			
 			repository(url: publishURL) {
 				authentication(userName: publishUser, password: publishPassword)
@@ -99,10 +98,10 @@ uploadArchives {
 					}
 				}
 				developers {
-			  	developer {
+					developer {
 						id "renep"
-			      name "René Pirringer"
-			      email "rene@openbakery.org"
+						name "René Pirringer"
+						email "rene@openbakery.org"
 					}
 				}
 			}
@@ -112,22 +111,22 @@ uploadArchives {
 
 
 task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
+	from sourceSets.main.allSource
+	classifier = 'sources'
 }
 
 
 pluginBundle {
-  website = 'http://openbakery.org/gradle.html'
-  vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
-  description = 'A gradle plugin for building Xcode projects!'
-  tags = ['xcode', 'iOS', 'os x', "osx", "mac", "iphone", "ipad"]
+	website = 'http://openbakery.org/gradle.html'
+	vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
+	description = 'A gradle plugin for building Xcode projects!'
+	tags = ['xcode', 'iOS', 'os x', "osx", "mac", "iphone", "ipad"]
 
-  plugins {
-    xcodePlugin {
-      id = 'org.openbakery.xcode-plugin'
-      displayName = 'Gradle Xcode plugin'
+	plugins {
+		xcodePlugin {
+			id = 'org.openbakery.xcode-plugin'
+			displayName = 'Gradle Xcode plugin'
 			version = versionNumber
-    }
-  }
+		}
+	}
 }
