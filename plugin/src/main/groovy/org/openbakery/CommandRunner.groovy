@@ -18,7 +18,6 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.output.NullWriter
-import org.gradle.util.CollectionUtils
 import org.openbakery.output.OutputAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

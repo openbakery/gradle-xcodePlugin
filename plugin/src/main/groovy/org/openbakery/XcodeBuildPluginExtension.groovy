@@ -254,7 +254,7 @@ class XcodeBuildPluginExtension {
 		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
 
 		if (destination instanceof List) {
-
+			destinations = [] as Set
 			destination.each { singleDestination ->
 				this.destination {
 					name = singleDestination.toString()

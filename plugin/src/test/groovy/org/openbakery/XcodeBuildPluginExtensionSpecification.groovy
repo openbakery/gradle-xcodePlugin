@@ -446,4 +446,19 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+
+	def "set destinations twice"() {
+		given:
+
+		extension.destination = ['iPad Air', 'iPhone 5s']
+		extension.destination = ['iPad Air', 'iPhone 4s']
+
+		when:
+		def destinations = extension.getAvailableDestinations()
+
+		then:
+		destinations.size() == 2
+
+	}
+
 }
