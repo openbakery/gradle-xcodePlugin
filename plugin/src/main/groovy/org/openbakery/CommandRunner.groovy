@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.apache.commons.collections.buffer.CircularFifoBuffer
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.output.NullWriter
@@ -26,7 +27,7 @@ class CommandRunner {
 
 	private static Logger logger = LoggerFactory.getLogger(CommandRunner.class)
 
-	private StringBuilder resultStringBuilder
+	Collection<String> commandOutputBuffer = null;
 
 	private File outputFile = null
 
@@ -69,6 +70,10 @@ class CommandRunner {
 			logger.debug("with additional environment variables: {}", environment)
 		}
 
+		if (commandOutputBuffer == null) {
+			commandOutputBuffer = new CircularFifoBuffer(20);
+		}
+
 		def commandsAsStrings = commandList.collect { it.toString() } // GStrings don't play well with ProcessBuilder
 		def processBuilder = new ProcessBuilder(commandsAsStrings)
 		processBuilder.redirectErrorStream(true)
@@ -79,9 +84,6 @@ class CommandRunner {
 		}
 		def process = processBuilder.start()
 
-    if( resultStringBuilder == null ) {
-      resultStringBuilder = new StringBuilder()
-    }
 
 		processInputStream(process.inputStream, outputAppender)
 
@@ -90,9 +92,7 @@ class CommandRunner {
 		readerThread.join()
 		if (process.exitValue() > 0) {
 			logger.debug("Exit Code: {}", process.exitValue())
-      def lastLines = resultStringBuilder.toString().split('\\n')
-      lastLines = lastLines[0 .. Math.min(lastLines.size(), 10)-1]
-      lastLines = lastLines.join('\n')
+      def lastLines = commandOutputBuffer.toArray().join("\n")
 			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList)+"\nTail of output:\n"+lastLines)
 		}
 
@@ -126,12 +126,8 @@ class CommandRunner {
 							outputAppender.append(line.replaceAll(/\u001B\[[\d]*m/, ""))
 						}
 
-						if (resultStringBuilder != null) {
-							if (resultStringBuilder.length() > 0) {
-								resultStringBuilder.append("\n")
-							}
-							resultStringBuilder.append(line)
-						}
+						commandOutputBuffer.add(line)
+
 						writer.write(line)
 						writer.write("\n")
 					}
@@ -186,9 +182,11 @@ class CommandRunner {
 	}
 
 	String runWithResult(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
-		resultStringBuilder = new StringBuilder();
+		commandOutputBuffer = new ArrayList<>();
 		run(directory, commandList, environment, outputAppender);
-		return resultStringBuilder.toString();
+		String result = commandOutputBuffer.join("\n")
+		commandOutputBuffer = null;
+		return result
 	}
 
 
