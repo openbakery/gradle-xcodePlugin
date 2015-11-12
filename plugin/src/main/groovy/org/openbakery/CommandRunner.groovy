@@ -92,8 +92,8 @@ class CommandRunner {
 		readerThread.join()
 		if (process.exitValue() > 0) {
 			logger.debug("Exit Code: {}", process.exitValue())
-      def lastLines = commandOutputBuffer.toArray().join("\n")
-			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList)+"\nTail of output:\n"+lastLines)
+			def lastLines = commandOutputBuffer.toArray().join("\n")
+			throw new CommandRunnerException("Command failed to run (exit code " + process.exitValue() + "): " + commandListToString(commandList) + "\nTail of output:\n" + lastLines)
 		}
 
 	}
