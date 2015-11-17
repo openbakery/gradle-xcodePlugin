@@ -21,17 +21,19 @@ import org.gradle.logging.ProgressLogger
 import org.gradle.logging.ProgressLoggerFactory
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
+import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.output.XcodeBuildOutputAppender
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 	XcodeBuildTask() {
 		super()
-
+/*
 		dependsOn(
 						XcodePlugin.XCODE_CONFIG_TASK_NAME,
 						XcodePlugin.INFOPLIST_MODIFY_TASK_NAME,
 		)
+		*/
 		this.description = "Builds the Xcode project"
 	}
 

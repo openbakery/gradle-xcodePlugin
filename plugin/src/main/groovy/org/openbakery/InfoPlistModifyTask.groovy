@@ -24,7 +24,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 	Boolean modfied = false
 
 	public InfoPlistModifyTask() {
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		//dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
 

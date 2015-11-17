@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import org.apache.commons.lang.WordUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -22,6 +23,19 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.testing.Test
+import org.gradle.language.base.plugins.ComponentModelBasePlugin
+import org.gradle.model.Model
+import org.gradle.model.ModelMap
+import org.gradle.model.Mutate
+import org.gradle.model.Path
+import org.gradle.model.RuleSource
+import org.gradle.model.internal.registry.ModelRegistry
+import org.gradle.platform.base.BinaryTasks
+import org.gradle.platform.base.BinaryType
+import org.gradle.platform.base.BinaryTypeBuilder
+import org.gradle.platform.base.ComponentBinaries
+import org.gradle.platform.base.ComponentType
+import org.gradle.platform.base.ComponentTypeBuilder
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
@@ -48,6 +62,11 @@ import org.openbakery.hockeykit.HockeyKitImageTask
 import org.openbakery.hockeykit.HockeyKitManifestTask
 import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
+import org.openbakery.model.XcodeBinary
+import org.openbakery.model.XcodeComponent
+import org.openbakery.model.XcodeModel
+import org.openbakery.model.internal.DefaultXcodeBinary
+import org.openbakery.model.internal.DefaultXcodeComponent
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
 import org.openbakery.packaging.ReleaseNotesTask
@@ -66,6 +85,8 @@ import org.openbakery.simulators.SimulatorRunAppTask
 import org.openbakery.simulators.SimulatorInstallAppTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import javax.inject.Inject
 
 class XcodePlugin implements Plugin<Project> {
 
@@ -131,14 +152,123 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
+	private final ModelRegistry modelRegistry;
+
+	@Inject
+	public XcodePlugin(ModelRegistry modelRegistry) {
+		this.modelRegistry = modelRegistry;
+	}
+
+
+	@SuppressWarnings("UnusedDeclaration")
+	static class Rules extends RuleSource {
+
+
+		@ComponentType
+		void register(ComponentTypeBuilder<XcodeComponent> builder) {
+			builder.defaultImplementation(DefaultXcodeComponent.class)
+		}
+
+		@BinaryType
+		void register(BinaryTypeBuilder<XcodeBinary> builder) {
+			println("register XcodeBuilder")
+			builder.defaultImplementation(DefaultXcodeBinary.class)
+		}
+
+		@ComponentBinaries
+		void createBinaries(ModelMap<XcodeBinary> binaries, XcodeComponent component) {
+			println("createBinaries ${component.name}")
+			println("createBinaries ${binaries.keySet()}")
+			println("createBinaries ${component.displayName}")
+			binaries.create("${component.name}") {
+				it.name = component.name
+				it.version = component.version
+				println it
+			}
+			println("createBinaries done")
+		}
+
+		@BinaryTasks
+		void createTasks(ModelMap<Task> tasks, XcodeBinary binary) {
+			println("createTasks ${binary.name}")
+
+			String name = WordUtils.capitalize("${binary.name}")
+
+			String infoPlistModifyTaskName = "infoPlistModify${name}"
+			tasks.create(infoPlistModifyTaskName, InfoPlistModifyTask) {
+				println it
+			}
+
+			tasks.create("xcodebuild${name}", XcodeBuildTask) {
+				println it
+
+				it.dependsOn(infoPlistModifyTaskName)
+				it.setGroup(XCODE_GROUP_NAME)
+				//it.content = binary.name;
+				//it.fontSize = binary.version;
+				//it.outputFile = new File(it.project.buildDir, "renderedSvg/${binary.title}_${binary.size}.svg")
+			}
+
+
+
+		}
+
+/*
+		@Model("xcode")
+		XcodeModel xcode() { return new XcodeModel() }
+
+
+		@Model("xcode")
+		public static XcodeModel xcode(String name) {
+			return new XcodeModel(name: name)
+		}
+
+
+		@Mutate
+	  void taskConfig(ModelMap<Task> tasks, @Path("xcode") XcodeModel model) {
+
+			println model
+
+
+		}
+*/
+		/*
+		@Mutate
+		public static void createXcodeRules(ModelMap<Task> tasks, ModelMap<XcodeModel> xcodes) {
+
+			xcodes.keySet().each { name ->
+				println name
+				tasks.create("xcoderules${name}") {
+					doLast {
+						println "Xcode Version is $xcodes[name].version!"
+					}
+				}
+
+
+			}
+
+		}
+		*/
+
+	}
+
 
 
 
 	void apply(Project project) {
+
+		project.getPluginManager().apply(BasePlugin.class);
+  	//project.getExtensions().create("playConfigurations", PlayPluginConfigurations.class, project.getConfigurations(), project.getDependencies());
+
+  	//modelRegistry.getRoot().applyToAllLinksTransitive(ModelType.of(XcodeComponent.class), PlaySourceSetRules.class);
+
+
+		/*
 		project.getPlugins().apply(BasePlugin.class);
 
 		System.setProperty("java.awt.headless", "true");
-
+*/
+		/*
 		configureExtensions(project)
 		configureClean(project)
 		configureBuild(project)
@@ -160,6 +290,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureOCLint(project)
 		configureSimulatorTasks(project)
 		configureProperties(project)
+*/
 	}
 
 

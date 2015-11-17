@@ -42,12 +42,12 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		if (xcodeProjectFile.isOSX) {
 			return;
 		}
-
+/*
 		String version = commandRunner.runWithResult([project.xcodebuild.xcodebuildCommand, "-version"])
 		boolean isXcode5 = version.startsWith("Xcode 5");
 		logger.debug("isXcode5 {}", isXcode5);
 
-/*
+
 		if (isXcode5) {
 			createXcode5DeviceList()
 		} else {
