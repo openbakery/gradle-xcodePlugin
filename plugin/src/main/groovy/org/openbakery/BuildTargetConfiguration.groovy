@@ -11,6 +11,7 @@ class BuildConfiguration {
 	String productName
 	String sdkRoot
 	Devices devices
+	String entitlements
 
 	BuildConfiguration parent;
 
@@ -57,6 +58,16 @@ class BuildConfiguration {
 		}
 		if (parent != null) {
 			return parent.sdkRoot
+		}
+		return null
+	}
+
+	String getEntitlements() {
+		if (entitlements != null) {
+			return entitlements
+		}
+		if (parent != null) {
+			return parent.entitlements
 		}
 		return null
 	}

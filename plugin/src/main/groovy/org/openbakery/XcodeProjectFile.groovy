@@ -155,6 +155,7 @@ class XcodeProjectFile {
 			buildSettings.productName = targetName
 		}
 		buildSettings.sdkRoot = getBuildSetting(buildConfiguration, target, "SDKROOT")
+		buildSettings.entitlements = getBuildSetting(buildConfiguration, target, "CODE_SIGN_ENTITLEMENTS")
 
 		String deviceFamily =  getBuildSetting(buildConfiguration, target, "TARGETED_DEVICE_FAMILY")
 		if (deviceFamily.equals("1")) {
