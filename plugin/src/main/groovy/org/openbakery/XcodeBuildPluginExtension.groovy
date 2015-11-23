@@ -565,6 +565,35 @@ class XcodeBuildPluginExtension {
 	}
 
 
+	BuildConfiguration getBuildConfiguration() {
+		BuildTargetConfiguration buildTargetConfiguration = projectSettings[target]
+		if (buildTargetConfiguration != null) {
+			return buildTargetConfiguration.buildSettings[configuration];
+		}
+		throw new IllegalStateException("No build configuration found for + target '" + target + "' and configuration '" + configuration + "'");
+	}
+
+	BuildConfiguration getBuildConfiguration(String bundleIdentifier) {
+		BuildConfiguration result = null
+		projectSettings.each() { target, buildTargetConfiguration ->
+			BuildConfiguration settings = buildTargetConfiguration.buildSettings[configuration];
+
+			if (settings != null) {
+
+				if (settings.bundleIdentifier == null) {
+					String identifier = plistHelper.getValueFromPlist(settings.infoplist, "CFBundleIdentifier")
+					if (identifier != null && identifier.equalsIgnoreCase(bundleIdentifier)) {
+						result = settings
+						return true
+					}
+				} else if (settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
+					result = settings
+					return true
+				}
+			}
+		}
+		return result
+	}
 
 
 

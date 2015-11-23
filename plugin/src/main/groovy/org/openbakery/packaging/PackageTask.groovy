@@ -6,6 +6,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
+import org.openbakery.BuildConfiguration
 import org.openbakery.CommandRunnerException
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
@@ -201,26 +202,37 @@ class PackageTask extends AbstractDistributeTask {
 		if (bundleIdentifier == null) {
 			logger.debug("bundleIdentifier not found in bundle {}", bundle)
 		}
+
+		performCodesign(bundle, createEntitlementsFile(bundleIdentifier))
+
+
+	}
+
+	private File createEntitlementsFile(String bundleIdentifier) {
 		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
-
-		File entitlementsFile = null;
-
 		if (provisionFile == null) {
 			if (project.xcodebuild.type == Type.iOS) {
 				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
 			}
 			// on OS X this is valid
-		} else {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
-			String basename = FilenameUtils.getBaseName(provisionFile.path)
-			entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
-			reader.extractEntitlements(entitlementsFile, bundleIdentifier)
-			logger.info("Using entitlementsFile {}", entitlementsFile)
+			return null
 		}
 
-		performCodesign(bundle, entitlementsFile)
+		// set keychain access group
+
+		//BuildConfiguration buildConfiguration = project.xcodebuild.getBuildConfiguration()
+		//def keychainAccessGroup = plistHelper.getValueFromPlist(buildConfiguration.entitlements, "keychain-access-groups")
+		def keychainAccessGroup = []
+
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
+		String basename = FilenameUtils.getBaseName(provisionFile.path)
+		File entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
+		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup)
 
 
+
+		logger.info("Using entitlementsFile {}", entitlementsFile)
+		return entitlementsFile
 	}
 
 	private void codeSignFrameworks(File bundle) {

@@ -129,10 +129,6 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"\t<array/>\n" +
 				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
 				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
-				"\t<key>keychain-access-groups</key>\n" +
-				"\t<array>\n" +
-				"\t\t<string>Z7L2YCUH45.*</string>\n" +
-				"\t</array>\n" +
 				"</dict>\n" +
 				"</plist>\n"
 
@@ -141,7 +137,61 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", null)
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text == expectedContents
+	}
+
+
+	def "extract Entitlements with keychain access group"() {
+		given:
+		String expectedContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+				"<plist version=\"1.0\">\n" +
+				"<dict>\n" +
+				"\t<key>com.apple.application-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<key>com.apple.developer.aps-environment</key>\n" +
+				"\t<string>development</string>\n" +
+				"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.icloud-container-environment</key>\n" +
+				"\t<array>\n" +
+				"\t\t<string>Development</string>\n" +
+				"\t\t<string>Production</string>\n" +
+				"\t</array>\n" +
+				"\t<key>com.apple.developer.icloud-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.icloud-services</key>\n" +
+				"\t<string>*</string>\n" +
+				"\t<key>com.apple.developer.team-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45</string>\n" +
+				"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<key>keychain-access-groups</key>\n" +
+				"\t<array>\n" +
+				"\t\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t\t<string>Z7L2YCUH45.org.openbakery.Test</string>\n" +
+				"\t\t<string>AAAAAAAAAA.com.example.Test</string>\n" +
+				"\t</array>\n" +
+				"</dict>\n" +
+				"</plist>\n"
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
+
+		def keychainAccessGroups = [
+				"\$(AppIdentifierPrefix)org.openbakery.Example",
+				"\$(AppIdentifierPrefix)org.openbakery.Test",
+				"AAAAAAAAAA.com.example.Test",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()

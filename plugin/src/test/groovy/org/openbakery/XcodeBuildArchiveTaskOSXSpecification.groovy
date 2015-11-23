@@ -98,7 +98,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		xcodeBuildArchiveTask.plistHelper.setValueForPlist(infoPlistInAppFile, "CFBundleIconFile", "icon")
 
 		when:
-		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons(infoPlistInAppFile)
+		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons()
 
 		then:
 		macOSXIcons.size() == 1
@@ -111,7 +111,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 
 		when:
-		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons(infoPlistInAppFile)
+		def macOSXIcons = xcodeBuildArchiveTask.getMacOSXIcons()
 
 		then:
 		macOSXIcons.size() == 0

@@ -65,8 +65,11 @@ class PlistHelper {
 	}
 
 	void setValueForPlist(def plist, String key, List values) {
+		deleteValueFromPlist(plist, key)
+		//Add :Person:Likes array
+		setValueForPlist(plist, "Add :" + key + " array")
 		values.eachWithIndex { value, index ->
-			setValueForPlist(plist, "Set :" + key + ":" + index + " " + value)
+			setValueForPlist(plist, "Add :" + key + ": string " + value)
 		}
 	}
 

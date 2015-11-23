@@ -461,4 +461,19 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+
+	def "get build configuration for bundle identifier"() {
+		given:
+		extension.projectSettings = createProjectSettings()
+
+		when:
+		def configuration = extension.getBuildConfiguration("org.openbakery.Example")
+
+		then:
+		configuration != null
+		configuration.bundleIdentifier == 'org.openbakery.Example'
+		configuration.infoplist == "ExampleWatchkit/Info.plist"
+
+	}
+
 }

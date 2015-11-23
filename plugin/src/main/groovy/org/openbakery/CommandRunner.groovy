@@ -30,6 +30,7 @@ class CommandRunner {
 	Collection<String> commandOutputBuffer = null;
 
 	private File outputFile = null
+	String defaultBaseDirectory = "."
 
 	Thread readerThread
 
@@ -150,11 +151,11 @@ class CommandRunner {
 	}
 
 	def run(List<String> commandList, OutputAppender outputAppender) {
-		run(".", commandList, null, outputAppender)
+		run(defaultBaseDirectory, commandList, null, outputAppender)
 	}
 
 	def run(List<String> commandList) {
-		run(".", commandList, null, null)
+		run(defaultBaseDirectory, commandList, null, null)
 	}
 
 	def run(String... commandList) {
@@ -162,11 +163,11 @@ class CommandRunner {
 	}
 
 	def run(List<String> commandList, Map<String, String> environment) {
-		run(".", commandList, environment, null)
+		run(defaultBaseDirectory, commandList, environment, null)
 	}
 
 	def run(List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
-		run(".", commandList, environment, outputAppender)
+		run(defaultBaseDirectory, commandList, environment, outputAppender)
 	}
 
 	String runWithResult(String... commandList) {
@@ -174,7 +175,7 @@ class CommandRunner {
 	}
 
 	String runWithResult(List<String> commandList) {
-		return runWithResult(".", commandList)
+		return runWithResult(defaultBaseDirectory, commandList)
 	}
 
 	String runWithResult(String directory, List<String> commandList) {

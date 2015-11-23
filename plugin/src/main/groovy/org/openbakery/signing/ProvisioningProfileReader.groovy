@@ -15,6 +15,7 @@
  */
 package org.openbakery.signing
 
+import org.apache.commons.collections.ListUtils
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
@@ -154,7 +155,7 @@ class ProvisioningProfileReader {
 		return value;
 	}
 
-	void extractEntitlements(File entitlementFile, String bundleIdentifier) {
+	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups) {
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
 						"-x",
@@ -167,13 +168,18 @@ class ProvisioningProfileReader {
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
 		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
-		//setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "keychain-access-groups")
-
-		// the keychain-access-groups were removed from the entitlements on the xcode export step
-		// therefor I also remove this here. Maybe this is wrong, but I hope the future will clarify this.
-		//plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 
 
+		def teamIdentifier = plistHelper.getValueFromPlist(entitlementFile, "com.apple.developer.team-identifier")
+		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
+			def modifiedKeychainAccessGroups = []
+			keychainAccessGroups.each() { group ->
+				modifiedKeychainAccessGroups << group.replaceAll('\\$\\(AppIdentifierPrefix\\)', teamIdentifier + ".")
+			}
+			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
+		} else {
+			plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
+		}
 
 	}
 
@@ -199,4 +205,5 @@ class ProvisioningProfileReader {
 			}
 		}
 	}
+
 }

@@ -1,5 +1,6 @@
 package org.openbakery
 
+import aQute.libg.command.Command
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
@@ -7,6 +8,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.PlistHelperStub
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
+import sun.net.www.protocol.file.FileURLConnection
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -65,6 +67,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon.png"), "dummy")
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
 
+
+		FileUtils.copyFileToDirectory(new File("../example/iOS/Example/Example/Example.entitlements"), new File(projectDir, "Example"))
 	}
 
 	void mockSwiftLibs() {
@@ -291,5 +295,59 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		then:
 		true
 		// should not fail!
+	}
+
+
+	def "application directory"() {
+
+		when:
+		File applicationDirectory = xcodeBuildArchiveTask.getApplicationsDirectory()
+
+		then:
+		applicationDirectory == new File(projectDir, "build/archive/Example.xcarchive/Products/Applications")
+
+	}
+
+
+	def "bundle destination directory"() {
+		given:
+		File bundle = new File(project.xcodebuild.outputPath, "ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
+
+		when:
+		File applicationDirectory = xcodeBuildArchiveTask.getDestinationDirectoryForBundle(bundle)
+
+		then:
+		applicationDirectory == new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
+	}
+
+	def "copy entitlements if present"() {
+
+		//BuildConfiguration buildConfiguration = project.xcodebuild.getBuildConfiguration()
+		//def keychainAccessGroup = plistHelper.getValueFromPlist(buildConfiguration.entitlements, "keychain-access-groups")
+
+		given:
+		CommandRunner commandRunner = new CommandRunner()
+		commandRunner.defaultBaseDirectory = projectDir.absolutePath
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
+		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
+
+		File infoPlist = new File("../example/iOS/Example/Example/Example-Info.plist")
+		FileUtils.copyFile(infoPlist, new File(projectDir, "Example/Example-Info.plist"))
+
+		project.xcodebuild.target = "Example"
+		project.xcodebuild.configuration = "Debug"
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/Example/Example.xcodeproj/project.pbxproj"))
+		xcodeProjectFile.parse()
+		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File entitlements = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/archived-expanded-entitlements.xcent")
+
+		then:
+		entitlements.exists()
+
 	}
 }

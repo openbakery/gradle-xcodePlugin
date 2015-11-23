@@ -70,6 +70,7 @@ class PackageTaskSpecification extends Specification {
 		keychain = new File(projectDir, "gradle.keychain")
 		FileUtils.writeStringToFile(keychain, "dummy");
 		project.xcodebuild.signing.keychain = keychain.absolutePath
+		project.xcodebuild.target = "Example"
 
 	}
 
@@ -482,7 +483,7 @@ class PackageTaskSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		plistHelperStub.plistCommands.size() == 1
+		plistHelperStub.plistCommands.size() > 0
 		plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
 	}
 
