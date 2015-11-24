@@ -44,16 +44,7 @@ xcodebuild {
 	scheme = 'Example'
 	configuration = 'Test'	
 		
-	destination {
-		platform = 'iOS Simulator'
-		name = 'iPad 2'
-		os='9.*'
-	}
-	destination {
-		platform = 'iOS Simulator'
-		name = 'iPhone 4s'
-		os='9.*'
-	}	
+	destination = ['iPad 2', 'iPhone 4s' ]
 }
 
 
