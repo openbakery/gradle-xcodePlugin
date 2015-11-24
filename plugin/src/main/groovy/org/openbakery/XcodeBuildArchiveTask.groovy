@@ -179,7 +179,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 
 		if (frameworksPath.exists()) {
-			File swiftSupportDirectory = new File(getArchiveDirectory(), "SwiftSupport");
+
+			def swiftSupportPath = "SwiftSupport"
+
+			if (project.xcodebuild.version.major > 6) {
+				swiftSupportPath += "/iphoneos"
+			}
+
+			File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath);
 			if (!swiftSupportDirectory.exists()) {
 				swiftSupportDirectory.mkdirs()
 			}

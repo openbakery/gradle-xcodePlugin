@@ -17,6 +17,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	XcodeBuildPluginExtension extension;
 	CommandRunner commandRunner = Mock(CommandRunner)
 
+	File xcodebuild7_1_1
 	File xcodebuild6_1
 	File xcodebuild6_0
 	File xcodebuild5_1
@@ -33,14 +34,17 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 
+		xcodebuild7_1_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode7.1.1.app")
 		xcodebuild6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
 		xcodebuild6_0 = new File(System.getProperty("java.io.tmpdir"), "Xcode6.app")
 		xcodebuild5_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode5.app")
 
+		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcodebuild6_1, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcodebuild6_0, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcodebuild5_1, "Contents/Developer/usr/bin").mkdirs()
 
+		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcodebuild6_0, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcodebuild5_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
@@ -476,4 +480,53 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+	def "set xcode version"() {
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
+		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
+
+
+		given:
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
+
+		when:
+		extension.version = 7
+
+		then:
+		extension.version instanceof Version
+		extension.version.major == 7
+		extension.version.minor == 1
+		extension.version.maintenance == 1
+	}
+
+	def "set xcode version with xcode 6"() {
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
+		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+
+		given:
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
+
+		when:
+		extension.version = 6
+
+		then:
+		extension.version instanceof Version
+		extension.version.major == 6
+		extension.version.minor == 4
+		extension.version.maintenance == -1
+	}
+
+	def "get xcode version"() {
+		given:
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+		when:
+		Version version = extension.version
+
+		then:
+		version instanceof Version
+		version.major == 6
+		version.minor == 4
+		version.maintenance == -1
+	}
 }

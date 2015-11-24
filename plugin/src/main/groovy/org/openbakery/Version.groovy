@@ -11,7 +11,7 @@ class Version implements Comparable<Version> {
 	public Version() {
 	}
 
-	public Version(String version) {
+	public  Version(String version) {
 		Scanner versionScanner = new Scanner(version);
 		versionScanner.useDelimiter("\\.");
 

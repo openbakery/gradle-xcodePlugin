@@ -115,7 +115,7 @@ class XcodeBuildPluginExtension {
 	String bundleNameSuffix = null
 	List<String> arch = null
 	String workspace = null
-	String version = null
+	Version version = null
 	Map<String, String> environment = null
 	String productName = null
 	String bundleName = null
@@ -426,40 +426,49 @@ class XcodeBuildPluginExtension {
 
 
 	void setVersion(String version) {
-		this.version = version
+		Version versionToCompare = new Version(version)
 		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
 
 
 		for (String xcode : installedXcodes.split("\n")) {
-
-
 			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
 			if (xcodeBuildFile.exists()) {
-
-				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
-
-				def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
-				def matcher = VERSION_PATTERN.matcher(xcodeVersion)
-				if (matcher.matches()) {
-					String versionString = matcher[0][1]
-					String buildNumberString = matcher[0][2]
-
-					if (versionString.startsWith(version)) {
+				Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
+				if (xcodeVersion.suffix != null && versionToCompare.suffix != null) {
+					if (xcodeVersion.suffix.equalsIgnoreCase(versionToCompare.suffix)) {
 						xcodePath = xcode
+						this.version = xcodeVersion
 						return
 					}
-
-					if (buildNumberString.equals(version)) {
-						xcodePath = xcode
-						return
-					}
+				} else if (xcodeVersion.toString().startsWith(versionToCompare.toString())) {
+					xcodePath = xcode
+					this.version = xcodeVersion
+					return
 				}
-
-
 			}
 		}
-
 		throw new IllegalStateException("No Xcode found with build number " + version);
+	}
+
+
+	Version getVersion() {
+		if (this.version == null) {
+			this.version = getXcodeVersion(getXcodebuildCommand())
+		}
+		return this.version
+	}
+
+	Version getXcodeVersion(String xcodebuildCommand) {
+		String xcodeVersion = commandRunner.runWithResult(xcodebuildCommand, "-version");
+
+		def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
+		def matcher = VERSION_PATTERN.matcher(xcodeVersion)
+		if (matcher.matches()) {
+			Version version = new Version(matcher[0][1])
+			version.suffix = matcher[0][2]
+			return version
+		}
+		return null
 	}
 
 	String getXcodePath() {

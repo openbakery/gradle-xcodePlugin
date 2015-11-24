@@ -115,7 +115,10 @@ class PackageTask extends AbstractDistributeTask {
 
 
 	def addSwiftSupport(File payloadPath,  String applicationBundleName) {
-
+		if (project.xcodebuild.version.major > 6) {
+			// not needed anymore with xcode 7 and greater
+			return null
+		}
 		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
 		if (!frameworksPath.exists()) {
 			return null

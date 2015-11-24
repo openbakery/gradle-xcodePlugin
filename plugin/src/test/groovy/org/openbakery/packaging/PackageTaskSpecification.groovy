@@ -202,7 +202,6 @@ class PackageTaskSpecification extends Specification {
 		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
 		String result = new File('src/test/Resource/entitlements.plist').text
 		commandRunner.runWithResult(commandList) >> result
-
 		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
 		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
@@ -211,10 +210,9 @@ class PackageTaskSpecification extends Specification {
 
 
 
-
-
-	def "swift Framework"() {
+	def "swift Framework xcode 6"() {
 		given:
+		project.xcodebuild.version = 6
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true)
 
@@ -234,6 +232,29 @@ class PackageTaskSpecification extends Specification {
 
 		then:
 		entries.contains("SwiftSupport/libswiftCore.dylib")
+	}
+
+	def "swift Framework xcode 7"() {
+		given:
+		FileUtils.deleteDirectory(project.projectDir)
+		mockExampleApp(false, true)
+
+		when:
+		packageTask.packageApplication()
+
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
+
+
+		ZipFile zipFile = new ZipFile(ipaBundle);
+
+		List<String> entries = new ArrayList<String>()
+
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+
+		then:
+		!entries.contains("SwiftSupport/")
 	}
 
 

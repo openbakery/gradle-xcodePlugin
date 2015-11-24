@@ -1,6 +1,5 @@
 package org.openbakery
 
-import aQute.libg.command.Command
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
@@ -8,7 +7,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.PlistHelperStub
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
-import sun.net.www.protocol.file.FileURLConnection
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -248,8 +246,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	}
 
 
-	def "swift framework in App"() {
+	def "swift framework in App Xcode 6"() {
 		given:
+		project.xcodebuild.version = 6
 		mockSwiftLibs()
 
 		when:
@@ -266,6 +265,24 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
 	}
 
+	def "swift framework in App Xcode 7"() {
+		given:
+		project.xcodebuild.version = 7
+		mockSwiftLibs()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
+		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
+		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
+
+		then:
+		libswiftCore.exists()
+		supportLibswiftDirectory.list().length == 5
+		supportLibswiftCore.exists()
+		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
+	}
 
 	def "convert Info Plist to binary"() {
 		given:
