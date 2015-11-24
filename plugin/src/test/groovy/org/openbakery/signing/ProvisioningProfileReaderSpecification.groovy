@@ -185,8 +185,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
 
 		def keychainAccessGroups = [
-				"\$(AppIdentifierPrefix)org.openbakery.Example",
-				"\$(AppIdentifierPrefix)org.openbakery.Test",
+				"Z7L2YCUH45.org.openbakery.Example",
+				"Z7L2YCUH45.org.openbakery.Test",
 				"AAAAAAAAAA.com.example.Test",
 		]
 

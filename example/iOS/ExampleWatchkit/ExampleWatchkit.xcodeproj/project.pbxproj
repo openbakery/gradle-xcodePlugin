@@ -101,6 +101,8 @@
 		A70B879D1BBD18920023C19B /* NotificationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationController.m; sourceTree = "<group>"; };
 		A70B879F1BBD18920023C19B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A70B87A11BBD18920023C19B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A7CE94101C03312500EE5694 /* ExampleWatchkit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ExampleWatchkit.entitlements; sourceTree = "<group>"; };
+		A7CE94111C03313E00EE5694 /* ExampleWatchkit WatchKit Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "ExampleWatchkit WatchKit Extension.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +155,7 @@
 		A70B87601BBD18920023C19B /* ExampleWatchkit */ = {
 			isa = PBXGroup;
 			children = (
+				A7CE94101C03312500EE5694 /* ExampleWatchkit.entitlements */,
 				A70B87641BBD18920023C19B /* AppDelegate.h */,
 				A70B87651BBD18920023C19B /* AppDelegate.m */,
 				A70B87671BBD18920023C19B /* ViewController.h */,
@@ -196,6 +199,7 @@
 		A70B87931BBD18920023C19B /* ExampleWatchkit WatchKit Extension */ = {
 			isa = PBXGroup;
 			children = (
+				A7CE94111C03313E00EE5694 /* ExampleWatchkit WatchKit Extension.entitlements */,
 				A70B87961BBD18920023C19B /* InterfaceController.h */,
 				A70B87971BBD18920023C19B /* InterfaceController.m */,
 				A70B87991BBD18920023C19B /* ExtensionDelegate.h */,
@@ -302,6 +306,12 @@
 				TargetAttributes = {
 					A70B875D1BBD18920023C19B = {
 						CreatedOnToolsVersion = 7.0.1;
+						DevelopmentTeam = B7D3ZY9DN4;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					A70B87761BBD18920023C19B = {
 						CreatedOnToolsVersion = 7.0.1;
@@ -312,6 +322,12 @@
 					};
 					A70B878E1BBD18920023C19B = {
 						CreatedOnToolsVersion = 7.0.1;
+						DevelopmentTeam = B7D3ZY9DN4;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -535,10 +551,14 @@
 		A70B87A51BBD18920023C19B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "ExampleWatchkit WatchKit Extension/ExampleWatchkit WatchKit Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "ExampleWatchkit WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -549,10 +569,14 @@
 		A70B87A61BBD18920023C19B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "ExampleWatchkit WatchKit Extension/ExampleWatchkit WatchKit Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "ExampleWatchkit WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -594,10 +618,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ExampleWatchkit/ExampleWatchkit.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = ExampleWatchkit/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -605,10 +633,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ExampleWatchkit/ExampleWatchkit.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = ExampleWatchkit/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -655,6 +687,7 @@
 				A70B87A61BBD18920023C19B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A70B87A81BBD18920023C19B /* Build configuration list for PBXNativeTarget "ExampleWatchkit WatchKit App" */ = {
 			isa = XCConfigurationList;
@@ -663,6 +696,7 @@
 				A70B87AA1BBD18920023C19B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A70B87AC1BBD18920023C19B /* Build configuration list for PBXNativeTarget "ExampleWatchkit" */ = {
 			isa = XCConfigurationList;
@@ -671,6 +705,7 @@
 				A70B87AE1BBD18920023C19B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A70B87AF1BBD18920023C19B /* Build configuration list for PBXNativeTarget "ExampleWatchkitTests" */ = {
 			isa = XCConfigurationList;
@@ -679,6 +714,7 @@
 				A70B87B11BBD18920023C19B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

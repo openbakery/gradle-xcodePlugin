@@ -113,13 +113,18 @@ class XcodeProjectFileSpecification extends Specification {
 	}
 
 	def "parse entitlements file name"() {
+		given:
+		File  projectDir = new File("../example/iOS/ExampleWatchkit")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleWatchkit.xcodeproj/project.pbxproj"));
+
 		when:
 		def projectSettings = xcodeProjectFile.getProjectSettings()
 
 		then:
-		projectSettings["Example"] instanceof BuildTargetConfiguration
-		projectSettings["Example"].buildSettings["Debug"].infoplist == "Example/Example-Info.plist"
-		projectSettings["Example"].buildSettings["Debug"].entitlements == "Example/Example.entitlements"
+		projectSettings["ExampleWatchkit"] instanceof BuildTargetConfiguration
+		projectSettings["ExampleWatchkit"].buildSettings["Debug"].infoplist == "ExampleWatchkit/Info.plist"
+		projectSettings["ExampleWatchkit"].buildSettings["Debug"].entitlements == "ExampleWatchkit/ExampleWatchkit.entitlements"
 
 
 	}

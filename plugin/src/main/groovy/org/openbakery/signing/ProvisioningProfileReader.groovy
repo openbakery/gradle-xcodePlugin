@@ -15,7 +15,6 @@
  */
 package org.openbakery.signing
 
-import org.apache.commons.collections.ListUtils
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
@@ -29,6 +28,7 @@ import java.text.DateFormat
 
 class ProvisioningProfileReader {
 
+	public static final String APPLICATION_IDENTIFIER_PREFIX = '\\$\\(AppIdentifierPrefix\\)'
 	protected CommandRunner commandRunner
 	private PlistHelper plistHelper
 
@@ -116,7 +116,6 @@ class ProvisioningProfileReader {
 
 	String getApplicationIdentifierPrefix() {
 		return config.getString("ApplicationIdentifierPrefix")
-
 	}
 
 	File getPlistFromProvisioningProfile() {
@@ -174,7 +173,7 @@ class ProvisioningProfileReader {
 		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
 			def modifiedKeychainAccessGroups = []
 			keychainAccessGroups.each() { group ->
-				modifiedKeychainAccessGroups << group.replaceAll('\\$\\(AppIdentifierPrefix\\)', teamIdentifier + ".")
+				modifiedKeychainAccessGroups << group.replaceAll(APPLICATION_IDENTIFIER_PREFIX, teamIdentifier + ".")
 			}
 			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
 		} else {

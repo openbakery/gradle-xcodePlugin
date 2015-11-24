@@ -18,6 +18,10 @@ package org.openbakery
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
+import org.openbakery.packaging.PackageTask
+import org.openbakery.signing.ProvisioningProfileReader
 import org.openbakery.util.PlistHelper
 
 import java.text.SimpleDateFormat
@@ -225,4 +229,44 @@ abstract class AbstractXcodeTask extends DefaultTask {
 				}
 			}
 		}
+
+	File getProvisionFileForIdentifier(String bundleIdentifier) {
+
+		def provisionFileMap = [:]
+
+		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner, this.plistHelper)
+			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+		}
+
+		logger.debug("provisionFileMap: {}", provisionFileMap)
+
+		for ( entry in provisionFileMap ) {
+			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
+				return entry.value
+			}
+		}
+
+		// match wildcard
+		for ( entry in provisionFileMap ) {
+			if (entry.key.equals("*")) {
+				return entry.value
+			}
+
+			if (entry.key.endsWith("*")) {
+				String key = entry.key[0..-2].toLowerCase()
+				if (bundleIdentifier.toLowerCase().startsWith(key)) {
+					return entry.value
+				}
+			}
+		}
+
+		def output = services.get(StyledTextOutputFactory).create(PackageTask)
+
+		output.withStyle(StyledTextOutput.Style.Failure).println("No provisioning profile found for bundle identifier " + bundleIdentifier)
+		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + provisionFileMap.keySet())
+
+
+		return null
+	}
 }

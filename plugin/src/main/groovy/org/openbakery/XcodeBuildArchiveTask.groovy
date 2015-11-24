@@ -17,16 +17,20 @@ package org.openbakery
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.signing.ProvisioningProfileReader
+
 import static groovy.io.FileType.FILES
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	public static final String ARCHIVE_FOLDER = "archive"
 
-    XcodeBuildArchiveTask() {
+	XcodeBuildArchiveTask() {
 		super()
 
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
+		// when creating an xcarchive for iOS then the provisioning profile is need for the team id so that the entitlements is setup properly
+		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 
@@ -217,8 +221,37 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 		File destinationDirectory = getDestinationDirectoryForBundle(bundle)
+		if (buildConfiguration.entitlements) {
+			File entitlementFile = new File(destinationDirectory, "archived-expanded-entitlements.xcent")
+			FileUtils.copyFile(new File(project.projectDir, buildConfiguration.entitlements), entitlementFile)
+			modifyEntitlementsFile(entitlementFile, bundleIdentifier)
+		}
+	}
 
-		FileUtils.copyFileToDirectory(new File(project.projectDir, buildConfiguration.entitlements), new File(destinationDirectory, "archived-expanded-entitlements.xcent"))
+	def modifyEntitlementsFile(File entitlementFile, String bundleIdentifier) {
+		if (!entitlementFile.exists()) {
+			logger.warn("Entitlements File does not exist {}", entitlementFile)
+			return
+		}
+
+		String applicationIdentifier = "UNKNOWN00ID"; // if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
+		File provisioningProfile = getProvisionFileForIdentifier(bundleIdentifier)
+		if (provisioningProfile != null && provisioningProfile.exists()) {
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, project, commandRunner, plistHelper)
+			applicationIdentifier = reader.getApplicationIdentifierPrefix()
+		}
+
+		plistHelper.addValueForPlist(entitlementFile, "application-identifier", applicationIdentifier + "." + bundleIdentifier)
+
+		List<String> keychainAccessGroups = plistHelper.getValueFromPlist(entitlementFile, "keychain-access-groups")
+
+		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
+			def modifiedKeychainAccessGroups = []
+			keychainAccessGroups.each() { group ->
+				modifiedKeychainAccessGroups << group.replaceAll(ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX, applicationIdentifier + ".")
+			}
+			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
+		}
 	}
 
 

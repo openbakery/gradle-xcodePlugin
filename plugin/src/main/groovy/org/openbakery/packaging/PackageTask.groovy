@@ -2,6 +2,7 @@ package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
@@ -70,7 +71,7 @@ class PackageTask extends AbstractDistributeTask {
 		File infoPlist = getInfoPlistFile()
 
 		try {
-			plistHelper.setValueForPlist(infoPlist, "Delete CFBundleResourceSpecification")
+			plistHelper.deleteValueFromPlist(infoPlist, "CFBundleResourceSpecification")
 		} catch (CommandRunnerException ex) {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
@@ -110,46 +111,6 @@ class PackageTask extends AbstractDistributeTask {
 	File getProvisionFileForBundle(File bundle) {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
 		return getProvisionFileForIdentifier(bundleIdentifier)
-	}
-
-	File getProvisionFileForIdentifier(String bundleIdentifier) {
-
-		def provisionFileMap = [:]
-
-		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner, this.plistHelper)
-			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
-		}
-
-		logger.debug("provisionFileMap: {}", provisionFileMap)
-
-		for ( entry in provisionFileMap ) {
-			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
-				return entry.value
-			}
-		}
-
-		// match wildcard
-		for ( entry in provisionFileMap ) {
-			if (entry.key.equals("*")) {
-				return entry.value
-			}
-
-			if (entry.key.endsWith("*")) {
-				String key = entry.key[0..-2].toLowerCase()
-				if (bundleIdentifier.toLowerCase().startsWith(key)) {
-					return entry.value
-				}
-			}
-		}
-
-		def output = services.get(StyledTextOutputFactory).create(PackageTask)
-
-		output.withStyle(StyledTextOutput.Style.Failure).println("No provisioning profile found for bundle identifier " + bundleIdentifier)
-		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + provisionFileMap.keySet())
-
-
-		return null
 	}
 
 
@@ -203,12 +164,12 @@ class PackageTask extends AbstractDistributeTask {
 			logger.debug("bundleIdentifier not found in bundle {}", bundle)
 		}
 
-		performCodesign(bundle, createEntitlementsFile(bundleIdentifier))
+		performCodesign(bundle, createEntitlementsFile(bundle, bundleIdentifier))
 
 
 	}
 
-	private File createEntitlementsFile(String bundleIdentifier) {
+	File createEntitlementsFile(File bundle, String bundleIdentifier) {
 		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
 		if (provisionFile == null) {
 			if (project.xcodebuild.type == Type.iOS) {
@@ -222,7 +183,7 @@ class PackageTask extends AbstractDistributeTask {
 
 		//BuildConfiguration buildConfiguration = project.xcodebuild.getBuildConfiguration()
 		//def keychainAccessGroup = plistHelper.getValueFromPlist(buildConfiguration.entitlements, "keychain-access-groups")
-		def keychainAccessGroup = []
+		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(bundle)
 
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
@@ -233,6 +194,31 @@ class PackageTask extends AbstractDistributeTask {
 
 		logger.info("Using entitlementsFile {}", entitlementsFile)
 		return entitlementsFile
+	}
+
+	List<String> getKeychainAccessGroupFromEntitlements(File bundle) {
+
+		List<String> result = []
+		File entitlementsFile = new File(bundle, "archived-expanded-entitlements.xcent")
+		if (!entitlementsFile.exists()) {
+			return result
+		}
+
+		String applicationIdentifier = plistHelper.getValueFromPlist(entitlementsFile, "application-identifier")
+		if (StringUtils.isNotEmpty(applicationIdentifier)) {
+			applicationIdentifier = applicationIdentifier.split("\\.")[0] + "."
+		}
+		List<String> keychainAccessGroups = plistHelper.getValueFromPlist(entitlementsFile, "keychain-access-groups")
+
+		keychainAccessGroups.each { item ->
+			if (item.startsWith(applicationIdentifier)) {
+				result << item.replaceAll(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
+			} else {
+				result << item
+			}
+		}
+
+		return result
 	}
 
 	private void codeSignFrameworks(File bundle) {

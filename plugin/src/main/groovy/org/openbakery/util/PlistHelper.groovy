@@ -1,5 +1,6 @@
 package org.openbakery.util
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
@@ -66,19 +67,27 @@ class PlistHelper {
 
 	void setValueForPlist(def plist, String key, List values) {
 		deleteValueFromPlist(plist, key)
-		//Add :Person:Likes array
-		setValueForPlist(plist, "Add :" + key + " array")
+		addValueForPlist(plist, key, values)
+	}
+
+	void addValueForPlist(def plist, String key, List values) {
+		commandForPlist(plist, "Add :" + key + " array")
 		values.eachWithIndex { value, index ->
-			setValueForPlist(plist, "Add :" + key + ": string " + value)
+			commandForPlist(plist, "Add :" + key + ": string " + value)
 		}
 	}
 
-	void setValueForPlist(def plist, String key, String value) {
-		setValueForPlist(plist, "Set :" + key + " " + value)
+	void addValueForPlist(def plist, String key, String value) {
+		commandForPlist(plist, "Add :" + key + " string " + value)
 	}
 
 
-	void setValueForPlist(def plist, String command) {
+	void setValueForPlist(def plist, String key, String value) {
+		commandForPlist(plist, "Set :" + key + " " + value)
+	}
+
+
+	void commandForPlist(def plist, String command) {
 		File infoPlistFile;
 		if (plist instanceof File) {
 			infoPlistFile = plist
@@ -98,9 +107,23 @@ class PlistHelper {
 		])
 	}
 
-
 	void deleteValueFromPlist(def plist, String key) {
-		setValueForPlist(plist, "Delete " + key);
+		commandForPlist(plist, "Delete " + key);
 	}
 
+
+	void createForPlist(def plist) {
+		File infoPlistFile;
+		if (plist instanceof File) {
+			infoPlistFile = plist
+		} else {
+			infoPlistFile = new File(project.projectDir, plist)
+		}
+
+		FileUtils.writeStringToFile(infoPlistFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+				"<plist version=\"1.0\">\n" +
+				"<dict>\n</dict>\n" +
+				"</plist>")
+	}
 }

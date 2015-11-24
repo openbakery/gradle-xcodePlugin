@@ -68,7 +68,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
 
 
-		FileUtils.copyFileToDirectory(new File("../example/iOS/Example/Example/Example.entitlements"), new File(projectDir, "Example"))
+		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
 	}
 
 	void mockSwiftLibs() {
@@ -114,6 +114,17 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		then:
 		archiveDirectory.exists()
 		archiveDirectory.isDirectory()
+	}
+
+	def "depends on"() {
+		when:
+		def dependsOn = xcodeBuildArchiveTask.getDependsOn()
+		then:
+		dependsOn.size() == 3
+
+		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
+		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+
 	}
 
 	def "archive directory with BundleSuffix"() {
@@ -320,10 +331,68 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		applicationDirectory == new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
 	}
 
+	def "copy entitlements if present with default application identifier"() {
+
+		given:
+		CommandRunner commandRunner = new CommandRunner()
+		commandRunner.defaultBaseDirectory = projectDir.absolutePath
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
+		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
+
+		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
+		FileUtils.copyFile(infoPlist, new File(projectDir, "ExampleWatchkit/Info.plist"))
+
+		project.xcodebuild.target = "ExampleWatchkit"
+		project.xcodebuild.configuration = "Debug"
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
+		xcodeProjectFile.parse()
+		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File entitlements = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/archived-expanded-entitlements.xcent")
+
+		then:
+		entitlements.exists()
+		entitlements.isFile()
+
+		entitlements.text.contains("<key>application-identifier</key>\n\t<string>UNKNOWN00ID.org.openbakery.Example</string>")
+		entitlements.text.contains("<array>\n\t\t<string>UNKNOWN00ID.org.openbakery.Example</string>")
+	}
+
 	def "copy entitlements if present"() {
 
-		//BuildConfiguration buildConfiguration = project.xcodebuild.getBuildConfiguration()
-		//def keychainAccessGroup = plistHelper.getValueFromPlist(buildConfiguration.entitlements, "keychain-access-groups")
+		given:
+		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/openbakery.mobileprovision")
+		CommandRunner commandRunner = new CommandRunner()
+		commandRunner.defaultBaseDirectory = projectDir.absolutePath
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
+		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
+
+		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
+		FileUtils.copyFile(infoPlist, new File(projectDir, "ExampleWatchkit/Info.plist"))
+
+		project.xcodebuild.target = "ExampleWatchkit"
+		project.xcodebuild.configuration = "Debug"
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
+		xcodeProjectFile.parse()
+		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File entitlements = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/archived-expanded-entitlements.xcent")
+
+		then:
+		entitlements.exists()
+		entitlements.isFile()
+
+		entitlements.text.contains("<key>application-identifier</key>\n\t<string>AAAAAAAAAAA.org.openbakery.Example</string>")
+		entitlements.text.contains("<array>\n\t\t<string>AAAAAAAAAAA.org.openbakery.Example</string>")
+	}
+
+	def "copy entitlements but there are non"() {
 
 		given:
 		CommandRunner commandRunner = new CommandRunner()
@@ -340,14 +409,12 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
 
-
 		when:
 		xcodeBuildArchiveTask.archive()
 
-		File entitlements = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/archived-expanded-entitlements.xcent")
-
 		then:
-		entitlements.exists()
+		// should not thow an exception
+		true
 
 	}
 }

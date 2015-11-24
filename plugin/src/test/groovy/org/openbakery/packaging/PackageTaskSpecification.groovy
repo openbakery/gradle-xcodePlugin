@@ -14,6 +14,7 @@ import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -71,6 +72,15 @@ class PackageTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(keychain, "dummy");
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.target = "Example"
+
+		File entitlementsFile = new File(payloadAppDirectory, "archived-expanded-entitlements.xcent")
+
+		PlistHelper helper = new PlistHelper(project, new CommandRunner())
+		helper.createForPlist(entitlementsFile)
+		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
+		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
+
+		//FileUtils.writeStringToFile(entitlementsFile, "")
 
 	}
 
@@ -487,5 +497,34 @@ class PackageTaskSpecification extends Specification {
 		plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
 	}
 
+
+	def "getKeychainAccessGroupFromEntitlements"() {
+		given:
+		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+
+		when:
+		List<String> keychainAccessGroup = packageTask.getKeychainAccessGroupFromEntitlements(payloadAppDirectory)
+
+		then:
+		keychainAccessGroup.size() == 3
+		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)org.openbakery.Example"
+		keychainAccessGroup[1] == "\$(AppIdentifierPrefix)org.openbakery.ExampleWidget"
+		keychainAccessGroup[2] == "BBBBBBBBBB.org.openbakery.Foobar"
+	}
+
+	def "create entitlements with keychain access groups"() {
+		given:
+		mockExampleApp(false, false)
+		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+
+		when:
+		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.ExampleWidget")
+
+	}
 
 }
