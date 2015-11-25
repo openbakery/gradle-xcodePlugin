@@ -2,6 +2,7 @@ package org.openbakery
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.PlistHelperStub
@@ -29,7 +30,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def setup() {
 
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
+		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
