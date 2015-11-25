@@ -2,12 +2,9 @@ package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
 import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.wrapper.Logger
-import org.junit.After
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
@@ -42,7 +39,8 @@ class PackageTaskSpecification extends Specification {
 
 	void setup() {
 
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
+		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
@@ -85,6 +83,8 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	def cleanup() {
+		FileUtils.deleteDirectory(archiveDirectory)
+		FileUtils.deleteDirectory(project.buildDir)
 		FileUtils.deleteDirectory(projectDir)
 	}
 
@@ -217,10 +217,9 @@ class PackageTaskSpecification extends Specification {
 		mockExampleApp(false, true)
 
 		when:
-		packageTask.packageApplication()
-
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
-
+		assert !ipaBundle.exists()
+		packageTask.packageApplication()
 
 		ZipFile zipFile = new ZipFile(ipaBundle);
 
@@ -236,14 +235,14 @@ class PackageTaskSpecification extends Specification {
 
 	def "swift Framework xcode 7"() {
 		given:
+		project.xcodebuild.version = 7
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true)
 
 		when:
-		packageTask.packageApplication()
-
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
-
+		assert !ipaBundle.exists()
+		packageTask.packageApplication()
 
 		ZipFile zipFile = new ZipFile(ipaBundle);
 
