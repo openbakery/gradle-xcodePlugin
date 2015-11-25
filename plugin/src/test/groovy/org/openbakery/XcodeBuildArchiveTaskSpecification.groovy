@@ -101,7 +101,22 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	}
 
 
+	def mockXcodeVersion() {
+		project.xcodebuild.commandRunner = commandRunner
+		File xcodebuild7_1_1 = new File(projectDir, "Xcode7.1.1.app")
+		File xcodebuild6_1 = new File(projectDir, "Xcode6-1.app")
+		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcodebuild6_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
+		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.1.1\nBuild version 7B1005"
+		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+	}
+
+
 	def cleanup() {
+		FileUtils.deleteDirectory(project.projectDir)
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
@@ -250,6 +265,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "swift framework in App Xcode 6"() {
 		given:
+		mockXcodeVersion()
 		project.xcodebuild.version = 6
 		mockSwiftLibs()
 
@@ -269,6 +285,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "swift framework in App Xcode 7"() {
 		given:
+
+		mockXcodeVersion()
 		project.xcodebuild.version = 7
 		mockSwiftLibs()
 
