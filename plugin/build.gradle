@@ -4,7 +4,7 @@ plugins {
 
 
 
-def versionNumber = '0.12.4'
+def versionNumber = '0.12.4-TEST3'
 def publishURL = System.getenv("PUBLISH_URL")
 def publishUser = System.getenv("PUBLISH_USER")
 def publishPassword = System.getenv("PUBLISH_PASSWORD")

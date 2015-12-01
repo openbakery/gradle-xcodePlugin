@@ -68,7 +68,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	def "IllegalArgumentException_when_no_scheme_or_target_given"() {
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		thrown(IllegalArgumentException)
@@ -84,7 +84,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
@@ -115,7 +115,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.sharedPrecompsDir = new File("build/myShared").absoluteFile
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -145,7 +145,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.target = target
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
@@ -171,9 +171,8 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.workspace = 'myworkspace'
 		project.xcodebuild.simulator = false
 
-
 		when:
-			xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 			then:
 			1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
@@ -199,7 +198,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.type = Type.OSX
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -229,7 +228,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -261,7 +260,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -289,7 +288,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.workspace = 'myworkspace'
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -317,7 +316,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.workspace = 'myworkspace'
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -343,7 +342,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.simulator = true
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -371,7 +370,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.arch = ['i386'];
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -402,7 +401,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		when:
 		project.xcodebuild.version = '5B1008';
 
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -437,7 +436,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		}
 
 		when:
-		xcodeBuildTask.xcodebuild()
+		xcodeBuildTask.build()
 
 		then:
 		thrown(CommandRunnerException)
