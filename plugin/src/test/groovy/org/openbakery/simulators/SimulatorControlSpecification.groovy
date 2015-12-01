@@ -401,7 +401,6 @@ class SimulatorControlSpecification extends Specification {
 
 	def "get 8.4 device for destination xcode 7.1"() {
 		given:
-		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
 		Destination destination = new Destination()
@@ -419,7 +418,6 @@ class SimulatorControlSpecification extends Specification {
 
 	def "get 9.1 device for destination xcode 7.1"() {
 		given:
-		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
 		Destination destination = new Destination()
@@ -434,6 +432,38 @@ class SimulatorControlSpecification extends Specification {
 		device.name == "iPad 2"
 		device.identifier == "D72F7CC6-8426-4E0A-A234-34747B1F30DD"
 	}
+
+
+	def "get all iOS simulator destinations"() {
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+
+		when:
+		List<Destination> allDestinations = simulatorControl.getAllDestinations(Type.iOS)
+
+		then:
+		allDestinations.size() == 22
+		allDestinations[0].name == 'iPhone 4s'
+		allDestinations[0].platform == 'iOS Simulator'
+		allDestinations[0].id == '8C8C43D3-B53F-4091-8D7C-6A4B38051389'
+	}
+
+	def "get all tvOS simulator destinations"() {
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+
+		when:
+		List<Destination> allDestinations = simulatorControl.getAllDestinations(Type.tvOS)
+
+		then:
+		allDestinations.size() == 1
+		allDestinations[0].name == 'Apple TV 1080p'
+		allDestinations[0].platform == 'tvOS Simulator'
+		allDestinations[0].id == '4395107C-169C-43D7-A403-C9030B6A205D'
+	}
+
 }
 
 

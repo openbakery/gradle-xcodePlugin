@@ -298,7 +298,7 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("finding matching destination for: {}", destination)
 
-		for (Destination device in getAllDestinations()) {
+		for (Destination device in simulatorControl.getAllDestinations(Type.iOS)) {
 			if (!matches(destination.platform, device.platform)) {
 				//logger.debug("{} does not match {}", device.platform, destination.platform);
 				continue
@@ -360,19 +360,21 @@ class XcodeBuildPluginExtension {
 
 				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
+				def allDestinations = simulatorControl.getAllDestinations(Type.iOS)
+
 				switch (this.devices) {
 					case Devices.PHONE:
-						availableDestinations = getAllDestinations().findAll {
+						availableDestinations = allDestinations.findAll {
 							d -> d.name.contains("iPhone");
 						};
 						break;
 					case Devices.PAD:
-						availableDestinations = getAllDestinations().findAll {
+						availableDestinations = allDestinations.findAll {
 							d -> d.name.contains("iPad");
 						};
 						break;
 					default:
-						availableDestinations.addAll(getAllDestinations());
+						availableDestinations.addAll(allDestinations);
 						break;
 				}
 			}
@@ -624,23 +626,4 @@ class XcodeBuildPluginExtension {
 		return this.simulator
 	}
 
-	List<Destination> getAllDestinations() {
-		// returns all iOS destinations
-		def allDestinations = []
-
-		simulatorControl.getDevices().each { runtime, deviceList ->
-
-			if (runtime.type == Type.iOS) {
-				deviceList.each() { device ->
-					Destination destination = new Destination();
-					destination.platform = 'iOS Simulator'
-					destination.name = device.name
-					destination.os = runtime.version.toString()
-					allDestinations << destination
-				}
-			}
-
-		}
-		return allDestinations;
-	}
 }

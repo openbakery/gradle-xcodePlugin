@@ -164,9 +164,9 @@ class ProvisioningProfileReader {
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 
 
-		setBundleIdentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
-		setBundleIdentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
-		setBundleIdentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
 
 
 		//def teamIdentifier = plistHelper.getValueFromPlist(entitlementFile, "com.apple.developer.team-identifier")
@@ -189,7 +189,7 @@ class ProvisioningProfileReader {
 
 	}
 
-	private void setBundleIdentiferToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
+	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
 
 		if (currentValue == null) {

@@ -1,12 +1,7 @@
 package org.openbakery.simulators
 
 import org.gradle.api.Project
-import org.openbakery.CommandRunner
-import org.openbakery.CommandRunnerException
-import org.openbakery.Destination
-import org.openbakery.Type
-import org.openbakery.Version
-import org.openbakery.XcodePlugin
+import org.openbakery.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -411,4 +406,24 @@ class SimulatorControl {
 
 		return null
 	}
+
+	List<Destination> getAllDestinations(Type type) {
+		def allDestinations = []
+
+		getDevices().each { runtime, deviceList ->
+			if (runtime.type == type) {
+				deviceList.each() { device ->
+					Destination destination = new Destination();
+					destination.platform = type.value + ' Simulator'
+					destination.name = device.name
+					destination.os = runtime.version.toString()
+					destination.id = device.identifier
+					allDestinations << destination
+				}
+			}
+		}
+
+		return allDestinations
+	}
+
 }
