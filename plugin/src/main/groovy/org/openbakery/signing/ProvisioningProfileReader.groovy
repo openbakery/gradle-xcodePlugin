@@ -28,7 +28,7 @@ import java.text.DateFormat
 
 class ProvisioningProfileReader {
 
-	public static final String APPLICATION_IDENTIFIER_PREFIX = '\\$\\(AppIdentifierPrefix\\)'
+	public static final String APPLICATION_IDENTIFIER_PREFIX = '$(AppIdentifierPrefix)'
 	protected CommandRunner commandRunner
 	private PlistHelper plistHelper
 
@@ -164,16 +164,23 @@ class ProvisioningProfileReader {
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 
 
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
+		setBundleIdentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
+		setBundleIdentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
+		setBundleIdentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
 
 
-		def teamIdentifier = plistHelper.getValueFromPlist(entitlementFile, "com.apple.developer.team-identifier")
+		//def teamIdentifier = plistHelper.getValueFromPlist(entitlementFile, "com.apple.developer.team-identifier")
+		def applicationIdentifier = plistHelper.getValueFromPlist(entitlementFile, "application-identifier")
+		def applicationIdentifierPrefix = null
+		if (applicationIdentifier != null) {
+			applicationIdentifierPrefix = applicationIdentifier.split("\\.")[0]
+		}
+
+
 		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
 			def modifiedKeychainAccessGroups = []
 			keychainAccessGroups.each() { group ->
-				modifiedKeychainAccessGroups << group.replaceAll(APPLICATION_IDENTIFIER_PREFIX, teamIdentifier + ".")
+				modifiedKeychainAccessGroups << group.replace(APPLICATION_IDENTIFIER_PREFIX, applicationIdentifierPrefix + ".")
 			}
 			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
 		} else {
@@ -182,7 +189,7 @@ class ProvisioningProfileReader {
 
 	}
 
-	private void setBundleIndentiferToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
+	private void setBundleIdentiferToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
 
 		if (currentValue == null) {

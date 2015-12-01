@@ -255,7 +255,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
 			def modifiedKeychainAccessGroups = []
 			keychainAccessGroups.each() { group ->
-				modifiedKeychainAccessGroups << group.replaceAll(ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX, applicationIdentifier + ".")
+				modifiedKeychainAccessGroups << group.replace(ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX, applicationIdentifier + ".")
 			}
 			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
 		}

@@ -215,7 +215,7 @@ class PackageTask extends AbstractDistributeTask {
 
 		keychainAccessGroups.each { item ->
 			if (item.startsWith(applicationIdentifier)) {
-				result << item.replaceAll(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
+				result << item.replace(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
 			} else {
 				result << item
 			}
