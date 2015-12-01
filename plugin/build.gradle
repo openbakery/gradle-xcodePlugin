@@ -21,6 +21,9 @@ if (project.hasProperty("publishPassword")) {
 if (project.hasProperty("buildNumber")) {
 	versionNumber += "." + project.buildNumber 
 }
+if (project.hasProperty("versionSuffix")) {
+	versionNumber += project.versionSuffix 
+}
 
 
 group = 'org.openbakery'

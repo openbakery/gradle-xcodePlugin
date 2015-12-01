@@ -9,6 +9,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.Destination
 import org.openbakery.XcodePlugin
 import org.openbakery.XcodeProjectFile
+import org.openbakery.simulators.SimulatorControl
 
 /**
  * User: rene
@@ -16,8 +17,7 @@ import org.openbakery.XcodeProjectFile
  */
 class XcodeConfigTask extends AbstractXcodeTask {
 
-
-	XcodeProjectFile xcodeProjectFile;
+	XcodeProjectFile xcodeProjectFile
 
 	XcodeConfigTask() {
 		super()
@@ -55,7 +55,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		}
 		*/
 
-		logger.debug("all destinations: {}", project.xcodebuild.getAllDestinations())
+		//logger.debug("all destinations: {}", project.xcodebuild.getAllDestinations())
 
 	}
 
