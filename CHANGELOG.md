@@ -1,3 +1,12 @@
+# 0.12.4 (Dezember 9, 2015)
+
+Bugfixes
+* Fixed that the Keychain Access Group is propery set in the entitlements: Issue #226 
+* Fixed memory problem with the CommandRunner: Issue #222
+* Fixed that the SwiftSupport in not included anymore, because it is not needed
+* For simulator builds also the identifier is used. This avoids build failues if a simulator of the same type and name exists twice
+
+
 # 0.12.3 (November 11, 2015)
 
 Changes
