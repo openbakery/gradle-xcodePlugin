@@ -164,17 +164,35 @@ class ProvisioningProfileReader {
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 
 
+
+		def applicationIdentifier = plistHelper.getValueFromPlist(entitlementFile, "application-identifier")
+		def applicationIdentifierPrefix = null
+		String bundleIdentifierPrefix = ""
+		if (applicationIdentifier != null) {
+			String[] tokens = applicationIdentifier.split("\\.");
+			applicationIdentifierPrefix = tokens[0]
+			for (int i=1; i<tokens.length; i++) {
+				if (tokens[i] == "*") {
+					break;
+				}
+				if (bundleIdentifierPrefix.length() > 0) {
+					bundleIdentifierPrefix += "."
+				}
+				bundleIdentifierPrefix += tokens[i];
+			}
+		}
+
+		if (!bundleIdentifier.startsWith(bundleIdentifierPrefix)) {
+			throw new IllegalStateException("In the provisioning profile a application identifier is specified with " + bundleIdentifierPrefix + " but the app uses a bundle identifier " + bundleIdentifier + " that does not match!");
+		}
+
+
+
 		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
 		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
 		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
 
 
-		//def teamIdentifier = plistHelper.getValueFromPlist(entitlementFile, "com.apple.developer.team-identifier")
-		def applicationIdentifier = plistHelper.getValueFromPlist(entitlementFile, "application-identifier")
-		def applicationIdentifierPrefix = null
-		if (applicationIdentifier != null) {
-			applicationIdentifierPrefix = applicationIdentifier.split("\\.")[0]
-		}
 
 
 		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
