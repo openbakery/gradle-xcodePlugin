@@ -115,7 +115,7 @@ class XcodeBuildPluginExtension {
 	String bundleNameSuffix = null
 	List<String> arch = null
 	String workspace = null
-	String version = null
+	Version version = null
 	Map<String, String> environment = null
 	String productName = null
 	String bundleName = null
@@ -254,7 +254,7 @@ class XcodeBuildPluginExtension {
 		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
 
 		if (destination instanceof List) {
-
+			destinations = [] as Set
 			destination.each { singleDestination ->
 				this.destination {
 					name = singleDestination.toString()
@@ -298,7 +298,7 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("finding matching destination for: {}", destination)
 
-		for (Destination device in getAllDestinations()) {
+		for (Destination device in simulatorControl.getAllDestinations(Type.iOS)) {
 			if (!matches(destination.platform, device.platform)) {
 				//logger.debug("{} does not match {}", device.platform, destination.platform);
 				continue
@@ -360,19 +360,21 @@ class XcodeBuildPluginExtension {
 
 				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
+				def allDestinations = simulatorControl.getAllDestinations(Type.iOS)
+
 				switch (this.devices) {
 					case Devices.PHONE:
-						availableDestinations = getAllDestinations().findAll {
+						availableDestinations = allDestinations.findAll {
 							d -> d.name.contains("iPhone");
 						};
 						break;
 					case Devices.PAD:
-						availableDestinations = getAllDestinations().findAll {
+						availableDestinations = allDestinations.findAll {
 							d -> d.name.contains("iPad");
 						};
 						break;
 					default:
-						availableDestinations.addAll(getAllDestinations());
+						availableDestinations.addAll(allDestinations);
 						break;
 				}
 			}
@@ -426,40 +428,49 @@ class XcodeBuildPluginExtension {
 
 
 	void setVersion(String version) {
-		this.version = version
+		Version versionToCompare = new Version(version)
 		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
 
 
 		for (String xcode : installedXcodes.split("\n")) {
-
-
 			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
 			if (xcodeBuildFile.exists()) {
-
-				String xcodeVersion = commandRunner.runWithResult(xcodeBuildFile.absolutePath, "-version");
-
-				def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
-				def matcher = VERSION_PATTERN.matcher(xcodeVersion)
-				if (matcher.matches()) {
-					String versionString = matcher[0][1]
-					String buildNumberString = matcher[0][2]
-
-					if (versionString.startsWith(version)) {
+				Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
+				if (xcodeVersion.suffix != null && versionToCompare.suffix != null) {
+					if (xcodeVersion.suffix.equalsIgnoreCase(versionToCompare.suffix)) {
 						xcodePath = xcode
+						this.version = xcodeVersion
 						return
 					}
-
-					if (buildNumberString.equals(version)) {
-						xcodePath = xcode
-						return
-					}
+				} else if (xcodeVersion.toString().startsWith(versionToCompare.toString())) {
+					xcodePath = xcode
+					this.version = xcodeVersion
+					return
 				}
-
-
 			}
 		}
-
 		throw new IllegalStateException("No Xcode found with build number " + version);
+	}
+
+
+	Version getVersion() {
+		if (this.version == null) {
+			this.version = getXcodeVersion(getXcodebuildCommand())
+		}
+		return this.version
+	}
+
+	Version getXcodeVersion(String xcodebuildCommand) {
+		String xcodeVersion = commandRunner.runWithResult(xcodebuildCommand, "-version");
+
+		def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
+		def matcher = VERSION_PATTERN.matcher(xcodeVersion)
+		if (matcher.matches()) {
+			Version version = new Version(matcher[0][1])
+			version.suffix = matcher[0][2]
+			return version
+		}
+		return null
 	}
 
 	String getXcodePath() {
@@ -565,6 +576,35 @@ class XcodeBuildPluginExtension {
 	}
 
 
+	BuildConfiguration getBuildConfiguration() {
+		BuildTargetConfiguration buildTargetConfiguration = projectSettings[target]
+		if (buildTargetConfiguration != null) {
+			return buildTargetConfiguration.buildSettings[configuration];
+		}
+		throw new IllegalStateException("No build configuration found for + target '" + target + "' and configuration '" + configuration + "'");
+	}
+
+	BuildConfiguration getBuildConfiguration(String bundleIdentifier) {
+		BuildConfiguration result = null
+		projectSettings.each() { target, buildTargetConfiguration ->
+			BuildConfiguration settings = buildTargetConfiguration.buildSettings[configuration];
+
+			if (settings != null) {
+
+				if (settings.bundleIdentifier == null) {
+					String identifier = plistHelper.getValueFromPlist(settings.infoplist, "CFBundleIdentifier")
+					if (identifier != null && identifier.equalsIgnoreCase(bundleIdentifier)) {
+						result = settings
+						return true
+					}
+				} else if (settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
+					result = settings
+					return true
+				}
+			}
+		}
+		return result
+	}
 
 
 
@@ -586,23 +626,4 @@ class XcodeBuildPluginExtension {
 		return this.simulator
 	}
 
-	List<Destination> getAllDestinations() {
-		// returns all iOS destinations
-		def allDestinations = []
-
-		simulatorControl.getDevices().each { runtime, deviceList ->
-
-			if (runtime.type == Type.iOS) {
-				deviceList.each() { device ->
-					Destination destination = new Destination();
-					destination.platform = 'iOS Simulator'
-					destination.name = device.name
-					destination.os = runtime.version.toString()
-					allDestinations << destination
-				}
-			}
-
-		}
-		return allDestinations;
-	}
 }

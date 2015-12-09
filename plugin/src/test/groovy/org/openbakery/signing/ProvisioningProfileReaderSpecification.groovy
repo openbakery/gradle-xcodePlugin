@@ -1,5 +1,6 @@
 package org.openbakery.signing
 
+import aQute.libg.command.Command
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -7,6 +8,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
+import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 
 import static org.hamcrest.MatcherAssert.assertThat
@@ -25,6 +27,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	File projectDir
 	File buildOutputDirectory
 	File appDirectory
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -129,10 +132,6 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"\t<array/>\n" +
 				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
 				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
-				"\t<key>keychain-access-groups</key>\n" +
-				"\t<array>\n" +
-				"\t\t<string>Z7L2YCUH45.*</string>\n" +
-				"\t</array>\n" +
 				"</dict>\n" +
 				"</plist>\n"
 
@@ -141,10 +140,167 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", null)
 
 		then:
 		entitlementsFile.exists()
 		entitlementsFile.text == expectedContents
 	}
+
+
+	def "extract Entitlements with keychain access group"() {
+		given:
+		String expectedContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+				"<plist version=\"1.0\">\n" +
+				"<dict>\n" +
+				"\t<key>com.apple.application-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<key>com.apple.developer.aps-environment</key>\n" +
+				"\t<string>development</string>\n" +
+				"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.icloud-container-environment</key>\n" +
+				"\t<array>\n" +
+				"\t\t<string>Development</string>\n" +
+				"\t\t<string>Production</string>\n" +
+				"\t</array>\n" +
+				"\t<key>com.apple.developer.icloud-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.icloud-services</key>\n" +
+				"\t<string>*</string>\n" +
+				"\t<key>com.apple.developer.team-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45</string>\n" +
+				"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
+				"\t<array/>\n" +
+				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<key>keychain-access-groups</key>\n" +
+				"\t<array>\n" +
+				"\t\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t\t<string>Z7L2YCUH45.org.openbakery.Test</string>\n" +
+				"\t\t<string>AAAAAAAAAA.com.example.Test</string>\n" +
+				"\t</array>\n" +
+				"</dict>\n" +
+				"</plist>\n"
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
+
+		def keychainAccessGroups = [
+				"Z7L2YCUH45.org.openbakery.Example",
+				"Z7L2YCUH45.org.openbakery.Test",
+				"AAAAAAAAAA.com.example.Test",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text == expectedContents
+	}
+
+
+	def "extract Entitlements test application identifier"() {
+		given:
+		String mobileprovision = "src/test/Resource/openbakery.mobileprovision"
+		commandRunner.runWithResult(_) >> FileUtils.readFileToString(new File("src/test/Resource/entitlements.plist"))
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+
+		def keychainAccessGroups = [
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Test",
+				"CCCCCCCCCC.com.example.Test",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Test")
+		entitlementsFile.text.contains("CCCCCCCCCC.com.example.Test")
+	}
+
+
+	def "extract Entitlements with wildcard application identifier that does not match"() {
+			given:
+			String mobileprovision = "src/test/Resource/openbakery.mobileprovision"
+
+			def entitlements = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+					"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+					"<plist version=\"1.0\">\n" +
+					"<dict>\n" +
+					"    <key>keychain-access-groups</key>\n" +
+					"    <array>\n" +
+					"        <string>AAAAAAAAAA.*</string>\n" +
+					"    </array>\n" +
+					"    <key>get-task-allow</key>\n" +
+					"    <false/>\n" +
+					"    <key>application-identifier</key>\n" +
+					"    <string>DDDDDDDDDD.com.mycompany.*</string>\n" +
+					"    <key>com.apple.developer.team-identifier</key>\n" +
+					"    <string>AAAAAAAAAA</string>\n" +
+					"</dict>\n" +
+					"</plist>"
+
+			commandRunner.runWithResult(_) >> entitlements
+
+			when:
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+
+			def keychainAccessGroups = [
+					ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+			]
+
+			File entitlementsFile = new File(projectDir, "entitlements.plist")
+			reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+
+			then:
+			thrown(IllegalStateException.class)
+		}
+
+
+	def "extract Entitlements with wildcard application identifier"() {
+		given:
+		String mobileprovision = "src/test/Resource/openbakery.mobileprovision"
+
+		def entitlements = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+				"<plist version=\"1.0\">\n" +
+				"<dict>\n" +
+				"    <key>keychain-access-groups</key>\n" +
+				"    <array>\n" +
+				"        <string>AAAAAAAAAA.*</string>\n" +
+				"    </array>\n" +
+				"    <key>get-task-allow</key>\n" +
+				"    <false/>\n" +
+				"    <key>application-identifier</key>\n" +
+				"    <string>DDDDDDDDDD.org.openbakery.*</string>\n" +
+				"    <key>com.apple.developer.team-identifier</key>\n" +
+				"    <string>AAAAAAAAAA</string>\n" +
+				"</dict>\n" +
+				"</plist>"
+
+		commandRunner.runWithResult(_) >> entitlements
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+
+		def keychainAccessGroups = [
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text.contains("DDDDDDDDDD.org.openbakery.Example")
+	}
+
 }

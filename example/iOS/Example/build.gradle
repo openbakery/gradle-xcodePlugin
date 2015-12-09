@@ -44,16 +44,14 @@ xcodebuild {
 	scheme = 'Example'
 	configuration = 'Test'	
 		
-	destination {
-		platform = 'iOS Simulator'
-		name = 'iPad 2'
-		os='9.*'
+	destination = ['iPad 2', 'iPhone 4s' ]
+
+
+	signing {
+		certificateURI = "foo"
+		certificatePassword = "foo"
+		mobileProvisionURI = "foo"
 	}
-	destination {
-		platform = 'iOS Simulator'
-		name = 'iPhone 4s'
-		os='9.*'
-	}	
 }
 
 
@@ -62,11 +60,10 @@ coverage {
 	exclude = '.*h$|.*UnitTests.*m$'
 }
 
-
+/*
 task continuous(dependsOn:'test') {
 	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
 }
-
 
 task integration(dependsOn: ['archive', 'package', 'hockeyapp']) {
 	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
@@ -80,6 +77,79 @@ task release(dependsOn: ['archive', 'package']) {
 
 task appstore(dependsOn: ['archive', 'package']) {
 	description = 'Build for the AppStore'
+}
+*/
+
+
+def configureDescription = 'Configures the build according to the passed <ConfigurationName>'
+def archiveDescription = 'Configures the project using "configure<ConfigurationName>" and saves an Xcode archive'
+def packageDescription = 'Packages and codesignes the project after executing "archive<ConfigurationName" and saves the resulting ipa'
+def distributeHockeyDescription = 'Executes "package<Properties>/<ConfigurationName>" and uploads the resulting ipa to Hockey.'
+
+def getPropertyForComponents(List<String> components) {
+  def propertyName = components.join('.')
+
+	if (project.hasProperty(propertyName+"_0")) {
+		// is array
+		def result = []
+		def counter = 0
+		while(project.hasProperty(propertyName+"_"+counter)) {
+			result << project.property(propertyName+"_"+counter)
+			
+			counter++
+		}
+		return result
+	}
+	println propertyName
+	
+	
+  if (!project.hasProperty(propertyName)) {
+    components.pop()
+    propertyName = components.join('.')
+  }
+
+  return project.hasProperty(propertyName) ? project.property(propertyName) : ""
+}
+
+
+tasks.addRule("Pattern: configure<TargetName>: " + configureDescription) { String taskName ->
+	if (taskName.startsWith("configure")) {
+		task(taskName, dependsOn:['clean']) {
+      def configurationName = (taskName - 'configure')
+      xcodebuild {
+        configuration = 'Release'
+        scheme = configurationName
+        target = configurationName
+      }
+		}
+    tasks[taskName].mustRunAfter(clean)
+	}
+}
+
+tasks.addRule("Pattern: archive<TargetName>: " + archiveDescription) { String taskName ->
+  if (taskName.startsWith("archive")) {
+    def configureTask = 'configure' + (taskName - 'archive')
+    task(taskName, dependsOn:[configureTask, 'archive']).mustRunAfter(configureTask)
+  }
+}
+
+tasks.addRule("Pattern: package<TargetName>/<Properties>: " + packageDescription) { String taskName ->
+  if (taskName.startsWith("package")) {
+    def targetName = (taskName - 'package').split('/')[0]
+    def properties = (taskName - 'package').split('/')[1]
+    def archiveTask = 'archive' + targetName
+    task(taskName, dependsOn:[archiveTask, 'package']) {
+      project.xcodebuild {
+  			simulator = false
+  			signing {
+  				certificateURI = getPropertyForComponents([targetName, properties, 'SigningCertificateURI'])
+  				certificatePassword = getPropertyForComponents([targetName, properties, 'SigningCertificatePassword'])
+  				mobileProvisionURI = getPropertyForComponents([targetName, properties, 'SigningMobileProvisionURI'])
+  			}
+  		}
+    }
+    tasks[taskName].mustRunAfter(archiveTask)
+  }
 }
 
 
@@ -106,7 +176,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 	}
 	
 	// ------------------------------------------------------------------------------------------
-
+	/*
 	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
 		println "Configure sign settings for the integration and release build"
 		xcodebuild {
@@ -138,7 +208,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 			bundleIdentifier = 'org.openbakery.Example'
 		}
 	}
-	
+	*/
 	
 	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
 	

@@ -55,7 +55,7 @@ class PlistHelperStub extends PlistHelper {
 	}
 
 	@Override
-	void setValueForPlist(def Object plist, String command) {
+	void commandForPlist(def Object plist, String command) {
 		plistCommands.add(command)
 	}
 }

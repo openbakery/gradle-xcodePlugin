@@ -1,17 +1,10 @@
-buildscript {
-	repositories {
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
-	}
+plugins {
+	id "com.gradle.plugin-publish" version "0.9.1"
 }
 
 
 
-def versionNumber = '0.12.3'
+def versionNumber = '0.12.4'
 def publishURL = System.getenv("PUBLISH_URL")
 def publishUser = System.getenv("PUBLISH_USER")
 def publishPassword = System.getenv("PUBLISH_PASSWORD")
@@ -28,6 +21,9 @@ if (project.hasProperty("publishPassword")) {
 if (project.hasProperty("buildNumber")) {
 	versionNumber += "." + project.buildNumber 
 }
+if (project.hasProperty("versionSuffix")) {
+	versionNumber += project.versionSuffix 
+}
 
 
 group = 'org.openbakery'
@@ -36,16 +32,13 @@ version = versionNumber
 
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: "com.gradle.plugin-publish"
-
 
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.4'
+	gradleVersion = '2.8'
 }
 
 configurations {

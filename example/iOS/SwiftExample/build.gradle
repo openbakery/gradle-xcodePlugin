@@ -22,12 +22,13 @@ buildscript {
 	repositories {
 		maven {
 			url('http://repository.openbakery.org/')
+			//url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.11.+"
+	    classpath "org.openbakery:xcode-plugin:0.12.+"
 	}
 		
 }
@@ -36,12 +37,12 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
-	//version = "6.1"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 	version = "7"
 	
 	scheme = 'SwiftExample'
 	target = 'SwiftExample'
 
+	destination = ['iPad 2', 'iPhone 4s' ]
 }
 
 
@@ -56,11 +57,11 @@ task integration(dependsOn: ['package', 'hockeyapp']) {
 
 tasks.hockeyapp.mustRunAfter tasks.package
 
-task release(dependsOn: 'package') {
+task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
 }
 
-task appstore(dependsOn: 'package') {
+task appstore(dependsOn: ['archive', 'package']) {
 	description = 'Build for the AppStore'
 }
 
@@ -69,29 +70,6 @@ task appstore(dependsOn: 'package') {
 
 gradle.taskGraph.whenReady { taskGraph ->
 
-	
-
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(continuous) || taskGraph.hasTask(test)) {
-		println "Configure device settings for the continuous and test build"
-
-		println "CONFIGURE INTEGRATION"
-		xcodebuild {
-		
-			destination {
-				platform = 'iOS Simulator'
-				name = 'iPad 2'
-				os='9.*'
-			}
-			destination {
-				platform = 'iOS Simulator'
-				name = 'iPhone 4s'
-				os='9.*'
-			}
-		
-		}
-	}
 
 	// ------------------------------------------------------------------------------------------
 

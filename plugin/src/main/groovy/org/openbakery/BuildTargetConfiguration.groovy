@@ -11,6 +11,7 @@ class BuildConfiguration {
 	String productName
 	String sdkRoot
 	Devices devices
+	String entitlements
 
 	BuildConfiguration parent;
 
@@ -60,12 +61,39 @@ class BuildConfiguration {
 		}
 		return null
 	}
+
+	String getEntitlements() {
+		if (entitlements != null) {
+			return entitlements
+		}
+		if (parent != null) {
+			return parent.entitlements
+		}
+		return null
+	}
+
+	@Override
+	String toString() {
+		StringBuilder builder = new StringBuilder("BuildConfiguration[")
+		builder.append("infoplist=")
+		builder.append(infoplist)
+		builder.append(", bundleIdentifier=")
+		builder.append(bundleIdentifier)
+		builder.append(", productName=")
+		builder.append(productName)
+		builder.append(", sdkRoot=")
+		builder.append(sdkRoot)
+		builder.append(", devices=")
+		builder.append(devices)
+		builder.append(", entitlements=")
+		builder.append(entitlements)
+		return builder.toString()
+	}
 }
 
 class BuildTargetConfiguration {
 
 	HashMap<String, BuildConfiguration> buildSettings = new HashMap<>()
-
 
 }
 

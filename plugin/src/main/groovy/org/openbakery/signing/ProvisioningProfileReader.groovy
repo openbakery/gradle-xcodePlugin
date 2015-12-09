@@ -28,6 +28,7 @@ import java.text.DateFormat
 
 class ProvisioningProfileReader {
 
+	public static final String APPLICATION_IDENTIFIER_PREFIX = '$(AppIdentifierPrefix)'
 	protected CommandRunner commandRunner
 	private PlistHelper plistHelper
 
@@ -115,7 +116,6 @@ class ProvisioningProfileReader {
 
 	String getApplicationIdentifierPrefix() {
 		return config.getString("ApplicationIdentifierPrefix")
-
 	}
 
 	File getPlistFromProvisioningProfile() {
@@ -154,7 +154,7 @@ class ProvisioningProfileReader {
 		return value;
 	}
 
-	void extractEntitlements(File entitlementFile, String bundleIdentifier) {
+	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups) {
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
 						"-x",
@@ -164,20 +164,50 @@ class ProvisioningProfileReader {
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 
 
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
-		setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
-		//setBundleIndentiferToEntitlementsForValue(entitlementFile, bundleIdentifier, "keychain-access-groups")
 
-		// the keychain-access-groups were removed from the entitlements on the xcode export step
-		// therefor I also remove this here. Maybe this is wrong, but I hope the future will clarify this.
-		//plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
+		def applicationIdentifier = plistHelper.getValueFromPlist(entitlementFile, "application-identifier")
+		def applicationIdentifierPrefix = null
+		String bundleIdentifierPrefix = ""
+		if (applicationIdentifier != null) {
+			String[] tokens = applicationIdentifier.split("\\.");
+			applicationIdentifierPrefix = tokens[0]
+			for (int i=1; i<tokens.length; i++) {
+				if (tokens[i] == "*") {
+					break;
+				}
+				if (bundleIdentifierPrefix.length() > 0) {
+					bundleIdentifierPrefix += "."
+				}
+				bundleIdentifierPrefix += tokens[i];
+			}
+		}
+
+		if (!bundleIdentifier.startsWith(bundleIdentifierPrefix)) {
+			throw new IllegalStateException("In the provisioning profile a application identifier is specified with " + bundleIdentifierPrefix + " but the app uses a bundle identifier " + bundleIdentifier + " that does not match!");
+		}
 
 
+
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
+
+
+
+
+		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
+			def modifiedKeychainAccessGroups = []
+			keychainAccessGroups.each() { group ->
+				modifiedKeychainAccessGroups << group.replace(APPLICATION_IDENTIFIER_PREFIX, applicationIdentifierPrefix + ".")
+			}
+			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
+		} else {
+			plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
+		}
 
 	}
 
-	private void setBundleIndentiferToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
+	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
 
 		if (currentValue == null) {
@@ -199,4 +229,5 @@ class ProvisioningProfileReader {
 			}
 		}
 	}
+
 }

@@ -36,7 +36,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 	}
 
 	@TaskAction
-	def xcodebuild() {
+	def build() {
 		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}

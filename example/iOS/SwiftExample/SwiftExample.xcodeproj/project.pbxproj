@@ -156,6 +156,7 @@
 		A7B734991A80E76900EE8EBD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Rene Pirringer";
 				TargetAttributes = {
@@ -405,6 +406,7 @@
 				A7B734C21A80E76900EE8EBD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7B734C31A80E76900EE8EBD /* Build configuration list for PBXNativeTarget "SwiftExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -413,6 +415,7 @@
 				A7B734C51A80E76900EE8EBD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

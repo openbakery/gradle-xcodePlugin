@@ -56,10 +56,6 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return getDestinationFile(outputDirectory, extension)
 	}
 
-	@Override
-	def createZip(File fileToZip) {
-		return super.createZip(fileToZip)
-	}
 
 	File copyBundleToDirectory(File outputDirectory, File bundle) {
 		if (!outputDirectory.exists()) {

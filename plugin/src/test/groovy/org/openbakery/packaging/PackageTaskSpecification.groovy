@@ -2,18 +2,16 @@ package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
 import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.wrapper.Logger
-import org.junit.After
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -41,7 +39,8 @@ class PackageTaskSpecification extends Specification {
 
 	void setup() {
 
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
+		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
@@ -70,10 +69,22 @@ class PackageTaskSpecification extends Specification {
 		keychain = new File(projectDir, "gradle.keychain")
 		FileUtils.writeStringToFile(keychain, "dummy");
 		project.xcodebuild.signing.keychain = keychain.absolutePath
+		project.xcodebuild.target = "Example"
+
+		File entitlementsFile = new File(payloadAppDirectory, "archived-expanded-entitlements.xcent")
+
+		PlistHelper helper = new PlistHelper(project, new CommandRunner())
+		helper.createForPlist(entitlementsFile)
+		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
+		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
+
+		//FileUtils.writeStringToFile(entitlementsFile, "")
 
 	}
 
 	def cleanup() {
+		FileUtils.deleteDirectory(archiveDirectory)
+		FileUtils.deleteDirectory(project.buildDir)
 		FileUtils.deleteDirectory(projectDir)
 	}
 
@@ -147,6 +158,19 @@ class PackageTaskSpecification extends Specification {
 
 	}
 
+	def mockXcodeVersion() {
+		project.xcodebuild.commandRunner = commandRunner
+		File xcodebuild7_1_1 = new File(projectDir, "Xcode7.1.1.app")
+		File xcodebuild6_1 = new File(projectDir, "Xcode6-1.app")
+		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcodebuild6_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
+		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.1.1\nBuild version 7B1005"
+		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+	}
+
 
 	List<String> codesignLibCommand(String path) {
 		File payloadApp = new File(packageTask.outputPath, path)
@@ -191,7 +215,6 @@ class PackageTaskSpecification extends Specification {
 		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
 		String result = new File('src/test/Resource/entitlements.plist').text
 		commandRunner.runWithResult(commandList) >> result
-
 		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
 		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
@@ -200,18 +223,17 @@ class PackageTaskSpecification extends Specification {
 
 
 
-
-
-	def "swift Framework"() {
+	def "swift Framework xcode 6"() {
 		given:
+		mockXcodeVersion()
+		project.xcodebuild.version = 6
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true)
 
 		when:
-		packageTask.packageApplication()
-
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
-
+		assert !ipaBundle.exists()
+		packageTask.packageApplication()
 
 		ZipFile zipFile = new ZipFile(ipaBundle);
 
@@ -223,6 +245,30 @@ class PackageTaskSpecification extends Specification {
 
 		then:
 		entries.contains("SwiftSupport/libswiftCore.dylib")
+	}
+
+	def "swift Framework xcode 7"() {
+		given:
+		mockXcodeVersion()
+		project.xcodebuild.version = 7
+		FileUtils.deleteDirectory(project.projectDir)
+		mockExampleApp(false, true)
+
+		when:
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
+		assert !ipaBundle.exists()
+		packageTask.packageApplication()
+
+		ZipFile zipFile = new ZipFile(ipaBundle);
+
+		List<String> entries = new ArrayList<String>()
+
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+
+		then:
+		!entries.contains("SwiftSupport/")
 	}
 
 
@@ -482,9 +528,38 @@ class PackageTaskSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		plistHelperStub.plistCommands.size() == 1
+		plistHelperStub.plistCommands.size() > 0
 		plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
 	}
 
+
+	def "getKeychainAccessGroupFromEntitlements"() {
+		given:
+		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+
+		when:
+		List<String> keychainAccessGroup = packageTask.getKeychainAccessGroupFromEntitlements(payloadAppDirectory)
+
+		then:
+		keychainAccessGroup.size() == 3
+		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)org.openbakery.Example"
+		keychainAccessGroup[1] == "\$(AppIdentifierPrefix)org.openbakery.ExampleWidget"
+		keychainAccessGroup[2] == "BBBBBBBBBB.org.openbakery.Foobar"
+	}
+
+	def "create entitlements with keychain access groups"() {
+		given:
+		mockExampleApp(false, false)
+		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+
+		when:
+		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.ExampleWidget")
+
+	}
 
 }

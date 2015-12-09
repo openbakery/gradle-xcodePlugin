@@ -17,16 +17,20 @@ package org.openbakery
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.signing.ProvisioningProfileReader
+
 import static groovy.io.FileType.FILES
 
 class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	public static final String ARCHIVE_FOLDER = "archive"
 
-    XcodeBuildArchiveTask() {
+	XcodeBuildArchiveTask() {
 		super()
 
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
+		// when creating an xcarchive for iOS then the provisioning profile is need for the team id so that the entitlements is setup properly
+		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		this.description = "Prepare the app bundle that it can be archive"
 	}
 
@@ -58,8 +62,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		return icons
 	}
 
-	def getMacOSXIcons(def appInfoPlist) {
-
+	def getMacOSXIcons() {
+		File appInfoPlist  = new File(project.xcodebuild.applicationBundle, "Contents/Info.plist")
 		ArrayList<String> icons = new ArrayList<>();
 
 		def icnsFileName = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIconFile")
@@ -75,36 +79,40 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	}
 
 
+
+	def getValueFromBundleInfoPlist(File bundle, String key) {
+		File appInfoPlist
+		if (project.xcodebuild.type == Type.OSX) {
+			appInfoPlist = new File(bundle, "Contents/Info.plist")
+		} else {
+			appInfoPlist = new File(bundle, "Info.plist")
+		}
+		return plistHelper.getValueFromPlist(appInfoPlist, key)
+	}
+
+
 	def createInfoPlist(def applicationsDirectory) {
 
 		StringBuilder content = new StringBuilder();
 
 
-		File appInfoPlist
-		if (project.xcodebuild.type == Type.OSX) {
-			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Contents/Info.plist")
-		} else {
-			appInfoPlist = new File(project.xcodebuild.applicationBundle, "Info.plist")
-		}
-
-
 		def name = project.xcodebuild.bundleName
 		def schemeName = name
 		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
-		def bundleIdentifier = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIdentifier")
+		def bundleIdentifier = getValueFromBundleInfoPlist(project.xcodebuild.applicationBundle, "CFBundleIdentifier")
 		int time = System.currentTimeMillis() / 1000;
 
 		def creationDate = formatDate(new Date());
 
-		def shortBundleVersion = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleShortVersionString")
-		def bundleVersion = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleVersion")
+		def shortBundleVersion = getValueFromBundleInfoPlist(project.xcodebuild.applicationBundle, "CFBundleShortVersionString")
+		def bundleVersion = getValueFromBundleInfoPlist(project.xcodebuild.applicationBundle, "CFBundleVersion")
 
 		List icons = new ArrayList<String>()
 
 		if (project.xcodebuild.type == Type.iOS) {
 			icons = getiOSIcons()
 		} else {
-			icons = getMacOSXIcons(appInfoPlist)
+			icons = getMacOSXIcons()
 		}
 
 		content.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -163,13 +171,22 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 	}
 
+
+
 	def createFrameworks(def applicationsDirectory) {
 
 		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
 
 
 		if (frameworksPath.exists()) {
-			File swiftSupportDirectory = new File(getArchiveDirectory(), "SwiftSupport");
+
+			def swiftSupportPath = "SwiftSupport"
+
+			if (project.xcodebuild.version.major > 6) {
+				swiftSupportPath += "/iphoneos"
+			}
+
+			File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath);
 			if (!swiftSupportDirectory.exists()) {
 				swiftSupportDirectory.mkdirs()
 			}
@@ -190,7 +207,58 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		}
 
+	}
 
+	def createEntitlements(File bundle) {
+
+		if (project.xcodebuild.type != Type.iOS) {
+			logger.warn("Entitlements handling is only implemented for iOS!")
+			return
+		}
+
+		String bundleIdentifier = getValueFromBundleInfoPlist(bundle, "CFBundleIdentifier")
+		if (bundleIdentifier == null) {
+			logger.debug("No entitlements embedded, because no bundle identifier found in bundle {}", bundle)
+			return
+		}
+		BuildConfiguration buildConfiguration = project.xcodebuild.getBuildConfiguration(bundleIdentifier)
+		if (buildConfiguration == null) {
+			logger.debug("No entitlements embedded, because no buildConfiguration for bundle identifier {}", bundleIdentifier)
+			return
+		}
+
+		File destinationDirectory = getDestinationDirectoryForBundle(bundle)
+		if (buildConfiguration.entitlements) {
+			File entitlementFile = new File(destinationDirectory, "archived-expanded-entitlements.xcent")
+			FileUtils.copyFile(new File(project.projectDir, buildConfiguration.entitlements), entitlementFile)
+			modifyEntitlementsFile(entitlementFile, bundleIdentifier)
+		}
+	}
+
+	def modifyEntitlementsFile(File entitlementFile, String bundleIdentifier) {
+		if (!entitlementFile.exists()) {
+			logger.warn("Entitlements File does not exist {}", entitlementFile)
+			return
+		}
+
+		String applicationIdentifier = "UNKNOWN00ID"; // if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
+		File provisioningProfile = getProvisionFileForIdentifier(bundleIdentifier)
+		if (provisioningProfile != null && provisioningProfile.exists()) {
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, project, commandRunner, plistHelper)
+			applicationIdentifier = reader.getApplicationIdentifierPrefix()
+		}
+
+		plistHelper.addValueForPlist(entitlementFile, "application-identifier", applicationIdentifier + "." + bundleIdentifier)
+
+		List<String> keychainAccessGroups = plistHelper.getValueFromPlist(entitlementFile, "keychain-access-groups")
+
+		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
+			def modifiedKeychainAccessGroups = []
+			keychainAccessGroups.each() { group ->
+				modifiedKeychainAccessGroups << group.replace(ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX, applicationIdentifier + ".")
+			}
+			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
+		}
 	}
 
 
@@ -217,10 +285,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		logger.debug("Create xcarchive")
 
 		// create xcarchive
-		def applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
-		applicationsDirectory.mkdirs()
-
-		copy(project.xcodebuild.applicationBundle, applicationsDirectory)
+		copy(project.xcodebuild.applicationBundle, getApplicationsDirectory())
 
 
 		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
@@ -233,12 +298,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			if (dsymPath.exists()) {
 				copy(dsymPath, dSymDirectory)
 			}
+			createEntitlements(bundle)
 		}
 
 
 		createInfoPlist(getArchiveDirectory())
 
 		createFrameworks(getArchiveDirectory())
+
 
 		if (project.xcodebuild.type == Type.iOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + project.xcodebuild.applicationBundle.name)
@@ -248,6 +315,17 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		logger.debug("create archive done")
 
+	}
+
+	File getApplicationsDirectory() {
+		File applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
+		applicationsDirectory.mkdirs()
+		return applicationsDirectory
+	}
+
+	File getDestinationDirectoryForBundle(File bundle) {
+		String relative = project.xcodebuild.outputPath.toURI().relativize(bundle.toURI()).getPath();
+		return new File(getApplicationsDirectory(), relative)
 	}
 
 	def convertInfoPlistToBinary(File archiveDirectory) {

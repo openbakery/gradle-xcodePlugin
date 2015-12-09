@@ -159,7 +159,8 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse with no result"() {
 		def allResults = [:]
-		def destination = project.xcodebuild.getAllDestinations()[0]
+		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		def destination = simulatorControl.getAllDestinations(Type.iOS)[0]
 		allResults.put(destination, null)
 		xcodeTestTask.allResults = allResults
 		when:
@@ -310,8 +311,8 @@ class XcodeTestTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPad 2,OS=9.0"
-			expectedCommandList << "-destination" << "platform=iOS Simulator,name=iPhone 4s,OS=9.0"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 			expectedCommandList << "test"
 		}
 		commandList == expectedCommandList

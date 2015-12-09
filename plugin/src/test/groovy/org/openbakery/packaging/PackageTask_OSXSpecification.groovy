@@ -139,7 +139,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
 		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
-		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "Delete CFBundleResourceSpecification")
+		plistHelperStub.deleteValueFromPlist(infoPlist.absolutePath, "CFBundleResourceSpecification")
 		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 

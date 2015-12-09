@@ -1,8 +1,6 @@
 package org.openbakery
 
-import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
-import org.openbakery.signing.ProvisioningProfileReader
 
 /**
  * User: rene

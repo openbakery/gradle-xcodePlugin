@@ -40,7 +40,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		infoPlist = new File(project.projectDir, project.xcodebuild.infoPlist)
 
 
-		logger.lifecycle("Updating {}", infoPlist)
+		logger.debug("Try to updating {}", infoPlist)
 
 		if (project.infoplist.bundleIdentifier != null) {
 			setValueForPlist("CFBundleIdentifier", project.infoplist.bundleIdentifier)
@@ -49,9 +49,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		// add suffix to bundleIdentifier
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
-
 			setValueForPlist("CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
-
 		}
 
 		// Modify bundle bundleName
@@ -80,8 +78,10 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			setValueForPlist(command)
 		}
 
-		if (!modfied) {
-			logger.lifecycle("Nothing was modifed!")
+		if (modfied) {
+			logger.lifecycle("{} was updated", infoPlist)
+		} else {
+			logger.debug("Nothing was modified!")
 		}
 	}
 
@@ -152,7 +152,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 	void setValueForPlist(String command) {
 		modfied = true
 		logger.lifecycle("Set {}", command)
-		plistHelper.setValueForPlist(infoPlist, command)
+		plistHelper.commandForPlist(infoPlist, command)
 
 	}
 }

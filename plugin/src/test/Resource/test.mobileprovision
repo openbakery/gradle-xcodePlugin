@@ -17,6 +17,8 @@
 	<dict>
 		<key>application-identifier</key>
 		<string>AAAAAAAAAAA.org.openbakery.Example</string>
+		<key>com.apple.developer.team-identifier</key>
+    <string>AAAAAAAAAAA</string>
 		<key>get-task-allow</key>
 		<false/>
 		<key>keychain-access-groups</key>
