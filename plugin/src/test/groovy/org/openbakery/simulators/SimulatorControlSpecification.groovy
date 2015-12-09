@@ -61,11 +61,18 @@ class SimulatorControlSpecification extends Specification {
 		runtimes != null
 		runtimes.size() == 2
 
+
 		SimulatorRuntime runtime = runtimes.get(0)
-		runtime.name.equals("iOS 7.1")
-		runtime.version.toString().equals("7.1")
-		runtime.buildNumber.equals("11D167")
-		runtime.identifier.equals("com.apple.CoreSimulator.SimRuntime.iOS-7-1")
+		runtime.name.equals("iOS 8.2")
+		runtime.version.toString().equals("8.2")
+		runtime.buildNumber.equals("12D508")
+		runtime.identifier.equals("com.apple.CoreSimulator.SimRuntime.iOS-8-2")
+
+		SimulatorRuntime runtime1 = runtimes.get(1)
+		runtime1.name.equals("iOS 7.1")
+		runtime1.version.toString().equals("7.1")
+		runtime1.buildNumber.equals("11D167")
+		runtime1.identifier.equals("com.apple.CoreSimulator.SimRuntime.iOS-7-1")
 	}
 
 
@@ -120,7 +127,7 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.runDevice(devices.get(0))
 
 		then:
-		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "73C126C8-FD53-44EA-80A3-84F5F19508C0"])
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "E06E8144-D4AB-4616-A19E-9A489FB0CC17"])
 
 	}
 
@@ -147,7 +154,7 @@ class SimulatorControlSpecification extends Specification {
 
 		when:
 		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(1));
 
 		then:
 		devices != null
@@ -165,7 +172,7 @@ class SimulatorControlSpecification extends Specification {
 
 		when:
 		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(1));
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
 
 		then:
 		devices != null
@@ -276,7 +283,7 @@ class SimulatorControlSpecification extends Specification {
 
 
 		then:
-		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "73C126C8-FD53-44EA-80A3-84F5F19508C0"])
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/instruments", "-w", "E06E8144-D4AB-4616-A19E-9A489FB0CC17"])
 	}
 
 
@@ -307,12 +314,12 @@ class SimulatorControlSpecification extends Specification {
 
 		when:
 		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(1));
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
 
 		then:
 		runtimes != null
 		runtimes.size() == 4
-		runtimes.get(1).name.equals("iOS 9.1")
+		runtimes.get(0).name.equals("iOS 9.1")
 
 		devices != null
 		devices.size() == 12
@@ -463,6 +470,9 @@ class SimulatorControlSpecification extends Specification {
 		allDestinations[0].platform == 'tvOS Simulator'
 		allDestinations[0].id == '4395107C-169C-43D7-A403-C9030B6A205D'
 	}
+
+
+
 
 }
 

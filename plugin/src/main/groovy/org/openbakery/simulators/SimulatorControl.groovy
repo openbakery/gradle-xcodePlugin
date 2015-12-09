@@ -127,6 +127,8 @@ class SimulatorControl {
 
 			}
 		}
+		runtimes.sort(new SimulatorRuntimeComparator())
+
 	}
 
 	SimulatorDevice parseIdentifierFromDevicePairs(String line) {
@@ -170,7 +172,7 @@ class SimulatorControl {
 		if (runtimes == null) {
 			parse()
 		}
-		return runtimes
+		return runtimes;
 	}
 
 
@@ -181,26 +183,29 @@ class SimulatorControl {
 				result << runtime
 			}
 		}
+		result.sort(new SimulatorRuntimeComparator())
 		return result
 	}
 
-	SimulatorRuntime getMostRecentRuntime(Type type) {
 
-		SimulatorRuntime result = null;
+	List<SimulatorRuntime> getRuntimes(Type type) {
+		ArrayList<SimulatorRuntime> result = new ArrayList<>()
 
 		for (SimulatorRuntime runtime in getRuntimes()) {
-			if (runtime.type != type) {
-				continue
+			if (runtime.type == type) {
+				result.add(runtime);
 			}
-			if (result != null &&
-							runtime.getVersion().compareTo(result.version) > 0) {
-				result = runtime;
-			} else {
-				result = runtime;
-			}
-
 		}
-		return result
+		result.sort(new SimulatorRuntimeComparator())
+		return result;
+	}
+
+	SimulatorRuntime getMostRecentRuntime(Type type) {
+		List<SimulatorRuntime> runtimes = getRuntimes(type);
+		if (runtimes.size() > 0) {
+			return runtimes.get(0)
+		}
+		return null;
 	}
 
 
