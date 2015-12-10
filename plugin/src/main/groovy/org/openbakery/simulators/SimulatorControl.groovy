@@ -127,7 +127,7 @@ class SimulatorControl {
 
 			}
 		}
-		runtimes.sort(new SimulatorRuntimeComparator())
+		Collections.sort(runtimes, new SimulatorRuntimeComparator())
 
 	}
 
@@ -183,7 +183,7 @@ class SimulatorControl {
 				result << runtime
 			}
 		}
-		result.sort(new SimulatorRuntimeComparator())
+		Collections.sort(result, new SimulatorRuntimeComparator())
 		return result
 	}
 
@@ -196,7 +196,7 @@ class SimulatorControl {
 				result.add(runtime);
 			}
 		}
-		result.sort(new SimulatorRuntimeComparator())
+		Collections.sort(result, new SimulatorRuntimeComparator())
 		return result;
 	}
 
