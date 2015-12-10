@@ -258,9 +258,6 @@ class SimulatorControl {
 	}
 
 
-
-
-
 	HashMap<SimulatorRuntime, List<SimulatorDevice>> getDevices() {
 		if (devices == null) {
 			parse()
@@ -415,16 +412,14 @@ class SimulatorControl {
 	List<Destination> getAllDestinations(Type type) {
 		def allDestinations = []
 
-		getDevices().each { runtime, deviceList ->
-			if (runtime.type == type) {
-				deviceList.each() { device ->
-					Destination destination = new Destination();
-					destination.platform = type.value + ' Simulator'
-					destination.name = device.name
-					destination.os = runtime.version.toString()
-					destination.id = device.identifier
-					allDestinations << destination
-				}
+		getRuntimes(type).each { runtime ->
+			getDevices(runtime).each { device ->
+				Destination destination = new Destination()
+				destination.platform = type.value + ' Simulator'
+				destination.name = device.name
+				destination.os = runtime.version.toString()
+				destination.id = device.identifier
+				allDestinations << destination
 			}
 		}
 
