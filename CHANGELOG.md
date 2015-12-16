@@ -1,3 +1,9 @@
+# 0.12.5 (Dezember 16, 2015)
+
+Bugfixes
+* Reverted the removal of the SwiftSupport, because the appstore needs this. Issue #231
+
+
 # 0.12.4 (Dezember 9, 2015)
 
 Bugfixes
