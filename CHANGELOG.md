@@ -1,3 +1,7 @@
+# 0.12.6
+
+Bugfixes
+* Added support for wildcard identifiers when extracting the entitlment from the provisioning profile: fixes issue #230
 # 0.12.5 (Dezember 16, 2015)
 
 Bugfixes

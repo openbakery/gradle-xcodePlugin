@@ -218,14 +218,14 @@ class ProvisioningProfileReader {
 			def modifiedValues = []
 			currentValue.each { item ->
 				if (item.toString().endsWith('*')) {
-					modifiedValues << item[0..-2] + bundleIdentifier
+					modifiedValues << getApplicationIdentifierPrefix() + "." + bundleIdentifier
 				}
 			}
 			plistHelper.setValueForPlist(entitlementFile, value, modifiedValues)
 
 		} else {
 			if (currentValue.toString().endsWith('*')) {
-				plistHelper.setValueForPlist(entitlementFile, value, currentValue[0..-2] + bundleIdentifier)
+				plistHelper.setValueForPlist(entitlementFile, value, getApplicationIdentifierPrefix() + "."  + bundleIdentifier)
 			}
 		}
 	}
