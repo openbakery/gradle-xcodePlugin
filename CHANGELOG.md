@@ -2,6 +2,9 @@
 
 Bugfixes
 * Added support for wildcard identifiers when extracting the entitlment from the provisioning profile: fixes issue #230
+* Fixed that when building a commandline tool that has no info plist that it does not fail: issue #235
+
+
 # 0.12.5 (Dezember 16, 2015)
 
 Bugfixes

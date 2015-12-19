@@ -106,4 +106,27 @@ class InfoPlistModifyTaskSpecification extends Specification{
 
 	}
 
+	def "nothing to modify"() {
+		given:
+		project.xcodebuild.infoPlist = null
+
+		when:
+		task.prepare()
+
+		then:
+		true // should not fail
+	}
+
+	def "has entry to modify but no info plist"() {
+		given:
+		project.xcodebuild.infoPlist = null
+		project.infoplist.shortVersionString = '1.2.3'
+
+		when:
+		task.prepare()
+
+		then:
+		thrown(IllegalArgumentException.class)
+	}
+
 }

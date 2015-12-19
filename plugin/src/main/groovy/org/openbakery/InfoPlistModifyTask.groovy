@@ -33,6 +33,12 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 	@TaskAction
 	def prepare() {
 
+		if (!project.infoplist.hasValuesToModify()) {
+			logger.debug("Nothing to modify")
+			return;
+		}
+
+
 		if (project.xcodebuild.infoPlist == null) {
 			throw new IllegalArgumentException("No Info.plist was found! Check you xcode project settings if the specified target has a Info.plist set.")
 		}
