@@ -48,6 +48,10 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 	 * @return
 	 */
 	def removeGradleKeychainsFromSearchList() {
-		setKeychainList(getKeychainList())
+		List<String>keychainList = getKeychainList();
+		if (project.xcodebuild.signing.keychain != null) {
+			keychainList.remove(project.xcodebuild.signing.keychain.absolutePath)
+		}
+		setKeychainList(keychainList)
 	}
 }
