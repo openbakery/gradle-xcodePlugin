@@ -1,21 +1,17 @@
 /*
 
-If you what to create a for the device than you have to specify for sign sign settings.
+If you what to create a build for the device than you have to specify for sign sign settings.
+
+e.g for a adHoc build:
+
 Create a gradle.properties and add the following values: 
 
-	hockeyappApiToken = ""
-	hockeyappAppId = ""
-	deploygateApiToken = ""
-	deploygateUserName = ""
+Example.AdHoc.SigningCertificateURI=http://.../Development.p12  // file:// urls also works here
+Example.AdHoc.SigningCertificatePassword=mySecrect
+Example.AdHoc.SigningMobileProvisionURI_0=http://.../Development.mobileprovision
 
-	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
-	signingCertificatePassword = password // password to unlock to p12
-	signingMobileProvisionURI = http://../Development.mobileprovision
-	
-	signingMobileProvisionURIWidget = http://../Development.mobileprovision // provisioning profil for the widget
-	exampleTodayWidgetBundleIdentifier = com.example.MyWidget
-	
-You can also scroll down and add the values directly (line 115ff).
+Then run: 'gradle package/Example/AdHoc
+
 
 */
 
@@ -23,7 +19,8 @@ You can also scroll down and add the values directly (line 115ff).
 buildscript {
 	repositories {
 		maven {
-			url('http://repository.openbakery.org')
+			//url('http://repository.openbakery.org')
+			url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -36,6 +33,7 @@ buildscript {
 
 apply plugin: 'org.openbakery.xcode-plugin'
 
+
 xcodebuild {
 	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 	version = "7"
@@ -43,15 +41,9 @@ xcodebuild {
 	target = 'Example'
 	scheme = 'Example'
 	configuration = 'Test'	
-		
+	simulator = false	
 	destination = ['iPad 2', 'iPhone 4s' ]
 
-
-	signing {
-		certificateURI = "foo"
-		certificatePassword = "foo"
-		mobileProvisionURI = "foo"
-	}
 }
 
 
@@ -60,31 +52,18 @@ coverage {
 	exclude = '.*h$|.*UnitTests.*m$'
 }
 
-/*
-task continuous(dependsOn:'test') {
-	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
+task adhoc(dependsOn:'package/Example/AdHoc', description: 'Creates an adhoc device build') {
 }
 
-task integration(dependsOn: ['archive', 'package', 'hockeyapp']) {
-	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
-}
 
-tasks.hockeyapp.mustRunAfter tasks.package
-
-task release(dependsOn: ['archive', 'package']) {
-	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
+task appstore(dependsOn:'package/Example/Appstore', description: 'Creates an appstore device build') {
 }
-
-task appstore(dependsOn: ['archive', 'package']) {
-	description = 'Build for the AppStore'
-}
-*/
 
 
 def configureDescription = 'Configures the build according to the passed <ConfigurationName>'
 def archiveDescription = 'Configures the project using "configure<ConfigurationName>" and saves an Xcode archive'
 def packageDescription = 'Packages and codesignes the project after executing "archive<ConfigurationName" and saves the resulting ipa'
-def distributeHockeyDescription = 'Executes "package<Properties>/<ConfigurationName>" and uploads the resulting ipa to Hockey.'
+def distributeHockeyDescription = 'Executes "package<Properties>/<ConfigurationName>" and uploads the resulting ipa to Hockey. e.g. package/Example/AdHoc'
 
 def getPropertyForComponents(List<String> components) {
   def propertyName = components.join('.')
@@ -100,22 +79,27 @@ def getPropertyForComponents(List<String> components) {
 		}
 		return result
 	}
+	/*	
 	println propertyName
-	
-	
+
   if (!project.hasProperty(propertyName)) {
     components.pop()
     propertyName = components.join('.')
+		
   }
+	*/
 
+  if (!project.hasProperty(propertyName)) {
+		logger.warn("No property defined with name " + propertyName)
+	}
   return project.hasProperty(propertyName) ? project.property(propertyName) : ""
 }
 
 
-tasks.addRule("Pattern: configure<TargetName>: " + configureDescription) { String taskName ->
+tasks.addRule("Pattern: configure/<TargetName>: " + configureDescription) { String taskName ->
 	if (taskName.startsWith("configure")) {
 		task(taskName, dependsOn:['clean']) {
-      def configurationName = (taskName - 'configure')
+      def configurationName = (taskName - 'configure/')
       xcodebuild {
         configuration = 'Release'
         scheme = configurationName
@@ -126,18 +110,24 @@ tasks.addRule("Pattern: configure<TargetName>: " + configureDescription) { Strin
 	}
 }
 
-tasks.addRule("Pattern: archive<TargetName>: " + archiveDescription) { String taskName ->
+tasks.addRule("Pattern: archive/<TargetName>: " + archiveDescription) { String taskName ->
   if (taskName.startsWith("archive")) {
-    def configureTask = 'configure' + (taskName - 'archive')
+    def configureTask = 'configure/' + (taskName - 'archive/')
     task(taskName, dependsOn:[configureTask, 'archive']).mustRunAfter(configureTask)
   }
 }
 
-tasks.addRule("Pattern: package<TargetName>/<Properties>: " + packageDescription) { String taskName ->
+tasks.addRule("Pattern: package/<TargetName>/<Properties>: " + packageDescription) { String taskName ->
   if (taskName.startsWith("package")) {
-    def targetName = (taskName - 'package').split('/')[0]
-    def properties = (taskName - 'package').split('/')[1]
-    def archiveTask = 'archive' + targetName
+		
+		def tokens = taskName.split('/')
+		if (tokens.length != 3) {
+			throw new IllegalArgumentException("Wrong number of parameters: package/<TargetName>/<Properties>")
+		}
+		
+    def targetName = tokens[1]
+    def properties = tokens[2]
+    def archiveTask = 'archive/' + targetName
     task(taskName, dependsOn:[archiveTask, 'package']) {
       project.xcodebuild {
   			simulator = false
@@ -151,7 +141,6 @@ tasks.addRule("Pattern: package<TargetName>/<Properties>: " + packageDescription
     tasks[taskName].mustRunAfter(archiveTask)
   }
 }
-
 
 
 
@@ -174,41 +163,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 			userName = deploygateUserName
 		}
 	}
-	
-	// ------------------------------------------------------------------------------------------
-	/*
-	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
-		println "Configure sign settings for the integration and release build"
-		xcodebuild {
-			simulator = false
-			signing {
-				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
-				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingMobileProvisionURI, signingMobileProvisionURIWidget, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-			}
-		}
-		
-	}
-
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(tasks.appstore)) {
-		println "Configure build settings for release or appstore"
-		xcodebuild {
-			configuration = 'Release'
-			simulator = false
-
-			signing {
-				certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'
-				certificatePassword = 'secret'     // e.g. 'secret'
-				mobileProvisionURI = '...'         // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-			}
-		}
-		infoplist {
-			bundleIdentifier = 'org.openbakery.Example'
-		}
-	}
-	*/
 	
 	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
 	

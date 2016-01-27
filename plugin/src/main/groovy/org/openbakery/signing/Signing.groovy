@@ -73,7 +73,7 @@ class Signing {
 	}
 
 	void setSigningDestinationRoot(Object keychainDestinationRoot) {
-		this.destinationRoot = keychainDestinationRoot
+		this.signingDestinationRoot = keychainDestinationRoot
 	}
 
 	File getKeychainPathInternal() {

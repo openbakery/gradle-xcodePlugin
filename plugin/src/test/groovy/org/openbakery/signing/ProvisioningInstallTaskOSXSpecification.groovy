@@ -70,7 +70,7 @@ class ProvisioningInstallTaskOSXSpecification extends Specification {
 
 	def "multiple ProvisioningProfiles"() {
 		given:
-		File firstMobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		File firstMobileprovision = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 		File secondMobileprovision = new File("src/test/Resource/openbakery-example.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString()]
 

@@ -125,4 +125,26 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
 		commandList == ["security", "list-keychains", "-s", loginKeychain]
 	}
+
+
+	def "remove current used internal keychain"() {
+		def commandList;
+
+		given:
+		project.xcodebuild.signing.signingDestinationRoot = project.buildDir
+
+		FileUtils.writeStringToFile(project.xcodebuild.signing.keychainPathInternal, "dummy");
+		def securityList = createSecurityListResult(project.xcodebuild.signing.keychainPathInternal.getAbsolutePath())
+		commandRunner.runWithResult(["security", "list-keychains"]) >> securityList
+
+		when:
+		task.remove()
+
+		then:
+		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
+		commandList == ["security", "list-keychains", "-s", loginKeychain]
+	}
+
+
+
 }

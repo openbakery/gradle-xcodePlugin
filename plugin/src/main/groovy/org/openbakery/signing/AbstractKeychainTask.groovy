@@ -49,8 +49,9 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 	 */
 	def removeGradleKeychainsFromSearchList() {
 		List<String>keychainList = getKeychainList();
-		if (project.xcodebuild.signing.keychain != null) {
-			keychainList.remove(project.xcodebuild.signing.keychain.absolutePath)
+		logger.debug("project.xcodebuild.signing.keychain should not be removed: {}", project.xcodebuild.signing.keychainPathInternal)
+		if (project.xcodebuild.signing.keychainPathInternal != null) {
+			keychainList.remove(project.xcodebuild.signing.keychainPathInternal.absolutePath)
 		}
 		setKeychainList(keychainList)
 	}
