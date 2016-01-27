@@ -40,7 +40,7 @@ Here a table of the values for the migration to 0.12:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.12.5
+### Current stable version is 0.12.6
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
 
@@ -58,7 +58,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.12.5"
+  id "org.openbakery.xcode-plugin" version "0.12.6"
 }
 
 xcodebuild {
