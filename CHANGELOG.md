@@ -1,3 +1,12 @@
+# 0.12.8 (TBA)
+
+Changes
+* Updated OCLint to 0.10.2
+
+Bugfixes
+*  Fixed that empty Frameworks directory gets deleted: issue #242
+
+
 # 0.12.7 (January 27, 2016 )
 
 Bugfixes
