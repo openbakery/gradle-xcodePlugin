@@ -12,7 +12,7 @@ class OCLintTask extends AbstractXcodeTask {
 	File outputDirectory
 
 	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.2/oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
-	String archiveName = FilenameUtils.getBaseName(downloadURL)
+	String archiveName = FilenameUtils.getName(downloadURL)
 
 	OCLintTask() {
 		super()

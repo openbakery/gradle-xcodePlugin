@@ -28,7 +28,7 @@ class OCLintTaskTest {
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
 	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.2/oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
-	String filename = FilenameUtils.getBaseName(downloadURL)
+	String filename = "oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
 	String oclintPath = 'oclint-0.10.2'
 
 	def commandRunnerMock
