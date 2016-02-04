@@ -28,7 +28,8 @@ import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
 
-import org.openbakery.cocoapods.CocoapodsTask
+import org.openbakery.cocoapods.CocoapodsInstallTask
+import org.openbakery.cocoapods.CocoapodsUpdateTask
 import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
@@ -117,7 +118,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
-	public static final String COCOAPODS_TASK_NAME = 'cocoapods'
+	public static final String COCOAPODS_INSTALL_TASK_NAME = 'cocoapodsInstall'
+	public static final String COCOAPODS_UPDATE_TASK_NAME = 'cocoapodsUpdate'
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
@@ -552,10 +554,12 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCocoapods(Project project) {
 
 		//project.task(COCOAPODS_CLEAN_TASK_NAME, type: CocoapodsCleanTask, group: COCOAPODS_GROUP_NAME)
-		CocoapodsTask task = project.task(COCOAPODS_TASK_NAME, type: CocoapodsTask, group: COCOAPODS_GROUP_NAME)
+		CocoapodsInstallTask task = project.task(COCOAPODS_INSTALL_TASK_NAME, type: CocoapodsInstallTask, group: COCOAPODS_GROUP_NAME)
 		if (task.hasPodfile()) {
 			addDependencyToBuild(project, task);
 		}
+
+		project.task(COCOAPODS_UPDATE_TASK_NAME, type: CocoapodsUpdateTask, group: COCOAPODS_GROUP_NAME)
 	}
 
 	private void configureOCLint(Project project) {

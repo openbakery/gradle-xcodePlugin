@@ -10,11 +10,11 @@ import spock.lang.Specification
 /**
  * Created by rene on 11.11.14.
  */
-class CocoapodsTaskSpecification extends Specification {
+class CocoapodsInstallTaskSpecification extends Specification {
 
 
 	Project project
-	CocoapodsTask cocoapodsTask;
+	CocoapodsInstallTask cocoapodsTask;
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 
@@ -26,7 +26,7 @@ class CocoapodsTaskSpecification extends Specification {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin:org.openbakery.XcodePlugin
 
-		cocoapodsTask = project.getTasks().getByPath('cocoapods')
+		cocoapodsTask = project.getTasks().getByPath('cocoapodsInstall')
 
 		cocoapodsTask.commandRunner = commandRunner
 

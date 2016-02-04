@@ -2,6 +2,7 @@
 
 Changes
 * Updated OCLint to 0.10.2
+* Added 'cocoapodsUpdate' task: Issue: #241
 
 Bugfixes
 *  Fixed that empty Frameworks directory gets deleted: issue #242
