@@ -153,6 +153,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
 		}
+		if (project.xcodebuild.version.major < 7) {
+			commandList.add("GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES")
+			commandList.add("GCC_GENERATE_TEST_COVERAGE_FILES=YES")
+		} else {
+			commandList.add("-enableCodeCoverage")
+			commandList.add("yes")
+		}
 	}
 
 

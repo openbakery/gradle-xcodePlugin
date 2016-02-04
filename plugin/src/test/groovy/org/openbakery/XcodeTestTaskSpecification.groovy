@@ -283,19 +283,26 @@ class XcodeTestTaskSpecification extends Specification {
 
 	}
 
-
-
-	def "test command  for iOS simulator"() {
-		def commandList
-		def expectedCommandList
-
-		//simulatorControlMock.killAll()
-
+	def setup_iOS_SimualtorBuild() {
 		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.target = 'Test';
 
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
+
+		def expectedCommandList = ['script', '-q', '/dev/null',
+																 "xcodebuild",
+																 "-scheme", 'myscheme',
+																 "-workspace", "myworkspace",
+																 "-configuration", 'Debug',
+					]
+					expectedCommandList.addAll(expectedDefaultDirectories())
+		return expectedCommandList
+	}
+
+	def "test command for iOS simulator"() {
+		def commandList
+		def expectedCommandList = setup_iOS_SimualtorBuild()
 
 		when:
 		xcodeTestTask.test()
@@ -304,20 +311,38 @@ class XcodeTestTaskSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
 		interaction {
-			expectedCommandList = ['script', '-q', '/dev/null',
-														 "xcodebuild",
-														 "-scheme", 'myscheme',
-														 "-workspace", "myworkspace",
-														 "-configuration", 'Debug',
-			]
-			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
 		commandList == expectedCommandList
 	}
 
+
+	def "test command with coverage settings Xcode 6"() {
+		project.xcodebuild.commandRunner = commandRunner
+		def commandList
+		def expectedCommandList = setup_iOS_SimualtorBuild()
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		interaction {
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
+			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
+			expectedCommandList << "test"
+		}
+		commandList == expectedCommandList
+
+	}
 
 
 
