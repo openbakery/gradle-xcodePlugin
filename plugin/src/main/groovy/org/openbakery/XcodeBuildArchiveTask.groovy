@@ -15,6 +15,7 @@
  */
 package org.openbakery
 
+import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.signing.ProvisioningProfileReader
@@ -163,12 +164,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		content.append("</dict>\n")
 		content.append("</plist>")
 
-
-
 		File infoPlist = new File(applicationsDirectory, "Info.plist")
 		FileUtils.writeStringToFile(infoPlist, content.toString())
-
-
 	}
 
 
@@ -176,8 +173,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	def createFrameworks(def applicationsDirectory) {
 
 		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
-
-
 		if (frameworksPath.exists()) {
 
 			def swiftSupportPath = "SwiftSupport"
@@ -205,6 +200,28 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			}
 
 
+		}
+
+	}
+
+	def deleteDirectoryIfEmpty(File base, String child) {
+		File directory = new File(base, child)
+		if (directory.exists() && directory.list().length == 0) {
+			directory.deleteDir();
+		}
+	}
+
+	def deleteEmptyFrameworksDirectory(File applicationsDirectory) {
+		File appPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+		deleteDirectoryIfEmpty(appPath, "Frameworks")
+
+		File pluginsDirectory = new File(appPath, "PlugIns");
+		if (pluginsDirectory.exists()) {
+			pluginsDirectory.eachFile(FileType.DIRECTORIES) { subDirectory ->
+				if (subDirectory.name.endsWith(".appex")) {
+					deleteDirectoryIfEmpty(subDirectory, "Frameworks")
+				}
+			}
 		}
 
 	}
@@ -287,7 +304,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		// create xcarchive
 		copy(project.xcodebuild.applicationBundle, getApplicationsDirectory())
 
-
 		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
 		dSymDirectory.mkdirs()
 
@@ -301,20 +317,16 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 			createEntitlements(bundle)
 		}
 
-
 		createInfoPlist(getArchiveDirectory())
-
 		createFrameworks(getArchiveDirectory())
-
+		deleteEmptyFrameworksDirectory(getArchiveDirectory())
 
 		if (project.xcodebuild.type == Type.iOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + project.xcodebuild.applicationBundle.name)
 			convertInfoPlistToBinary(applicationFolder)
 		}
 
-
 		logger.debug("create archive done")
-
 	}
 
 	File getApplicationsDirectory() {

@@ -114,6 +114,22 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
 	}
 
+	def setupProject() {
+		CommandRunner commandRunner = new CommandRunner()
+		commandRunner.defaultBaseDirectory = projectDir.absolutePath
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
+		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
+
+		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
+		FileUtils.copyFile(infoPlist, new File(projectDir, "ExampleWatchkit/Info.plist"))
+
+		project.xcodebuild.target = "ExampleWatchkit"
+		project.xcodebuild.configuration = "Debug"
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
+		xcodeProjectFile.parse()
+		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+
+	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
@@ -371,19 +387,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "copy entitlements if present with default application identifier"() {
 
 		given:
-		CommandRunner commandRunner = new CommandRunner()
-		commandRunner.defaultBaseDirectory = projectDir.absolutePath
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
-		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
-
-		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
-		FileUtils.copyFile(infoPlist, new File(projectDir, "ExampleWatchkit/Info.plist"))
-
-		project.xcodebuild.target = "ExampleWatchkit"
-		project.xcodebuild.configuration = "Debug"
-		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
-		xcodeProjectFile.parse()
-		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+		setupProject()
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -399,22 +403,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	}
 
 	def "copy entitlements if present"() {
-
 		given:
 		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/openbakery.mobileprovision")
-		CommandRunner commandRunner = new CommandRunner()
-		commandRunner.defaultBaseDirectory = projectDir.absolutePath
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
-		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
-
-		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
-		FileUtils.copyFile(infoPlist, new File(projectDir, "ExampleWatchkit/Info.plist"))
-
-		project.xcodebuild.target = "ExampleWatchkit"
-		project.xcodebuild.configuration = "Debug"
-		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
-		xcodeProjectFile.parse()
-		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+		setupProject()
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -432,19 +423,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "copy entitlements but there are non"() {
 
 		given:
-		CommandRunner commandRunner = new CommandRunner()
-		commandRunner.defaultBaseDirectory = projectDir.absolutePath
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
-		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
-
-		File infoPlist = new File("../example/iOS/Example/Example/Example-Info.plist")
-		FileUtils.copyFile(infoPlist, new File(projectDir, "Example/Example-Info.plist"))
-
-		project.xcodebuild.target = "Example"
-		project.xcodebuild.configuration = "Debug"
-		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/Example/Example.xcodeproj/project.pbxproj"))
-		xcodeProjectFile.parse()
-		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
+		setupProject()
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -452,6 +431,36 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		then:
 		// should not thow an exception
 		true
+
+	}
+
+	def "delete empty frameworks directory"() {
+		given:
+		setupProject()
+		File frameworksDirectory = new File(appDirectory, "Frameworks")
+		frameworksDirectory.mkdirs()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+		File archiveFrameworksDirectory = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks")
+
+		then:
+		!archiveFrameworksDirectory.exists()
+	}
+
+
+	def "delete empty frameworks directory in extension"() {
+		given:
+		setupProject()
+		File extensionDirectory = new File(appDirectory, "PlugIns/ExampleTodayWidget.appex/Frameworks")
+		extensionDirectory.mkdirs()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+		File archiveFrameworksDirectory = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/PlugIns/ExampleTodayWidget.appex/Frameworks")
+
+		then:
+		!archiveFrameworksDirectory.exists()
 
 	}
 }

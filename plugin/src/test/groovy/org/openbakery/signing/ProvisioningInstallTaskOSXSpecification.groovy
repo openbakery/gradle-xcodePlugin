@@ -48,7 +48,7 @@ class ProvisioningInstallTaskOSXSpecification extends Specification {
 	def "single ProvisioningProfile"() {
 
 		given:
-		File testMobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		File testMobileprovision = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
 		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunner)

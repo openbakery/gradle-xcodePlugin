@@ -95,7 +95,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File wildcardMacProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
 
 		when:
-		ProvisioningProfileReader provisioningProfileReader = new ProvisioningProfileReader(wildcardMacProfile, project, new CommandRunner())
+		ProvisioningProfileReader provisioningProfileReader = new ProvisioningProfileReaderIgnoreExpired(wildcardMacProfile, project, new CommandRunner())
 
 		def applicationIdentifier = provisioningProfileReader.getApplicationIdentifier()
 
@@ -136,7 +136,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"</plist>\n"
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
 
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -185,7 +185,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"</plist>\n"
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired("src/test/Resource/test-wildcard-mac-development.provisionprofile", project, new CommandRunner())
 
 		def keychainAccessGroups = [
 				"Z7L2YCUH45.org.openbakery.Example",

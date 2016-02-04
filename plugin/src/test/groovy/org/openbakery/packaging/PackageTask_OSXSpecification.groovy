@@ -67,7 +67,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		appDirectory = new File(packageTask.outputPath, "Example.app");
 
-		provisionProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		provisionProfile = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 
 	}
 
@@ -95,7 +95,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 	List<String> codesignCommand(String path) {
 		File payloadApp = new File(packageTask.outputPath, path)
-		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test-wildcard-mac-development.plist")
+		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test-wildcard-mac.plist")
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -143,7 +143,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
 
 
-		File mobileprovision = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		File mobileprovision = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
 
 		String basename = FilenameUtils.getBaseName(mobileprovision.path)
