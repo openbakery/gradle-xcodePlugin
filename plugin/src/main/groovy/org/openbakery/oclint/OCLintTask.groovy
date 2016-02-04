@@ -1,5 +1,6 @@
 package org.openbakery.oclint
 
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 
@@ -9,6 +10,9 @@ import org.openbakery.AbstractXcodeTask
 class OCLintTask extends AbstractXcodeTask {
 
 	File outputDirectory
+
+	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.2/oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
+	String archiveName = FilenameUtils.getBaseName(downloadURL)
 
 	OCLintTask() {
 		super()
@@ -21,17 +25,21 @@ class OCLintTask extends AbstractXcodeTask {
 		if (!downloadDirectory.exists()) {
 			downloadDirectory.mkdirs()
 		}
-		ant.get(src: 'http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz', dest: downloadDirectory, verbose:true)
+		ant.get(src: downloadURL, dest: downloadDirectory, verbose:true)
 
 
 		def command = [
 						'tar',
 						'xzf',
-						new File(downloadDirectory, "oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz").absolutePath,
+						new File(downloadDirectory, archiveName).absolutePath,
 						'-C',
 						outputDirectory.absolutePath
 		]
 		commandRunner.run(command)
+
+		File oclintDirectory = new File(outputDirectory, "oclint-0.10.2")
+		oclintDirectory.renameTo(new File(outputDirectory, "oclint"))
+
 	}
 
 
@@ -41,11 +49,11 @@ class OCLintTask extends AbstractXcodeTask {
 
 		download()
 
-		def oclintXcodebuild = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath
+		def oclintXcodebuild = new File(outputDirectory, 'oclint/bin/oclint-xcodebuild').absolutePath
 
 		commandRunner.run([oclintXcodebuild, 'build/xcodebuild-output.txt'])
 
-		def oclint = new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath
+		def oclint = new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath
 		def report = new File(outputDirectory, 'oclint.html').absolutePath
 
 		def ocLintParameters = [oclint]

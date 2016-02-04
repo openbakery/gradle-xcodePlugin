@@ -2,6 +2,7 @@ package org.openbakery.oclint
 
 import groovy.mock.interceptor.MockFor
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
@@ -25,6 +26,10 @@ class OCLintTaskTest {
 
 	OCLintTask ocLintTask
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
+
+	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.2/oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
+	String filename = FilenameUtils.getBaseName(downloadURL)
+	String oclintPath = 'oclint-0.10.2'
 
 	def commandRunnerMock
 	@Before
@@ -75,9 +80,10 @@ class OCLintTaskTest {
 
 		ocLintTask.run()
 
+
 		assertThat(antBuilderStub.get.size(), is(1));
 		def getCall = antBuilderStub.get.first()
-		assertThat(getCall, hasEntry("src", "http://archives.oclint.org/releases/0.8/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz"));
+		assertThat(getCall, hasEntry("src", downloadURL));
 
 		File downloadDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint/download")
 		assertThat(getCall, hasEntry("dest", downloadDirectory));
@@ -91,7 +97,7 @@ class OCLintTaskTest {
 					def expectedParameters = [
 									'tar',
 									'xzf',
-									new File(outputDirectory, 'download/oclint-0.8.1-x86_64-darwin-14.0.0.tar.gz').absolutePath,
+									new File(outputDirectory, 'download/' + filename).absolutePath,
 									'-C',
 									outputDirectory.absolutePath
 					]
@@ -120,7 +126,7 @@ class OCLintTaskTest {
 
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-xcodebuild').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-xcodebuild').absolutePath,
 							'build/xcodebuild-output.txt']
 
 			assertThat(parameters, is(equalTo(expectedParameters)))
@@ -154,7 +160,7 @@ class OCLintTaskTest {
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
@@ -190,7 +196,7 @@ class OCLintTaskTest {
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
@@ -232,7 +238,7 @@ class OCLintTaskTest {
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
@@ -274,7 +280,7 @@ class OCLintTaskTest {
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
 							"-e",
 							"Pods",
 							"-e",
@@ -315,7 +321,7 @@ class OCLintTaskTest {
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=100",
 							"-max-priority-2=200",
@@ -355,7 +361,7 @@ class OCLintTaskTest {
 			File outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
 
 			def expectedParameters = [
-							new File(outputDirectory, 'oclint-0.8.1/bin/oclint-json-compilation-database').absolutePath,
+							new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
