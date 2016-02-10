@@ -5,7 +5,8 @@ Changes
 * Added 'cocoapodsUpdate' task: Issue: #241
 
 Bugfixes
-*  Fixed that empty Frameworks directory gets deleted: issue #242
+* Fixed that empty Frameworks directory gets deleted: issue #242
+* Fixed that on simulatorCreate the simualtors gets killed first, to avoid a failure is a simulator is running
 
 
 # 0.12.7 (January 27, 2016 )

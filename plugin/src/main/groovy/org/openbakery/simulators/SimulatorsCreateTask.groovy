@@ -21,6 +21,7 @@ class SimulatorsCreateTask extends DefaultTask {
 
 	@TaskAction
 	void run() {
+		simulatorControl.killAll()
 		simulatorControl.deleteAll()
 		simulatorControl.createAll()
 	}

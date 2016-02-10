@@ -51,6 +51,7 @@ class SimulatorsCreateTaskSpecification extends Specification {
 		task.run()
 
 		then:
+		1 * simulatorControl.killAll()
 		1 * simulatorControl.deleteAll()
 		1 * simulatorControl.createAll()
 	}
