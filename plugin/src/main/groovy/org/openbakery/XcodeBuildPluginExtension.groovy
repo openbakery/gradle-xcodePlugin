@@ -631,7 +631,7 @@ class XcodeBuildPluginExtension {
 			this.simulator = simulator
 			return
 		}
-		this.simulator = simulator.toString().equalsIgnoreCase("true")
+		this.simulator = simulator.toString().equalsIgnoreCase("true") || simulator.toString().equalsIgnoreCase("yes")
 
 	}
 }
