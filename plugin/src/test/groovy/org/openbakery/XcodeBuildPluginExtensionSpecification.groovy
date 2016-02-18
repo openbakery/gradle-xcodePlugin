@@ -529,4 +529,54 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		version.minor == 4
 		version.maintenance == -1
 	}
+
+
+	def "test simulator as string: true"() {
+		when:
+		extension.type = Type.iOS;
+		extension.simulator = 'true'
+		then:
+		extension.simulator == true
+	}
+
+	def "test simulator as string: false"() {
+		when:
+		extension.type = Type.iOS;
+		extension.simulator = 'false'
+		then:
+		extension.simulator == false
+	}
+
+
+	def "test simulator as string: YES"() {
+		when:
+		extension.type = Type.iOS;
+		extension.simulator = 'yEs'
+		then:
+		extension.simulator == true
+	}
+
+	def "test simulator as string: NO"() {
+		when:
+		extension.type = Type.iOS;
+		extension.simulator = 'No'
+		then:
+		extension.simulator == false
+	}
+
+	def "test simulator true"() {
+		when:
+		extension.type = Type.iOS;
+		extension.simulator = true
+		then:
+		extension.simulator == true
+	}
+
+	def "test simulator false"() {
+		when:
+		extension.type = Type.iOS;
+		extension.simulator = false
+		then:
+		extension.simulator == false
+	}
 }

@@ -626,4 +626,12 @@ class XcodeBuildPluginExtension {
 		return this.simulator
 	}
 
+	void setSimulator(Object simulator) {
+		if (simulator instanceof Boolean) {
+			this.simulator = simulator
+			return
+		}
+		this.simulator = simulator.toString().equalsIgnoreCase("true")
+
+	}
 }
