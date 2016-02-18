@@ -301,9 +301,11 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 	def "test command for iOS simulator"() {
+		project.xcodebuild.commandRunner = commandRunner
 		def commandList
 		def expectedCommandList = setup_iOS_SimualtorBuild()
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+
 		when:
 		xcodeTestTask.test()
 
