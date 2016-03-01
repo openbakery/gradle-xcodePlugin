@@ -579,4 +579,22 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		then:
 		extension.simulator == false
 	}
+
+	def "get binary"() {
+		when:
+		File projectDir =  new File("../example/iOS/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
+		extension.projectSettings = xcodeProjectFile.getProjectSettings()
+		extension.type = Type.iOS
+		extension.simulator = false
+		extension.target = "ExampleTodayWidget"
+		extension.productType = "appex"
+		extension.infoPlist = "../../example/iOS/Example/ExampleTodayWidget/Info.plist"
+
+		then:
+		extension.getBinary().toString().endsWith("Debug-iphoneos/ExampleTodayWidget.app/ExampleTodayWidget")
+
+	}
 }

@@ -4,7 +4,7 @@ plugins {
 
 
 
-def versionNumber = '0.12.7'
+def versionNumber = '0.13.0'
 def publishURL = System.getenv("PUBLISH_URL")
 def publishUser = System.getenv("PUBLISH_USER")
 def publishPassword = System.getenv("PUBLISH_PASSWORD")
@@ -60,6 +60,7 @@ dependencies {
 	compile 'org.apache.httpcomponents:httpmime:4.3+'
 	compile 'org.pegdown:pegdown:1.5.+'
 	compile 'ch.qos.logback:logback-core:1.1.+'
+	compile 'org.openbakery.coverage:CoverageReport:0.9'
 	testCompile 'junit:junit:4.12'
 	testCompile 'org.hamcrest:hamcrest-all:1.3'
 	testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
@@ -67,10 +68,6 @@ dependencies {
 	testCompile 'cglib:cglib-nodep:3.1'
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.10"
 }
-
-
-
-
 
 
 uploadArchives {

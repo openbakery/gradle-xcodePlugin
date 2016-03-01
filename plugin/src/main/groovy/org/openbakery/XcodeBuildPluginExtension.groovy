@@ -575,6 +575,17 @@ class XcodeBuildPluginExtension {
 		return new File(getOutputPath(), getBundleName() + "." + this.productType)
 	}
 
+	File getBinary() {
+		logger.debug("getBinary")
+		BuildTargetConfiguration buildConfiguration = projectSettings[target]
+		if (buildConfiguration != null) {
+			BuildConfiguration buildSettings = buildConfiguration.buildSettings[configuration];
+			logger.debug("buildSettings: {}", buildSettings)
+			return new File(getOutputPath(), buildSettings.productName + ".app/" + buildSettings.productName)
+		}
+		return null
+	}
+
 
 	BuildConfiguration getBuildConfiguration() {
 		BuildTargetConfiguration buildTargetConfiguration = projectSettings[target]

@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -125,9 +126,48 @@ class XcodeProjectFileSpecification extends Specification {
 		projectSettings["ExampleWatchkit"] instanceof BuildTargetConfiguration
 		projectSettings["ExampleWatchkit"].buildSettings["Debug"].infoplist == "ExampleWatchkit/Info.plist"
 		projectSettings["ExampleWatchkit"].buildSettings["Debug"].entitlements == "ExampleWatchkit/ExampleWatchkit.entitlements"
-
-
 	}
 
+
+
+	def "update target build settings TARGET_NAME"() {
+		given:
+		XMLPropertyListConfiguration config = Mock()
+		xcodeProjectFile.config = config
+
+		1* config.getString("objects.AAAAAA.buildConfigurationList") >> "item"
+		1* config.getList("objects.item.buildConfigurations") >> ["ListItem"]
+		1* config.getString("objects.ListItem.name") >> "config"
+		1* config.getString("objects.ListItem.buildSettings.PRODUCT_NAME") >> '$(TARGET_NAME)'
+
+		BuildConfiguration buildSettings = new BuildConfiguration()
+		//buildSettings.productName = '$(TARGET_NAME)-Test'
+
+		when:
+		xcodeProjectFile.updateBuildSettings(buildSettings, "config", "AAAAAA", "MyTarget")
+
+		then:
+		buildSettings.productName == "MyTarget"
+	}
+
+
+	def "update target build settings TARGET_NAME complex"() {
+		given:
+		XMLPropertyListConfiguration config = Mock()
+		xcodeProjectFile.config = config
+
+		1* config.getString("objects.AAAAAA.buildConfigurationList") >> "item"
+		1* config.getList("objects.item.buildConfigurations") >> ["ListItem"]
+		1* config.getString("objects.ListItem.name") >> "config"
+		1* config.getString("objects.ListItem.buildSettings.PRODUCT_NAME") >> '$(TARGET_NAME)-Test'
+
+		BuildConfiguration buildSettings = new BuildConfiguration()
+
+		when:
+		xcodeProjectFile.updateBuildSettings(buildSettings, "config", "AAAAAA", "MyTarget")
+
+		then:
+		buildSettings.productName == "MyTarget-Test"
+	}
 
 }

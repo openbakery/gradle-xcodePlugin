@@ -9,6 +9,7 @@ class CoveragePluginExtension {
 
 	def Object outputDirectory
 	def String exclude = null
+	def String include = null
 	def String outputFormat = null
 
 	private final Project project

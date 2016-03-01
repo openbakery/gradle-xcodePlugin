@@ -1,7 +1,7 @@
 /*
  * Copyright 2013 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -35,7 +35,7 @@ class ProvisioningProfileReader {
 
 	private static Logger logger = LoggerFactory.getLogger(ProvisioningProfileReader.class)
 
-	XMLPropertyListConfiguration config;
+	XMLPropertyListConfiguration config
 
 	public Project project
 
@@ -59,7 +59,7 @@ class ProvisioningProfileReader {
 
 		this.project = project
 
-		checkExpired();
+		checkExpired()
 	}
 
 	String load(def provisioningProfile) {
@@ -69,29 +69,27 @@ class ProvisioningProfileReader {
 			this.provisioningProfile = provisioningProfile
 		}
 
-
 		if (!this.provisioningProfile.exists()) {
-			return null;
+			logger.warn("The specified provisioning profile does not exist: " + this.provisioningProfile.absolutePath)
+			return null
 		}
 
+		StringBuffer result = new StringBuffer()
 
-
-		StringBuffer result = new StringBuffer();
-
-		boolean append = false;
+		boolean append = false
 		for (String line : this.provisioningProfile.text.split("\n")) {
 			if (line.startsWith("<!DOCTYPE plist PUBLIC")) {
-				append = true;
+				append = true
 			}
 
 			if (line.startsWith("</plist>")) {
 				result.append("</plist>")
-				return result.toString();
+				return result.toString()
 			}
 
 			if (append) {
 				result.append(line)
-				result.append("\n");
+				result.append("\n")
 			}
 
 
@@ -104,8 +102,8 @@ class ProvisioningProfileReader {
 
 		Date expireDate = config.getProperty("ExpirationDate")
 		if (expireDate.before(new Date())) {
-			DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
-			throw new IllegalArgumentException("The Provisioning Profile has expired on " + formatter.format(expireDate) );
+			DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault())
+			throw new IllegalArgumentException("The Provisioning Profile has expired on " + formatter.format(expireDate) )
 		}
 	}
 
@@ -125,7 +123,7 @@ class ProvisioningProfileReader {
 																													 "cms",
 																													 "-D",
 																													 "-i",
-																													 provisioningProfile.absolutePath]);
+																													 provisioningProfile.absolutePath])
 
 			String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 			// read temporary plist file
@@ -134,7 +132,7 @@ class ProvisioningProfileReader {
 			// write temporary plist to disk
 			FileUtils.writeStringToFile(provisioningPlist, extractedPlist)
 		}
-		return provisioningPlist;
+		return provisioningPlist
 	}
 
 	String getApplicationIdentifier() {
@@ -151,7 +149,7 @@ class ProvisioningProfileReader {
 		if (value.startsWith(prefix)) {
 			return value.substring(prefix.length())
 		}
-		return value;
+		return value
 	}
 
 	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups) {
@@ -169,21 +167,21 @@ class ProvisioningProfileReader {
 		def applicationIdentifierPrefix = null
 		String bundleIdentifierPrefix = ""
 		if (applicationIdentifier != null) {
-			String[] tokens = applicationIdentifier.split("\\.");
+			String[] tokens = applicationIdentifier.split("\\.")
 			applicationIdentifierPrefix = tokens[0]
 			for (int i=1; i<tokens.length; i++) {
 				if (tokens[i] == "*") {
-					break;
+					break
 				}
 				if (bundleIdentifierPrefix.length() > 0) {
 					bundleIdentifierPrefix += "."
 				}
-				bundleIdentifierPrefix += tokens[i];
+				bundleIdentifierPrefix += tokens[i]
 			}
 		}
 
 		if (!bundleIdentifier.startsWith(bundleIdentifierPrefix)) {
-			throw new IllegalStateException("In the provisioning profile a application identifier is specified with " + bundleIdentifierPrefix + " but the app uses a bundle identifier " + bundleIdentifier + " that does not match!");
+			throw new IllegalStateException("In the provisioning profile a application identifier is specified with " + bundleIdentifierPrefix + " but the app uses a bundle identifier " + bundleIdentifier + " that does not match!")
 		}
 
 

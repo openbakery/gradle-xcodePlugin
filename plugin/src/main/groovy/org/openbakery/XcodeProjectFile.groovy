@@ -151,8 +151,8 @@ class XcodeProjectFile {
 		buildSettings.infoplist = getBuildSetting(buildConfiguration, target, "INFOPLIST_FILE")
 		buildSettings.bundleIdentifier = getBuildSetting(buildConfiguration, target, "PRODUCT_BUNDLE_IDENTIFIER")
 		buildSettings.productName = getBuildSetting(buildConfiguration, target, "PRODUCT_NAME")
-		if (buildSettings.productName.equals('$(TARGET_NAME)')) {
-			buildSettings.productName = targetName
+		if (buildSettings.productName != null && buildSettings.productName.contains('$(TARGET_NAME)')) {
+			buildSettings.productName = buildSettings.productName.replace('$(TARGET_NAME)', targetName)
 		}
 		buildSettings.sdkRoot = getBuildSetting(buildConfiguration, target, "SDKROOT")
 		buildSettings.entitlements = getBuildSetting(buildConfiguration, target, "CODE_SIGN_ENTITLEMENTS")
