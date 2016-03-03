@@ -27,6 +27,7 @@ class CoverageTaskSpecification extends Specification {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
+		project.xcodebuild.projectFile = "Test.xcodeproj"
 		coverageTask = project.getTasks().getByPath('coverage')
 
 		coverageTask.commandRunner = commandRunner
@@ -282,6 +283,21 @@ class CoverageTaskSpecification extends Specification {
 
 		then:
 		1 * coverageTask.report.create()
+	}
 
+
+	def "report title"() {
+		given:
+		project.xcodebuild.projectFile = "../directory/My Project.xcodeproj"
+		project.coverage.outputDirectory = new File(project.projectDir, "myCoverage")
+		coverageTask.profileData = createFile("Coverage.profdata")
+		coverageTask.binary = createFile("foobar")
+		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
+
+		when:
+		coverageTask.coverage()
+
+		then:
+		coverageTask.report.title == "My Project"
 	}
 }

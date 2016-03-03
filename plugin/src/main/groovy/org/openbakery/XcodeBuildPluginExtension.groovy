@@ -121,6 +121,7 @@ class XcodeBuildPluginExtension {
 	String bundleName = null
 	String productType = "app"
 	String ipaFileName = null
+	File projectFile
 
 	Devices devices = Devices.UNIVERSAL;
 
@@ -643,6 +644,19 @@ class XcodeBuildPluginExtension {
 			return
 		}
 		this.simulator = simulator.toString().equalsIgnoreCase("true") || simulator.toString().equalsIgnoreCase("yes")
+	}
 
+	void setProjectFile(def projectFile) {
+		if (projectFile instanceof File) {
+			this.projectFile = projectFile
+		}
+		this.projectFile = new File(projectFile)
+	}
+
+	File getProjectFile() {
+		if (this.projectFile != null) {
+			return this.projectFile
+		}
+		return new File(project.projectDir, project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0])
 	}
 }

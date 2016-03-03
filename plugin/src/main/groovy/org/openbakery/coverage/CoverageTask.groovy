@@ -1,5 +1,6 @@
 package org.openbakery.coverage
 
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
@@ -39,6 +40,7 @@ class CoverageTask extends AbstractXcodeTask {
 			report.include = getInclude()
 			report.exclude = getExclude()
 			report.type = getReportType()
+			report.title = FilenameUtils.getBaseName(project.xcodebuild.projectFile.path)
 			report.destinationPath = project.coverage.outputDirectory
 			logger.debug("Report to create with data: {}", report)
 			report.create()

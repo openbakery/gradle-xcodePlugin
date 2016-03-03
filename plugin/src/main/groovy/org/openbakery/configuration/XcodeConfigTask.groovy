@@ -27,12 +27,7 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	@TaskAction
 	void configuration() {
-
-
-		def projectFileDirectory = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0]
-		def xcodeProjectDir = new File(project.projectDir, projectFileDirectory) // prepend project dir to support multi-project build
-		def projectFile = new File(xcodeProjectDir, "project.pbxproj")
-
+		def projectFile = new File(project.xcodebuild.projectFile, "project.pbxproj")
 		xcodeProjectFile = new XcodeProjectFile(project, projectFile)
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()

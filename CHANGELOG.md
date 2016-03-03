@@ -1,8 +1,10 @@
-# 0.12.8 (TBA)
+# 0.13.0 (TBA)
 
 Changes
+* Added new code coverate support for the new reports Xcode 7 creates
 * Updated OCLint to 0.10.2
 * Added 'cocoapodsUpdate' task: Issue: #241
+* Added that the project file can be specified as parameter
 
 Bugfixes
 * Fixed that empty Frameworks directory gets deleted: issue #242

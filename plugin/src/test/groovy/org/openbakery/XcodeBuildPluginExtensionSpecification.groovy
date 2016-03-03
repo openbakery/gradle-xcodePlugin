@@ -597,4 +597,26 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.getBinary().toString().endsWith("Debug-iphoneos/ExampleTodayWidget.app/ExampleTodayWidget")
 
 	}
+
+
+	def "get project file"() {
+		when:
+		File projectDir =  new File("../example/iOS/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+
+		then:
+		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
+	}
+
+	def "set project file"() {
+		when:
+		File projectDir =  new File("../example/iOS")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.projectFile = "../example/iOS/Example/Example.xcodeproj"
+
+		then:
+		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
+	}
 }
