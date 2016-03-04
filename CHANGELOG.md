@@ -1,4 +1,4 @@
-# 0.13.0 (TBA)
+# 0.13.0 (March 4, 2016)
 
 Changes
 * Added new code coverate support for the new reports Xcode 7 creates: #225
