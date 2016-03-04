@@ -1,7 +1,9 @@
 # 0.13.0 (TBA)
 
 Changes
-* Added new code coverate support for the new reports Xcode 7 creates
+* Added new code coverate support for the new reports Xcode 7 creates: #225
+ * This ables coverage reports for Swift projects
+ * Also added support for coverage reports for OS X projects
 * Updated OCLint to 0.10.2
 * Added 'cocoapodsUpdate' task: Issue: #241
 * Added that the project file can be specified as parameter

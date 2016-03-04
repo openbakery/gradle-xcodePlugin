@@ -259,6 +259,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 		project.xcodebuild.type = 'OSX'
 		project.xcodebuild.target = 'Test';
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
 
 
 		when:
