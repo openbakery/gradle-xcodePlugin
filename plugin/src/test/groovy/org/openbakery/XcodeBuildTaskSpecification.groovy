@@ -129,7 +129,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
 														 "SYMROOT=" + new File("build/mySym").absolutePath,
 														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
-														 "-destination", "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+														 "-destination", "generic/platform=iOS build"
 			]
 		}
 		commandList == expectedCommandList
@@ -155,7 +155,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 														]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 		}
 		commandList == expectedCommandList
 
@@ -206,12 +206,13 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['xcodebuild',
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
-														 "-sdk", "macosx",
 														 "-configuration", "Debug",
 														 "CODE_SIGN_IDENTITY=",
 														 "CODE_SIGNING_REQUIRED=NO"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+
 		}
 		commandList == expectedCommandList
 	}
@@ -240,7 +241,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "ARCHS=myarch"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 
 		}
 		commandList == expectedCommandList
@@ -299,7 +300,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", "Debug",
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 
 		}
 		commandList == expectedCommandList
@@ -326,7 +327,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 		}
 		commandList == expectedCommandList
 
@@ -353,7 +354,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 		}
 		commandList == expectedCommandList
 	}
@@ -382,7 +383,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "ARCHS=i386"
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 		}
 		commandList == expectedCommandList
 	}
@@ -411,7 +412,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList <<  "-destination" << "generic/platform=iOS build"
 		}
 		commandList == expectedCommandList
 	}

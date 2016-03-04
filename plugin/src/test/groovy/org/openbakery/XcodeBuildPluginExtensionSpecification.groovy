@@ -580,7 +580,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.simulator == false
 	}
 
-	def "get binary"() {
+	def "get binary iOS"() {
 		when:
 		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -595,7 +595,24 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 		then:
 		extension.getBinary().toString().endsWith("Debug-iphoneos/ExampleTodayWidget.app/ExampleTodayWidget")
+	}
 
+
+	def "get binary OS X"() {
+		when:
+		File projectDir =  new File("../example/OSX/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleOSX.xcodeproj/project.pbxproj"))
+		extension.projectSettings = xcodeProjectFile.getProjectSettings()
+		extension.type = Type.OSX
+		extension.simulator = false
+		extension.target = "ExampleOSX"
+		extension.productType = "app"
+		extension.infoPlist = "../../example/iOS/ExampleOSX/Info.plist"
+
+		then:
+		extension.getBinary().toString().endsWith("build/sym/Debug/ExampleOSX.app/Contents/MacOS/ExampleOSX")
 	}
 
 

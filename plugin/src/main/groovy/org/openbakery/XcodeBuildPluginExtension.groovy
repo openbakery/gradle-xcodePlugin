@@ -582,6 +582,9 @@ class XcodeBuildPluginExtension {
 		if (buildConfiguration != null) {
 			BuildConfiguration buildSettings = buildConfiguration.buildSettings[configuration];
 			logger.debug("buildSettings: {}", buildSettings)
+			if (type == Type.OSX) {
+				return new File(getOutputPath(), buildSettings.productName + ".app/Contents/MacOS/" + buildSettings.productName)
+			}
 			return new File(getOutputPath(), buildSettings.productName + ".app/" + buildSettings.productName)
 		}
 		return null

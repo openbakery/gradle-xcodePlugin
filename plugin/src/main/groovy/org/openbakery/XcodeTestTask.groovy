@@ -115,7 +115,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		// (Otherwise stderr can corrupt the stdout output)
 		commandList = ["script", "-q", "/dev/null"] + commandList
 
-		addIOSSimulatorTargets(commandList)
+		addDesination(commandList)
+		addCoverageSettings(commandList)
 
 
 		commandList.add('test');
@@ -144,15 +145,19 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	void addIOSSimulatorTargets(ArrayList commandList) {
+	void addDesination(ArrayList commandList) {
 		if (project.xcodebuild.type == Type.OSX) {
+			commandList.add("-destination")
+			commandList.add("platform=OS X,arch=x86_64")
 			return
 		}
-
 		for (Destination destination in project.xcodebuild.availableDestinations) {
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
 		}
+	}
+
+	void addCoverageSettings(ArrayList commandList) {
 		if (project.xcodebuild.version.major < 7) {
 			commandList.add("GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES")
 			commandList.add("GCC_GENERATE_TEST_COVERAGE_FILES=YES")
@@ -161,7 +166,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			commandList.add("yes")
 		}
 	}
-
 
 	boolean parseResult(File outputFile) {
 		logger.debug("parse result from: {}", outputFile)

@@ -31,21 +31,6 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 				commandList.add(project.xcodebuild.workspace)
 			}
 
-			if (project.xcodebuild.type == Type.OSX) {
-				commandList.add("-sdk")
-				commandList.add("macosx")
-			}
-
-			/*
-			if (project.xcodebuild.sdk != null) {
-				commandList.add("-sdk")
-				commandList.add(project.xcodebuild.sdk)
-				if (project.xcodebuild.sdk.equals(XcodePlugin.SDK_IPHONESIMULATOR) && project.xcodebuild.arch != null) {
-					commandList.add("ONLY_ACTIVE_ARCH=NO")
-				}
-			}
-			*/
-
 			if (project.xcodebuild.configuration != null) {
 				commandList.add("-configuration")
 				commandList.add(project.xcodebuild.configuration)

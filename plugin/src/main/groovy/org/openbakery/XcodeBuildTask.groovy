@@ -45,10 +45,15 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 
 		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			Destination destination = project.xcodebuild.availableDestinations.last()
 			commandList.add("-destination")
-			commandList.add(getDestinationCommandParameter(destination))
+			commandList.add("generic/platform=iOS build")
 		}
+
+		if (project.xcodebuild.isSimulatorBuildOf(Type.OSX)) {
+			commandList.add("-destination")
+			commandList.add("platform=OS X,arch=x86_64")
+		}
+
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 		Map<String, String> environment = project.xcodebuild.environment

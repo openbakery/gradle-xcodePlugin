@@ -277,6 +277,8 @@ class XcodeTestTaskSpecification extends Specification {
 														 "CODE_SIGN_IDENTITY=",
 														 "CODE_SIGNING_REQUIRED=NO"]
 			expectedCommandList.addAll(expectedDefaultDirectories())
+			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
 		commandList == expectedCommandList
@@ -347,5 +349,66 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
+	def setupOSXBuild() {
+		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.target = 'Test';
+
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+
+		def expectedCommandList = ['script', '-q', '/dev/null',
+															 "xcodebuild",
+															 "-scheme", 'myscheme',
+															 "-workspace", "myworkspace",
+															 "-configuration", 'Debug',
+															 "CODE_SIGN_IDENTITY=",
+															 "CODE_SIGNING_REQUIRED=NO"
+		]
+		expectedCommandList.addAll(expectedDefaultDirectories())
+		return expectedCommandList
+	}
+
+	def "test command with coverage for OS X"() {
+		project.xcodebuild.commandRunner = commandRunner
+		def commandList
+		def expectedCommandList = setupOSXBuild()
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		interaction {
+			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+			expectedCommandList << "-enableCodeCoverage" << "yes"
+			expectedCommandList << "test"
+		}
+		commandList == expectedCommandList
+	}
+
+	def "test command with coverage for OSX using Xcode 6"() {
+		project.xcodebuild.commandRunner = commandRunner
+		def commandList
+		def expectedCommandList = setupOSXBuild()
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		interaction {
+			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
+			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
+			expectedCommandList << "test"
+		}
+		commandList == expectedCommandList
+
+	}
 
 }

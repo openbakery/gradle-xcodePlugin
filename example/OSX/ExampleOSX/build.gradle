@@ -7,7 +7,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.12.+"
+	    classpath "org.openbakery:xcode-plugin:0.13.+"
 	}
 		
 }
@@ -19,6 +19,10 @@ xcodebuild {
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	type = 'OSX'
+}
+
+coverage {
+  outputFormat = 'html'
 }
 
 task release(dependsOn: ['archive', 'package']) {
