@@ -250,10 +250,11 @@ class XcodeTestTaskSpecification extends Specification {
 		xcodeTestTask.numberErrors() == 0
 	}
 
-
-
+	
 
 	def "test command without simulator"() {
+		project.xcodebuild.commandRunner = commandRunner
+
 		def commandList
 		def expectedCommandList
 
