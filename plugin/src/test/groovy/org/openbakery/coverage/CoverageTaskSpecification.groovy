@@ -36,7 +36,10 @@ class CoverageTaskSpecification extends Specification {
 	}
 
 	def cleanup() {
+
 		FileUtils.deleteDirectory(project.projectDir)
+		FileUtils.deleteDirectory(project.xcodebuild.derivedDataPath)
+
 	}
 
 	def createFile(String name) {
@@ -299,5 +302,22 @@ class CoverageTaskSpecification extends Specification {
 
 		then:
 		coverageTask.report.title == "My Project"
+	}
+
+
+	def "profile data coverage with target for Xcode 7.3"() {
+		given:
+		project.xcodebuild.target = "MyApp"
+		coverageTask.binary = createFile("MyApp")
+		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
+
+		File profData = new File(project.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/Coverage.profdata")
+		FileUtils.writeStringToFile(profData, "Dummy")
+
+		when:
+		coverageTask.coverage()
+
+		then:
+		coverageTask.report.profileData != null
 	}
 }

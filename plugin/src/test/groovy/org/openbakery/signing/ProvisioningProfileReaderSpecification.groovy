@@ -242,6 +242,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 								"    <string>" + applicationIdentifier + "</string>\n" +
 								"    <key>com.apple.developer.team-identifier</key>\n" +
 								"    <string>AAAAAAAAAA</string>\n" +
+								"    <key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
+						    "    <string>ABCDE12345.*</string>\n" +
 								"</dict>\n" +
 								"</plist>"
 	}

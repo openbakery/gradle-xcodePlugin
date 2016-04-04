@@ -95,9 +95,17 @@ class CoverageTask extends AbstractXcodeTask {
 		if (this.profileData != null) {
 			return this.profileData
 		}
-		this.profileData = new File(project.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/" + project.xcodebuild.target + "/Coverage.profdata")
-		if (this.profileData.exists()) {
-			return this.profileData
+		def possibleDirectories = [
+						"Build/Intermediates/CodeCoverage/" + project.xcodebuild.target + "/Coverage.profdata",
+						"Build/Intermediates/CodeCoverage/Coverage.profdata"
+		]
+
+		for (String directory : possibleDirectories) {
+			this.profileData = new File(project.xcodebuild.derivedDataPath, directory)
+			if (this.profileData.exists()) {
+				return this.profileData
+			}
+
 		}
 		return null
 	}
