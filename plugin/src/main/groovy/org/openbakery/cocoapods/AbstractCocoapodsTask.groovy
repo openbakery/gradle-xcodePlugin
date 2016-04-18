@@ -23,7 +23,7 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 			String podPath = commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir")
 			podCommand = podPath + "/bin/pod"
 		}
-		logger.lifecycle "Run pod install"
+		logger.lifecycle "Run pod " + parameter
 
 		def output = services.get(StyledTextOutputFactory).create(CocoapodsInstallTask)
 

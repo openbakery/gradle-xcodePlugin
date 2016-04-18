@@ -1,3 +1,8 @@
+# 0.13.1 (TBA)
+
+Bugfixes
+* Fixed that the SwiftSupport is only created for Swift projects: #260
+
 # 0.13.0 (March 4, 2016)
 
 Changes

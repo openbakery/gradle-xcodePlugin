@@ -71,7 +71,42 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
 	}
 
+	void createFrameworkLib(String item) {
+		File lib = new File(appDirectory, "Frameworks/" + item)
+		FileUtils.writeStringToFile(lib, "foo")
+	}
+
+	def createSwiftLibs() {
+		def swiftLibs = [
+						"libswiftCore.dylib",
+						"libswiftCoreGraphics.dylib",
+						"libswiftCoreImage.dylib",
+						"libswiftDarwin.dylib",
+						"libswiftDispatch.dylib",
+						"libswiftFoundation.dylib",
+						"libswiftObjectiveC.dylib",
+						"libswiftSecurity.dylib",
+						"libswiftUIKit.dylib"
+		]
+
+		File swiftLibsDirectory = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+		swiftLibsDirectory.mkdirs();
+
+		swiftLibs.each { item ->
+			File lib = new File(swiftLibsDirectory, item)
+			FileUtils.writeStringToFile(lib, "bar")
+		}
+		return swiftLibs
+	}
+
 	void mockSwiftLibs() {
+		def swiftLibs = createSwiftLibs()
+		swiftLibs[0..4].each { item ->
+			File lib = new File(appDirectory, "Frameworks/" + item)
+			FileUtils.writeStringToFile(lib, "foo")
+		}
+
+		/*
 		def swiftLibs = [
 						"libswiftCore.dylib",
 						"libswiftCoreGraphics.dylib",
@@ -97,7 +132,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 			File lib = new File(swiftLibsDirectory, item)
 			FileUtils.writeStringToFile(lib, "bar")
 		}
-
+*/
 	}
 
 
@@ -318,6 +353,28 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		supportLibswiftDirectory.list().length == 5
 		supportLibswiftCore.exists()
 		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
+	}
+
+
+	def "no swift but framework in App Xcode 7"() {
+		given:
+
+		mockXcodeVersion()
+		project.xcodebuild.version = 7
+		createSwiftLibs()
+		createFrameworkLib("myFramework.dylib")
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File myFramework = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/myFramework.dylib")
+		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
+		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
+
+		then:
+		myFramework.exists()
+		!supportLibswiftDirectory.exists()
+		!supportLibswiftCore.exists()
 	}
 
 	def "convert Info Plist to binary"() {
