@@ -1,6 +1,6 @@
 *.xcodeproj/project.xcworkspace/
 *.xcodeproj/xcuserdata/
-*.properties
+gradle.properties
 build
 .DS_Store
 Pods
