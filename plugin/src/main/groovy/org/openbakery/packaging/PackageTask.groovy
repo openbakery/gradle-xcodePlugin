@@ -56,7 +56,6 @@ class PackageTask extends AbstractDistributeTask {
 		def applicationName = getApplicationNameFromArchive()
 		copy(getApplicationBundleDirectory(), applicationFolder)
 
-
 		applicationBundleName = applicationName + ".app"
 
 
@@ -88,6 +87,7 @@ class PackageTask extends AbstractDistributeTask {
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+				removeFrameworkFromExtensions(bundle)
 				embedProvisioningProfileToBundle(bundle)
 			}
 
@@ -108,6 +108,17 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
+	def removeFrameworkFromExtensions(File bundle) {
+		// appex extensions should not contain extensions
+		if (FilenameUtils.getExtension(bundle.toString()).equalsIgnoreCase("appex"))  {
+			File frameworksPath = new File(bundle, "Frameworks")
+			if (frameworksPath.exists()) {
+				FileUtils.deleteDirectory(frameworksPath)
+			}
+		}
+
+	}
+
 	File getProvisionFileForBundle(File bundle) {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
 		return getProvisionFileForIdentifier(bundleIdentifier)
@@ -122,9 +133,11 @@ class PackageTask extends AbstractDistributeTask {
 
 		File swiftLibArchive = new File(getArchiveDirectory(), "SwiftSupport")
 
-		copy(swiftLibArchive, payloadPath.getParentFile())
-		return new File(payloadPath.getParentFile(), "SwiftSupport");;
-
+		if (swiftLibArchive.exists()) {
+			copy(swiftLibArchive, payloadPath.getParentFile())
+			return new File(payloadPath.getParentFile(), "SwiftSupport")
+		}
+		return null
 	}
 
 

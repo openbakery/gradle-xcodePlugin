@@ -1,6 +1,7 @@
 # 0.13.1 (TBA)
 
 Bugfixes
+* Added that in the ipa app extentions for iOS apps do not contain frameworks, because the should be in the base app
 * Fixed that the SwiftSupport is only created for Swift projects: #260
 
 # 0.13.0 (March 4, 2016)

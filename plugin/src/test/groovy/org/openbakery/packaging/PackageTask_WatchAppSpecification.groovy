@@ -31,6 +31,10 @@ class PackageTask_WatchAppSpecification extends Specification {
 	File archiveDirectory
 	File keychain
 
+	File applicationBundle
+	File watchkitExtensionBundle
+	String watchkitExtensionPath
+
 	void setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -62,16 +66,28 @@ class PackageTask_WatchAppSpecification extends Specification {
 		FileUtils.writeStringToFile(keychain, "dummy");
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 
+		applicationBundle = new File(archiveDirectory, "Products/Applications/ExampleWatchKit.app")
+		watchkitExtensionPath = "Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex"
+		watchkitExtensionBundle = new File(applicationBundle, watchkitExtensionPath)
+
 	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
 	}
 
+	void createFrameworkIn(File directory) {
+
+		def frameworksDirectory = new File(directory, "Frameworks/MyFramework.framework")
+		if (!frameworksDirectory.exists()) {
+			frameworksDirectory.mkdirs()
+		}
+		FileUtils.writeStringToFile(new File(frameworksDirectory, "MyFramework"), "dummy");
+
+	}
 
 	void createExampleApp() {
 
-		def applicationBundle = new File(archiveDirectory, "Products/Applications/ExampleWatchKit.app")
 
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
@@ -93,9 +109,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		plistHelperStub.setValueForPlist(infoPlistWatchkit.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp")
 
 
-		String watchkitExtensionPath = "Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex"
-		File watchkitExtensionDirectory = new File(applicationBundle, watchkitExtensionPath)
-		FileUtils.writeStringToFile(new File(watchkitExtensionDirectory, "ExampleWatchkit WatchKit Extension"), "dummy");
+		FileUtils.writeStringToFile(new File(watchkitExtensionBundle, "ExampleWatchkit WatchKit Extension"), "dummy");
 
 		File infoPlistWatchkitExtension = new File(payloadAppDirectory, watchkitExtensionPath + "/Info.plist");
 		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp.watchkitextension")
@@ -170,6 +184,34 @@ class PackageTask_WatchAppSpecification extends Specification {
 		1 * commandRunner.run(codesignWatchKitExtensionCommand, _)
 		//1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
 		//commandList == codesignWatchKitExtensionCommand
+	}
+
+
+	def "copy frameworks"() {
+
+		given:
+		createExampleApp()
+		createFrameworkIn(applicationBundle)
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/Frameworks/MyFramework.framework").exists()
+	}
+
+	def "do not copy frameworks in app extension"() {
+		given:
+		createExampleApp()
+		createFrameworkIn(applicationBundle)
+		createFrameworkIn(watchkitExtensionBundle)
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		!(new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/" + watchkitExtensionPath + "/Frameworks").exists())
+
 	}
 
 }
