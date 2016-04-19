@@ -139,4 +139,33 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		0 * commandRunner.run(["/usr/bin/plutil", "-convert", "binary1", infoPlistToConvert.absolutePath])
 
 	}
+
+
+	def "copy plugins"() {
+		File xctext = new File(appDirectory, "Contents/PlugIns/Today.appex/Contents/MacOS/Today")
+		FileUtils.writeStringToFile(xctext, "dummy")
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Contents/PlugIns/Today.appex/Contents/MacOS/Today")
+
+		then:
+		appFile.exists()
+
+	}
+
+	def "xctest should not be copied"() {
+		File xctest = new File(appDirectory, "Contents/PlugIns/ExampleOSXTests.xctest/foobar")
+		FileUtils.writeStringToFile(xctest, "dummy")
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File appFile = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Contents/PlugIns/ExampleOSXTests.xctest")
+
+		then:
+		!appFile.exists()
+	}
+
 }

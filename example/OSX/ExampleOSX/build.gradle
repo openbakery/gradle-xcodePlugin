@@ -34,10 +34,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 	if (taskGraph.hasTask(package) || taskGraph.hasTask(release)) {
 
-		if (!project.hasProperty("signingIdentity")) {
-			def signingIdentity = System.console().readLine("\nPlease enter the signing identity: ")
-			
-		}
 
 		if (!project.hasProperty("signingCertificateURI")) {
 			signingCertificateURI = System.console().readLine("\nPlease enter the certificate URI: ")
@@ -45,10 +41,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 		if (!project.hasProperty("signingCertificatePassword")) {
 			signingCertificatePassword = System.console().readPassword("\nPlease enter the certificate password: ")
-		}
-
-		if (!project.hasProperty("signingProvisionURI")) {
-			signingProvisionURI = System.console().readLine("\nPlease enter the mobile provision URI: ")
 		}
 
 	

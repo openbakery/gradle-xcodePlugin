@@ -322,6 +322,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		createInfoPlist(getArchiveDirectory())
 		createFrameworks(getArchiveDirectory())
 		deleteEmptyFrameworksDirectory(getArchiveDirectory())
+		deleteXCTestIfExists(getApplicationsDirectory())
 
 		if (project.xcodebuild.type == Type.iOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + project.xcodebuild.applicationBundle.name)
@@ -329,6 +330,19 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("create archive done")
+	}
+
+	def deleteXCTestIfExists(File applicationsDirectory) {
+		File plugins = new File(applicationsDirectory, project.xcodebuild.applicationBundle.name + "/Contents/Plugins")
+		if (!plugins.exists()) {
+			return
+		}
+		plugins.eachFile (FileType.DIRECTORIES) { file ->
+			if (file.toString().endsWith("xctest")) {
+				FileUtils.deleteDirectory(file)
+				return true
+			}
+		}
 	}
 
 	File getApplicationsDirectory() {

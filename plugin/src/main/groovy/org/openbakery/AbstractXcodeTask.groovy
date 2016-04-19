@@ -181,8 +181,9 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 		File appBundle = new File(appPath, applicationBundleName)
 
+		addPluginsToAppBundle(appBundle, bundles)
+
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-			addPluginsToAppBundle(appBundle, bundles)
 			addWatchToAppBundle(appBundle, bundles)
 		}
 		bundles.add(appBundle)
@@ -191,7 +192,14 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
 		File plugins
-		plugins = new File(appBundle, "PlugIns")
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+			plugins = new File(appBundle, "PlugIns")
+		}	else if (project.xcodebuild.type == Type.OSX) {
+			plugins = new File(appBundle, "Contents/PlugIns")
+		} else {
+			return
+		}
+
 		if (plugins.exists()) {
 			for (File pluginBundle : plugins.listFiles()) {
 				if (pluginBundle.isDirectory()) {
