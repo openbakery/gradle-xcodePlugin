@@ -213,15 +213,28 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 	}
 
-	def deleteEmptyFrameworksDirectory(File applicationsDirectory) {
+	def deleteEmptyFrameworks(File applicationsDirectory) {
+		// if frameworks directory is emtpy
 		File appPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
 		deleteDirectoryIfEmpty(appPath, "Frameworks")
 
-		File pluginsDirectory = new File(appPath, "PlugIns");
-		if (pluginsDirectory.exists()) {
-			pluginsDirectory.eachFile(FileType.DIRECTORIES) { subDirectory ->
-				if (subDirectory.name.endsWith(".appex")) {
-					deleteDirectoryIfEmpty(subDirectory, "Frameworks")
+
+
+	}
+
+	def deleteFrameworksInExtension(File applicationsDirectory) {
+
+
+		File plugins = new File(applicationsDirectory, project.xcodebuild.applicationBundle.name + "/Plugins")
+		if (!plugins.exists()) {
+			return
+		}
+
+		plugins.eachFile(FileType.DIRECTORIES) { file ->
+			if (file.toString().endsWith(".appex")) {
+				File frameworkDirectory = new File(file, "Frameworks");
+				if (frameworkDirectory.exists()) {
+					FileUtils.deleteDirectory(frameworkDirectory)
 				}
 			}
 		}
@@ -321,8 +334,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 
 		createInfoPlist(getArchiveDirectory())
 		createFrameworks(getArchiveDirectory())
-		deleteEmptyFrameworksDirectory(getArchiveDirectory())
+		deleteEmptyFrameworks(getArchiveDirectory())
 		deleteXCTestIfExists(getApplicationsDirectory())
+		deleteFrameworksInExtension(getApplicationsDirectory())
 
 		if (project.xcodebuild.type == Type.iOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + project.xcodebuild.applicationBundle.name)

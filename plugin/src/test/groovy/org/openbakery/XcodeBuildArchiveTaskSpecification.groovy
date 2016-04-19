@@ -506,10 +506,10 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	}
 
 
-	def "delete empty frameworks directory in extension"() {
+	def "delete frameworks directory in extension"() {
 		given:
 		setupProject()
-		File extensionDirectory = new File(appDirectory, "PlugIns/ExampleTodayWidget.appex/Frameworks")
+		File extensionDirectory = new File(appDirectory, "PlugIns/ExampleTodayWidget.appex/Frameworks/MyFramework.framework")
 		extensionDirectory.mkdirs()
 
 		when:
