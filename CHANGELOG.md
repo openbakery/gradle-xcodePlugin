@@ -1,4 +1,4 @@
-# 0.13.1 (TBA)
+# 0.13.1 (Mai 2, 2015)
 
 Bugfixes
 * Added that in the ipa app extentions for iOS apps do not contain frameworks, because the should be in the base app
