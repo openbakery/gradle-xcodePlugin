@@ -313,4 +313,22 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		entitlementsFile.text.contains("AAAAAAAAAAA.org.openbakery.Example.widget")
 	}
 
+
+	def "is ad-hoc profile"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/test.mobileprovision", project, new CommandRunner())
+
+		then:
+		reader.isAdHoc() == true
+	}
+
+
+	def "is not ad-hoc profile"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader("src/test/Resource/Appstore.mobileprovision", project, new CommandRunner())
+
+		then:
+		reader.isAdHoc() == false
+	}
+
 }

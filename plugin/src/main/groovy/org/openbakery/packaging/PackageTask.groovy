@@ -7,7 +7,6 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
-import org.openbakery.BuildConfiguration
 import org.openbakery.CommandRunnerException
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
@@ -84,6 +83,7 @@ class PackageTask extends AbstractDistributeTask {
 			signSettingsAvailable = false;
 		}
 
+
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -100,12 +100,24 @@ class PackageTask extends AbstractDistributeTask {
 			}
 		}
 
+		File appBundle = appBundles.last()
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-			createIpa(applicationFolder);
+
+			boolean isAdHoc = isAdHoc(appBundle)
+			createIpa(applicationFolder, !isAdHoc);
 		} else {
-			createPackage(appBundles.last());
+			createPackage(appBundle);
 		}
 
+	}
+
+	boolean isAdHoc(File appBundle) {
+		File provisionFile = getProvisionFileForBundle(appBundle)
+		if (provisionFile == null) {
+			return false
+		}
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
+		return reader.isAdHoc()
 	}
 
 	def removeFrameworkFromExtensions(File bundle) {
@@ -141,13 +153,17 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 
-	private void createZipPackage(File packagePath, String extension) {
+	private void createZipPackage(File packagePath, String extension, boolean includeSwiftSupport) {
 		File packageBundle = new File(outputPath, getIpaFileName() + "." + extension)
 		if (!packageBundle.parentFile.exists()) {
 			packageBundle.parentFile.mkdirs()
 		}
 
-		File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
+		File swiftSupportPath = null;
+		if (includeSwiftSupport) {
+			swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
+		}
+
 		if (swiftSupportPath != null) {
 			createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath)
 		} else {
@@ -155,13 +171,13 @@ class PackageTask extends AbstractDistributeTask {
 		}
 	}
 
-	private void createIpa(File payloadPath) {
-		createZipPackage(payloadPath, "ipa")
+	private void createIpa(File payloadPath, boolean addSwiftSupport) {
+		createZipPackage(payloadPath, "ipa", addSwiftSupport)
 	}
 
 	private void createPackage(File packagePath) {
 
-		createZipPackage(packagePath, "zip")
+		createZipPackage(packagePath, "zip", false)
 	}
 
 	private void codesign(File bundle) {

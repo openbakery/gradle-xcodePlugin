@@ -30,9 +30,10 @@ group = 'org.openbakery'
 version = versionNumber
 
 
-apply plugin: 'java'
+apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
 apply plugin: 'maven'
+
 
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6" 
@@ -67,6 +68,9 @@ dependencies {
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 	testCompile 'cglib:cglib-nodep:3.1'
 	deployerJars "org.apache.maven.wagon:wagon-ssh:2.10"
+	testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
+		exclude module: 'groovy-all'
+	}
 }
 
 

@@ -1,3 +1,8 @@
+# 0.13.2 (TBA)
+
+Bugfixes
+* Added that the SwiftSupport folder is only included in Appstore builds, but not in AdHoc builds: #232
+
 # 0.13.1 (Mai 2, 2015)
 
 Bugfixes

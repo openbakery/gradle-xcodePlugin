@@ -224,19 +224,19 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 	private void addWatchToAppBundle(File appBundle, ArrayList<File> bundles) {
-			File watchDirectory
-			watchDirectory = new File(appBundle, "Watch")
-			if (watchDirectory.exists()) {
-				for (File bundle : watchDirectory.listFiles()) {
-					if (bundle.isDirectory()) {
-						if (bundle.name.endsWith(".app")) {
-							addPluginsToAppBundle(bundle, bundles)
-							bundles.add(bundle)
-						}
+		File watchDirectory
+		watchDirectory = new File(appBundle, "Watch")
+		if (watchDirectory.exists()) {
+			for (File bundle : watchDirectory.listFiles()) {
+				if (bundle.isDirectory()) {
+					if (bundle.name.endsWith(".app")) {
+						addPluginsToAppBundle(bundle, bundles)
+						bundles.add(bundle)
 					}
 				}
 			}
 		}
+	}
 
 	File getProvisionFileForIdentifier(String bundleIdentifier) {
 

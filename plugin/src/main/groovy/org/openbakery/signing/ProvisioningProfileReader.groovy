@@ -228,4 +228,9 @@ class ProvisioningProfileReader {
 		}
 	}
 
+	public boolean isAdHoc() {
+		def provisionedDevices = config.getList("ProvisionedDevices")
+		return !provisionedDevices.empty
+	}
+
 }
