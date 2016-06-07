@@ -1,2 +1,5 @@
-pod 'Sparkle', '~> 1.9'
+
+target "ExampleOSX" do
+	pod 'Sparkle', '~> 1.9'
+end
 
