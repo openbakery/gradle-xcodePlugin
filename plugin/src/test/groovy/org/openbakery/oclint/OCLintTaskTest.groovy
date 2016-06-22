@@ -95,7 +95,6 @@ class OCLintTaskTest {
 	}
 
 	void mockUntar() {
-		File tmpDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp/oclint/")
 		commandRunnerMock.demand.run { parameters ->
 
 
@@ -130,7 +129,7 @@ class OCLintTaskTest {
 
 
 			def expectedParameters = [
-							new File(tmpDirectory, 'oclint/bin/oclint-xcodebuild').absolutePath,
+							new File(tmpDirectory, oclintPath + '/bin/oclint-xcodebuild').absolutePath,
 							'build/xcodebuild-output.txt']
 
 			assertThat(parameters, is(equalTo(expectedParameters)))
@@ -155,7 +154,7 @@ class OCLintTaskTest {
 	def expectedParameters(String reportType) {
 
 		return [
-						new File(tmpDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
+						new File(tmpDirectory, oclintPath + '/bin/oclint-json-compilation-database').absolutePath,
 						"--",
 						"-max-priority-1=0",
 						"-max-priority-2=10",
@@ -220,7 +219,7 @@ class OCLintTaskTest {
 		commandRunnerMock.demand.run { parameters ->
 
 			def expectedParameters = [
-							new File(tmpDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
+							new File(tmpDirectory, oclintPath + '/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",
@@ -260,7 +259,7 @@ class OCLintTaskTest {
 		commandRunnerMock.demand.run { parameters ->
 
 			def expectedParameters = [
-							new File(tmpDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
+							new File(tmpDirectory, oclintPath + '/bin/oclint-json-compilation-database').absolutePath,
 							"-e",
 							"Pods",
 							"-e",
@@ -298,7 +297,7 @@ class OCLintTaskTest {
 
 		commandRunnerMock.demand.run { parameters ->
 			def expectedParameters = [
-							new File(tmpDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
+							new File(tmpDirectory, oclintPath + '/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=100",
 							"-max-priority-2=200",
@@ -336,7 +335,7 @@ class OCLintTaskTest {
 		commandRunnerMock.demand.run { parameters ->
 
 			def expectedParameters = [
-							new File(tmpDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath,
+							new File(tmpDirectory, oclintPath + '/bin/oclint-json-compilation-database').absolutePath,
 							"--",
 							"-max-priority-1=0",
 							"-max-priority-2=10",

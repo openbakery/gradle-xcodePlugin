@@ -12,7 +12,10 @@ class OCLintTask extends AbstractXcodeTask {
 	File outputDirectory
 
 	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.3/oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
+	String oclintDirectoryName = "oclint-0.10.3"
 	String archiveName = FilenameUtils.getName(downloadURL)
+
+	File oclintBinDirectory
 
 	OCLintTask() {
 		super()
@@ -37,9 +40,6 @@ class OCLintTask extends AbstractXcodeTask {
 		]
 		commandRunner.run(command)
 
-		File oclintDirectory = new File(outputDirectory, "oclint-0.10.2")
-		oclintDirectory.renameTo(new File(outputDirectory, "oclint"))
-
 		return tmpDirectory
 	}
 
@@ -52,11 +52,12 @@ class OCLintTask extends AbstractXcodeTask {
 		}
 		def tmpDirectory = download()
 
-		def oclintXcodebuild = new File(tmpDirectory, 'oclint/bin/oclint-xcodebuild').absolutePath
+		oclintBinDirectory = new File(tmpDirectory, oclintDirectoryName + "/bin")
+		def oclintXcodebuild = new File(oclintBinDirectory, 'oclint-xcodebuild').absolutePath
 
 		commandRunner.run([oclintXcodebuild, 'build/xcodebuild-output.txt'])
 
-		def oclint = new File(tmpDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath
+		def oclint = new File(oclintBinDirectory, 'oclint-json-compilation-database').absolutePath
 		def report = new File(outputDirectory, 'oclint.html').absolutePath
 
 		def ocLintParameters = [oclint]
