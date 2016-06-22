@@ -4,8 +4,8 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.Type

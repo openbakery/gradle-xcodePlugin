@@ -1,6 +1,7 @@
 package org.openbakery.stubs
 
-import org.gradle.logging.ProgressLogger
+import org.gradle.internal.logging.progress.ProgressLogger
+
 
 /**
  * Created by rene on 30.06.15.

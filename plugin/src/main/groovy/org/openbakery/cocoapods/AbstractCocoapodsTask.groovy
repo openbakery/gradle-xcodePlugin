@@ -1,6 +1,6 @@
 package org.openbakery.cocoapods
 
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 

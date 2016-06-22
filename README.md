@@ -22,25 +22,19 @@ Here a brief overview of the features:
 
 ## Note
 
-**With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter**
+**Version 0.14 of the plugin needs at least gradle version 2.14**
 
-Here a table of the values for the migration to 0.12:
-
-| sdk (old)         | type (new)    | simulator (new)         |
-| ----------------- | ------------- | ------------------------|
-| iphonesimulator   | iOS           | true                    |
-| iphoneos          | iOS           | false                   |
-| macosx            | OSX           | (this value is ignored) |
+**Version 0.13+ will not work with gradle version 2.14**
 
 
 ## Requirements
 
 * Xcode 6 or greater
-* [Gradle](http://gradle.org) 2.0 or greater
+* [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
 
 
-### Current stable version is 0.13.1
+### Current stable version is 0.14.0
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
 
@@ -89,3 +83,14 @@ I'm always happy to receive pull requests with new features and if you send a pu
 * For unit test please use the [spock framework](http://spockframework.org) for mocking. I want to remove the old gmock framework and port the old tests to use spock.
 * If a pull request does not contain any unit tests, I always think twice if I should merge it at all.
 
+# Migration Notes
+
+With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter
+
+Here a table of the values for the migration to 0.12:
+
+| sdk (old)         | type (new)    | simulator (new)         |
+| ----------------- | ------------- | ------------------------|
+| iphonesimulator   | iOS           | true                    |
+| iphoneos          | iOS           | false                   |
+| macosx            | OSX           | (this value is ignored) |

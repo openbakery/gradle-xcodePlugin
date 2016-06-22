@@ -25,7 +25,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.13.+"
+	    classpath "org.openbakery:xcode-plugin:0.14.+"
 	}
 }
 
@@ -40,8 +40,13 @@ xcodebuild {
 	scheme = 'Example'
 	configuration = 'Test'	
 	simulator = false	
-	destination = ['iPad 2', 'iPhone 4s' ]
-
+	//destination = ['iPad 2', 'iPhone 4s' ]
+	
+	destination {
+		id = 'a285fd0ed450825830809a4d8a0b4d5bbfcf49b5'
+		simulator = false
+	}
+	
 }
 
 

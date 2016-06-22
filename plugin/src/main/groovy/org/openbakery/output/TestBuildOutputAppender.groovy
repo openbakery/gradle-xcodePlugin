@@ -1,8 +1,8 @@
 package org.openbakery.output
 
 import org.gradle.api.Project
-import org.gradle.logging.ProgressLogger
-import org.gradle.logging.StyledTextOutput
+import org.gradle.internal.logging.progress.ProgressLogger
+import org.gradle.internal.logging.text.StyledTextOutput
 import org.openbakery.Destination
 
 /**

@@ -1,7 +1,9 @@
-# 0.13.2 (TBA)
+# 0.14.0 (TBA)
 
 Bugfixes
 * Added that the SwiftSupport folder is only included in Appstore builds, but not in AdHoc builds: #232
+* Make compatible with gradle 2.14. (Older version of gradle will not work anymore with this version)
+
 
 # 0.13.1 (Mai 2, 2015)
 

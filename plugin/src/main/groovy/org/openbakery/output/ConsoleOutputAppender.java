@@ -1,8 +1,7 @@
 package org.openbakery.output;
 
-import org.gradle.api.plugins.jetty.AbstractJettyRunTask;
-import org.gradle.logging.ProgressLogger;
-import org.gradle.logging.StyledTextOutput;
+
+import org.gradle.internal.logging.text.StyledTextOutput;
 
 /**
  * Created by rene on 06.08.14.

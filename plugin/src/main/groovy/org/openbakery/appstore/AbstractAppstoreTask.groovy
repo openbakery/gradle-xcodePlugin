@@ -1,7 +1,7 @@
 package org.openbakery.appstore
 
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.output.ConsoleOutputAppender
 

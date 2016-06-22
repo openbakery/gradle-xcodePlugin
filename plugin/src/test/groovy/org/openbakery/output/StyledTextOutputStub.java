@@ -1,6 +1,7 @@
 package org.openbakery.output;
 
-import org.gradle.logging.StyledTextOutput;
+
+import org.gradle.internal.logging.text.StyledTextOutput;
 
 import java.text.MessageFormat;
 

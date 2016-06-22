@@ -3,11 +3,10 @@ package org.openbakery
 import groovy.xml.MarkupBuilder
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.ProgressLogger
-import org.gradle.logging.ProgressLoggerFactory
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
-
+import org.gradle.internal.logging.progress.ProgressLogger
+import org.gradle.internal.logging.progress.ProgressLoggerFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.simulators.SimulatorControl
 
