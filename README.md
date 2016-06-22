@@ -52,7 +52,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.13.1"
+  id "org.openbakery.xcode-plugin" version "0.14.0"
 }
 
 xcodebuild {
@@ -61,6 +61,9 @@ xcodebuild {
 }
 
 ```
+
+When you use version that is deployed on [plugins.gradle.org](https://plugins.gradle.org/plugin/org.openbakery.xcode-plugin) then you get always a stable version. If you want to work with the latest development version of the plugin then use the http://repostory.openbakery.org URL. Here the latest development version is automatically published from the continous develivery pipeline when all tests are green. (Unit Test and build of the example projects)
+
 
 ## Example
 
