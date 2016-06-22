@@ -3,6 +3,9 @@
 Changes
 * OCLint report is stored now in build/report/oclint: #263
 * Updated OCLint to 0.10.3
+* Set Coverage report directory to build/report/coverage
+* Set CPD report directory to build/report/cpd/
+
 
 Bugfixes
 * Added that the SwiftSupport folder is only included in Appstore builds, but not in AdHoc builds: #232
