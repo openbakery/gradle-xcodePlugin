@@ -9,3 +9,6 @@ before_script: cd plugin
 
 script:
     - ./gradlew test --info
+
+after_success:
+		- ./gradlew cobertura coveralls

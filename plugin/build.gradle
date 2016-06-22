@@ -1,7 +1,8 @@
 plugins {
 	id "com.gradle.plugin-publish" version "0.9.1"
+	id 'net.saliman.cobertura' version '2.3.1'
+	id 'com.github.kt3k.coveralls' version '2.6.3'
 }
-
 
 
 def versionNumber = '0.14.0'
@@ -28,6 +29,7 @@ if (project.hasProperty("versionSuffix")) {
 
 group = 'org.openbakery'
 version = versionNumber
+cobertura.coverageFormats = ['html', 'xml']
 
 
 apply plugin: 'java-gradle-plugin'
