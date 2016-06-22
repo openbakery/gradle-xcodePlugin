@@ -16,8 +16,7 @@
 package org.openbakery.crashlytics
 
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.XcodePlugin
 import org.openbakery.output.ConsoleOutputAppender

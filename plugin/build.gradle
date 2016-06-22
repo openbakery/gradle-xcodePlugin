@@ -4,7 +4,7 @@ plugins {
 
 
 
-def versionNumber = '0.14'
+def versionNumber = '0.14.0'
 def publishURL = System.getenv("PUBLISH_URL")
 def publishUser = System.getenv("PUBLISH_USER")
 def publishPassword = System.getenv("PUBLISH_PASSWORD")
@@ -66,8 +66,9 @@ dependencies {
 	testCompile 'org.hamcrest:hamcrest-all:1.3'
 	testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+	testCompile 'org.objenesis:objenesis:1.2'
 	testCompile 'cglib:cglib-nodep:2.2.2'
-	deployerJars "org.apache.maven.wagon:wagon-ssh:2.10"
+	deployerJars 'org.apache.maven.wagon:wagon-ssh:2.10'
 	testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
 		exclude module: 'groovy-all'
 	}

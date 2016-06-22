@@ -26,10 +26,10 @@ class OCLintTaskTest {
 
 	OCLintTask ocLintTask
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
-	
-	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.2/oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
-	String filename = "oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
-	String oclintPath = 'oclint-0.10.2'
+
+	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.3/oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
+	String filename = "oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
+	String oclintPath = 'oclint-0.10.3'
 
 	File tmpDirectory
 	File outputDirectory
