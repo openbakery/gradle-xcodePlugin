@@ -18,8 +18,8 @@ package org.openbakery
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
 import org.openbakery.util.PlistHelper
@@ -276,5 +276,10 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 		return null
+	}
+
+	File getTemporaryDirectory(String path) {
+		File tmp = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp")
+		return new File(tmp, path)
 	}
 }
