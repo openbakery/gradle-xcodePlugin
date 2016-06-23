@@ -30,7 +30,6 @@ if (project.hasProperty("versionSuffix")) {
 group = 'org.openbakery'
 version = versionNumber
 cobertura.coverageFormats = ['html', 'xml']
-cobertura.coverageSourceDirs = sourceSets.main.groovy.srcDirs
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
