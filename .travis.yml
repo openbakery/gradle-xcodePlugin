@@ -8,7 +8,7 @@ env:
 before_script: cd plugin
 
 script:
-    - ./gradlew test --info
+  - ./gradlew test --info
 
 after_success:
-		- ./gradlew cobertura coveralls
+  - ./gradlew cobertura coveralls
