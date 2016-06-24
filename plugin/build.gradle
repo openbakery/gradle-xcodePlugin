@@ -19,11 +19,11 @@ if (project.hasProperty("publishUser")) {
 if (project.hasProperty("publishPassword")) {
 	publishPassword = project.publishPassword
 }
-if (project.hasProperty("buildNumber")) {
-	versionNumber += "." + project.buildNumber 
-}
 if (project.hasProperty("versionSuffix")) {
 	versionNumber += project.versionSuffix 
+}
+if (project.hasProperty("buildNumber")) {
+	versionNumber += "." + project.buildNumber 
 }
 
 
