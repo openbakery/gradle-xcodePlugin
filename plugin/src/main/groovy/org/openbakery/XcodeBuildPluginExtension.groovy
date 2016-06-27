@@ -132,7 +132,10 @@ class XcodeBuildPluginExtension {
 	CommandRunner commandRunner
 	VariableResolver variableResolver
 	PlistHelper plistHelper
+
+	
 	SimulatorControl simulatorControl
+	Xcode xcode
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 
@@ -149,7 +152,6 @@ class XcodeBuildPluginExtension {
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(this.project, commandRunner)
-		simulatorControl = new SimulatorControl(this.project, commandRunner)
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -254,7 +256,7 @@ class XcodeBuildPluginExtension {
 	}
 
 	void setDestination(def destination) {
-		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
+		SimulatorRuntime runtime = getSimulatorControl().getMostRecentRuntime(Type.iOS)
 
 		if (destination instanceof List) {
 			destinations = [] as Set
@@ -301,7 +303,7 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("finding matching destination for: {}", destination)
 
-		for (Destination device in simulatorControl.getAllDestinations(Type.iOS)) {
+		for (Destination device in getSimulatorControl().getAllDestinations(Type.iOS)) {
 			if (!matches(destination.platform, device.platform)) {
 				//logger.debug("{} does not match {}", device.platform, destination.platform);
 				continue
@@ -363,7 +365,7 @@ class XcodeBuildPluginExtension {
 
 				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
-				def allDestinations = simulatorControl.getAllDestinations(Type.iOS)
+				def allDestinations = getSimulatorControl().getAllDestinations(Type.iOS)
 
 				switch (this.devices) {
 					case Devices.PHONE:
@@ -433,27 +435,22 @@ class XcodeBuildPluginExtension {
 	void setVersion(String version) {
 		this.xcodeVersion = version
 		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
-		new Xcode(commandRunner, xcodeVersion)
+		getXcode()
 	}
 
-
-
-	Version getVersion() {
-		return new Xcode(commandRunner, xcodeVersion).getVersion()
-	}
 
 
 	String getXcodePath() {
-		return new Xcode(commandRunner, xcodeVersion).getPath()
+		return getXcode().getPath()
 	}
 
 
 	String getXcodebuildCommand() {
-		return new Xcode(commandRunner, xcodeVersion).getXcodebuild()
+		return getXcode().getXcodebuild()
 	}
 
 	String getXcrunCommand() {
-		return new Xcode(commandRunner, xcodeVersion).getXcrun()
+		return getXcode().getXcrun()
 	}
 
 
@@ -617,6 +614,22 @@ class XcodeBuildPluginExtension {
 			return this.projectFile
 		}
 		return new File(project.projectDir, project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0])
+	}
+
+	// should be remove in the future, so that every task has its own xcode object
+	Xcode getXcode() {
+		if (xcode == null) {
+			xcode = new Xcode(commandRunner, xcodeVersion)
+		}
+ 		return xcode
+	}
+
+
+	SimulatorControl getSimulatorControl() {
+		if (simulatorControl == null) {
+			simulatorControl = new SimulatorControl(project, commandRunner, getXcode())
+		}
+		return simulatorControl
 	}
 
 

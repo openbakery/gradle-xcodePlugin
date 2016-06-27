@@ -95,4 +95,8 @@ class Xcode {
 	String getXcrun() {
 		return getPath() + "/Contents/Developer/usr/bin/xcrun"
 	}
+
+	String getSimctl() {
+		return getPath() + "/Contents/Developer/usr/bin/simctl"
+	}
 }

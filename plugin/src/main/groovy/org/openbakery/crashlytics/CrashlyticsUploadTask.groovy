@@ -78,7 +78,7 @@ class CrashlyticsUploadTask extends AbstractDistributeTask {
 			commandList.push(project.crashlytics.notifications ? 'YES' : 'NO')
 		}
 
-		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
+		def environment = ["DEVELOPER_DIR":xcode.getPath() + "/Contents/Developer/"]
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(CrashlyticsUploadTask.class)
 		commandRunner.run(commandList, environment, new ConsoleOutputAppender(output))

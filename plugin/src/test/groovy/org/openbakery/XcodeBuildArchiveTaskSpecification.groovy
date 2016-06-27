@@ -45,7 +45,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 		xcodeBuildArchiveTask.plistHelper = plistHelper
 		xcodeBuildArchiveTask.commandRunner = commandRunner
-
+		xcodeBuildArchiveTask.xcode.commandRunner = commandRunner
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphoneos")
 		buildOutputDirectory.mkdirs()
@@ -71,6 +71,11 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
 	}
 
+	def cleanup() {
+		FileUtils.deleteDirectory(project.projectDir)
+	}
+
+
 	void createFrameworkLib(String item) {
 		File lib = new File(appDirectory, "Frameworks/" + item)
 		FileUtils.writeStringToFile(lib, "foo")
@@ -80,7 +85,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		def swiftLibs = [
 						"libswiftCore.dylib",
 						"libswiftCoreGraphics.dylib",
-						"libswiftCoreImage.dylib",
 						"libswiftDarwin.dylib",
 						"libswiftDispatch.dylib",
 						"libswiftFoundation.dylib",
@@ -120,8 +124,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		project.xcodebuild.commandRunner = commandRunner
 
 		File xcode = createXcode(version)
-		createXcode("7.1.1")
-		createXcode("6.1")
 		commandRunner.runWithResult("xcode-select", "-p") >> (xcode.absolutePath + "/Contents/Developer")
 
 		xcodeBuildArchiveTask.xcode.version = new Version(version)
@@ -145,10 +147,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	}
 
-	def cleanup() {
-		FileUtils.deleteDirectory(project.projectDir)
-		FileUtils.deleteDirectory(project.projectDir)
-	}
 
 	def "archiveDirectory"() {
 		when:
@@ -469,6 +467,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "delete empty frameworks directory"() {
 		given:
+		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
 		setupProject()
 		File frameworksDirectory = new File(appDirectory, "Frameworks")
 		frameworksDirectory.mkdirs()

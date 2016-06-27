@@ -293,7 +293,7 @@ class PackageTask extends AbstractDistributeTask {
 		codesignCommand << "--keychain"
 		codesignCommand << project.xcodebuild.signing.keychainPathInternal.absolutePath
 
-		def environment = ["DEVELOPER_DIR":project.xcodebuild.xcodePath + "/Contents/Developer/"]
+		def environment = ["DEVELOPER_DIR":xcode.getPath() + "/Contents/Developer/"]
 		commandRunner.run(codesignCommand, environment)
 
 	}

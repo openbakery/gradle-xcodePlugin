@@ -154,4 +154,12 @@ class XcodeSpecification extends Specification {
 		version.maintenance == -1
 	}
 
+
+	def "simctl default path"() {
+		given:
+		useDefaultXcode()
+
+		expect:
+		xcode.getSimctl() == '/Applications/Xcode.app/Contents/Developer/usr/bin/simctl'
+	}
 }
