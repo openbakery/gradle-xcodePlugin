@@ -19,18 +19,17 @@ if (project.hasProperty("publishUser")) {
 if (project.hasProperty("publishPassword")) {
 	publishPassword = project.publishPassword
 }
-if (project.hasProperty("buildNumber")) {
-	versionNumber += "." + project.buildNumber 
-}
 if (project.hasProperty("versionSuffix")) {
 	versionNumber += project.versionSuffix 
+}
+if (project.hasProperty("buildNumber")) {
+	versionNumber += "." + project.buildNumber 
 }
 
 
 group = 'org.openbakery'
 version = versionNumber
 cobertura.coverageFormats = ['html', 'xml']
-
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
