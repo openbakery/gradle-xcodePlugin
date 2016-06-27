@@ -2,6 +2,7 @@ package org.openbakery.tools
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
+import org.openbakery.Version
 import spock.lang.Specification
 
 /**
@@ -36,6 +37,7 @@ class XcodeSpecification extends Specification {
 		new File(xcode6_0, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcode5_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 
+
 	}
 
 	def cleanup() {
@@ -45,19 +47,16 @@ class XcodeSpecification extends Specification {
 		FileUtils.deleteDirectory(xcode5_1)
 	}
 
-	def useXcode5_1() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath
+	def useXcode(String version) {
 		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
-
-		xcode = new Xcode(commandRunner, '5B1008')
-	}
-
-	def useXcode7_1_1() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode7_1_1.absolutePath + "\n"  + xcode6_1.absolutePath
+		commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.0\nBuild version 6A000")
+		commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 		commandRunner.runWithResult(xcode7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath + "\n" +  xcode7_1_1.absolutePath
 
-		xcode = new Xcode(commandRunner, '7.1')
+		xcode = new Xcode(commandRunner, version)
 	}
+
 
 	def useDefaultXcode() {
 		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
@@ -65,7 +64,7 @@ class XcodeSpecification extends Specification {
 
 	def "xcodebuild of Xcode 5 is used"() {
 		given:
-		useXcode5_1()
+		useXcode("5B1008")
 
 		expect:
 		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
@@ -94,7 +93,7 @@ class XcodeSpecification extends Specification {
 
 	def "altool with xcode 7.1.1"() {
 		given:
-		useXcode7_1_1()
+		useXcode("7.1")
 
 		expect:
 		xcode.getAltool().contains('Xcode7.1.1.app')
@@ -112,9 +111,47 @@ class XcodeSpecification extends Specification {
 
 	def "xcrun with xcode 7.1.1"() {
 		given:
-		useXcode7_1_1()
+		useXcode("7.1")
 
 		expect:
 		xcode.getXcrun().endsWith('Xcode7.1.1.app/Contents/Developer/usr/bin/xcrun')
 	}
+
+
+
+	def "set xcode version"() {
+		useXcode("7.1")
+
+
+		expect:
+		xcode.version instanceof Version
+		xcode.version.major == 7
+		xcode.version.minor == 1
+		xcode.version.maintenance == 1
+	}
+
+	def "set xcode version with xcode 6"() {
+		useXcode("6.4")
+
+		expect:
+		xcode.version instanceof Version
+		xcode.version.major == 6
+		xcode.version.minor == 4
+		xcode.version.maintenance == -1
+	}
+
+	def "get xcode version"() {
+		given:
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+		when:
+		Version version = xcode.version
+
+		then:
+		version instanceof Version
+		version.major == 6
+		version.minor == 4
+		version.maintenance == -1
+	}
+
 }

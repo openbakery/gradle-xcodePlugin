@@ -195,7 +195,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	def getSwiftSupportDirectory() {
 		def swiftSupportPath = "SwiftSupport"
 
-		if (project.xcodebuild.version.major > 6) {
+		if (xcode.version.major > 6) {
 			swiftSupportPath += "/iphoneos"
 		}
 

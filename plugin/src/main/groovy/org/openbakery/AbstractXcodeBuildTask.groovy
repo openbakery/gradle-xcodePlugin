@@ -1,6 +1,7 @@
 package org.openbakery
 
 import org.gradle.api.DefaultTask
+import org.openbakery.tools.Xcode
 
 /**
  * User: rene
@@ -10,10 +11,12 @@ import org.gradle.api.DefaultTask
 abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 	CommandRunner commandRunner
+	Xcode xcode
 
 	AbstractXcodeBuildTask() {
 		super()
 		commandRunner = new CommandRunner()
+		xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
 	}
 
 	def createCommandList() {

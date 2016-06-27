@@ -37,6 +37,8 @@ class XcodeTestTaskSpecification extends Specification {
 		xcodeTestTask.commandRunner = commandRunner
 		xcodeTestTask.simulatorControl = simulatorControl
 
+		xcodeTestTask.xcode.commandRunner = commandRunner
+
 		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 
@@ -76,6 +78,10 @@ class XcodeTestTaskSpecification extends Specification {
 		]
 	}
 
+	def "has xcode"() {
+		expect:
+		xcodeTestTask.xcode != null
+	}
 
 	/*
 

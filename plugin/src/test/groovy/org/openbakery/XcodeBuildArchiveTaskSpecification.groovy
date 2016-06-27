@@ -76,7 +76,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(lib, "foo")
 	}
 
-	def createSwiftLibs() {
+	def createSwiftLibs(String xcodepath) {
 		def swiftLibs = [
 						"libswiftCore.dylib",
 						"libswiftCoreGraphics.dylib",
@@ -89,7 +89,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 						"libswiftUIKit.dylib"
 		]
 
-		File swiftLibsDirectory = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+		File swiftLibsDirectory = new File(xcodepath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
 		swiftLibsDirectory.mkdirs();
 
 		swiftLibs.each { item ->
@@ -99,54 +99,33 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		return swiftLibs
 	}
 
-	void mockSwiftLibs() {
-		def swiftLibs = createSwiftLibs()
+	void mockSwiftLibs(String xcodepath) {
+		def swiftLibs = createSwiftLibs(xcodepath)
 		swiftLibs[0..4].each { item ->
 			File lib = new File(appDirectory, "Frameworks/" + item)
 			FileUtils.writeStringToFile(lib, "foo")
 		}
 
-		/*
-		def swiftLibs = [
-						"libswiftCore.dylib",
-						"libswiftCoreGraphics.dylib",
-						"libswiftCoreImage.dylib",
-						"libswiftDarwin.dylib",
-						"libswiftDispatch.dylib",
-						"libswiftFoundation.dylib",
-						"libswiftObjectiveC.dylib",
-						"libswiftSecurity.dylib",
-						"libswiftUIKit.dylib"
-		]
-		swiftLibs[0..4].each { item ->
-			File lib = new File(appDirectory, "Frameworks/" + item)
-			FileUtils.writeStringToFile(lib, "foo")
-		}
-
-		project.xcodebuild.xcodePath = new File(projectDir, "xcode");
-
-		File swiftLibsDirectory = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
-		swiftLibsDirectory.mkdirs();
-
-		swiftLibs.each { item ->
-			File lib = new File(swiftLibsDirectory, item)
-			FileUtils.writeStringToFile(lib, "bar")
-		}
-*/
 	}
 
+	def createXcode(String version) {
+		File xcode = new File(projectDir, "Xcode" + version + ".app")
+		new File(xcode, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcode, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		commandRunner.runWithResult(xcode.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode "+ version + "\nBuild version ABCDE"
+		return xcode
+	}
 
-	def mockXcodeVersion() {
+	def mockXcodeVersion(String version) {
 		project.xcodebuild.commandRunner = commandRunner
-		File xcodebuild7_1_1 = new File(projectDir, "Xcode7.1.1.app")
-		File xcodebuild6_1 = new File(projectDir, "Xcode6-1.app")
-		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin").mkdirs()
-		new File(xcodebuild6_1, "Contents/Developer/usr/bin").mkdirs()
-		new File(xcodebuild7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
-		new File(xcodebuild6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.1.1\nBuild version 7B1005"
-		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+
+		File xcode = createXcode(version)
+		createXcode("7.1.1")
+		createXcode("6.1")
+		commandRunner.runWithResult("xcode-select", "-p") >> (xcode.absolutePath + "/Contents/Developer")
+
+		xcodeBuildArchiveTask.xcode.version = new Version(version)
+		return xcode.absolutePath
 	}
 
 	def setupProject() {
@@ -316,15 +295,14 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "swift framework in App Xcode 6"() {
 		given:
-		mockXcodeVersion()
-		project.xcodebuild.version = 6
-		mockSwiftLibs()
+		String xcodepath = mockXcodeVersion("6")
+		mockSwiftLibs(xcodepath)
 
 		when:
 		xcodeBuildArchiveTask.archive()
 
 		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
-		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/")
+		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport")
 		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
 
 		then:
@@ -337,9 +315,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "swift framework in App Xcode 7"() {
 		given:
 
-		mockXcodeVersion()
-		project.xcodebuild.version = 7
-		mockSwiftLibs()
+		String xcodepath = mockXcodeVersion("7")
+		mockSwiftLibs(xcodepath)
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -359,9 +336,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "no swift but framework in App Xcode 7"() {
 		given:
 
-		mockXcodeVersion()
-		project.xcodebuild.version = 7
-		createSwiftLibs()
+		String xcodepath = mockXcodeVersion("7")
+		createSwiftLibs(xcodepath)
 		createFrameworkLib("myFramework.dylib")
 
 		when:

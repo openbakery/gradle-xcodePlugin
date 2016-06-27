@@ -66,6 +66,12 @@ class XcodeBuildTaskSpecification extends Specification {
 		return command
 	}
 
+	def "has xcode"() {
+		expect:
+		xcodeBuildTask.xcode != null
+	}
+
+
 	def "IllegalArgumentException_when_no_scheme_or_target_given"() {
 		when:
 		xcodeBuildTask.build()
