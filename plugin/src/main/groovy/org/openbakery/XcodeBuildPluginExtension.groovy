@@ -23,6 +23,8 @@ import org.openbakery.signing.Signing
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.simulators.SimulatorDevice
 import org.openbakery.simulators.SimulatorRuntime
+import org.openbakery.tools.Xcode
+import org.openbakery.tools.Xcodebuild
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
@@ -115,7 +117,7 @@ class XcodeBuildPluginExtension {
 	String bundleNameSuffix = null
 	List<String> arch = null
 	String workspace = null
-	Version version = null
+	String xcodeVersion = null
 	Map<String, String> environment = null
 	String productName = null
 	String bundleName = null
@@ -127,13 +129,13 @@ class XcodeBuildPluginExtension {
 
 	Set<Destination> destinations = null
 
-	String xcodePath = null
 	CommandRunner commandRunner
 	VariableResolver variableResolver
 	PlistHelper plistHelper
 	SimulatorControl simulatorControl
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
+
 
 
 	/**
@@ -429,68 +431,25 @@ class XcodeBuildPluginExtension {
 
 
 	void setVersion(String version) {
-		Version versionToCompare = new Version(version)
-		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
-
-
-		for (String xcode : installedXcodes.split("\n")) {
-			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
-			if (xcodeBuildFile.exists()) {
-				Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
-				if (xcodeVersion.suffix != null && versionToCompare.suffix != null) {
-					if (xcodeVersion.suffix.equalsIgnoreCase(versionToCompare.suffix)) {
-						xcodePath = xcode
-						this.version = xcodeVersion
-						return
-					}
-				} else if (xcodeVersion.toString().startsWith(versionToCompare.toString())) {
-					xcodePath = xcode
-					this.version = xcodeVersion
-					return
-				}
-			}
-		}
-		throw new IllegalStateException("No Xcode found with build number " + version);
+		this.xcodeVersion = version
+		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
+		new Xcode(commandRunner, xcodeVersion)
 	}
+
 
 
 	Version getVersion() {
-		if (this.version == null) {
-			this.version = getXcodeVersion(getXcodebuildCommand())
-		}
-		return this.version
+		return new Xcode(commandRunner, xcodeVersion).getVersion()
 	}
 
-	Version getXcodeVersion(String xcodebuildCommand) {
-		String xcodeVersion = commandRunner.runWithResult(xcodebuildCommand, "-version");
-
-		def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
-		def matcher = VERSION_PATTERN.matcher(xcodeVersion)
-		if (matcher.matches()) {
-			Version version = new Version(matcher[0][1])
-			version.suffix = matcher[0][2]
-			return version
-		}
-		return null
-	}
 
 	String getXcodePath() {
-
-		if (xcodePath == null) {
-			String result = commandRunner.runWithResult("xcode-select", "-p")
-			xcodePath = result - "/Contents/Developer"
-		}
-		return xcodePath;
-
+		return new Xcode(commandRunner, xcodeVersion).getPath()
 	}
-
 
 
 	String getXcodebuildCommand() {
-		if (xcodePath != null) {
-			return xcodePath + "/Contents/Developer/usr/bin/xcodebuild"
-		}
-		return "xcodebuild"
+		return new Xcode(commandRunner, xcodeVersion).getXcodebuildCommand()
 	}
 
 	String getXcrunCommand() {
@@ -662,4 +621,6 @@ class XcodeBuildPluginExtension {
 		}
 		return new File(project.projectDir, project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0])
 	}
+
+
 }

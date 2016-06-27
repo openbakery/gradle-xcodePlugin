@@ -335,14 +335,12 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		thrown(IllegalStateException)
 	}
 
-	def "testXcodePath_notSet"() {
+	def "test default xcode path"() {
 		commandRunner.runWithResult("xcode-select", "-p") >> "/Applications/Xcode.app/Contents/Developer"
 
-		when:
-		extension.xcodePath = null
 
-		then:
-		extension.xcodePath.equals("/Applications/Xcode.app")
+		expect:
+		extension.getXcodePath().equals("/Applications/Xcode.app")
 
 	}
 

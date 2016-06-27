@@ -4,11 +4,16 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.output.ConsoleOutputAppender
+import org.openbakery.tools.Xcode
 
 /**
  * Created by rene on 08.01.15.
  */
 class AbstractAppstoreTask extends AbstractDistributeTask {
+
+
+	public AbstractDistributeTask() {
+	}
 
 	def runAltool(String action) {
 		File ipa = getIpaBundle()
@@ -21,7 +26,7 @@ class AbstractAppstoreTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("Appstore password is missing. Parameter: appstore.password")
 		}
 
-		String command = project.xcodebuild.xcodePath + "/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
+		String command = xcode.getPath() + "/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(AbstractAppstoreTask.class)
 

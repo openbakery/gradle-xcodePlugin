@@ -54,8 +54,6 @@ class PackageTask_OSXSpecification  extends Specification {
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
-		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
-
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
 		packageTask.plistHelper = plistHelperStub
 

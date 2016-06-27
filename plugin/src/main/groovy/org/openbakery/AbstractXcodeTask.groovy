@@ -22,6 +22,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.tools.Xcode
 import org.openbakery.util.PlistHelper
 
 import java.text.SimpleDateFormat
@@ -37,11 +38,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	public CommandRunner commandRunner
 
 	public PlistHelper plistHelper
+	public Xcode xcode
+
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
-
 		plistHelper = new PlistHelper(project, commandRunner)
+		xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
 	}
 
 
