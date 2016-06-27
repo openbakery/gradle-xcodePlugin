@@ -453,10 +453,7 @@ class XcodeBuildPluginExtension {
 	}
 
 	String getXcrunCommand() {
-		if (xcodePath != null) {
-			return xcodePath + "/Contents/Developer/usr/bin/xcrun"
-		}
-		return "xcrun"
+		return new Xcode(commandRunner, xcodeVersion).getXcrun()
 	}
 
 

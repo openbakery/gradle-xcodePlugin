@@ -48,20 +48,26 @@ class XcodeSpecification extends Specification {
 	def useXcode5_1() {
 		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath
 		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
+
+		xcode = new Xcode(commandRunner, '5B1008')
 	}
 
 	def useXcode7_1_1() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode7_1_1.absolutePath + "\n"  + xcode6_1.absolutePath
+		commandRunner.runWithResult(xcode7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
+
+		xcode = new Xcode(commandRunner, '7.1')
+	}
+
+	def useDefaultXcode() {
+		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
 	}
 
 	def "xcodebuild of Xcode 5 is used"() {
+		given:
 		useXcode5_1()
 
-		when:
-		xcode = new Xcode(commandRunner, '5B1008')
-
-		then:
+		expect:
 		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 	}
 
@@ -80,18 +86,35 @@ class XcodeSpecification extends Specification {
 
 	def "altool default path"() {
 		given:
-		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
+		useDefaultXcode()
 
 		expect:
 		xcode.getAltool() == '/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool'
 	}
 
-	def "altool default xcode 7.1.1"() {
+	def "altool with xcode 7.1.1"() {
+		given:
 		useXcode7_1_1()
 
 		expect:
 		xcode.getAltool().contains('Xcode7.1.1.app')
 		xcode.getAltool().endsWith('Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool')
+	}
 
+	def "xcrun default path"() {
+		given:
+		useDefaultXcode()
+
+		expect:
+		xcode.getXcrun() == '/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun'
+	}
+
+
+	def "xcrun with xcode 7.1.1"() {
+		given:
+		useXcode7_1_1()
+
+		expect:
+		xcode.getXcrun().endsWith('Xcode7.1.1.app/Contents/Developer/usr/bin/xcrun')
 	}
 }

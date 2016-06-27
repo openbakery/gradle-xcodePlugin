@@ -91,4 +91,8 @@ class Xcode {
 	String getAltool() {
 		return getPath() + "/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 	}
+
+	String getXcrun() {
+		return getPath() + "/Contents/Developer/usr/bin/xcrun"
+	}
 }
