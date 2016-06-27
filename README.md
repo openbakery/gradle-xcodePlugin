@@ -126,3 +126,8 @@ Here a table of the values for the migration to 0.12:
 | iphonesimulator   | iOS           | true                    |
 | iphoneos          | iOS           | false                   |
 | macosx            | OSX           | (this value is ignored) |
+
+
+# License
+
+This project is licensed under the terms of the Apache license. See the [LICENSE](LICENSE) file.
