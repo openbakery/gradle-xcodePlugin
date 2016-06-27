@@ -26,10 +26,8 @@ class AbstractAppstoreTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("Appstore password is missing. Parameter: appstore.password")
 		}
 
-		String command = xcode.getPath() + "/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
-
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(AbstractAppstoreTask.class)
 
-		commandRunner.run([command, action, "--username", project.appstore.username, "--password",  project.appstore.password, "--file", ipa.getAbsolutePath()], new ConsoleOutputAppender(output))
+		commandRunner.run([xcode.getAltool(), action, "--username", project.appstore.username, "--password",  project.appstore.password, "--file", ipa.getAbsolutePath()], new ConsoleOutputAppender(output))
 	}
 }

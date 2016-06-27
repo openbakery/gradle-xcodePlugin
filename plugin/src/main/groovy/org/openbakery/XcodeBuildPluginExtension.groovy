@@ -449,7 +449,7 @@ class XcodeBuildPluginExtension {
 
 
 	String getXcodebuildCommand() {
-		return new Xcode(commandRunner, xcodeVersion).getXcodebuildCommand()
+		return new Xcode(commandRunner, xcodeVersion).getXcodebuild()
 	}
 
 	String getXcrunCommand() {

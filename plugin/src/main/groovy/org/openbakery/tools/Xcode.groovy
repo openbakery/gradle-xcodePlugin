@@ -65,17 +65,9 @@ class Xcode {
 		return null
 	}
 
-	String getXcodebuildCommand() {
-		if (xcodePath != null) {
-			return xcodePath + "/Contents/Developer/usr/bin/xcodebuild"
-		}
-		return "xcodebuild"
-	}
-
-
 	Version getVersion() {
 		if (this.version == null) {
-			this.version = getXcodeVersion(getXcodebuildCommand())
+			this.version = getXcodeVersion(getXcodebuild())
 		}
 		return this.version
 	}
@@ -86,5 +78,17 @@ class Xcode {
 			xcodePath = result - "/Contents/Developer"
 		}
 		return xcodePath
+	}
+
+
+	String getXcodebuild() {
+		if (xcodePath != null) {
+			return xcodePath + "/Contents/Developer/usr/bin/xcodebuild"
+		}
+		return "xcodebuild"
+	}
+
+	String getAltool() {
+		return getPath() + "/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 	}
 }

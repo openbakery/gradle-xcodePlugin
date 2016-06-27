@@ -45,16 +45,24 @@ class XcodeSpecification extends Specification {
 		FileUtils.deleteDirectory(xcode5_1)
 	}
 
-
-	def "xcodebuild of Xcode 5 is used"() {
+	def useXcode5_1() {
 		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath
 		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
+	}
+
+	def useXcode7_1_1() {
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
+		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
+	}
+
+	def "xcodebuild of Xcode 5 is used"() {
+		useXcode5_1()
 
 		when:
 		xcode = new Xcode(commandRunner, '5B1008')
 
 		then:
-		xcode.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 	}
 
 
@@ -69,4 +77,21 @@ class XcodeSpecification extends Specification {
 		xcode.getVersion().maintenance == 1
 	}
 
+
+	def "altool default path"() {
+		given:
+		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
+
+		expect:
+		xcode.getAltool() == '/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool'
+	}
+
+	def "altool default xcode 7.1.1"() {
+		useXcode7_1_1()
+
+		expect:
+		xcode.getAltool().contains('Xcode7.1.1.app')
+		xcode.getAltool().endsWith('Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool')
+
+	}
 }
