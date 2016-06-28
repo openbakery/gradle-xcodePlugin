@@ -386,11 +386,10 @@ class SimulatorControl {
 		}
 
 		try {
-			commandRunner.run([project.xcodebuild.xcodePath + "/Contents/Developer/usr/bin/instruments", "-w", device.identifier])
+			commandRunner.run([xcode.getPath() + "/Contents/Developer/usr/bin/instruments", "-w", device.identifier])
 		} catch (CommandRunnerException ex) {
 			// ignore, because the result of this command is a failure, but the simulator should be launched
 		}
-		//commandRunner.run("open", "-b", "com.apple.iphonesimulator", "--args", "-CurrentDeviceUDID", device.identifier)
 	}
 
 	SimulatorRuntime getRuntime(SimulatorDevice simulatorDevice) {

@@ -133,7 +133,7 @@ class XcodeBuildPluginExtension {
 	VariableResolver variableResolver
 	PlistHelper plistHelper
 
-	
+
 	SimulatorControl simulatorControl
 	Xcode xcode
 
@@ -429,28 +429,11 @@ class XcodeBuildPluginExtension {
 	}
 
 
-
-
-
 	void setVersion(String version) {
 		this.xcodeVersion = version
 		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
+		xcode = null
 		getXcode()
-	}
-
-
-
-	String getXcodePath() {
-		return getXcode().getPath()
-	}
-
-
-	String getXcodebuildCommand() {
-		return getXcode().getXcodebuild()
-	}
-
-	String getXcrunCommand() {
-		return getXcode().getXcrun()
 	}
 
 

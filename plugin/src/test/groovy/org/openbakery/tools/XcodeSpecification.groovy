@@ -47,6 +47,16 @@ class XcodeSpecification extends Specification {
 		FileUtils.deleteDirectory(xcode5_1)
 	}
 
+	def "test default xcode path"() {
+		given:
+		useDefaultXcode()
+
+		expect:
+		xcode.getPath().equals("/Applications/Xcode.app")
+
+	}
+
+
 	def useXcode(String version) {
 		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
 		commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.0\nBuild version 6A000")
@@ -70,6 +80,56 @@ class XcodeSpecification extends Specification {
 		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 	}
 
+	def "xcodebuild of Xcode 5 simple version number"() {
+		given:
+		useXcode("5.1")
+
+		expect:
+		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+
+	def "xcode Version Simple 1"() {
+
+		given:
+		useXcode("5.1.1")
+
+		expect:
+		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+	def "xcodeVersion Simple not found"() {
+		when:
+		useXcode("5.1.2")
+
+		then:
+		thrown(IllegalStateException)
+	}
+
+
+	def "xcodeVersion select last"() {
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcode6_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode5_1.absolutePath
+		commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+		commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
+
+		when:
+		xcode = new Xcode(commandRunner, '5B1008')
+
+		then:
+		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+	}
+
+
+	def "xcodeVersion select not found"() {
+		useXcode("5B1008")
+
+		when:
+		xcode = new Xcode(commandRunner, '5B1009')
+
+		then:
+		thrown(IllegalStateException)
+	}
 
 	def "version is not null"() {
 		given:

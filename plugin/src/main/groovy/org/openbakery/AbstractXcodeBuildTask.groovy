@@ -22,7 +22,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 	def createCommandList() {
 
 		def commandList = [
-					project.xcodebuild.xcodebuildCommand
+					xcode.xcodebuild
 		]
 
 		if (project.xcodebuild.scheme) {

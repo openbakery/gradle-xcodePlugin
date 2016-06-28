@@ -3,6 +3,7 @@ package org.openbakery
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.tools.Xcode
 import spock.lang.Specification
 
 
@@ -39,6 +40,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
+		xcodeBuildTask.xcode.commandRunner = commandRunner
 		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 
@@ -406,7 +408,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		project.xcodebuild.target = 'mytarget'
 
 		when:
-		project.xcodebuild.version = '5B1008';
+		xcodeBuildTask.xcode = new Xcode(commandRunner, "5B1008")
 
 		xcodeBuildTask.build()
 
