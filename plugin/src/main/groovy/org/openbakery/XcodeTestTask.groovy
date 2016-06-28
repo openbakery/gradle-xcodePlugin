@@ -8,7 +8,9 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
+import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.simulators.SimulatorControl
+import org.openbakery.tools.Xcodebuild
 
 
 class TestResult {
@@ -108,17 +110,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			outputDirectory.mkdirs()
 		}
 
-		def commandList = createCommandList()
-
-		// Run the command in a pseudo-terminal to force line-buffered output
-		// (Otherwise stderr can corrupt the stdout output)
-		commandList = ["script", "-q", "/dev/null"] + commandList
-
-		addDesination(commandList)
-		addCoverageSettings(commandList)
-
-
-		commandList.add('test');
 
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
@@ -130,41 +121,19 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
 			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, project)
-			commandRunner.run(project.projectDir.absolutePath, commandList, null, outputAppender)
+
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild)
+			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
+
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
 			if (!parseResult(outputFile)) {
-				//logger.lifecycle("Tests Failed!")
-				//logger.lifecycle(getFailureFromLog(outputFile));
 				throw new Exception("Not all unit tests are successful!")
 			}
-			//logger.lifecycle("Done")
 		}
 	}
 
-
-	void addDesination(ArrayList commandList) {
-		if (project.xcodebuild.type == Type.OSX) {
-			commandList.add("-destination")
-			commandList.add("platform=OS X,arch=x86_64")
-			return
-		}
-		for (Destination destination in project.xcodebuild.availableDestinations) {
-			commandList.add("-destination")
-			commandList.add(getDestinationCommandParameter(destination))
-		}
-	}
-
-	void addCoverageSettings(ArrayList commandList) {
-		if (xcode.version.major < 7) {
-			commandList.add("GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES")
-			commandList.add("GCC_GENERATE_TEST_COVERAGE_FILES=YES")
-		} else {
-			commandList.add("-enableCodeCoverage")
-			commandList.add("yes")
-		}
-	}
 
 	boolean parseResult(File outputFile) {
 		logger.debug("parse result from: {}", outputFile)

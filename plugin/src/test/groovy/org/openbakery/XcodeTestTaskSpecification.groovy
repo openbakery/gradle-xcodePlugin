@@ -419,4 +419,32 @@ class XcodeTestTaskSpecification extends Specification {
 
 	}
 
+
+	def "output file was set"() {
+		def givenOutputFile
+		project.xcodebuild.target = "Test"
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+		when:
+		xcodeTestTask.test()
+
+
+		then:
+		1 * commandRunner.setOutputFile(_) >> { arguments -> givenOutputFile = arguments[0] }
+		givenOutputFile.absolutePath.endsWith("xcodebuild-output.txt")
+		givenOutputFile == new File(project.getBuildDir(), "test/xcodebuild-output.txt")
+
+	}
+
+	def "build directory is created"() {
+		project.xcodebuild.target = "Test"
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		project.getBuildDir().exists()
+	}
+
 }

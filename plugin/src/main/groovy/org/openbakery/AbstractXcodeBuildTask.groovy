@@ -127,6 +127,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 	}
 	*/
 
+	// delete me if Xcodebuild is used!
 	protected String getDestinationCommandParameter(Destination destination) {
 		def destinationParameters = []
 

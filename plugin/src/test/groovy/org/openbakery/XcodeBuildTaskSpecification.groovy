@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.SimulatorControlStub
@@ -30,11 +31,10 @@ class XcodeBuildTaskSpecification extends Specification {
 		return destination
 	}
 
+
 	def setup() {
-
 		project = ProjectBuilder.builder().build()
-		project.buildDir = new File('build').absoluteFile
-
+		project.buildDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild/build")
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
@@ -42,17 +42,19 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask.commandRunner = commandRunner
 		xcodeBuildTask.xcode.commandRunner = commandRunner
 		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+	}
 
-
+	def cleanup() {
+		FileUtils.deleteDirectory(project.buildDir)
 	}
 
 	def expectedDefaultDirectories() {
 		return [
-						"-derivedDataPath", new File("build/derivedData").absolutePath,
-						"DSTROOT=" + new File("build/dst").absolutePath,
-						"OBJROOT=" + new File("build/obj").absolutePath,
-						"SYMROOT=" + new File("build/sym").absolutePath,
-						"SHARED_PRECOMPS_DIR=" + new File("build/shared").absolutePath
+						"-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath,
+						"DSTROOT=" + new File(project.buildDir,"dst").absolutePath,
+						"OBJROOT=" + new File(project.buildDir,"obj").absolutePath,
+						"SYMROOT=" + new File(project.buildDir,"sym").absolutePath,
+						"SHARED_PRECOMPS_DIR=" + new File(project.buildDir,"shared").absolutePath
 		]
 	}
 
@@ -449,8 +451,31 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		then:
 		thrown(CommandRunnerException)
+	}
+
+	def "output file was set"() {
+		def givenOutputFile
+		project.xcodebuild.target = "Test"
+
+		when:
+		xcodeBuildTask.build()
 
 
+		then:
+		1 * commandRunner.setOutputFile(_) >> { arguments -> givenOutputFile = arguments[0] }
+		givenOutputFile.absolutePath.endsWith("xcodebuild-output.txt")
+		givenOutputFile == new File(project.getBuildDir(), "xcodebuild-output.txt")
+
+	}
+
+	def "build directory is created"() {
+		project.xcodebuild.target = "Test"
+
+		when:
+		xcodeBuildTask.build()
+
+		then:
+		project.getBuildDir().exists()
 	}
 
 
