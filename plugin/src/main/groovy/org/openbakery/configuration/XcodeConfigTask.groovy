@@ -31,18 +31,6 @@ class XcodeConfigTask extends AbstractXcodeTask {
 		xcodeProjectFile = new XcodeProjectFile(project, projectFile)
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
-
-
-
-		if (xcodeProjectFile.isOSX) {
-			return;
-		}
-
-		String version = commandRunner.runWithResult([project.xcodebuild.xcodebuildCommand, "-version"])
-		boolean isXcode5 = version.startsWith("Xcode 5");
-		logger.debug("isXcode5 {}", isXcode5);
-
-
 	}
 
 }
