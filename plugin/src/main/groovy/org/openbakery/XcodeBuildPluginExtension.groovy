@@ -233,8 +233,10 @@ class XcodeBuildPluginExtension {
 
 	boolean isSimulatorBuildOf(Type expectedType) {
 		if (type != expectedType) {
+			logger.debug("is no simualtor build")
 			return false;
 		}
+		logger.debug("is simualtor build {}", this.simulator)
 		return this.simulator;
 	}
 

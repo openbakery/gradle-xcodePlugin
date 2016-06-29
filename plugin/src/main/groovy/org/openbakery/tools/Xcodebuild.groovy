@@ -225,4 +225,26 @@ class Xcodebuild {
 		}
 		return destinationParameters.join(",")
 	}
+
+
+	@Override
+	public String toString() {
+		return "Xcodebuild{" +
+						"xcodePath='" + xcodePath + '\'' +
+						", scheme='" + scheme + '\'' +
+						", target='" + target + '\'' +
+						", simulator=" + simulator +
+						", type=" + type +
+						", workspace='" + workspace + '\'' +
+						", configuration='" + configuration + '\'' +
+						", dstRoot=" + dstRoot +
+						", objRoot=" + objRoot +
+						", symRoot=" + symRoot +
+						", sharedPrecompsDir=" + sharedPrecompsDir +
+						", derivedDataPath=" + derivedDataPath +
+						", arch=" + arch +
+						", additionalParameters=" + additionalParameters +
+						", destinations=" + destinations +
+						'}';
+	}
 }

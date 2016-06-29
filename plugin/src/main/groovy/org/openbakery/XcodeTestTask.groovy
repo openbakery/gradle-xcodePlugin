@@ -123,6 +123,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, project)
 
 			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild)
+			logger.debug("Executing xcodebuild with {}", xcodebuild)
 			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
 
 		} catch (CommandRunnerException ex) {
