@@ -72,6 +72,9 @@ class Xcodebuild {
 		validateParameters(directory, outputAppender, environment)
 		def commandList = []
 		addBuildSettings(commandList)
+		addDisableCodeSigning(commandList)
+		addAdditionalParameters(commandList)
+		addBuildPath(commandList)
 		addDestinationSettingsForBuild(commandList)
 		commandRunner.run(directory, commandList, environment, outputAppender)
 	}
@@ -83,6 +86,8 @@ class Xcodebuild {
 		commandList << 'script' << '-q' << '/dev/null'
 		addBuildSettings(commandList)
 		addDestinationSettingsForTest(commandList)
+		addAdditionalParameters(commandList)
+		addBuildPath(commandList)
 		addCoverageSettings(commandList)
 		commandList << "test"
 		commandRunner.run(directory, commandList, environment, outputAppender)
@@ -120,12 +125,28 @@ class Xcodebuild {
 			commandList.add(target)
 		}
 
+
+	}
+
+
+	def addDisableCodeSigning(ArrayList commandList) {
 		if (!isSimulatorBuildOf(Type.iOS)) {
 			// disable codesign when building for OS X and iOS device
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
 		}
+	}
 
+	def addBuildPath(ArrayList commandList) {
+		commandList.add("-derivedDataPath")
+		commandList.add(derivedDataPath.absolutePath)
+		commandList.add("DSTROOT=" + dstRoot.absolutePath)
+		commandList.add("OBJROOT=" + objRoot.absolutePath)
+		commandList.add("SYMROOT=" + symRoot.absolutePath)
+		commandList.add("SHARED_PRECOMPS_DIR=" + sharedPrecompsDir.absolutePath)
+	}
+
+	def addAdditionalParameters(ArrayList commandList) {
 		if (arch != null) {
 			StringBuilder archs = new StringBuilder("ARCHS=");
 			for (String singleArch in arch) {
@@ -136,15 +157,6 @@ class Xcodebuild {
 			}
 			commandList.add(archs.toString());
 		}
-
-
-		commandList.add("-derivedDataPath")
-		commandList.add(derivedDataPath.absolutePath)
-		commandList.add("DSTROOT=" + dstRoot.absolutePath)
-		commandList.add("OBJROOT=" + objRoot.absolutePath)
-		commandList.add("SYMROOT=" + symRoot.absolutePath)
-		commandList.add("SHARED_PRECOMPS_DIR=" + sharedPrecompsDir.absolutePath)
-
 
 		if (additionalParameters instanceof List) {
 			for (String value in additionalParameters) {
@@ -171,15 +183,22 @@ class Xcodebuild {
 	}
 
 	def addDestinationSettingsForTest(ArrayList commandList) {
-		if (isSimulatorBuildOf(Type.iOS)) {
-			destinations.each { destination ->
+		switch (type) {
+			case Type.iOS:
+				destinations.each { destination ->
+					commandList.add("-destination")
+					commandList.add(getDestinationCommandParameter(destination))
+				}
+				break;
+
+			case Type.OSX:
 				commandList.add("-destination")
-				commandList.add(getDestinationCommandParameter(destination))
-			}
-		}
-		if (type == Type.OSX) {
-			commandList.add("-destination")
-			commandList.add("platform=OS X,arch=x86_64")
+				commandList.add("platform=OS X,arch=x86_64")
+				break;
+
+			default:
+				break;
+
 		}
 	}
 

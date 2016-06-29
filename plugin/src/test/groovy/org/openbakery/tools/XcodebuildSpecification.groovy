@@ -428,8 +428,8 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
-							"-configuration", 'Debug')
-			expectedCommandList << "foobar"
+							"-configuration", 'Debug',
+							"foobar")
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
@@ -453,9 +453,8 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
-							"-configuration", 'Debug')
-			expectedCommandList << "foo"
-			expectedCommandList << "bar"
+							"-configuration", 'Debug',
+							"foo", "bar")
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
@@ -529,9 +528,7 @@ class XcodebuildSpecification extends Specification {
 							"-configuration", 'Debug',
 							"-sdk", "macosx",
 							"-target", 'Test',
-							"CODE_SIGN_IDENTITY=",
-							"CODE_SIGNING_REQUIRED=NO")
-			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+							"-destination", "platform=OS X,arch=x86_64")
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -544,7 +541,7 @@ class XcodebuildSpecification extends Specification {
 		def expectedCommandList
 
 
-		extension.destination = [ 'iPad 2', 'iPhone 4s']
+		extension.destination = ['iPad 2', 'iPhone 4s']
 
 		xcodebuild.type = Type.iOS
 		xcodebuild.target = 'Test';
@@ -563,10 +560,47 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList = createCommandWithDefaultDirectories('script', '-q', '/dev/null',
 							"xcodebuild",
 							"-scheme", 'myscheme',
-						 "-workspace", "myworkspace",
-						 "-configuration", 'Debug')
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+							"-workspace", "myworkspace",
+							"-configuration", 'Debug',
+							"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
+							"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A")
+			expectedCommandList << "-enableCodeCoverage" << "yes"
+			expectedCommandList << "test"
+		}
+
+		commandList == expectedCommandList
+	}
+
+
+	def "test command for iOS device"() {
+		def commandList
+		def expectedCommandList
+
+
+		extension.destination { id = '83384347-6976-4E70-A54F-1CFECD1E02B1' }
+		extension.simulator = false
+
+		xcodebuild.type = Type.iOS
+		xcodebuild.target = 'Test';
+		xcodebuild.scheme = 'myscheme'
+		xcodebuild.workspace = 'myworkspace'
+		xcodebuild.destinations = extension.availableDestinations
+		xcodebuild.simulator = false
+
+		when:
+		xcodebuild.executeTest("", outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+
+		interaction {
+			expectedCommandList = createCommandWithDefaultDirectories('script', '-q', '/dev/null',
+							"xcodebuild",
+							"-scheme", 'myscheme',
+							"-workspace", "myworkspace",
+							"-configuration", 'Debug',
+							"-destination", "id=83384347-6976-4E70-A54F-1CFECD1E02B1")
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
