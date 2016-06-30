@@ -281,11 +281,9 @@ class XcodeTestTaskSpecification extends Specification {
 														 "xcodebuild",
 														 "-configuration", 'Debug',
 														 "-sdk", "macosx",
-														 "-target", 'Test',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO"]
-			expectedCommandList.addAll(expectedDefaultDirectories())
+														 "-target", 'Test']
 			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -293,7 +291,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	}
 
-	def setup_iOS_SimualtorBuild() {
+	def setup_iOS_SimualtorBuild(String... commands) {
 		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.target = 'Test';
 
@@ -301,19 +299,23 @@ class XcodeTestTaskSpecification extends Specification {
 		project.xcodebuild.workspace = 'myworkspace'
 
 		def expectedCommandList = ['script', '-q', '/dev/null',
-																 "xcodebuild",
-																 "-scheme", 'myscheme',
-																 "-workspace", "myworkspace",
-																 "-configuration", 'Debug',
-					]
-					expectedCommandList.addAll(expectedDefaultDirectories())
+															 "xcodebuild",
+															 "-scheme", 'myscheme',
+															 "-workspace", "myworkspace",
+															 "-configuration", 'Debug',
+		]
+		expectedCommandList.addAll(commands)
+		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
 	}
 
 	def "test command for iOS simulator"() {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
-		def expectedCommandList = setup_iOS_SimualtorBuild()
+		def expectedCommandList = setup_iOS_SimualtorBuild(
+						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
+						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+		)
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
 
 		when:
@@ -323,8 +325,6 @@ class XcodeTestTaskSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
 		interaction {
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -335,7 +335,10 @@ class XcodeTestTaskSpecification extends Specification {
 	def "test command with coverage settings Xcode 6"() {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
-		def expectedCommandList = setup_iOS_SimualtorBuild()
+		def expectedCommandList = setup_iOS_SimualtorBuild(
+						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
+						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+		)
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 
 
@@ -346,8 +349,6 @@ class XcodeTestTaskSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
 		interaction {
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
 			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
 			expectedCommandList << "test"
@@ -357,7 +358,7 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
-	def setupOSXBuild() {
+	def setupOSXBuild(String... commands) {
 		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.target = 'Test';
 
@@ -369,9 +370,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO"
 		]
+		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
 	}
@@ -379,7 +379,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "test command with coverage for OS X"() {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
-		def expectedCommandList = setupOSXBuild()
+		def expectedCommandList = setupOSXBuild("-destination","platform=OS X,arch=x86_64")
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
 
 
@@ -390,7 +390,6 @@ class XcodeTestTaskSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
 		interaction {
-			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -400,7 +399,9 @@ class XcodeTestTaskSpecification extends Specification {
 	def "test command with coverage for OSX using Xcode 6"() {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
-		def expectedCommandList = setupOSXBuild()
+		def expectedCommandList = setupOSXBuild(
+						"-destination", "platform=OS X,arch=x86_64"
+		)
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 
 		when:
@@ -410,7 +411,6 @@ class XcodeTestTaskSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
 		interaction {
-			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
 			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
 			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
 			expectedCommandList << "test"
