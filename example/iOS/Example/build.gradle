@@ -39,12 +39,7 @@ xcodebuild {
 	target = 'Example'
 	scheme = 'Example'
 	configuration = 'Test'	
-	//destination = ['iPad 2', 'iPhone 4s' ]
-	simulator = false
-	destination { 
-		id = 'a285fd0ed450825830809a4d8a0b4d5bbfcf49b5'
-	}
-	
+	destination = ['iPad 2', 'iPhone 4s' ]
 }
 
 
