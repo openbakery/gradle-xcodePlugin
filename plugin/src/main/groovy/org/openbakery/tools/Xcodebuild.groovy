@@ -85,6 +85,7 @@ class Xcodebuild {
 		def commandList = []
 		commandList << 'script' << '-q' << '/dev/null'
 		addBuildSettings(commandList)
+		addDisableCodeSigning(commandList)
 		addDestinationSettingsForTest(commandList)
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
@@ -218,9 +219,12 @@ class Xcodebuild {
 		if (type != expectedType) {
 			return false;
 		}
-		return simulator;
+		if (type != Type.OSX) {
+			// os x does not have a simulator
+			return simulator
+		}
+		return false;
 	}
-
 
 	protected String getDestinationCommandParameter(Destination destination) {
 		def destinationParameters = []

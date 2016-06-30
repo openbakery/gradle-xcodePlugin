@@ -281,8 +281,11 @@ class XcodeTestTaskSpecification extends Specification {
 														 "xcodebuild",
 														 "-configuration", 'Debug',
 														 "-sdk", "macosx",
-														 "-target", 'Test']
-			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
+														 "-target", 'Test',
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO",
+														 "-destination",
+														 "platform=OS X,arch=x86_64"]
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
@@ -370,6 +373,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
+															 "CODE_SIGN_IDENTITY=",
+															 "CODE_SIGNING_REQUIRED=NO"
 		]
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())

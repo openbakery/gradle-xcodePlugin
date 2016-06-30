@@ -528,6 +528,8 @@ class XcodebuildSpecification extends Specification {
 							"-configuration", 'Debug',
 							"-sdk", "macosx",
 							"-target", 'Test',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
 							"-destination", "platform=OS X,arch=x86_64")
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
@@ -600,6 +602,8 @@ class XcodebuildSpecification extends Specification {
 							"-scheme", 'myscheme',
 							"-workspace", "myworkspace",
 							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
 							"-destination", "id=83384347-6976-4E70-A54F-1CFECD1E02B1")
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
