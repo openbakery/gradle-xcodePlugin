@@ -580,6 +580,23 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.simulator == false
 	}
 
+	def "test environment not crash for strings"() {
+		when:
+		extension.type = Type.iOS;
+		extension.environment = 'TestEnvironmentVariable=trueeee'
+		then:
+		extension.environment.size() == 1
+	}
+
+	def "test environment not crash for Maps"() {
+		when:
+		extension.type = Type.iOS;
+		extension.environment = ['TestEnvironmentFirstVariable' :  'trueeee', 'TestEnvironmentSecondVariable' :  'falseee']
+		then:
+		extension.environment.size() == 2
+	}
+
+
 	def "get binary iOS"() {
 		when:
 		File projectDir =  new File("../example/iOS/Example")

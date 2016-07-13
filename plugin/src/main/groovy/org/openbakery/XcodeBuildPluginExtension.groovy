@@ -409,7 +409,7 @@ class XcodeBuildPluginExtension {
 
 		if (environment instanceof Map) {
 			logger.debug("environment is Map: " + environment + " - " + environment.getClass().getName())
-			this.index = index;
+			this.environment = environment;
 		} else {
 			logger.debug("environment is string: " + environment + " - " + environment.getClass().getName())
 			this.environment = new HashMap<String, String>();
@@ -417,9 +417,9 @@ class XcodeBuildPluginExtension {
 			String environmentString = environment.toString()
 			int index = environmentString.indexOf("=")
 			if (index == -1) {
-				environment.put(environmentString, null)
+				this.environment.put(environmentString, null)
 			} else {
-				environment.put(environmentString.substring(0, index),environmentString.substring(index + 1))
+				this.environment.put(environmentString.substring(0, index),environmentString.substring(index + 1))
 			}
 		}
 	}
