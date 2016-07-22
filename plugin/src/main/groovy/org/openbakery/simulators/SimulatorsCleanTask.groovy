@@ -8,15 +8,13 @@ import org.openbakery.XcodePlugin
 /**
  * Created by rene on 30.04.15.
  */
-class SimulatorsCleanTask extends DefaultTask {
+class SimulatorsCleanTask extends AbstractSimulatorTask {
 
-	SimulatorControl simulatorControl
 
 
 	public SimulatorsCleanTask() {
 		setDescription("Deletes contents and settings for all iOS Simulators")
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		simulatorControl = new SimulatorControl(project, new CommandRunner())
 	}
 
 

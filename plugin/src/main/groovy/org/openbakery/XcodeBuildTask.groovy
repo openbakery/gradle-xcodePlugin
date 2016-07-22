@@ -17,11 +17,12 @@ package org.openbakery
 
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.ProgressLogger
-import org.gradle.logging.ProgressLoggerFactory
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.progress.ProgressLogger
+import org.gradle.internal.logging.progress.ProgressLoggerFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.XcodeBuildOutputAppender
+import org.openbakery.tools.Xcodebuild
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
 
@@ -41,35 +42,19 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 
-		def commandList = createCommandList()
-
-
-		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			Destination destination = project.xcodebuild.availableDestinations.last()
-			commandList.add("-destination")
-			commandList.add(getDestinationCommandParameter(destination))
-		}
-
-		if (project.xcodebuild.isSimulatorBuildOf(Type.OSX)) {
-			commandList.add("-destination")
-			commandList.add("platform=OS X,arch=x86_64")
-		}
-
-
-		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
-		Map<String, String> environment = project.xcodebuild.environment
-
 		if (!project.getBuildDir().exists()) {
 			project.getBuildDir().mkdirs()
 		}
+
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
 
+		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild)
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
 
-		commandRunner.run("${project.projectDir.absolutePath}", commandList, environment, new XcodeBuildOutputAppender(progressLogger, output))
-
+		xcodebuild.execute(project.projectDir.absolutePath, new XcodeBuildOutputAppender(progressLogger, output), project.xcodebuild.environment)
 		logger.lifecycle("Done")
 	}
 

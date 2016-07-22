@@ -17,7 +17,7 @@ class CoveragePluginExtension {
 	public CoveragePluginExtension(Project project) {
 		this.project = project
 		this.outputDirectory = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("coverage")
+			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("report/coverage")
 		}
 	}
 

@@ -7,6 +7,8 @@ import org.openbakery.CommandRunner
 import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.Version
+import org.openbakery.stubs.XcodeStub
+import org.openbakery.tools.Xcode
 import spock.lang.Specification
 
 /**
@@ -18,6 +20,7 @@ class SimulatorControlSpecification extends Specification {
 	File projectDir
 	SimulatorControl simulatorControl
 	CommandRunner commandRunner = Mock(CommandRunner);
+	Xcode xcode = Mock(Xcode);
 
 	def SIMCTL = "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 
@@ -27,11 +30,10 @@ class SimulatorControlSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin:org.openbakery.XcodePlugin
 
-		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
 
 		projectDir.mkdirs()
 
-		simulatorControl = new SimulatorControl(project, commandRunner)
+		simulatorControl = new SimulatorControl(project, commandRunner, new XcodeStub())
 
 	}
 
@@ -41,12 +43,10 @@ class SimulatorControlSpecification extends Specification {
 
 
 	void mockXcode6() {
-		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-unavailable.txt"))
 	}
 
 	void mockXcode7() {
-		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7.txt"))
 	}
 

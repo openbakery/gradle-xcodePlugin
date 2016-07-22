@@ -2,6 +2,7 @@ package org.openbakery.stubs
 
 import org.gradle.api.AntBuilder
 import org.gradle.api.Transformer
+import org.gradle.api.AntBuilder.AntMessagePriority
 
 /**
  * Created by rene on 22.07.15.
@@ -43,5 +44,15 @@ class AntBuilderStub extends AntBuilder {
 
 	void importBuild(Object o, Transformer<? extends String, ? super String> transformer) {
 
+	}
+
+	@Override
+	void setLifecycleLogLevel(AntMessagePriority antMessagePriority) {
+
+	}
+
+	@Override
+	AntMessagePriority getLifecycleLogLevel() {
+		return null
 	}
 }

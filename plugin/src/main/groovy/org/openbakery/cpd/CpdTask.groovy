@@ -39,7 +39,8 @@ class CpdTask extends AbstractXcodeTask {
 		def xcodebuild = project.xcodebuild
 		def buildDir = project.buildDir
 
-		commandRunner.setOutputFile(new File("${buildDir}/cpd.xml"))
+		File outputFile = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("report/cpd/cpd.xml")
+		commandRunner.setOutputFile(outputFile)
 
 		def commands = [
 						"java", "-Xmx512m",

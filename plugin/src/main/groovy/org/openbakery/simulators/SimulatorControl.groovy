@@ -2,6 +2,7 @@ package org.openbakery.simulators
 
 import org.gradle.api.Project
 import org.openbakery.*
+import org.openbakery.tools.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -39,8 +40,7 @@ class SimulatorControl {
 	private static Logger logger = LoggerFactory.getLogger(SimulatorControl.class)
 
 	CommandRunner commandRunner
-
-	String simctlCommand
+	Xcode xcode
 
 	ArrayList<SimulatorDeviceType> deviceTypes
 	ArrayList<SimulatorRuntime> runtimes
@@ -53,9 +53,10 @@ class SimulatorControl {
 
 	Project project
 
-	public SimulatorControl(Project project, CommandRunner commandRunner) {
+	public SimulatorControl(Project project, CommandRunner commandRunner, Xcode xcode) {
 		this.project = project
 		this.commandRunner = commandRunner
+		this.xcode = xcode
 	}
 
 	void parse() {
@@ -282,12 +283,8 @@ class SimulatorControl {
 
 
 	String simctl(String... commands) {
-		if (simctlCommand == null) {
-			simctlCommand = commandRunner.runWithResult([project.xcodebuild.xcrunCommand, "-sdk", "iphoneos", "-find", "simctl"])
-		}
-
 		ArrayList<String>parameters = new ArrayList<>()
-		parameters.add(simctlCommand)
+		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
 		return commandRunner.runWithResult(parameters)
 	}
@@ -389,11 +386,10 @@ class SimulatorControl {
 		}
 
 		try {
-			commandRunner.run([project.xcodebuild.xcodePath + "/Contents/Developer/usr/bin/instruments", "-w", device.identifier])
+			commandRunner.run([xcode.getPath() + "/Contents/Developer/usr/bin/instruments", "-w", device.identifier])
 		} catch (CommandRunnerException ex) {
 			// ignore, because the result of this command is a failure, but the simulator should be launched
 		}
-		//commandRunner.run("open", "-b", "com.apple.iphonesimulator", "--args", "-CurrentDeviceUDID", device.identifier)
 	}
 
 	SimulatorRuntime getRuntime(SimulatorDevice simulatorDevice) {

@@ -23,6 +23,8 @@ import org.openbakery.signing.Signing
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.simulators.SimulatorDevice
 import org.openbakery.simulators.SimulatorRuntime
+import org.openbakery.tools.Xcode
+import org.openbakery.tools.Xcodebuild
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
@@ -115,7 +117,7 @@ class XcodeBuildPluginExtension {
 	String bundleNameSuffix = null
 	List<String> arch = null
 	String workspace = null
-	Version version = null
+	String xcodeVersion = null
 	Map<String, String> environment = null
 	String productName = null
 	String bundleName = null
@@ -127,13 +129,16 @@ class XcodeBuildPluginExtension {
 
 	Set<Destination> destinations = null
 
-	String xcodePath = null
 	CommandRunner commandRunner
 	VariableResolver variableResolver
 	PlistHelper plistHelper
+
+
 	SimulatorControl simulatorControl
+	Xcode xcode
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
+
 
 
 	/**
@@ -147,7 +152,6 @@ class XcodeBuildPluginExtension {
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(this.project, commandRunner)
-		simulatorControl = new SimulatorControl(this.project, commandRunner)
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -229,8 +233,10 @@ class XcodeBuildPluginExtension {
 
 	boolean isSimulatorBuildOf(Type expectedType) {
 		if (type != expectedType) {
+			logger.debug("is no simualtor build")
 			return false;
 		}
+		logger.debug("is simualtor build {}", this.simulator)
 		return this.simulator;
 	}
 
@@ -252,7 +258,7 @@ class XcodeBuildPluginExtension {
 	}
 
 	void setDestination(def destination) {
-		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
+		SimulatorRuntime runtime = getSimulatorControl().getMostRecentRuntime(Type.iOS)
 
 		if (destination instanceof List) {
 			destinations = [] as Set
@@ -299,7 +305,7 @@ class XcodeBuildPluginExtension {
 
 		logger.debug("finding matching destination for: {}", destination)
 
-		for (Destination device in simulatorControl.getAllDestinations(Type.iOS)) {
+		for (Destination device in getSimulatorControl().getAllDestinations(Type.iOS)) {
 			if (!matches(destination.platform, device.platform)) {
 				//logger.debug("{} does not match {}", device.platform, destination.platform);
 				continue
@@ -361,7 +367,7 @@ class XcodeBuildPluginExtension {
 
 				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
-				def allDestinations = simulatorControl.getAllDestinations(Type.iOS)
+				def allDestinations = getSimulatorControl().getAllDestinations(Type.iOS)
 
 				switch (this.devices) {
 					case Devices.PHONE:
@@ -425,79 +431,11 @@ class XcodeBuildPluginExtension {
 	}
 
 
-
-
-
 	void setVersion(String version) {
-		Version versionToCompare = new Version(version)
-		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
-
-
-		for (String xcode : installedXcodes.split("\n")) {
-			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
-			if (xcodeBuildFile.exists()) {
-				Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
-				if (xcodeVersion.suffix != null && versionToCompare.suffix != null) {
-					if (xcodeVersion.suffix.equalsIgnoreCase(versionToCompare.suffix)) {
-						xcodePath = xcode
-						this.version = xcodeVersion
-						return
-					}
-				} else if (xcodeVersion.toString().startsWith(versionToCompare.toString())) {
-					xcodePath = xcode
-					this.version = xcodeVersion
-					return
-				}
-			}
-		}
-		throw new IllegalStateException("No Xcode found with build number " + version);
-	}
-
-
-	Version getVersion() {
-		if (this.version == null) {
-			this.version = getXcodeVersion(getXcodebuildCommand())
-		}
-		return this.version
-	}
-
-	Version getXcodeVersion(String xcodebuildCommand) {
-		String xcodeVersion = commandRunner.runWithResult(xcodebuildCommand, "-version");
-
-		def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
-		def matcher = VERSION_PATTERN.matcher(xcodeVersion)
-		if (matcher.matches()) {
-			Version version = new Version(matcher[0][1])
-			version.suffix = matcher[0][2]
-			return version
-		}
-		return null
-	}
-
-	String getXcodePath() {
-
-		if (xcodePath == null) {
-			String result = commandRunner.runWithResult("xcode-select", "-p")
-			xcodePath = result - "/Contents/Developer"
-		}
-		return xcodePath;
-
-	}
-
-
-
-	String getXcodebuildCommand() {
-		if (xcodePath != null) {
-			return xcodePath + "/Contents/Developer/usr/bin/xcodebuild"
-		}
-		return "xcodebuild"
-	}
-
-	String getXcrunCommand() {
-		if (xcodePath != null) {
-			return xcodePath + "/Contents/Developer/usr/bin/xcrun"
-		}
-		return "xcrun"
+		this.xcodeVersion = version
+		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
+		xcode = null
+		getXcode()
 	}
 
 
@@ -662,4 +600,22 @@ class XcodeBuildPluginExtension {
 		}
 		return new File(project.projectDir, project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0])
 	}
+
+	// should be remove in the future, so that every task has its own xcode object
+	Xcode getXcode() {
+		if (xcode == null) {
+			xcode = new Xcode(commandRunner, xcodeVersion)
+		}
+ 		return xcode
+	}
+
+
+	SimulatorControl getSimulatorControl() {
+		if (simulatorControl == null) {
+			simulatorControl = new SimulatorControl(project, commandRunner, getXcode())
+		}
+		return simulatorControl
+	}
+
+
 }

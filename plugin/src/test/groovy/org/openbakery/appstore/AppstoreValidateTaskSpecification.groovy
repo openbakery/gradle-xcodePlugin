@@ -13,7 +13,6 @@ import spock.lang.Specification
  */
 class AppstoreValidateTaskSpecification extends Specification {
 
-
 	Project project
 	AppstoreValidateTask task
 	File infoPlist
@@ -27,8 +26,6 @@ class AppstoreValidateTaskSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
-
-		project.xcodebuild.xcodePath = "/Application/Xcode.app"
 
 		task = project.getTasks().getByPath(XcodePlugin.APPSTORE_VALIDATE_TASK_NAME)
 
@@ -61,7 +58,7 @@ class AppstoreValidateTaskSpecification extends Specification {
 		project.appstore.username = "me@example.com"
 		project.appstore.password = "1234"
 
-		def command = "/Application/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
+		def command = "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 
 		when:
 		task.validate()

@@ -11,8 +11,11 @@ class OCLintTask extends AbstractXcodeTask {
 
 	File outputDirectory
 
-	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.2/oclint-0.10.2-x86_64-darwin-15.2.0.tar.gz"
+	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.3/oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
+	String oclintDirectoryName = "oclint-0.10.3"
 	String archiveName = FilenameUtils.getName(downloadURL)
+
+	File oclintBinDirectory
 
 	OCLintTask() {
 		super()
@@ -21,39 +24,40 @@ class OCLintTask extends AbstractXcodeTask {
 
 
 	def download() {
-		File downloadDirectory = new File(outputDirectory, "download")
-		if (!downloadDirectory.exists()) {
-			downloadDirectory.mkdirs()
+		File tmpDirectory = getTemporaryDirectory("oclint")
+		if (!tmpDirectory.exists()) {
+			tmpDirectory.mkdirs()
 		}
-		ant.get(src: downloadURL, dest: downloadDirectory, verbose:true)
+		ant.get(src: downloadURL, dest: tmpDirectory, verbose:true)
 
 
 		def command = [
 						'tar',
 						'xzf',
-						new File(downloadDirectory, archiveName).absolutePath,
+						new File(tmpDirectory, archiveName).absolutePath,
 						'-C',
-						outputDirectory.absolutePath
+						tmpDirectory.absolutePath
 		]
 		commandRunner.run(command)
 
-		File oclintDirectory = new File(outputDirectory, "oclint-0.10.2")
-		oclintDirectory.renameTo(new File(outputDirectory, "oclint"))
-
+		return tmpDirectory
 	}
 
 
 	@TaskAction
 	def run() {
-		outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("oclint")
+		outputDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("report/oclint")
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs()
+		}
+		def tmpDirectory = download()
 
-		download()
-
-		def oclintXcodebuild = new File(outputDirectory, 'oclint/bin/oclint-xcodebuild').absolutePath
+		oclintBinDirectory = new File(tmpDirectory, oclintDirectoryName + "/bin")
+		def oclintXcodebuild = new File(oclintBinDirectory, 'oclint-xcodebuild').absolutePath
 
 		commandRunner.run([oclintXcodebuild, 'build/xcodebuild-output.txt'])
 
-		def oclint = new File(outputDirectory, 'oclint/bin/oclint-json-compilation-database').absolutePath
+		def oclint = new File(oclintBinDirectory, 'oclint-json-compilation-database').absolutePath
 		def report = new File(outputDirectory, 'oclint.html').absolutePath
 
 		def ocLintParameters = [oclint]

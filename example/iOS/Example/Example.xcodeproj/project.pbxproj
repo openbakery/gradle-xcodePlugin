@@ -10,10 +10,8 @@
 		A55E38A91B276F4C00EAF0B8 /* InterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = A55E38A81B276F4C00EAF0B8 /* InterfaceController.m */; };
 		A55E38AC1B276F4C00EAF0B8 /* NotificationController.m in Sources */ = {isa = PBXBuildFile; fileRef = A55E38AB1B276F4C00EAF0B8 /* NotificationController.m */; };
 		A55E38AE1B276F4C00EAF0B8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A55E38AD1B276F4C00EAF0B8 /* Images.xcassets */; };
-		A55E38B21B276F4C00EAF0B8 /* Example WatchKit App.app in Resources */ = {isa = PBXBuildFile; fileRef = A55E38B11B276F4C00EAF0B8 /* Example WatchKit App.app */; };
 		A55E38BA1B276F4C00EAF0B8 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A55E38B81B276F4C00EAF0B8 /* Interface.storyboard */; };
 		A55E38BC1B276F4C00EAF0B8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A55E38BB1B276F4C00EAF0B8 /* Images.xcassets */; };
-		A55E38BF1B276F4C00EAF0B8 /* Example WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A55E38A21B276F4C00EAF0B8 /* Example WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A7148CCC18A397560010B761 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7148CCB18A397560010B761 /* Foundation.framework */; };
 		A7148CCE18A397560010B761 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7148CCD18A397560010B761 /* CoreGraphics.framework */; };
 		A7148CD018A397560010B761 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7148CCF18A397560010B761 /* UIKit.framework */; };
@@ -30,6 +28,8 @@
 		A7148CF318A397560010B761 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7148CCF18A397560010B761 /* UIKit.framework */; };
 		A7148CFB18A397570010B761 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A7148CF918A397570010B761 /* InfoPlist.strings */; };
 		A7148CFD18A397570010B761 /* ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A7148CFC18A397570010B761 /* ExampleTests.m */; };
+		A7304B491D1AD1210075EBF1 /* Example WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A55E38A21B276F4C00EAF0B8 /* Example WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A7304B4C1D1AD1210075EBF1 /* Example WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A55E38B11B276F4C00EAF0B8 /* Example WatchKit App.app */; };
 		D99F95471A0EBB11007BB79F /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D99F95461A0EBB11007BB79F /* NotificationCenter.framework */; };
 		D99F954D1A0EBB11007BB79F /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D99F954C1A0EBB11007BB79F /* TodayViewController.m */; };
 		D99F954F1A0EBB11007BB79F /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D99F954E1A0EBB11007BB79F /* MainInterface.storyboard */; };
@@ -37,19 +37,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A55E38B31B276F4C00EAF0B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7148CC018A397560010B761 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A55E38B01B276F4C00EAF0B8;
-			remoteInfo = "Example WatchKit App";
-		};
-		A55E38BD1B276F4C00EAF0B8 /* PBXContainerItemProxy */ = {
+		A7304B471D1AD1210075EBF1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7148CC018A397560010B761 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A55E38A11B276F4C00EAF0B8;
 			remoteInfo = "Example WatchKit Extension";
+		};
+		A7304B4A1D1AD1210075EBF1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7148CC018A397560010B761 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A55E38B01B276F4C00EAF0B8;
+			remoteInfo = "Example WatchKit App";
 		};
 		A7EA9F3D1AEA69C40025AB8D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -68,13 +68,34 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		A7304B4D1D1AD1210075EBF1 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A7304B491D1AD1210075EBF1 /* Example WatchKit Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A7304B4E1D1AD1210075EBF1 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				A7304B4C1D1AD1210075EBF1 /* Example WatchKit App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D99F95561A0EBB11007BB79F /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				A55E38BF1B276F4C00EAF0B8 /* Example WatchKit Extension.appex in Embed App Extensions */,
 				D99F95521A0EBB11007BB79F /* ExampleTodayWidget.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -334,27 +355,28 @@
 			buildRules = (
 			);
 			dependencies = (
-				A55E38B41B276F4C00EAF0B8 /* PBXTargetDependency */,
 			);
 			name = "Example WatchKit Extension";
 			productName = "Example WatchKit Extension";
 			productReference = A55E38A21B276F4C00EAF0B8 /* Example WatchKit Extension.appex */;
-			productType = "com.apple.product-type.watchkit-extension";
+			productType = "com.apple.product-type.watchkit2-extension";
 		};
 		A55E38B01B276F4C00EAF0B8 /* Example WatchKit App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A55E38C41B276F4C00EAF0B8 /* Build configuration list for PBXNativeTarget "Example WatchKit App" */;
 			buildPhases = (
 				A55E38AF1B276F4C00EAF0B8 /* Resources */,
+				A7304B4D1D1AD1210075EBF1 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A7304B481D1AD1210075EBF1 /* PBXTargetDependency */,
 			);
 			name = "Example WatchKit App";
 			productName = "Example WatchKit App";
 			productReference = A55E38B11B276F4C00EAF0B8 /* Example WatchKit App.app */;
-			productType = "com.apple.product-type.application.watchapp";
+			productType = "com.apple.product-type.application.watchapp2";
 		};
 		A7148CC718A397560010B761 /* Example */ = {
 			isa = PBXNativeTarget;
@@ -364,12 +386,13 @@
 				A7148CC518A397560010B761 /* Frameworks */,
 				A7148CC618A397560010B761 /* Resources */,
 				D99F95561A0EBB11007BB79F /* Embed App Extensions */,
+				A7304B4E1D1AD1210075EBF1 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				D99F95511A0EBB11007BB79F /* PBXTargetDependency */,
-				A55E38BE1B276F4C00EAF0B8 /* PBXTargetDependency */,
+				A7304B4B1D1AD1210075EBF1 /* PBXTargetDependency */,
 			);
 			name = Example;
 			productName = Example;
@@ -417,7 +440,7 @@
 		A7148CC018A397560010B761 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Rene Pirringer";
 				TargetAttributes = {
 					A55E38A11B276F4C00EAF0B8 = {
@@ -470,7 +493,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A55E38AE1B276F4C00EAF0B8 /* Images.xcassets in Resources */,
-				A55E38B21B276F4C00EAF0B8 /* Example WatchKit App.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -552,15 +574,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A55E38B41B276F4C00EAF0B8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A55E38B01B276F4C00EAF0B8 /* Example WatchKit App */;
-			targetProxy = A55E38B31B276F4C00EAF0B8 /* PBXContainerItemProxy */;
-		};
-		A55E38BE1B276F4C00EAF0B8 /* PBXTargetDependency */ = {
+		A7304B481D1AD1210075EBF1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A55E38A11B276F4C00EAF0B8 /* Example WatchKit Extension */;
-			targetProxy = A55E38BD1B276F4C00EAF0B8 /* PBXContainerItemProxy */;
+			targetProxy = A7304B471D1AD1210075EBF1 /* PBXContainerItemProxy */;
+		};
+		A7304B4B1D1AD1210075EBF1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A55E38B01B276F4C00EAF0B8 /* Example WatchKit App */;
+			targetProxy = A7304B4A1D1AD1210075EBF1 /* PBXContainerItemProxy */;
 		};
 		A7EA9F3E1AEA69C40025AB8D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -636,7 +658,10 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
@@ -655,7 +680,10 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
@@ -677,9 +705,10 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
-				"TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*]" = "1,4";
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
@@ -698,9 +727,10 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
-				"TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*]" = "1,4";
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Release;
 		};
@@ -722,6 +752,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -787,6 +818,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -804,6 +836,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -826,6 +859,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "ExampleTests/ExampleTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.openbakery.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -844,6 +878,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				INFOPLIST_FILE = "ExampleTests/ExampleTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.openbakery.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -894,6 +929,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -912,6 +948,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				INFOPLIST_FILE = "ExampleTests/ExampleTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.openbakery.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -928,6 +965,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -948,7 +986,10 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Test;
 		};
@@ -967,9 +1008,10 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
-				"TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*]" = "1,4";
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Test;
 		};
@@ -987,6 +1029,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -1002,6 +1045,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

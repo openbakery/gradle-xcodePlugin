@@ -320,4 +320,10 @@ class CoverageTaskSpecification extends Specification {
 		then:
 		coverageTask.report.profileData != null
 	}
+
+
+	def "coverage path container report"() {
+		expect:
+		project.coverage.outputDirectory.absolutePath.contains("report/")
+	}
 }

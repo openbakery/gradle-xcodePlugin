@@ -18,10 +18,11 @@ package org.openbakery
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.tools.Xcode
 import org.openbakery.util.PlistHelper
 
 import java.text.SimpleDateFormat
@@ -37,11 +38,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	public CommandRunner commandRunner
 
 	public PlistHelper plistHelper
+	public Xcode xcode
+
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
-
 		plistHelper = new PlistHelper(project, commandRunner)
+		xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
 	}
 
 
@@ -224,19 +227,19 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 	private void addWatchToAppBundle(File appBundle, ArrayList<File> bundles) {
-			File watchDirectory
-			watchDirectory = new File(appBundle, "Watch")
-			if (watchDirectory.exists()) {
-				for (File bundle : watchDirectory.listFiles()) {
-					if (bundle.isDirectory()) {
-						if (bundle.name.endsWith(".app")) {
-							addPluginsToAppBundle(bundle, bundles)
-							bundles.add(bundle)
-						}
+		File watchDirectory
+		watchDirectory = new File(appBundle, "Watch")
+		if (watchDirectory.exists()) {
+			for (File bundle : watchDirectory.listFiles()) {
+				if (bundle.isDirectory()) {
+					if (bundle.name.endsWith(".app")) {
+						addPluginsToAppBundle(bundle, bundles)
+						bundles.add(bundle)
 					}
 				}
 			}
 		}
+	}
 
 	File getProvisionFileForIdentifier(String bundleIdentifier) {
 
@@ -276,5 +279,10 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 		return null
+	}
+
+	File getTemporaryDirectory(String path) {
+		File tmp = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp")
+		return new File(tmp, path)
 	}
 }

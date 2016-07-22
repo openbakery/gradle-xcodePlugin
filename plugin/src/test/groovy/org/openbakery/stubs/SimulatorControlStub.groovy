@@ -11,7 +11,7 @@ class SimulatorControlStub extends SimulatorControl {
 	File simctlListOutput
 
 	public SimulatorControlStub(String filename) {
-		super(null, null)
+		super(null, null, null)
 		simctlListOutput = new File("src/test/Resource/", filename);
 	}
 

@@ -2,6 +2,8 @@ gradle-xcodePlugin
 ==================
 
 [![Build Status](https://travis-ci.org/openbakery/gradle-xcodePlugin.svg?branch=master)](https://travis-ci.org/openbakery/gradle-xcodePlugin)
+[![Coverage Status](https://coveralls.io/repos/github/openbakery/gradle-xcodePlugin/badge.svg?branch=develop)](https://coveralls.io/github/openbakery/gradle-xcodePlugin?branch=develop)
+
 
 The gradle xcode plugin (gxp) makes it easier to build Xcode projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
 
@@ -22,27 +24,22 @@ Here a brief overview of the features:
 
 ## Note
 
-**With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter**
+**Version 0.14 of the plugin needs at least gradle version 2.14**
 
-Here a table of the values for the migration to 0.12:
-
-| sdk (old)         | type (new)    | simulator (new)         |
-| ----------------- | ------------- | ------------------------|
-| iphonesimulator   | iOS           | true                    |
-| iphoneos          | iOS           | false                   |
-| macosx            | OSX           | (this value is ignored) |
+**Version 0.13+ will not work with gradle version 2.14**
 
 
 ## Requirements
 
 * Xcode 6 or greater
-* [Gradle](http://gradle.org) 2.0 or greater
+* [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
 
 
-### Current stable version is 0.13.1
+### Current stable version is 0.14.0
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
+
 
 
 ## Documentation
@@ -58,7 +55,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.13.1"
+  id "org.openbakery.xcode-plugin" version "0.14.0"
 }
 
 xcodebuild {
@@ -67,6 +64,35 @@ xcodebuild {
 }
 
 ```
+
+You can also use the version that is deployed the repository on [openbakery.org](https://openbakery.org) with the following build.gradle file configuration:
+```
+buildscript {
+	repositories {
+		maven {
+			url('http://repository.openbakery.org/')
+		}
+		mavenCentral()
+  }
+
+	dependencies {
+	    classpath "org.openbakery:xcode-plugin:0.14.+"
+	}
+}
+
+apply plugin: "org.openbakery.xcode-plugin"
+
+```
+
+### Current develop version
+
+When using the [openbakery.org](https://openbakery.org) repository you can also get the latest develop version by including `develop` into the version pattern. e.g.: 
+```
+classpath "org.openbakery:xcode-plugin:0.14.0.develop.+"
+```
+
+The develop version contains all the changes from the develop branch, where all the fixes and feature are implemented. The development version is deployed automatically when all the projects unit tests are  successful, and also the if the example projects build. 
+
 
 ## Example
 
@@ -89,3 +115,19 @@ I'm always happy to receive pull requests with new features and if you send a pu
 * For unit test please use the [spock framework](http://spockframework.org) for mocking. I want to remove the old gmock framework and port the old tests to use spock.
 * If a pull request does not contain any unit tests, I always think twice if I should merge it at all.
 
+# Migration Notes
+
+With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter
+
+Here a table of the values for the migration to 0.12:
+
+| sdk (old)         | type (new)    | simulator (new)         |
+| ----------------- | ------------- | ------------------------|
+| iphonesimulator   | iOS           | true                    |
+| iphoneos          | iOS           | false                   |
+| macosx            | OSX           | (this value is ignored) |
+
+
+# License
+
+This project is licensed under the terms of the Apache license. See the [LICENSE](LICENSE) file.

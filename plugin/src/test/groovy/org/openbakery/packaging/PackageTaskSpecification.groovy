@@ -30,7 +30,6 @@ class PackageTaskSpecification extends Specification {
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
-	File provisionLibraryPath
 	File projectDir
 	File infoPlist
 	File payloadAppDirectory
@@ -56,8 +55,6 @@ class PackageTaskSpecification extends Specification {
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
-
-		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
@@ -89,10 +86,10 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	void mockExampleApp(boolean withPlugin, boolean withSwift) {
-		mockExampleApp(withPlugin, withSwift, false)
+		mockExampleApp(withPlugin, withSwift, false, true)
 	}
 
-	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework) {
+	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework, boolean adHoc) {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
 
@@ -145,7 +142,12 @@ class PackageTaskSpecification extends Specification {
 			FileUtils.writeStringToFile(frameworkFile, "dummy")
 		}
 
-		File mobileprovision = new File("src/test/Resource/test.mobileprovision")
+		File mobileprovision = null
+		if (adHoc) {
+			mobileprovision = new File("src/test/Resource/test.mobileprovision")
+		} else {
+			mobileprovision = new File("src/test/Resource/Appstore.mobileprovision")
+		}
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
 		mockEntitlementsFromPlist(mobileprovision)
 
@@ -228,7 +230,7 @@ class PackageTaskSpecification extends Specification {
 		mockXcodeVersion()
 		project.xcodebuild.version = 6
 		FileUtils.deleteDirectory(project.projectDir)
-		mockExampleApp(false, true)
+		mockExampleApp(false, true, false, false)
 
 		when:
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
@@ -247,9 +249,31 @@ class PackageTaskSpecification extends Specification {
 		entries.contains("SwiftSupport/libswiftCore.dylib")
 	}
 
-	/*
-	disabled for now because it looks like it does not work as expected: issue #231
-	def "swift Framework xcode 7"() {
+	def "SwiftSupport should be added for Appstore IPA"() {
+		given:
+		mockXcodeVersion()
+		project.xcodebuild.version = 7
+		FileUtils.deleteDirectory(project.projectDir)
+		mockExampleApp(false, true, false, false)
+
+		when:
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
+		assert !ipaBundle.exists()
+		packageTask.packageApplication()
+
+		ZipFile zipFile = new ZipFile(ipaBundle);
+
+		List<String> entries = new ArrayList<String>()
+
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+
+		then:
+		entries.contains("SwiftSupport/")
+	}
+
+	def "SwiftSupport should not be added for AdHoc IPA"() {
 		given:
 		mockXcodeVersion()
 		project.xcodebuild.version = 7
@@ -272,7 +296,6 @@ class PackageTaskSpecification extends Specification {
 		then:
 		!entries.contains("SwiftSupport/")
 	}
-*/
 
 	def "test create payload"() {
 		given:
@@ -475,7 +498,7 @@ class PackageTaskSpecification extends Specification {
 		def codesignFramework = codesignLibCommand("Payload/Example.app/Frameworks/My.framework")
 
 		given:
-		mockExampleApp(false, true, true)
+		mockExampleApp(false, true, true, true)
 
 		when:
 		packageTask.packageApplication()

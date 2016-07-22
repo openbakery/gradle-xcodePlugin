@@ -9,9 +9,8 @@ import org.openbakery.XcodePlugin
 /**
  * Created by rene on 05.11.15.
  */
-class SimulatorKillTask extends DefaultTask {
+class SimulatorKillTask extends AbstractSimulatorTask {
 
-	SimulatorControl simulatorControl
 
 
 	public SimulatorKillTask() {
@@ -20,7 +19,6 @@ class SimulatorKillTask extends DefaultTask {
 		this.setOnlyIf {
 			return project.xcodebuild.isSimulatorBuildOf(Type.iOS)
 		}
-		simulatorControl = new SimulatorControl(project, new CommandRunner())
 	}
 
 

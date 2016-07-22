@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.tools.Xcode
 import spock.lang.Specification
 
 
@@ -17,6 +18,7 @@ class AppstoreUploadTaskSpecification extends Specification {
 	File infoPlist
 
 	CommandRunner commandRunner = Mock(CommandRunner)
+	Xcode xcode = Mock(Xcode)
 	File ipaBundle;
 
 	def setup() {
@@ -26,8 +28,6 @@ class AppstoreUploadTaskSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
-
-		project.xcodebuild.xcodePath = "/Application/Xcode.app"
 
 		task = project.tasks.findByName('appstoreUpload')
 		task.commandRunner = commandRunner
@@ -53,6 +53,10 @@ class AppstoreUploadTaskSpecification extends Specification {
 
 	}
 
+	def "task as xcode"() {
+		expect:
+		task.xcode != null
+	}
 
 	def "test upload"() {
 		given:
@@ -63,7 +67,7 @@ class AppstoreUploadTaskSpecification extends Specification {
 		task.upload()
 
 		then:
-		1 * commandRunner.run(["/Application/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool",
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool",
 													 "--upload-app",
 													 "--username",
 													 "me@example.com",

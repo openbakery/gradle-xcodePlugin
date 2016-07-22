@@ -102,6 +102,10 @@
 	
 	This closure can be defined multiple times for multipe devices
 
+	* _id_ - device identifier
+
+	default value: empty
+
 	* _platform_ - Platform, e.g. 'iOS', 'OS X' or 'iOS Simulator'
 
 	default value: empty

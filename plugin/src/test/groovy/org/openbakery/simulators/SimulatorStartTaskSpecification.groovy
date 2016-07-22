@@ -43,8 +43,6 @@ class SimulatorStartTaskSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin:org.openbakery.XcodePlugin
 
-		project.xcodebuild.xcodePath = '/Applications/Xcode.app'
-
 		projectDir.mkdirs()
 
 		task = project.tasks.findByName(XcodePlugin.SIMULATORS_START_TASK_NAME)

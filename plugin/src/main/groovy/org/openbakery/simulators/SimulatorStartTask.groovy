@@ -7,13 +7,11 @@ import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
 
-class SimulatorStartTask extends DefaultTask {
-	SimulatorControl simulatorControl
+class SimulatorStartTask extends AbstractSimulatorTask {
 
 	public SimulatorStartTask() {
 		setDescription("Start iOS Simulators")
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
-		simulatorControl = new SimulatorControl(project, new CommandRunner())
 	}
 
 	@TaskAction

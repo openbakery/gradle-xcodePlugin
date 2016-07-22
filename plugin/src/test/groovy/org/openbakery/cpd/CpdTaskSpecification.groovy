@@ -98,7 +98,7 @@ class CpdTaskSpecification extends Specification {
 		cpdTask.cpd()
 
 		then:
-		1 * commandRunner.setOutputFile(new File("${project.buildDir}/cpd.xml"))
+		1 * commandRunner.setOutputFile(new File("${project.buildDir}/report/cpd/cpd.xml"))
 		1 * commandRunner.run([
 						'java', '-Xmx512m',
 						'-cp', "\"${destDir}/tools/pmd-4.2.5/lib/a.jar:${destDir}/tools/pmd-4.2.5/lib/b.jar:${destDir}/tools/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",

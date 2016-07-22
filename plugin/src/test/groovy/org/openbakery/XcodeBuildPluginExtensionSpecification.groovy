@@ -118,47 +118,12 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		return result
 	}
 
-	def "xcode version"() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild5_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
-
-		when:
-		extension.version = '5B1008';
-
-		then:
-		extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
 
 
-	def "xcodeVersion select last"() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcodebuild6_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath
-		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcodebuild6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
 
 
-		when:
-		extension.version = '5B1008';
-
-		then:
-		extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
 
 
-	def "xcodeVersion select not found"() {
-
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild6_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath
-		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcodebuild6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
-
-
-		when:
-		extension.version = '5B1009';
-
-		then:
-		thrown(IllegalStateException)
-	}
 
 	def "workspace nil"() {
 		when:
@@ -297,54 +262,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		bundleName.equals("TestApp2")
 	}
 
-	def xcodeVersionSimple() {
-
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcodebuild5_1.absolutePath + "\n"  + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
-
-		when:
-		extension.version = '5.1';
-
-		then:
-		extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
-
-	def "xcode Version Simple 1"() {
-
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild5_1.absolutePath + "\n" + xcodebuild6_0.absolutePath + "\n" + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
-
-		when:
-		extension.version = '5.1.1';
-
-		then:
-		extension.getXcodebuildCommand().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
-
-
-	def "xcodeVersion Simple not found"() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild6_1.absolutePath + "\n" + xcodebuild6_0.absolutePath + "\n" + xcodebuild5_1.absolutePath
-		commandRunner.runWithResult(xcodebuild6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcodebuild6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcodebuild5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
-
-		when:
-		extension.version = '5.1.2';
-
-		then:
-		thrown(IllegalStateException)
-	}
-
-	def "testXcodePath_notSet"() {
-		commandRunner.runWithResult("xcode-select", "-p") >> "/Applications/Xcode.app/Contents/Developer"
-
-		when:
-		extension.xcodePath = null
-
-		then:
-		extension.xcodePath.equals("/Applications/Xcode.app")
-
-	}
 
 
 	def "available destinations for OS X"() {
@@ -478,56 +395,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		configuration.bundleIdentifier == 'org.openbakery.Example'
 		configuration.infoplist == "ExampleWatchkit/Info.plist"
 
-	}
-
-	def "set xcode version"() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
-
-
-		given:
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
-
-		when:
-		extension.version = 7
-
-		then:
-		extension.version instanceof Version
-		extension.version.major == 7
-		extension.version.minor == 1
-		extension.version.maintenance == 1
-	}
-
-	def "set xcode version with xcode 6"() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodebuild7_1_1.absolutePath + "\n"  + xcodebuild6_1.absolutePath
-		commandRunner.runWithResult(xcodebuild7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
-
-
-		given:
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
-
-		when:
-		extension.version = 6
-
-		then:
-		extension.version instanceof Version
-		extension.version.major == 6
-		extension.version.minor == 4
-		extension.version.maintenance == -1
-	}
-
-	def "get xcode version"() {
-		given:
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
-
-		when:
-		Version version = extension.version
-
-		then:
-		version instanceof Version
-		version.major == 6
-		version.minor == 4
-		version.maintenance == -1
 	}
 
 

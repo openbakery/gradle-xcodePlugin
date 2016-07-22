@@ -181,7 +181,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 				libNames.add(it.getName())
 			}
 
-			File swiftLibs = new File(project.xcodebuild.xcodePath + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+			File swiftLibs = new File(xcode.getPath() + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
 
 			swiftLibs.eachFile() {
 				if (libNames.contains(it.name)) {
@@ -195,7 +195,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 	def getSwiftSupportDirectory() {
 		def swiftSupportPath = "SwiftSupport"
 
-		if (project.xcodebuild.version.major > 6) {
+		if (xcode.version.major > 6) {
 			swiftSupportPath += "/iphoneos"
 		}
 

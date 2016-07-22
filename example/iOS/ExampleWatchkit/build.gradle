@@ -24,7 +24,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.13.+"
+	    classpath "org.openbakery:xcode-plugin:0.14.+"
 	}
 		
 }
@@ -43,7 +43,7 @@ xcodebuild {
 	signing {
 		certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
 		certificatePassword = signingCertificatePassword // e.g. 'secret'
-		mobileProvisionURI = [ signingMobileProvisionURI, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+		mobileProvisionURI = [ signingMobileProvisionURI ] //, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 	}
 	
 }
@@ -88,9 +88,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 			simulator = false
 
 			signing {
-				certificateURI = '...'             // e.g 'http://example.com/Provisioning/Development.p12'
-				certificatePassword = 'secret'     // e.g. 'secret'
-				mobileProvisionURI = '...'         // e.g 'http://example.com/Provisioning/Development.mobileprovision'
+				mobileProvisionURI = [ appstoreSigningMobileProvisionURI ] //, signingMobileProvisionURIWatchKit, signingMobileProvisionURIOpenbakeryWatchKitExtension ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
 			}
 		}
 	}

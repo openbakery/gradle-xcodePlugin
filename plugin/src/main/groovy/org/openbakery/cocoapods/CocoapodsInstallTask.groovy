@@ -1,12 +1,7 @@
 package org.openbakery.cocoapods
 
-import org.apache.commons.io.FileUtils
 import org.gradle.StartParameter
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
-import org.openbakery.AbstractXcodeTask
-import org.openbakery.output.ConsoleOutputAppender
 
 /**
  * Install cocoapods in a project
