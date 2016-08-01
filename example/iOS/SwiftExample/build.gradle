@@ -22,7 +22,6 @@ buildscript {
 	repositories {
 		maven {
 			url('http://repository.openbakery.org/')
-			//url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -37,7 +36,6 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
-	version = "7"
 	
 	scheme = 'SwiftExample'
 	target = 'SwiftExample'
@@ -46,89 +44,5 @@ xcodebuild {
 }
 
 
-task continuous(dependsOn:'test') {
-	description = 'Builds the app and runs all unit test in the Simulator for the iPhone and iPad'
-}
-
-
-task integration(dependsOn: ['package', 'hockeyapp']) {
-	description = 'Performs a build for the device and the resulting ipa is published using hockeyapp'
-}
-
-tasks.hockeyapp.mustRunAfter tasks.package
-
-task release(dependsOn: ['archive', 'package']) {
-	description = 'Performs a build for the device that has the same configuration as the AppStore build, but it is signed using the developer certificate'
-}
-
-task appstore(dependsOn: ['archive', 'package']) {
-	description = 'Build for the AppStore'
-}
-
-
-
-
-gradle.taskGraph.whenReady { taskGraph ->
-
-
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(tasks.hockeyapp)) {
-		println ("using api token: " + hockeyappApiToken)
-		hockeyapp {
-			apiToken = hockeyappApiToken
-			appID = hockeyappAppId
-		}
-	}
-
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(integration) || taskGraph.hasTask(release)) {
-		println "Configure sign settings for the integration and release build"
-		xcodebuild {
-			simulator = false
-			signing {
-				certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'
-				certificatePassword = signingCertificatePassword // e.g. 'secret'
-				mobileProvisionURI = [ signingMobileProvisionURI ]  // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-			}
-		}
-		
-		
-	}
-
-	// ------------------------------------------------------------------------------------------
-
-	if (taskGraph.hasTask(tasks.appstore)) {
-		println "Configure build settings for release or appstore"
-		xcodebuild {
-			configuration = 'Release'
-			simulator = false
-
-			signing {
-				certificateURI = appstoreSigningCertificateURI            // e.g 'http://example.com/Provisioning/Development.p12'
-				certificatePassword = appstoreSigningCertificatePassword  // e.g. 'secret'
-				mobileProvisionURI = appstoreSigningMobileProvisionURI    // e.g 'http://example.com/Provisioning/Development.mobileprovision'
-			}
-		}
-		infoplist {
-			bundleIdentifier = appstoreBundleIdentifier
-			version = '1.0.0'
-		}
-	}
-	
-	// ------------------------------------------------------------------------------------------
-	
-	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
-	
-		appstore.username = appstoreUsername
-		
-		if (appstore.password == null) {
-			def password = System.console().readPassword("\nPlease enter the appstore password for <" + appstore.username + ">: ")
-			appstore.password = new String(password)
-		}
-	
-	}
-}
 
 
