@@ -520,4 +520,68 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		then:
 		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
 	}
+
+
+	def "XcodebuildParameters are created with proper values"() {
+		when:
+		File projectDir =  new File("../example/OSX/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.type = Type.OSX
+		extension.simulator = false
+		extension.target = "ExampleOSX"
+		extension.scheme = "ExampleScheme"
+
+		extension.workspace = "workspace"
+		extension.configuration = "configuration"
+		extension.additionalParameters = "additionalParameters"
+
+		extension.dstRoot = new File(projectDir, "dstRoot")
+		extension.objRoot = new File(projectDir, "objRoot")
+		extension.symRoot = new File(projectDir, "symRoot")
+		extension.sharedPrecompsDir = new File(projectDir, "sharedPrecompsDir")
+		extension.derivedDataPath = new File(projectDir, "derivedDataPath")
+		extension.arch = ['i386']
+
+
+		def parameters = extension.getXcodebuildParameters()
+		then:
+		parameters.type == Type.OSX
+		parameters.simulator == false
+		parameters.target == "ExampleOSX"
+		parameters.scheme == "ExampleScheme"
+		parameters.workspace == "workspace"
+		parameters.configuration == "configuration"
+		parameters.additionalParameters == "additionalParameters"
+		parameters.dstRoot.canonicalPath == new File(projectDir, "dstRoot").canonicalPath
+		parameters.objRoot.canonicalPath == new File(projectDir, "objRoot").canonicalPath
+		parameters.symRoot.canonicalPath == new File(projectDir, "symRoot").canonicalPath
+		parameters.sharedPrecompsDir.canonicalPath == new File(projectDir, "sharedPrecompsDir").canonicalPath
+		parameters.derivedDataPath.canonicalPath == new File(projectDir, "derivedDataPath").canonicalPath
+
+		parameters.destinations.size() == 1
+		parameters.destinations[0].name == "OS X"
+
+		parameters.arch.size() == 1
+		parameters.arch[0] == "i386"
+
+	}
+
+
+	def "XcodebuildParameters are created with iOS destination"() {
+		when:
+		File projectDir =  new File("../example/OSX/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.type = Type.iOS
+		extension.destination = ['iPad 2']
+
+
+		def parameters = extension.getXcodebuildParameters()
+		then:
+
+		parameters.destinations.size() == 1
+		parameters.destinations[0].name == "iPad 2"
+
+	}
 }

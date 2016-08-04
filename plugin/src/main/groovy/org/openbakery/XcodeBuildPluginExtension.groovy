@@ -25,6 +25,7 @@ import org.openbakery.simulators.SimulatorDevice
 import org.openbakery.simulators.SimulatorRuntime
 import org.openbakery.tools.Xcode
 import org.openbakery.tools.Xcodebuild
+import org.openbakery.tools.XcodebuildParameters
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
@@ -207,22 +208,37 @@ class XcodeBuildPluginExtension {
 	}
 
 	File getDstRoot() {
+		if (dstRoot instanceof File) {
+			return dstRoot
+		}
 		return project.file(dstRoot)
 	}
 
 	File getObjRoot() {
+		if (objRoot instanceof File) {
+			return objRoot
+		}
 		return project.file(objRoot)
 	}
 
 	File getSymRoot() {
+		if (symRoot instanceof File) {
+			return symRoot
+		}
 		return project.file(symRoot)
 	}
 
 	File getSharedPrecompsDir() {
+		if (sharedPrecompsDir instanceof File) {
+			return sharedPrecompsDir
+		}
 		return project.file(sharedPrecompsDir)
 	}
 
 	File getDerivedDataPath() {
+		if (derivedDataPath instanceof File) {
+			return derivedDataPath
+		}
 		return project.file(derivedDataPath)
 	}
 
@@ -617,5 +633,9 @@ class XcodeBuildPluginExtension {
 		return simulatorControl
 	}
 
+
+	XcodebuildParameters getXcodebuildParameters() {
+		return new XcodebuildParameters(this)
+	}
 
 }

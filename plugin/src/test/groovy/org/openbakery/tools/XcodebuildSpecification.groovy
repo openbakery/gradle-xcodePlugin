@@ -32,7 +32,7 @@ class XcodebuildSpecification extends Specification {
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension)
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters)
 	}
 
 	def cleanup() {
@@ -73,10 +73,10 @@ class XcodebuildSpecification extends Specification {
 	def "run command with expected scheme and expected default directories"() {
 		def commandList
 
-		xcodebuild.type = Type.iOS
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = false
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = false
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -100,16 +100,16 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.type = Type.iOS
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.type = Type.iOS
 
 
-		xcodebuild.derivedDataPath = new File("build/myDerivedData").absoluteFile
-		xcodebuild.dstRoot = new File("build/myDst").absoluteFile
-		xcodebuild.objRoot = new File("build/myObj").absoluteFile
-		xcodebuild.symRoot = new File("build/mySym").absoluteFile
-		xcodebuild.sharedPrecompsDir = new File("build/myShared").absoluteFile
+		xcodebuild.parameters.derivedDataPath = new File("build/myDerivedData").absoluteFile
+		xcodebuild.parameters.dstRoot = new File("build/myDst").absoluteFile
+		xcodebuild.parameters.objRoot = new File("build/myObj").absoluteFile
+		xcodebuild.parameters.symRoot = new File("build/mySym").absoluteFile
+		xcodebuild.parameters.sharedPrecompsDir = new File("build/myShared").absoluteFile
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -139,7 +139,7 @@ class XcodebuildSpecification extends Specification {
 		def expectedCommandList
 
 		def target = 'mytarget'
-		xcodebuild.target = target
+		xcodebuild.parameters.target = target
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -161,9 +161,9 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = false
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = false
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -187,9 +187,9 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.type = Type.OSX
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.type = Type.OSX
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -215,9 +215,9 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.arch = ['myarch']
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.arch = ['myarch']
 
 
 		when:
@@ -242,10 +242,10 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = false
-		xcodebuild.arch = ['armv', 'armv7s']
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = false
+		xcodebuild.parameters.arch = ['armv', 'armv7s']
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -270,8 +270,8 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -296,8 +296,8 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.target = 'mytarget'
-		xcodebuild.workspace = 'myworkspace'
+		xcodebuild.parameters.target = 'mytarget'
+		xcodebuild.parameters.workspace = 'myworkspace'
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -319,9 +319,9 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = true
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = true
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -343,10 +343,10 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = true
-		xcodebuild.arch = ['i386'];
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = true
+		xcodebuild.parameters.arch = ['i386'];
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -372,7 +372,7 @@ class XcodebuildSpecification extends Specification {
 		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> "/Applications/Xcode.app"
 		commandRunner.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
 
-		xcodebuild.target = 'mytarget'
+		xcodebuild.parameters.target = 'mytarget'
 
 		when:
 		xcodebuild.xcode = new Xcode(commandRunner, "5B1008")
@@ -395,7 +395,7 @@ class XcodebuildSpecification extends Specification {
 	def "xcodebuild fails"() {
 
 		given:
-		xcodebuild.target = "Test"
+		xcodebuild.parameters.target = "Test"
 		commandRunner.run(_,_,_,_) >> {
 			throw new CommandRunnerException()
 		}
@@ -414,10 +414,10 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = true
-		xcodebuild.additionalParameters = 'foobar';
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = true
+		xcodebuild.parameters.additionalParameters = 'foobar';
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -439,10 +439,10 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.simulator = true
-		xcodebuild.additionalParameters = ['foo', 'bar']
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = true
+		xcodebuild.parameters.additionalParameters = ['foo', 'bar']
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -463,7 +463,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "set execution directory"() {
 		def directory
-		xcodebuild.scheme = 'myscheme'
+		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
 		xcodebuild.execute("foobar", outputAppender, null)
@@ -474,7 +474,7 @@ class XcodebuildSpecification extends Specification {
 	}
 
 	def "directory must not be null"() {
-		xcodebuild.scheme = 'myscheme'
+		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
 		xcodebuild.execute(null, outputAppender, null)
@@ -486,7 +486,7 @@ class XcodebuildSpecification extends Specification {
 
 
 	def "output appender must not be null"() {
-		xcodebuild.scheme = 'myscheme'
+		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
 		xcodebuild.execute("", null, null)
@@ -499,7 +499,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "output appender is set"() {
 		def givenOutputAppender
-		xcodebuild.scheme = 'myscheme'
+		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -513,8 +513,8 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.type = 'OSX'
-		xcodebuild.target = 'Test';
+		xcodebuild.parameters.type = 'OSX'
+		xcodebuild.parameters.target = 'Test';
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)
@@ -545,11 +545,11 @@ class XcodebuildSpecification extends Specification {
 
 		extension.destination = ['iPad 2', 'iPhone 4s']
 
-		xcodebuild.type = Type.iOS
-		xcodebuild.target = 'Test';
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.destinations = extension.availableDestinations
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.target = 'Test';
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.destinations = extension.availableDestinations
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)
@@ -582,12 +582,12 @@ class XcodebuildSpecification extends Specification {
 		extension.destination { id = '83384347-6976-4E70-A54F-1CFECD1E02B1' }
 		extension.simulator = false
 
-		xcodebuild.type = Type.iOS
-		xcodebuild.target = 'Test';
-		xcodebuild.scheme = 'myscheme'
-		xcodebuild.workspace = 'myworkspace'
-		xcodebuild.destinations = extension.availableDestinations
-		xcodebuild.simulator = false
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.target = 'Test';
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.destinations = extension.availableDestinations
+		xcodebuild.parameters.simulator = false
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)

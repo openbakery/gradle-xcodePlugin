@@ -122,7 +122,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
 			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, project)
 
-			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild)
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild.xcodebuildParameters)
 			logger.debug("Executing xcodebuild with {}", xcodebuild)
 			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
 

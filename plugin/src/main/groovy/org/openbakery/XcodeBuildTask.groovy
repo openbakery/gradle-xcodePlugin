@@ -49,7 +49,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
 
-		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild)
+		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild.xcodebuildParameters)
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");
