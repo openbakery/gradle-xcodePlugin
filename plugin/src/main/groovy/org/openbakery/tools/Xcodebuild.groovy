@@ -113,8 +113,11 @@ class Xcodebuild {
 	}
 
 	def addBuildPath(ArrayList commandList) {
-		commandList.add("-derivedDataPath")
-		commandList.add(parameters.derivedDataPath.absolutePath)
+		if (parameters.scheme) {
+			// add this parameter only if a scheme is set
+			commandList.add("-derivedDataPath")
+			commandList.add(parameters.derivedDataPath.absolutePath)
+		}
 		commandList.add("DSTROOT=" + parameters.dstRoot.absolutePath)
 		commandList.add("OBJROOT=" + parameters.objRoot.absolutePath)
 		commandList.add("SYMROOT=" + parameters.symRoot.absolutePath)

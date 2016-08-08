@@ -1,6 +1,5 @@
 package org.openbakery.tools
 
-import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
@@ -59,7 +58,7 @@ class XcodebuildSpecification extends Specification {
 		e.message == "No 'scheme' or 'target' specified, so do not know what to build"
 	}
 
-	def createCommandWithDefaultDirectories(String... commands) {
+	def createCommandWithDerivedDataPath_And_DefaultDirectories(String... commands) {
 		def command = []
 		command.addAll(commands)
 		command << "-derivedDataPath" << new File("build/derivedData").absolutePath
@@ -69,6 +68,17 @@ class XcodebuildSpecification extends Specification {
 		command << "SHARED_PRECOMPS_DIR=" + new File("build/shared").absolutePath
 		return command
 	}
+
+	def createCommandWithDefaultDirectories(String... commands) {
+		def command = []
+		command.addAll(commands)
+		command << "DSTROOT=" + new File("build/dst").absolutePath
+		command << "OBJROOT=" + new File("build/obj").absolutePath
+		command << "SYMROOT=" + new File("build/sym").absolutePath
+		command << "SHARED_PRECOMPS_DIR=" + new File("build/shared").absolutePath
+		return command
+	}
+
 
 	def "run command with expected scheme and expected default directories"() {
 		def commandList
@@ -84,7 +94,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
 
-		commandList == createCommandWithDefaultDirectories('xcodebuild',
+		commandList == createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 										"-scheme", 'myscheme',
 										"-workspace", 'myworkspace',
 										"-configuration", "Debug",
@@ -171,7 +181,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", "Debug",
@@ -197,7 +207,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", "Debug",
@@ -226,7 +236,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", "Debug",
@@ -253,7 +263,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
@@ -279,7 +289,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug")
@@ -329,7 +339,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", 'Debug' )
@@ -354,7 +364,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", 'Debug',
@@ -425,7 +435,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", 'Debug',
@@ -450,7 +460,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", 'Debug',
@@ -559,7 +569,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('script', '-q', '/dev/null',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('script', '-q', '/dev/null',
 							"xcodebuild",
 							"-scheme", 'myscheme',
 							"-workspace", "myworkspace",
@@ -597,7 +607,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('script', '-q', '/dev/null',
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('script', '-q', '/dev/null',
 							"xcodebuild",
 							"-scheme", 'myscheme',
 							"-workspace", "myworkspace",
@@ -611,4 +621,30 @@ class XcodebuildSpecification extends Specification {
 
 		commandList == expectedCommandList
 	}
+
+
+
+	def "run command with target that has no scheme, and must not include derivedDataPath"() {
+
+		def commandList
+		def expectedCommandList
+
+		xcodebuild.parameters.target = 'mytarget'
+		xcodebuild.parameters.workspace = 'myworkspace'
+
+		when:
+		xcodebuild.execute("", outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
+														 "-configuration", "Debug",
+														 "-target", 'mytarget')
+			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+		}
+		commandList == expectedCommandList
+
+	}
+
 }
