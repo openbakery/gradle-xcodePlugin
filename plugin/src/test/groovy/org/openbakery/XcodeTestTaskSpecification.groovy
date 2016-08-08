@@ -285,8 +285,12 @@ class XcodeTestTaskSpecification extends Specification {
 														 "CODE_SIGN_IDENTITY=",
 														 "CODE_SIGNING_REQUIRED=NO",
 														 "-destination",
-														 "platform=OS X,arch=x86_64"]
-			expectedCommandList.addAll(expectedDefaultDirectories())
+														 "platform=OS X,arch=x86_64",
+														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
+														 "OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
+														 "SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
+														 "SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath
+			]
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
