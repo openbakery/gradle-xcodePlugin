@@ -270,7 +270,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.type = Type.OSX
 
 		then:
-		extension.getAvailableDestinations().size() == 1
+		extension.getXcodebuildParameters().getDestinations().size() == 1
 	}
 
 	def "os x has no simulator"() {
@@ -296,7 +296,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 		when:
-		def destinations = extension.getAvailableDestinations()
+		def destinations = extension.getXcodebuildParameters().getDestinations()
 
 		then:
 		destinations.size() == 11
@@ -313,7 +313,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		}
 
 		when:
-		def destinations = extension.getAvailableDestinations()
+		def destinations = extension.getXcodebuildParameters().getDestinations()
 
 		then:
 		destinations.size() == 1
@@ -331,7 +331,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 		when:
-		extension.getAvailableDestinations()
+		extension.getXcodebuildParameters().getDestinations()
 
 		then:
 		thrown(IllegalStateException)
@@ -345,7 +345,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.destination = 'iPad Air'
 
 		when:
-		def destinations = extension.getAvailableDestinations()
+		def destinations = extension.getXcodebuildParameters().getDestinations()
 
 		then:
 		destinations.size() == 1
@@ -360,7 +360,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.destination = ['iPad Air', 'iPhone 4s']
 
 		when:
-		def destinations = extension.getAvailableDestinations()
+		def destinations = extension.getXcodebuildParameters().getDestinations()
 
 		then:
 		destinations.size() == 2
@@ -375,7 +375,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.destination = ['iPad Air', 'iPhone 4s']
 
 		when:
-		def destinations = extension.getAvailableDestinations()
+		def destinations = extension.getXcodebuildParameters().getDestinations()
 
 		then:
 		destinations.size() == 2
@@ -565,6 +565,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		parameters.arch.size() == 1
 		parameters.arch[0] == "i386"
 
+		parameters.devices ==  Devices.UNIVERSAL
 	}
 
 

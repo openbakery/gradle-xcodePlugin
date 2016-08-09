@@ -559,7 +559,8 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.destinations = extension.availableDestinations
+		xcodebuild.parameters.allDestinations = extension.getAllDestinations()
+		xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)
@@ -596,7 +597,8 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.destinations = extension.availableDestinations
+		xcodebuild.parameters.allDestinations = extension.getAllDestinations()
+		xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 		xcodebuild.parameters.simulator = false
 
 		when:

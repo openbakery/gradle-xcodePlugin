@@ -4,6 +4,9 @@ import org.gradle.api.Project
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.openbakery.Destination
+import org.openbakery.tools.XcodebuildParameters
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,6 +16,9 @@ import org.openbakery.Destination
  * To change this template use File | Settings | File Templates.
  */
 class TestBuildOutputAppender extends XcodeBuildOutputAppender {
+
+	private static Logger logger = LoggerFactory.getLogger(TestBuildOutputAppender.class)
+
 
 	enum TestState {
 		Unknown,
@@ -35,18 +41,18 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	TestState state = TestState.Unknown;
 	int testRun = 0
 	int startedDestination = -1
-	Project project
+	XcodebuildParameters parameters
 	String currentTestCase = null;
 
 	StringBuilder currentOutput = new StringBuilder();
 
-	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, Project project) {
+	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, XcodebuildParameters parameters) {
 		super(progressLogger, output)
-		this.project = project
+		this.parameters = parameters
 	}
 
-	TestBuildOutputAppender(StyledTextOutput output, Project project) {
-		this(null, output, project)
+	TestBuildOutputAppender(StyledTextOutput output, XcodebuildParameters parameters) {
+		this(null, output, parameters)
 	}
 
 	@Override
@@ -116,7 +122,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	private void printFailureOutput() {
-		project.getLogger().debug("printFailureOutput")
+		logger.debug("printFailureOutput")
 		def failureOutput = []
 		def startFound = false;
 		currentOutput.toString().split("\n").reverse().any {
@@ -188,7 +194,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	void startDestination() {
 		if (startedDestination != testRun) {
-			Destination destination = project.xcodebuild.availableDestinations[testRun]
+			Destination destination = parameters.destinations[testRun]
 			if (destination) {
 				startedDestination = testRun
 				output.append("\nRun tests for: ")
@@ -199,7 +205,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	void finishDestination() {
-		Destination destination = project.xcodebuild.availableDestinations[testRun]
+		Destination destination = parameters.destinations[testRun]
 		if (destination != null) {
 			progress("Tests finished: " + destination.toPrettyString())
 			output.append(getTestInfoMessage())

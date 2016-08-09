@@ -179,6 +179,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse success result"() {
 		when:
+		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
 
 		then:
@@ -190,6 +191,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse failure result"() {
 		when:
+		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
 
 		then:
@@ -203,6 +205,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse failure result with partial suite"() {
 		when:
+		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
 		then:
@@ -214,6 +217,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse success result xcode 6.1"() {
 		when:
+		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
 
 		then:
@@ -225,6 +229,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse complex test output"() {
 
 		when:
+		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
 
 		then:
@@ -248,6 +253,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse success result for tests written in swift using Xcode 6.1"() {
 		when:
+		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
 
 		then:

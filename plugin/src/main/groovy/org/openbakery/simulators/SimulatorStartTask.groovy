@@ -32,7 +32,7 @@ class SimulatorStartTask extends AbstractSimulatorTask {
 
 		def device = deviceList.get(0)
 		*/
-		Destination destination = project.xcodebuild.availableDestinations.first()
+		Destination destination = project.xcodebuild.getXcodebuildParameters().destinations.first()
 
 		SimulatorDevice device = simulatorControl.getDevice(destination)
 

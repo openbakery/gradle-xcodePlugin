@@ -11,6 +11,7 @@ import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.tools.Xcodebuild
+import org.openbakery.tools.XcodebuildParameters
 
 
 class TestResult {
@@ -88,6 +89,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	File outputDirectory = null
 	SimulatorControl simulatorControl
 
+	XcodebuildParameters parameters
+
 	XcodeTestTask() {
 		super()
 		dependsOn(
@@ -101,7 +104,10 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def test() {
-		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
+
+		parameters = project.xcodebuild.xcodebuildParameters
+
+		if (parameters.scheme == null && parameters.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 
@@ -120,9 +126,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, project)
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, parameters)
 
-			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild.xcodebuildParameters)
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters)
 			logger.debug("Executing xcodebuild with {}", xcodebuild)
 			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
 
@@ -220,7 +226,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 			if( endOfDestination ) {
-				Destination destination = project.xcodebuild.availableDestinations[(testRun - 1)]
+				Destination destination = parameters.destinations[(testRun - 1)]
 
 				if (this.allResults.containsKey(destination)) {
 					def destinationResultList = this.allResults.get(destination)
