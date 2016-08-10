@@ -17,15 +17,16 @@ class Xcodebuild {
 	Xcode xcode
 
 	XcodebuildParameters parameters
+	List<Destination> destinations
 
 
 
 
-
-	public Xcodebuild(CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters) {
+	public Xcodebuild(CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, 	List<Destination> destinations) {
 		this.commandRunner = commandRunner
 		this.xcode = xcode
 		this.parameters = parameters
+		this.destinations = destinations
 	}
 
 	def validateParameters(String directory, OutputAppender outputAppender, Map<String, String> environment) {
@@ -150,7 +151,7 @@ class Xcodebuild {
 
 	def addDestinationSettingsForBuild(ArrayList commandList) {
 		if (isSimulatorBuildOf(Type.iOS)) {
-			Destination destination = parameters.destinations.last()
+			Destination destination = this.destinations.last()
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
 		}
@@ -163,7 +164,7 @@ class Xcodebuild {
 	def addDestinationSettingsForTest(ArrayList commandList) {
 		switch (parameters.type) {
 			case Type.iOS:
-				parameters.destinations.each { destination ->
+				this.destinations.each { destination ->
 					commandList.add("-destination")
 					commandList.add(getDestinationCommandParameter(destination))
 				}

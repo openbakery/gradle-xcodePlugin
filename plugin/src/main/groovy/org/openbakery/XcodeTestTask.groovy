@@ -10,6 +10,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.simulators.SimulatorControl
+import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.Xcodebuild
 import org.openbakery.tools.XcodebuildParameters
 
@@ -87,9 +88,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
-	SimulatorControl simulatorControl
-
-	XcodebuildParameters parameters
 
 	XcodeTestTask() {
 		super()
@@ -99,13 +97,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
-		this.simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
 	}
+
 
 	@TaskAction
 	def test() {
 
-		parameters = project.xcodebuild.xcodebuildParameters
+		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 
 		if (parameters.scheme == null && parameters.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
@@ -126,9 +124,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, parameters)
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, getDestinations())
 
-			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters)
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
 			logger.debug("Executing xcodebuild with {}", xcodebuild)
 			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
 
@@ -140,6 +138,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 		}
 	}
+
+
 
 
 	boolean parseResult(File outputFile) {
@@ -226,7 +226,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 			if( endOfDestination ) {
-				Destination destination = parameters.destinations[(testRun - 1)]
+				Destination destination = getDestinations()[(testRun - 1)]
 
 				if (this.allResults.containsKey(destination)) {
 					def destinationResultList = this.allResults.get(destination)

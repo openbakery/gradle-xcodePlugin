@@ -38,7 +38,10 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def build() {
-		if (project.xcodebuild.scheme == null && project.xcodebuild.target == null) {
+
+		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
+
+		if (parameters.scheme == null && parameters.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 
@@ -49,7 +52,7 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
 
-		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, project.xcodebuild.xcodebuildParameters)
+		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start("XcodeBuildTask", "XcodeBuildTask");

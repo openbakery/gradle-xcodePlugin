@@ -42,6 +42,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask.commandRunner = commandRunner
 		xcodeBuildTask.xcode.commandRunner = commandRunner
 		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		xcodeBuildTask.destinationResolver.simulatorControl = project.xcodebuild.simulatorControl
 	}
 
 	def cleanup() {
@@ -490,6 +491,103 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		then:
 		project.getBuildDir().exists()
+	}
+
+
+
+	def "set target"() {
+		when:
+		xcodeBuildTask.target = "target"
+
+		then:
+		xcodeBuildTask.parameters.target == "target"
+	}
+
+
+	def "set scheme"() {
+		when:
+		xcodeBuildTask.scheme = "scheme"
+
+		then:
+		xcodeBuildTask.parameters.scheme == "scheme"
+	}
+
+
+	def "set simulator"() {
+		when:
+		xcodeBuildTask.simulator = true
+
+		then:
+		xcodeBuildTask.parameters.simulator == true
+	}
+
+	def "set simulator false"() {
+		when:
+		xcodeBuildTask.simulator = false
+
+		then:
+		xcodeBuildTask.parameters.simulator == false
+	}
+
+	def "set type"() {
+		when:
+		xcodeBuildTask.type = Type.iOS
+
+		then:
+		xcodeBuildTask.parameters.type == Type.iOS
+	}
+
+	def "set workspace"() {
+		when:
+		xcodeBuildTask.workspace = "workspace"
+
+		then:
+		xcodeBuildTask.parameters.workspace == "workspace"
+	}
+
+	def "set additionalParameters"() {
+		when:
+		xcodeBuildTask.additionalParameters = "additionalParameters"
+
+		then:
+		xcodeBuildTask.parameters.additionalParameters == "additionalParameters"
+	}
+
+	def "set configuration"() {
+		when:
+		xcodeBuildTask.configuration = "configuration"
+
+		then:
+		xcodeBuildTask.parameters.configuration == "configuration"
+	}
+
+	def "set arch"() {
+		when:
+		xcodeBuildTask.arch = ["i386"]
+
+		then:
+		xcodeBuildTask.parameters.arch == ["i386"]
+	}
+
+
+	def "set configuredDestinations"() {
+		when:
+		Destination destination = new Destination()
+		Set<Destination> destinations = [] as Set
+		destinations.add(destination)
+		xcodeBuildTask.configuredDestinations = destinations
+
+		then:
+		xcodeBuildTask.parameters.configuredDestinations.size() == 1
+		xcodeBuildTask.parameters.configuredDestinations[0] == destination
+	}
+
+	def "set devices"() {
+		when:
+		xcodeBuildTask.devices = Devices.WATCH
+
+		then:
+		xcodeBuildTask.parameters.devices == Devices.WATCH
 	}
 
 

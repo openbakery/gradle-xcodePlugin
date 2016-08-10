@@ -4,6 +4,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
+import org.openbakery.Destination
+import org.openbakery.Devices
 import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.output.ConsoleOutputAppender
@@ -25,13 +27,15 @@ class XcodebuildSpecification extends Specification {
 
 	OutputAppender outputAppender = new ConsoleOutputAppender()
 	XcodeBuildPluginExtension extension
+	DestinationResolver destinationResolver
 
 	def setup() {
 		File projectDir = new File(".")
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters)
+		destinationResolver = new DestinationResolver(extension.simulatorControl)
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 	}
 
 	def cleanup() {
@@ -554,6 +558,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		extension.destination = ['iPad 2', 'iPhone 4s']
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -592,6 +597,8 @@ class XcodebuildSpecification extends Specification {
 
 		extension.destination { id = '83384347-6976-4E70-A54F-1CFECD1E02B1' }
 		extension.simulator = false
+
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -648,5 +655,6 @@ class XcodebuildSpecification extends Specification {
 		commandList == expectedCommandList
 
 	}
+
 
 }

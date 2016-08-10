@@ -33,6 +33,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.infoPlist = "Info.plist";
 		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
+		extension.destinationResolver.simulatorControl = extension.simulatorControl
 
 		xcodebuild7_1_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode7.1.1.app")
 		xcodebuild6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
@@ -270,7 +271,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.type = Type.OSX
 
 		then:
-		extension.getXcodebuildParameters().getDestinations().size() == 1
+		extension.destinationResolver.getDestinations(extension.getXcodebuildParameters()).size() == 1
 	}
 
 	def "os x has no simulator"() {
@@ -296,7 +297,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 		when:
-		def destinations = extension.getXcodebuildParameters().getDestinations()
+		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
 		destinations.size() == 11
@@ -313,7 +314,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		}
 
 		when:
-		def destinations = extension.getXcodebuildParameters().getDestinations()
+		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
 		destinations.size() == 1
@@ -331,7 +332,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 		when:
-		extension.getXcodebuildParameters().getDestinations()
+		extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
 		thrown(IllegalStateException)
@@ -345,7 +346,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.destination = 'iPad Air'
 
 		when:
-		def destinations = extension.getXcodebuildParameters().getDestinations()
+		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
 		destinations.size() == 1
@@ -360,7 +361,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.destination = ['iPad Air', 'iPhone 4s']
 
 		when:
-		def destinations = extension.getXcodebuildParameters().getDestinations()
+		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
 		destinations.size() == 2
@@ -375,7 +376,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.destination = ['iPad Air', 'iPhone 4s']
 
 		when:
-		def destinations = extension.getXcodebuildParameters().getDestinations()
+		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
 		destinations.size() == 2
@@ -545,6 +546,8 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 		def parameters = extension.getXcodebuildParameters()
+		def destinations = extension.destinationResolver.getDestinations(parameters)
+
 		then:
 		parameters.type == Type.OSX
 		parameters.simulator == false
@@ -559,8 +562,8 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		parameters.sharedPrecompsDir.canonicalPath == new File(projectDir, "sharedPrecompsDir").canonicalPath
 		parameters.derivedDataPath.canonicalPath == new File(projectDir, "derivedDataPath").canonicalPath
 
-		parameters.destinations.size() == 1
-		parameters.destinations[0].name == "OS X"
+		destinations.size() == 1
+		destinations[0].name == "OS X"
 
 		parameters.arch.size() == 1
 		parameters.arch[0] == "i386"
@@ -569,20 +572,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	}
 
 
-	def "XcodebuildParameters are created with iOS destination"() {
-		when:
-		File projectDir =  new File("../example/OSX/ExampleOSX")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-		extension.type = Type.iOS
-		extension.destination = ['iPad 2']
 
 
-		def parameters = extension.getXcodebuildParameters()
-		then:
-
-		parameters.destinations.size() == 1
-		parameters.destinations[0].name == "iPad 2"
-
-	}
 }

@@ -7,6 +7,7 @@ import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.tools.DestinationResolver
 import spock.lang.Specification
 
 /**
@@ -17,6 +18,7 @@ class SimulatorStartTaskSpecification extends Specification {
 	Project project
 	File projectDir
 	SimulatorControl simulatorControl = Mock(SimulatorControl)
+	DestinationResolver destinationResolver = Mock(DestinationResolver)
 	SimulatorStartTask task
 
 
@@ -35,7 +37,9 @@ class SimulatorStartTaskSpecification extends Specification {
 					new SimulatorDevice("iPad Pro (744F7B28-373D-4666-B4DF-8438D1109663) (Shutdown)")
 	]
 
-
+	def destinations = [
+	        new Destination("iOS Simulator", "iPhone 4s", "iOS 9")
+	]
 
 	def setup() {
 
@@ -67,6 +71,7 @@ class SimulatorStartTaskSpecification extends Specification {
 	def "run"() {
 		given:
 		simulatorControl.getDevice(_) >> devices9_1[0]
+		destinationResolver.getDestinations(_) >> destinations
 
 		when:
 		task.run()

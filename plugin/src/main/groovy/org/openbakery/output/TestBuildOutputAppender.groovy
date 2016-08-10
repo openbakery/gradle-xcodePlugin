@@ -41,18 +41,18 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	TestState state = TestState.Unknown;
 	int testRun = 0
 	int startedDestination = -1
-	XcodebuildParameters parameters
+	List<Destination> destinations
 	String currentTestCase = null;
 
 	StringBuilder currentOutput = new StringBuilder();
 
-	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, XcodebuildParameters parameters) {
+	TestBuildOutputAppender(ProgressLogger progressLogger, StyledTextOutput output, List<Destination> destinations) {
 		super(progressLogger, output)
-		this.parameters = parameters
+		this.destinations = destinations
 	}
 
-	TestBuildOutputAppender(StyledTextOutput output, XcodebuildParameters parameters) {
-		this(null, output, parameters)
+	TestBuildOutputAppender(StyledTextOutput output, List<Destination> destinations) {
+		this(null, output, destinations)
 	}
 
 	@Override
@@ -194,7 +194,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 
 	void startDestination() {
 		if (startedDestination != testRun) {
-			Destination destination = parameters.destinations[testRun]
+			Destination destination = this.destinations[testRun]
 			if (destination) {
 				startedDestination = testRun
 				output.append("\nRun tests for: ")
@@ -205,7 +205,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	}
 
 	void finishDestination() {
-		Destination destination = parameters.destinations[testRun]
+		Destination destination = this.destinations[testRun]
 		if (destination != null) {
 			progress("Tests finished: " + destination.toPrettyString())
 			output.append(getTestInfoMessage())

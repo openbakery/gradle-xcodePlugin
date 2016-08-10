@@ -40,7 +40,7 @@ class XcodeTestTaskSpecification extends Specification {
 		xcodeTestTask.xcode.commandRunner = commandRunner
 
 		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
-
+		xcodeTestTask.destinationResolver.simulatorControl = project.xcodebuild.simulatorControl
 
 		project.xcodebuild.destination {
 			name = "iPad 2"
@@ -306,7 +306,6 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def setup_iOS_SimualtorBuild(String... commands) {
 		project.xcodebuild.type = Type.iOS
-		project.xcodebuild.target = 'Test';
 
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
@@ -461,5 +460,142 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		project.getBuildDir().exists()
 	}
+
+	def "set target"() {
+		when:
+		xcodeTestTask.target = "target"
+
+		then:
+		xcodeTestTask.parameters.target == "target"
+	}
+
+
+	def "set scheme"() {
+		when:
+		xcodeTestTask.scheme = "scheme"
+
+		then:
+		xcodeTestTask.parameters.scheme == "scheme"
+	}
+
+
+	def "set simulator"() {
+		when:
+		xcodeTestTask.simulator = true
+
+		then:
+		xcodeTestTask.parameters.simulator == true
+	}
+
+	def "set simulator false"() {
+		when:
+		xcodeTestTask.simulator = false
+
+		then:
+		xcodeTestTask.parameters.simulator == false
+	}
+
+	def "set type"() {
+		when:
+		xcodeTestTask.type = Type.iOS
+
+		then:
+		xcodeTestTask.parameters.type == Type.iOS
+	}
+
+	def "set workspace"() {
+		when:
+		xcodeTestTask.workspace = "workspace"
+
+		then:
+		xcodeTestTask.parameters.workspace == "workspace"
+	}
+
+	def "set additionalParameters"() {
+		when:
+		xcodeTestTask.additionalParameters = "additionalParameters"
+
+		then:
+		xcodeTestTask.parameters.additionalParameters == "additionalParameters"
+	}
+
+	def "set configuration"() {
+		when:
+		xcodeTestTask.configuration = "configuration"
+
+		then:
+		xcodeTestTask.parameters.configuration == "configuration"
+	}
+
+	def "set arch"() {
+		when:
+		xcodeTestTask.arch = ["i386"]
+
+		then:
+		xcodeTestTask.parameters.arch == ["i386"]
+	}
+
+
+	def "set configuredDestinations"() {
+		when:
+		Destination destination = new Destination()
+		Set<Destination> destinations = [] as Set
+		destinations.add(destination)
+		xcodeTestTask.configuredDestinations = destinations
+
+		then:
+		xcodeTestTask.parameters.configuredDestinations.size() == 1
+		xcodeTestTask.parameters.configuredDestinations[0] == destination
+	}
+
+	def "set devices"() {
+		when:
+		xcodeTestTask.devices = Devices.WATCH
+
+		then:
+		xcodeTestTask.parameters.devices == Devices.WATCH
+	}
+
+
+	def "test command for iOS simulator with override target and destination"() {
+		project.xcodebuild.commandRunner = commandRunner
+		def commandList
+
+		project.xcodebuild.type = Type.iOS
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		xcodeTestTask.scheme = "Foobar"
+		xcodeTestTask.destination {
+			name = "iPad 2"
+		}
+
+		def expectedCommandList = ['script', '-q', '/dev/null',
+															 "xcodebuild",
+															 "-scheme", "Foobar",
+															 "-workspace", "myworkspace",
+															 "-configuration", 'Debug',
+															 "-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+		]
+		expectedCommandList.addAll(expectedDefaultDirectories())
+
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+
+
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		interaction {
+			expectedCommandList << "-enableCodeCoverage" << "yes"
+			expectedCommandList << "test"
+		}
+		commandList == expectedCommandList
+
+		expectedCommandList.contains("Foobar")
+	}
+
 
 }

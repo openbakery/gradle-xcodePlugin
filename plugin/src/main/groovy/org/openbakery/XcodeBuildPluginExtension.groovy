@@ -23,6 +23,7 @@ import org.openbakery.signing.Signing
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.simulators.SimulatorDevice
 import org.openbakery.simulators.SimulatorRuntime
+import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.Xcode
 import org.openbakery.tools.Xcodebuild
 import org.openbakery.tools.XcodebuildParameters
@@ -100,6 +101,8 @@ class XcodeBuildPluginExtension {
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
 
+	XcodebuildParameters _parameters = new XcodebuildParameters()
+
 	String infoPlist = null
 	String scheme = null
 	String configuration = 'Debug'
@@ -128,7 +131,7 @@ class XcodeBuildPluginExtension {
 
 	Devices devices = Devices.UNIVERSAL;
 
-	Set<Destination> destinations = null
+	//Set<Destination> destinations = null
 
 	CommandRunner commandRunner
 	VariableResolver variableResolver
@@ -137,6 +140,7 @@ class XcodeBuildPluginExtension {
 
 	SimulatorControl simulatorControl
 	Xcode xcode
+	DestinationResolver destinationResolver
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 
@@ -153,6 +157,8 @@ class XcodeBuildPluginExtension {
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(this.project, commandRunner)
+
+		destinationResolver = new DestinationResolver(getSimulatorControl())
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -264,6 +270,8 @@ class XcodeBuildPluginExtension {
 	}
 
 	void destination(Closure closure) {
+		_parameters.destination(closure)
+		/*
 		Destination destination = new Destination()
 		ConfigureUtil.configure(closure, destination)
 		if (destinations == null) {
@@ -271,17 +279,17 @@ class XcodeBuildPluginExtension {
 		}
 
 		destinations << destination
+		*/
 	}
 
 	void setDestination(def destination) {
-		SimulatorRuntime runtime = getSimulatorControl().getMostRecentRuntime(Type.iOS)
-
+		_parameters.setDestination(destination)
+		/*
 		if (destination instanceof List) {
 			destinations = [] as Set
 			destination.each { singleDestination ->
 				this.destination {
 					name = singleDestination.toString()
-					os = runtime.version.toString()
 				}
 			}
 
@@ -290,9 +298,19 @@ class XcodeBuildPluginExtension {
 
 		this.destination {
 			name = destination.toString()
-			os = runtime.version.toString()
 		}
+		*/
 	}
+
+	Set<Destination> getDestinations() {
+		return _parameters.configuredDestinations
+	}
+
+
+	SimulatorRuntime getMostRecentRuntime(Type type) {
+		return getSimulatorControl().getMostRecentRuntime(type)
+	}
+
 
 	List<Destination> getAllDestinations() {
 		return getSimulatorControl().getAllDestinations(type)

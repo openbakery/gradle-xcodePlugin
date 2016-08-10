@@ -10,6 +10,7 @@ import org.openbakery.stubs.ProgressLoggerStub
 import org.junit.Test
 import org.junit.Before
 import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.XcodebuildParameters
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +44,7 @@ class TestBuildOutputAppenderTest {
 
 
 	Project project
-	XcodebuildParameters parameters
+	List<Destination> destinations
 
 	@Before
 	void setup() {
@@ -51,7 +52,7 @@ class TestBuildOutputAppenderTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
 
 		project.xcodebuild.destination {
 			name = "iPad 2"
@@ -60,14 +61,15 @@ class TestBuildOutputAppenderTest {
 			name = "iPhone 4s"
 		}
 
-		parameters = project.xcodebuild.getXcodebuildParameters()
+		DestinationResolver destinationResolver = new DestinationResolver(simulatorControl)
+		destinations = destinationResolver.getDestinations(project.xcodebuild.getXcodebuildParameters())
 	}
 
 	@Test
 	void testNoOutput() {
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
@@ -79,7 +81,7 @@ class TestBuildOutputAppenderTest {
 	void testSuccess() {
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
 		for (String line in successTestOutput.split("\n")) {
@@ -96,7 +98,7 @@ class TestBuildOutputAppenderTest {
 
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 		appender.fullProgress = true;
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
@@ -115,7 +117,7 @@ class TestBuildOutputAppenderTest {
 
 		ProgressLoggerStub progress = new ProgressLoggerStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, destinations)
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
 		for (String line in successTestOutput.split("\n")) {
@@ -131,7 +133,7 @@ class TestBuildOutputAppenderTest {
 		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
 		StyledTextOutputStub output = new StyledTextOutputStub()
 		ProgressLoggerStub progress = new ProgressLoggerStub()
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, destinations)
 		for (String line : xcodebuildOutput.split("\n")) {
 			appender.append(line);
 		}
@@ -154,7 +156,7 @@ class TestBuildOutputAppenderTest {
 		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
 		StyledTextOutputStub output = new StyledTextOutputStub()
 		ProgressLoggerStub progress = new ProgressLoggerStub()
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, destinations)
 		for (String line : xcodebuildOutput.split("\n")) {
 			appender.append(line);
 		}
@@ -170,7 +172,7 @@ class TestBuildOutputAppenderTest {
 
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 		appender.append("PhaseScriptExecution Copy\\ Pods\\ Resources build/obj/MyApp.build/Debug-iphonesimulator/myApp.build/Script-FCB0D86122C34DC69AE16EE3.sh")
 
 		for (String line in errorTestOutput.split("\n")) {
@@ -210,7 +212,7 @@ class TestBuildOutputAppenderTest {
 
 		StyledTextOutputStub output = new StyledTextOutputStub()
 
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 
 		for (String line : simctlOutput.split("\n")) {
 			appender.append(line);
@@ -225,7 +227,7 @@ class TestBuildOutputAppenderTest {
 	void testComplexOutput() {
 		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
 		StyledTextOutputStub output = new StyledTextOutputStub()
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 		for (String line : simctlOutput.split("\n")) {
 			appender.append(line);
 		}
@@ -238,7 +240,7 @@ class TestBuildOutputAppenderTest {
 	void testFailureOutput() {
 		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-compile-error.txt"))
 		StyledTextOutputStub output = new StyledTextOutputStub()
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 		for (String line : simctlOutput.split("\n")) {
 			appender.append(line);
 		}
@@ -263,7 +265,7 @@ class TestBuildOutputAppenderTest {
 						"** TEST FAILED **"
 
 		StyledTextOutputStub output = new StyledTextOutputStub()
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, parameters)
+		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, destinations)
 		for (String line : lines.split("\n")) {
 			appender.append(line);
 		}
@@ -279,7 +281,7 @@ class TestBuildOutputAppenderTest {
 		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-createbinary.txt"))
 		StyledTextOutputStub output = new StyledTextOutputStub()
 		ProgressLoggerStub progress = new ProgressLoggerStub()
-		TestBuildOutputAppender appender =  new TestBuildOutputAppender(progress, output, parameters)
+		TestBuildOutputAppender appender =  new TestBuildOutputAppender(progress, output, destinations)
 		for (String line : xcodebuildOutput.split("\n")) {
 			appender.append(line);
 		}
@@ -293,7 +295,7 @@ class TestBuildOutputAppenderTest {
 		String xcodebuildOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
 		StyledTextOutputStub output = new StyledTextOutputStub()
 		ProgressLoggerStub progress = new ProgressLoggerStub()
-		TestBuildOutputAppender appender =  new TestBuildOutputAppender(progress, output, parameters)
+		TestBuildOutputAppender appender =  new TestBuildOutputAppender(progress, output, destinations)
 		for (String line : xcodebuildOutput.split("\n")) {
 			appender.append(line);
 		}
