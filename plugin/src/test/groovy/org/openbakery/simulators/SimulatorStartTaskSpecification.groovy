@@ -8,6 +8,7 @@ import org.openbakery.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.SimulatorControlStub
 import org.openbakery.tools.DestinationResolver
+import org.openbakery.tools.XcodebuildParameters
 import spock.lang.Specification
 
 /**
@@ -38,7 +39,7 @@ class SimulatorStartTaskSpecification extends Specification {
 	]
 
 	def destinations = [
-	        new Destination("iOS Simulator", "iPhone 4s", "iOS 9")
+	        new Destination("iOS Simulator", "iPhone 4s", "iOS 9"),
 	]
 
 	def setup() {
@@ -51,8 +52,7 @@ class SimulatorStartTaskSpecification extends Specification {
 
 		task = project.tasks.findByName(XcodePlugin.SIMULATORS_START_TASK_NAME)
 		task.simulatorControl = simulatorControl
-
-
+		task.destinationResolver = destinationResolver
 
 	}
 
@@ -87,9 +87,11 @@ class SimulatorStartTaskSpecification extends Specification {
 
 	def "run with specified device"() {
 		given:
-		destinationResolver.getDestinations(_) >> destinations
 
-		def destination
+		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+		task.destinationResolver = destinationResolver
+
+		Destination destination
 		project.xcodebuild.destination = 'iPhone 6s'
 
 		when:

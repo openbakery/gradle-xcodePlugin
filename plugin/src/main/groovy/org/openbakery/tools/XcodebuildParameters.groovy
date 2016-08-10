@@ -76,7 +76,6 @@ class XcodebuildParameters {
 						", arch=" + arch +
 						", additionalParameters=" + additionalParameters +
 						", configuredDestinations=" + configuredDestinations +
-						", destinations=" + getDestinations() +
 						'}';
 	}
 
