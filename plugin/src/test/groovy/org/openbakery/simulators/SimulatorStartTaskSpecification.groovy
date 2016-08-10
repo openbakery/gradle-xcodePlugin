@@ -87,6 +87,8 @@ class SimulatorStartTaskSpecification extends Specification {
 
 	def "run with specified device"() {
 		given:
+		destinationResolver.getDestinations(_) >> destinations
+
 		def destination
 		project.xcodebuild.destination = 'iPhone 6s'
 
