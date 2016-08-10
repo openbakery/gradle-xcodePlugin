@@ -41,8 +41,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
 		xcodeBuildTask.xcode.commandRunner = commandRunner
-		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
-		xcodeBuildTask.destinationResolver.simulatorControl = project.xcodebuild.simulatorControl
+		xcodeBuildTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 	}
 
 	def cleanup() {

@@ -88,7 +88,6 @@ class SimulatorStartTaskSpecification extends Specification {
 	def "run with specified device"() {
 		given:
 		def destination
-		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
 		project.xcodebuild.destination = 'iPhone 6s'
 
 		when:

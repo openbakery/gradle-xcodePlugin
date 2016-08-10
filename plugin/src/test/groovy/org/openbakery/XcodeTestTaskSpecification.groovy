@@ -39,8 +39,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 		xcodeTestTask.xcode.commandRunner = commandRunner
 
-		project.xcodebuild.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
-		xcodeTestTask.destinationResolver.simulatorControl = project.xcodebuild.simulatorControl
+		xcodeTestTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
 		project.xcodebuild.destination {
 			name = "iPad 2"

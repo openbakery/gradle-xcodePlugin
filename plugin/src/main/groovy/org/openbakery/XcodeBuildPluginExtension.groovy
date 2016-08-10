@@ -138,9 +138,7 @@ class XcodeBuildPluginExtension {
 	PlistHelper plistHelper
 
 
-	SimulatorControl simulatorControl
 	Xcode xcode
-	DestinationResolver destinationResolver
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 
@@ -157,8 +155,6 @@ class XcodeBuildPluginExtension {
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(this.project, commandRunner)
-
-		destinationResolver = new DestinationResolver(getSimulatorControl())
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
@@ -255,10 +251,10 @@ class XcodeBuildPluginExtension {
 
 	boolean isSimulatorBuildOf(Type expectedType) {
 		if (type != expectedType) {
-			logger.debug("is no simualtor build")
+			logger.debug("is no simulator build")
 			return false;
 		}
-		logger.debug("is simualtor build {}", this.simulator)
+		logger.debug("is simulator build {}", this.simulator)
 		return this.simulator;
 	}
 
@@ -271,50 +267,16 @@ class XcodeBuildPluginExtension {
 
 	void destination(Closure closure) {
 		_parameters.destination(closure)
-		/*
-		Destination destination = new Destination()
-		ConfigureUtil.configure(closure, destination)
-		if (destinations == null) {
-			destinations = [] as Set
-		}
-
-		destinations << destination
-		*/
 	}
 
 	void setDestination(def destination) {
 		_parameters.setDestination(destination)
-		/*
-		if (destination instanceof List) {
-			destinations = [] as Set
-			destination.each { singleDestination ->
-				this.destination {
-					name = singleDestination.toString()
-				}
-			}
-
-			return
-		}
-
-		this.destination {
-			name = destination.toString()
-		}
-		*/
 	}
 
 	Set<Destination> getDestinations() {
 		return _parameters.configuredDestinations
 	}
 
-
-	SimulatorRuntime getMostRecentRuntime(Type type) {
-		return getSimulatorControl().getMostRecentRuntime(type)
-	}
-
-
-	List<Destination> getAllDestinations() {
-		return getSimulatorControl().getAllDestinations(type)
-	}
 
 
 	void setArch(Object arch) {
@@ -529,13 +491,6 @@ class XcodeBuildPluginExtension {
  		return xcode
 	}
 
-
-	SimulatorControl getSimulatorControl() {
-		if (simulatorControl == null) {
-			simulatorControl = new SimulatorControl(project, commandRunner, getXcode())
-		}
-		return simulatorControl
-	}
 
 
 	XcodebuildParameters getXcodebuildParameters() {

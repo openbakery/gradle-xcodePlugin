@@ -31,9 +31,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension = new XcodeBuildPluginExtension(project)
 		extension.commandRunner = commandRunner
 		extension.infoPlist = "Info.plist";
-		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 
-		extension.destinationResolver.simulatorControl = extension.simulatorControl
 
 		xcodebuild7_1_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode7.1.1.app")
 		xcodebuild6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
@@ -265,14 +263,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 
-	def "available destinations for OS X"() {
-
-		when:
-		extension.type = Type.OSX
-
-		then:
-		extension.destinationResolver.getDestinations(extension.getXcodebuildParameters()).size() == 1
-	}
 
 	def "os x has no simulator"() {
 
@@ -293,95 +283,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		return destination
 	}
 
-	def "available destinations default"() {
-
-
-		when:
-		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-		then:
-		destinations.size() == 11
-
-	}
-
-
-	def "available destinations match"() {
-
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = 'iPad Air'
-			os = "9.0"
-		}
-
-		when:
-		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-		then:
-		destinations.size() == 1
-
-	}
-
-
-	def "available destinations not match"() {
-		given:
-		extension.destination {
-			platform = 'iOS Simulator'
-			name = 'iPad Air'
-			os = "8.0"
-		}
-
-
-		when:
-		extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-		then:
-		thrown(IllegalStateException)
-
-	}
 
 
 
-	def "available destinations match simple single"() {
-		given:
-		extension.destination = 'iPad Air'
-
-		when:
-		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-		then:
-		destinations.size() == 1
-		destinations[0].name == "iPad Air"
-		destinations[0].os == "9.0"
-
-	}
-
-	def "available destinations match simple multiple"() {
-		given:
-
-		extension.destination = ['iPad Air', 'iPhone 4s']
-
-		when:
-		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-		then:
-		destinations.size() == 2
-
-	}
-
-
-	def "set destinations twice"() {
-		given:
-
-		extension.destination = ['iPad Air', 'iPhone 5s']
-		extension.destination = ['iPad Air', 'iPhone 4s']
-
-		when:
-		def destinations = extension.destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-		then:
-		destinations.size() == 2
-
-	}
 
 
 	def "get build configuration for bundle identifier"() {
@@ -546,7 +450,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 		def parameters = extension.getXcodebuildParameters()
-		def destinations = extension.destinationResolver.getDestinations(parameters)
 
 		then:
 		parameters.type == Type.OSX
@@ -561,9 +464,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		parameters.symRoot.canonicalPath == new File(projectDir, "symRoot").canonicalPath
 		parameters.sharedPrecompsDir.canonicalPath == new File(projectDir, "sharedPrecompsDir").canonicalPath
 		parameters.derivedDataPath.canonicalPath == new File(projectDir, "derivedDataPath").canonicalPath
-
-		destinations.size() == 1
-		destinations[0].name == "OS X"
 
 		parameters.arch.size() == 1
 		parameters.arch[0] == "i386"

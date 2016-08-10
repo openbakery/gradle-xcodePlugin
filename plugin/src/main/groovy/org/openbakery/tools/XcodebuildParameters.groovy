@@ -5,7 +5,6 @@ import org.openbakery.Destination
 import org.openbakery.Devices
 import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
-import org.openbakery.simulators.SimulatorRuntime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -31,8 +30,6 @@ class XcodebuildParameters {
 	List<String> arch
 	def additionalParameters
 	Set<Destination> configuredDestinations
-	List<Destination> allDestinations
-	SimulatorRuntime runtime
 	Devices devices
 
 
@@ -56,9 +53,7 @@ class XcodebuildParameters {
 		}
 		additionalParameters = extension.additionalParameters
 		devices = extension.devices
-		allDestinations = extension.getAllDestinations()
 		configuredDestinations = extension.destinations
-		runtime = extension.getMostRecentRuntime(type)
 	}
 
 

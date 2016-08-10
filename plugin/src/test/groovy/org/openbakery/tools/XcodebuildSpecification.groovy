@@ -33,8 +33,7 @@ class XcodebuildSpecification extends Specification {
 		File projectDir = new File(".")
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
-		destinationResolver = new DestinationResolver(extension.simulatorControl)
+		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
 		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 	}
 
@@ -564,7 +563,6 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.allDestinations = extension.getAllDestinations()
 		xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 
 		when:
@@ -598,13 +596,14 @@ class XcodebuildSpecification extends Specification {
 		extension.destination { id = '83384347-6976-4E70-A54F-1CFECD1E02B1' }
 		extension.simulator = false
 
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		def xcodebuildParameters = extension.xcodebuildParameters
+
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), xcodebuildParameters, destinationResolver.getDestinations(xcodebuildParameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.allDestinations = extension.getAllDestinations()
 		xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 		xcodebuild.parameters.simulator = false
 

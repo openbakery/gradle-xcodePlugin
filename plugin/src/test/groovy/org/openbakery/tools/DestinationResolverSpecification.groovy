@@ -2,9 +2,9 @@ package org.openbakery.tools
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.simulators.SimulatorControl
 import org.openbakery.stubs.SimulatorControlStub
 import spock.lang.Specification
 
@@ -15,13 +15,28 @@ class DestinationResolverSpecification extends Specification {
 
 	Project project
 	File projectDir
-	XcodeBuildPluginExtension extension;
+	XcodeBuildPluginExtension extension
+	DestinationResolver destinationResolver
+	SimulatorControl simulatorControl
 
 	def setup() {
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 		extension = new XcodeBuildPluginExtension(project)
+		simulatorControl = new SimulatorControlStub("simctl-list-xcode7_1.txt")
+		destinationResolver = new DestinationResolver(simulatorControl)
+	}
+
+
+
+	def "available destinations for OS X"() {
+
+		when:
+		extension.type = Type.OSX
+
+		then:
+		destinationResolver.getDestinations(extension.getXcodebuildParameters()).size() == 1
 	}
 
 
@@ -34,7 +49,7 @@ class DestinationResolverSpecification extends Specification {
 		extension.destination = ['iPad 2']
 
 		def parameters = extension.getXcodebuildParameters()
-		def destinations = extension.destinationResolver.getDestinations(parameters)
+		def destinations = destinationResolver.getDestinations(parameters)
 
 		then:
 
@@ -46,18 +61,114 @@ class DestinationResolverSpecification extends Specification {
 
 	def "test configured devices only should add most recent runtime"() {
 		when:
-		extension.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7_1.txt")
 		extension.destination = ['iPad 2']
 		def parameters = extension.getXcodebuildParameters()
-		def destinations = extension.destinationResolver.getDestinations(parameters)
+		def destinations = destinationResolver.getDestinations(parameters)
 
 		then:
 		destinations.size() == 1
 		destinations[0].name == "iPad 2"
 		destinations[0].os == "9.1"
+	}
 
+
+	def "available destinations default xcode 7"() {
+		when:
+		destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 11
 
 	}
+
+
+	def "available destinations default"() {
+		when:
+
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 22
+
+	}
+
+
+	def "available destinations match"() {
+
+			extension.destination {
+				platform = 'iOS Simulator'
+				name = 'iPad Air'
+				os = "9.1"
+			}
+
+			when:
+			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+			then:
+			destinations.size() == 1
+
+		}
+
+
+		def "available destinations not match"() {
+			given:
+			extension.destination {
+				platform = 'iOS Simulator'
+				name = 'iPad Air'
+				os = "8.0"
+			}
+
+			when:
+			destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+			then:
+			thrown(IllegalStateException)
+		}
+
+
+
+		def "available destinations match simple single"() {
+			given:
+			extension.destination = 'iPad Air'
+
+			when:
+			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+			then:
+			destinations.size() == 1
+			destinations[0].name == "iPad Air"
+			destinations[0].os == "9.1"
+
+		}
+
+		def "available destinations match simple multiple"() {
+			given:
+
+			extension.destination = ['iPad Air', 'iPhone 4s']
+
+			when:
+			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+			then:
+			destinations.size() == 2
+
+		}
+
+
+		def "set destinations twice"() {
+			given:
+
+			extension.destination = ['iPad Air', 'iPhone 5s']
+			extension.destination = ['iPad Air', 'iPhone 4s']
+
+			when:
+			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+			then:
+			destinations.size() == 2
+
+		}
 
 
 }
