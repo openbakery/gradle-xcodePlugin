@@ -1,6 +1,7 @@
 package org.openbakery
 
 import groovy.xml.MarkupBuilder
+import org.apache.commons.lang.time.DurationFormatUtils
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.progress.ProgressLogger
@@ -143,6 +144,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 	boolean parseResult(File outputFile) {
+		long startTime = System.currentTimeMillis()
 		logger.debug("parse result from: {}", outputFile)
 		if (!outputFile.exists()) {
 			logger.lifecycle("No xcodebuild output file found!");
@@ -247,7 +249,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			}
 		}
 		store()
-		logger.lifecycle("");
+		long endTime = System.currentTimeMillis();
+		logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime-startTime));
 		if (overallTestSuccess) {
 			logger.lifecycle("All " + numberSuccess() + " tests were successful");
 		} else {
