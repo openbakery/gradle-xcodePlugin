@@ -89,6 +89,8 @@ class PackageTaskSpecification extends Specification {
 		mockExampleApp(withPlugin, withSwift, false, true)
 	}
 
+
+
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework, boolean adHoc) {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
@@ -584,6 +586,24 @@ class PackageTaskSpecification extends Specification {
 		entitlementsFile.exists()
 		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
 		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.ExampleWidget")
+
+	}
+
+
+	def "use custom entitlements file"() {
+		given:
+
+		project.xcodebuild.signing.entitlementsFile = "MyCustomEntitlements.plist"
+
+		mockExampleApp(false, false)
+		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+
+		when:
+		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
+
+		then:
+		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
+
 
 	}
 

@@ -21,6 +21,7 @@ class Signing {
 	File keychain
 	Integer timeout = 3600
 	String plugin
+	Object entitlementsFile
 
 
 	/**
@@ -113,6 +114,17 @@ class Signing {
 		mobileProvisionFile.add(fileToAdd)
 	}
 
+
+	File getEntitlementsFile() {
+		if (entitlementsFile != null) {
+			return project.file(entitlementsFile)
+		}
+		return null
+	}
+
+	void setEntitlementsFile(Object entitlementsFile) {
+		this.entitlementsFile = entitlementsFile
+	}
 
 	String getIdentity() {
 

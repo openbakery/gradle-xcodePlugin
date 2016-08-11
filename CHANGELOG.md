@@ -1,3 +1,11 @@
+# 0.14.2 ()
+
+Changes
+* XcodebuildTask and XcodeTestTask can now override the global xcodebuild settings for building for supporting multiproject build
+* Added an option that a custom entitlements file can be specified for codesigning
+
+Note: There is no 0.14.1 version. (Reason is a typo)
+
 # 0.14.0 (July 22, 2016)
 
 Changes

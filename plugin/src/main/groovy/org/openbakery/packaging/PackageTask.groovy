@@ -198,6 +198,11 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	File createEntitlementsFile(File bundle, String bundleIdentifier) {
+
+		if (project.xcodebuild.signing.entitlementsFile != null) {
+			return project.xcodebuild.signing.entitlementsFile
+		}
+
 		File provisionFile = getProvisionFileForIdentifier(bundleIdentifier)
 		if (provisionFile == null) {
 			if (project.xcodebuild.type == Type.iOS) {

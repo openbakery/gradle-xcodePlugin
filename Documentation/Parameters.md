@@ -53,6 +53,10 @@
 
 #### Optional parameters
 
+* entitlementsFile - With this parameter a entitlments file can be specified that is used for codesigning. If empty then the entitlemnts that is embedded in the provisioning file is extracted and used.
+
+  default value: empty
+
 * identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)'. This parameter is **optional** and only needed if you have more then one identity in the keychain. This is only the case if the _keychain_ parameter is set, and the keychain is not created during the build process.
 
 	default value: empty
