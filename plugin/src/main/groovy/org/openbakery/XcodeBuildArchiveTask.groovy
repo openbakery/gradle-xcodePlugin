@@ -17,12 +17,19 @@ package org.openbakery
 
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.logging.progress.ProgressLogger
+import org.gradle.internal.logging.progress.ProgressLoggerFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
+import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.tools.Xcodebuild
 
 import static groovy.io.FileType.FILES
 
-class XcodeBuildArchiveTask extends AbstractXcodeTask {
+class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	public static final String ARCHIVE_FOLDER = "archive"
 
@@ -315,6 +322,17 @@ class XcodeBuildArchiveTask extends AbstractXcodeTask {
 		}
 
 		logger.debug("Create xcarchive")
+
+		if (project.xcodebuild.xcodeBuildArchiveTask) {
+
+			File outputFile = new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
+			commandRunner.setOutputFile(outputFile)
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
+			xcodebuild.executeArchive(project.projectDir.absolutePath, createXcodeBuildOutputAppender("XcodeBuildArchive"), project.xcodebuild.environment)
+
+			return
+		}
+
 
 		// create xcarchive
 		copy(project.xcodebuild.applicationBundle, getApplicationsDirectory())

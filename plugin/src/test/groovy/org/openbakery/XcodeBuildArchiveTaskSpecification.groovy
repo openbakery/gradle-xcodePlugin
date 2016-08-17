@@ -6,6 +6,7 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.tools.Xcodebuild
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 
@@ -493,6 +494,22 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 		then:
 		!archiveFrameworksDirectory.exists()
+
+	}
+
+
+	def "create archive using xcodebuild"() {
+		given:
+		setupProject()
+
+		project.xcodebuild.useXcodebuildArchive = true
+
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+		1 * xcodebuild.executeArchive(_, _, _, _)
 
 	}
 }

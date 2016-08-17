@@ -656,4 +656,45 @@ class XcodebuildSpecification extends Specification {
 	}
 
 
+	def "run archive command with expected scheme and expected directories"() {
+		def commandList
+		def expectedCommandList
+
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.type = Type.iOS
+
+
+		xcodebuild.parameters.derivedDataPath = new File("build/myDerivedData").absoluteFile
+		xcodebuild.parameters.dstRoot = new File("build/myDst").absoluteFile
+		xcodebuild.parameters.objRoot = new File("build/myObj").absoluteFile
+		xcodebuild.parameters.symRoot = new File("build/mySym").absoluteFile
+		xcodebuild.parameters.sharedPrecompsDir = new File("build/myShared").absoluteFile
+
+		when:
+		xcodebuild.executeArchive("", outputAppender, null, "build/archive/myArchive.xcarchive")
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
+														 "DSTROOT=" + new File("build/myDst").absolutePath,
+														 "OBJROOT=" + new File("build/myObj").absolutePath,
+														 "SYMROOT=" + new File("build/mySym").absolutePath,
+														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
+														 "-destination", "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61",
+														 "archive",
+														 "-archivePath",
+														 "build/archive/myArchive.xcarchive"
+
+			]
+		}
+		commandList == expectedCommandList
+
+	}
+
 }

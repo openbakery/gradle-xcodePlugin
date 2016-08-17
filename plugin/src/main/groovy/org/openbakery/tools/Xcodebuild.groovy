@@ -69,6 +69,21 @@ class Xcodebuild {
 		commandRunner.run(directory, commandList, environment, outputAppender)
 	}
 
+	def executeArchive(String directory, OutputAppender outputAppender, Map<String, String> environment, String archivePath) {
+		validateParameters(directory, outputAppender, environment)
+		def commandList = []
+		addBuildSettings(commandList)
+		addDisableCodeSigning(commandList)
+		addAdditionalParameters(commandList)
+		addBuildPath(commandList)
+		addDestinationSettingsForBuild(commandList)
+		commandList << "archive"
+		commandList << '-archivePath'
+		commandList << archivePath
+		commandRunner.run(directory, commandList, environment, outputAppender)
+	}
+
+
 	def addBuildSettings(ArrayList commandList) {
 
 		commandList << xcode.xcodebuild

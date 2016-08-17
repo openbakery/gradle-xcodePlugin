@@ -129,6 +129,9 @@ class XcodeBuildPluginExtension {
 	String ipaFileName = null
 	File projectFile
 
+	boolean useXcodebuildArchive = false
+
+
 	Devices devices = Devices.UNIVERSAL;
 
 	//Set<Destination> destinations = null

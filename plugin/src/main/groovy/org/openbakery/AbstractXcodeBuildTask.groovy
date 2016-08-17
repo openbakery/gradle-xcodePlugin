@@ -1,7 +1,13 @@
 package org.openbakery
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.logging.LogLevel
+import org.gradle.internal.logging.progress.ProgressLogger
+import org.gradle.internal.logging.progress.ProgressLoggerFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
+import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.Xcode
@@ -86,4 +92,12 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 		return destinationsCache
 	}
+
+	XcodeBuildOutputAppender createXcodeBuildOutputAppender(String name) {
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start(name, name);
+		return new XcodeBuildOutputAppender(progressLogger, output)
+	}
+
 }
