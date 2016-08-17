@@ -50,9 +50,14 @@ class SimulatorDeviceType {
 
 
 	boolean canCreateWithRuntime(SimulatorRuntime simulatorRuntime) {
-				if (shortIdentifier.startsWith("Apple-Watch") && simulatorRuntime.shortIdentifier.startsWith("watchOS")) {
+		if (shortIdentifier.startsWith("Apple-Watch") && simulatorRuntime.shortIdentifier.startsWith("watchOS")) {
 			return true
 		}
+
+		if (shortIdentifier.startsWith("Apple-TV-1080p") && simulatorRuntime.shortIdentifier.startsWith("tvOS")) {
+			return true
+		}
+
 
 		if (shortIdentifier.startsWith("iPhone") ||
 						shortIdentifier.startsWith("iPad") ||

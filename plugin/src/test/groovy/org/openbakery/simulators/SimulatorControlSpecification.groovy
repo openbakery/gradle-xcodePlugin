@@ -50,6 +50,10 @@ class SimulatorControlSpecification extends Specification {
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7.txt"))
 	}
 
+	void mockXcode8() {
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode8.txt"))
+	}
+
 	def "get runtimes"() {
 		given:
 		mockXcode6()
@@ -471,8 +475,103 @@ class SimulatorControlSpecification extends Specification {
 		allDestinations[0].id == '4395107C-169C-43D7-A403-C9030B6A205D'
 	}
 
+	def "get xcode 8 runtimes"() {
+		given:
+		mockXcode8()
 
 
+		expect:
+		List<Runtime> runtimes = simulatorControl.getRuntimes()
+
+		runtimes != null
+		runtimes.size() == 3
+
+	}
+
+	def "get xcode 8 has TV runtime"() {
+		given:
+		mockXcode8()
+
+
+		expect:
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.tvOS)
+		runtime != null
+	}
+
+
+	def "xcode 8 has Apple TV device"() {
+		given:
+		mockXcode8()
+
+
+		expect:
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.tvOS)
+
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtime);
+
+		devices != null
+		devices.size() == 1
+
+	}
+
+
+
+	def "xcode 8 has Apple TV device type "() {
+		given:
+		mockXcode8()
+
+
+		expect:
+		List<SimulatorDeviceType> deviceTypes = simulatorControl.getDeviceTypes()
+
+		deviceTypes != null
+		deviceTypes.size() == 17
+
+		deviceTypes[14].shortIdentifier == "Apple-TV-1080p"
+
+
+	}
+
+
+	def "can create Apple TV device"() {
+		given:
+		mockXcode8()
+
+		expect:
+		SimulatorRuntime appleTVRuntime = simulatorControl.getMostRecentRuntime(Type.tvOS)
+
+		List<SimulatorDeviceType> deviceTypes = simulatorControl.getDeviceTypes()
+		SimulatorDeviceType deviceType = deviceTypes[14]
+		deviceType.canCreateWithRuntime(appleTVRuntime) == true
+
+	}
+
+
+	def "create all iOS10 Simulators"() {
+		given:
+		mockXcode8()
+
+		when:
+		simulatorControl.createAll()
+
+		then:
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+
+		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+
+		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
+
+	}
 
 }
 

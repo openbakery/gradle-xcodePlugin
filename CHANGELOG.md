@@ -2,7 +2,8 @@
 
 Changes
 * XcodebuildTask and XcodeTestTask can now override the global xcodebuild settings for building for supporting multiproject build
-* Added an option that a custom entitlements file can be specified for codesigning
+* Added an option that a custom entitlements file can be specified for codesigningcd
+* SimulatorControl now also creates the tvOS simulator
 
 Note: There is no 0.14.1 version. (Reason is a typo)
 
