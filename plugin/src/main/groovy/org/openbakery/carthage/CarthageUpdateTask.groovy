@@ -22,7 +22,7 @@ class CarthageUpdateTask extends AbstractXcodeTask {
 		def carthageCommand = getCarthageCommand()
 
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		commandRunner.run([carthageCommand, "update"], new ConsoleOutputAppender(output))
+		commandRunner.run(project.projectDir.absolutePath, [carthageCommand, "update"], new ConsoleOutputAppender(output))
 
 	}
 
@@ -30,8 +30,18 @@ class CarthageUpdateTask extends AbstractXcodeTask {
 		try {
 			return commandRunner.runWithResult("which", "carthage")
 		} catch (CommandRunnerException) {
-			throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
+			// ignore, because try again with full path below
+
 		}
+
+		try {
+			def fullPath = "/usr/local/bin/carthage"
+			commandRunner.runWithResult("ls", fullPath)
+			return fullPath
+		} catch (CommandRunnerException) {
+			// ignore, because blow an exception is thrown
+		}
+		throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
 	}
 
 	boolean hasCartfile() {

@@ -34,9 +34,6 @@ class CarthageUpdateTaskSpecification extends Specification {
 	}
 
 
-	def cleanup() {
-		FileUtils.deleteDirectory(project.projectDir)
-	}
 
 	def "has carthageUpdate task"() {
 
@@ -48,6 +45,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 	def "verify that if carthage is not installed a exception is thrown"() {
 		given:
 		commandRunner.runWithResult("which", "carthage") >> { throw new CommandRunnerException("Command failed to run (exit code 1):") }
+		commandRunner.runWithResult("ls", "/usr/local/bin/carthage") >> { throw new CommandRunnerException("Command failed to run (exit code 1):") }
 
 		when:
 		carthageUpdateTask.update()
@@ -55,6 +53,18 @@ class CarthageUpdateTaskSpecification extends Specification {
 		then:
 		def e = thrown(IllegalStateException)
 		e.message.startsWith("The carthage command was not found. Make sure that Carthage is installed")
+	}
+
+
+	def "verify that if carthage is not installed at /usr/local/bin/carthage"() {
+		given:
+		commandRunner.runWithResult("which", "carthage") >> { throw new CommandRunnerException("Command failed to run (exit code 1):") }
+
+		when:
+		carthageUpdateTask.update()
+
+		then:
+		1 * commandRunner.runWithResult("ls", "/usr/local/bin/carthage")
 	}
 
 	def "verify that carthage is installed"() {
@@ -75,8 +85,8 @@ class CarthageUpdateTaskSpecification extends Specification {
 
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/carthage", "update"], _ ) >> {
-			args -> args[1] instanceof ConsoleOutputAppender
+		1 * commandRunner.run(_, ["/usr/local/bin/carthage", "update"], _ ) >> {
+			args -> args[2] instanceof ConsoleOutputAppender
 		}
 
 	}
