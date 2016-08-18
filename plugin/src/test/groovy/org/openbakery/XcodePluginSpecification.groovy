@@ -10,6 +10,9 @@ import org.junit.Test
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
+import org.openbakery.carthage.CarthageUpdateTask
+import org.openbakery.cocoapods.CocoapodsInstallTask
+import org.openbakery.cocoapods.CocoapodsUpdateTask
 import org.openbakery.cpd.CpdTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitImageTask
@@ -217,16 +220,45 @@ class XcodePluginSpecification extends Specification {
 		cpdTask.group == XcodePlugin.ANALYTICS_GROUP_NAME
 	}
 
-/*
-	def "pass parameters to property"() {
-
-		when:
-		project.properties.put("xcodebuild.destination", "iPhone")
-
-
-		then:
-		project.xcodebuild.destinations contains("iPhone")
+	def "has cocoapods update task"() {
+		expect:
+		project.tasks.findByName('cocoapodsUpdate') instanceof CocoapodsUpdateTask
 
 	}
-	*/
+
+	def "has cocoapods install task"() {
+		expect:
+		project.tasks.findByName('cocoapodsInstall') instanceof CocoapodsInstallTask
+	}
+
+	def "xcodebuild has cocoapods dependency"() {
+		when:
+		File projectDir = new File("../example/iOS/SwiftExample")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		XcodeBuildTask task = project.tasks.findByName('xcodebuild')
+
+		then:
+
+		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
+	}
+
+	def "has carthage task"() {
+		expect:
+		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
+	}
+
+	def "xcodebuild has carthage dependency"() {
+		when:
+		File projectDir = new File("../example/iOS/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		XcodeBuildTask task = project.tasks.findByName('xcodebuild')
+
+		then:
+
+		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME))
+	}
 }
