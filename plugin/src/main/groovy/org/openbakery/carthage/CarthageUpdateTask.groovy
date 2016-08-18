@@ -3,9 +3,6 @@ package org.openbakery.carthage
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
-import org.openbakery.CommandRunner
-import org.openbakery.CommandRunnerException
-import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.output.ConsoleOutputAppender
 
 /**
@@ -22,16 +19,16 @@ class CarthageUpdateTask extends AbstractXcodeTask {
 	@TaskAction
 	void update() {
 
-		checkCarthageInstallation()
+		def carthageCommand = getCarthageCommand()
 
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		commandRunner.run(["carthage", "update"], new ConsoleOutputAppender(output))
+		commandRunner.run([carthageCommand, "update"], new ConsoleOutputAppender(output))
 
 	}
 
-	void checkCarthageInstallation() {
+	String getCarthageCommand() {
 		try {
-			commandRunner.run("which", "carthage")
+			return commandRunner.runWithResult("which", "carthage")
 		} catch (CommandRunnerException) {
 			throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
 		}

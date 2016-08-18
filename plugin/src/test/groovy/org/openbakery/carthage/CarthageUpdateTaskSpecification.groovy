@@ -45,9 +45,9 @@ class CarthageUpdateTaskSpecification extends Specification {
 
 	}
 
-	def "verify that if carthage is not installed a excpetion is thrown"() {
+	def "verify that if carthage is not installed a exception is thrown"() {
 		given:
-		commandRunner.run("which", "carthage") >> { throw new CommandRunnerException("Command failed to run (exit code 1):") }
+		commandRunner.runWithResult("which", "carthage") >> { throw new CommandRunnerException("Command failed to run (exit code 1):") }
 
 		when:
 		carthageUpdateTask.update()
@@ -62,17 +62,20 @@ class CarthageUpdateTaskSpecification extends Specification {
 		carthageUpdateTask.update()
 
 		then:
-		1 * commandRunner.run("which", "carthage")
+		1 * commandRunner.runWithResult("which", "carthage")
 
 	}
 
 	def "run carthage update"() {
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
 		when:
 		carthageUpdateTask.update()
 
 
 		then:
-		1 * commandRunner.run(["carthage", "update"], _ ) >> {
+		1 * commandRunner.run(["/usr/local/bin/carthage", "update"], _ ) >> {
 			args -> args[1] instanceof ConsoleOutputAppender
 		}
 
