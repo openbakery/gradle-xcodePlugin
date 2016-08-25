@@ -28,6 +28,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	File buildOutputDirectory
 	File appDirectory
 	CommandRunner commandRunner = Mock(CommandRunner)
+	PlistHelper plistHelper
 
 	def setup() {
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -51,6 +52,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		File infoPlist = new File("../example/OSX/ExampleOSX/ExampleOSX/Info.plist")
 		FileUtils.copyFile(infoPlist, new File(appDirectory, "" + "Contents/Info.plist"))
+
+		plistHelper = new PlistHelper(project, new CommandRunner())
 	}
 
 	def cleanup() {
@@ -229,23 +232,25 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	String getEntitlementWithApplicationIdentifier(String applicationIdentifier) {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-								"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-								"<plist version=\"1.0\">\n" +
-								"<dict>\n" +
-								"    <key>keychain-access-groups</key>\n" +
-								"    <array>\n" +
-								"        <string>AAAAAAAAAA.*</string>\n" +
-								"    </array>\n" +
-								"    <key>get-task-allow</key>\n" +
-								"    <false/>\n" +
-								"    <key>application-identifier</key>\n" +
-								"    <string>" + applicationIdentifier + "</string>\n" +
-								"    <key>com.apple.developer.team-identifier</key>\n" +
-								"    <string>AAAAAAAAAA</string>\n" +
-								"    <key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
-						    "    <string>ABCDE12345.*</string>\n" +
-								"</dict>\n" +
-								"</plist>"
+						"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+						"<plist version=\"1.0\">\n" +
+						"<dict>\n" +
+						"    <key>keychain-access-groups</key>\n" +
+						"    <array>\n" +
+						"        <string>AAAAAAAAAA.*</string>\n" +
+						"    </array>\n" +
+						"    <key>get-task-allow</key>\n" +
+						"    <false/>\n" +
+						"    <key>application-identifier</key>\n" +
+						"    <string>" + applicationIdentifier + "</string>\n" +
+						"    <key>com.apple.developer.team-identifier</key>\n" +
+						"    <string>AAAAAAAAAA</string>\n" +
+						"    <key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
+						"    <string>ABCDE12345.*</string>\n" +
+						"    <key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
+						"    <string>ABCDE12345.*</string>\n" +
+						"</dict>\n" +
+						"</plist>"
 	}
 
 	def "extract Entitlements with wildcard application identifier that does not match"() {
@@ -279,7 +284,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
 
 		def keychainAccessGroups = [
-				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -287,7 +292,9 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		then:
 		entitlementsFile.exists()
-		entitlementsFile.text.contains("DDDDDDDDDD.org.openbakery.Example")
+		entitlementsFile.text.contains("AAAAAAAAAAA.org.openbakery.Example")
+		plistHelper.getValueFromPlist(entitlementsFile, "application-identifier").startsWith("AAAAAAAAAAA.org.openbakery.Example")
+
 	}
 
 
@@ -329,6 +336,49 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		then:
 		reader.isAdHoc() == false
+	}
+
+
+	def "extract Entitlements with wildcard and kvstore should start with team id"() {
+		given:
+		String mobileprovision = "src/test/Resource/openbakery-team.mobileprovision"
+
+		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+
+		def keychainAccessGroups = [
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example.widget", keychainAccessGroups)
+
+		then:
+		entitlementsFile.exists()
+		plistHelper.getValueFromPlist(entitlementsFile, "com.apple.developer.ubiquity-kvstore-identifier").startsWith("XXXXXZZZZZ.")
+	}
+
+	def "extract Entitlements with wildcard and container-identifiers should start with team id"() {
+		given:
+		String mobileprovision = "src/test/Resource/openbakery-team.mobileprovision"
+
+		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+
+		def keychainAccessGroups = [
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example.widget", keychainAccessGroups)
+
+		then:
+		entitlementsFile.exists()
+		plistHelper.getValueFromPlist(entitlementsFile, "com.apple.developer.ubiquity-container-identifiers").startsWith("XXXXXZZZZZ.")
 	}
 
 }
