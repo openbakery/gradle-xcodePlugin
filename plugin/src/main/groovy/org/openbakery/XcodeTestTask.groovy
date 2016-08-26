@@ -1,6 +1,7 @@
 package org.openbakery
 
 import groovy.xml.MarkupBuilder
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.time.DurationFormatUtils
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
@@ -89,6 +90,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
+	File testLogsDirectory = null
 
 	XcodeTestTask() {
 		super()
@@ -115,6 +117,8 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			outputDirectory.mkdirs()
 		}
 
+		testLogsDirectory = new File(parameters.derivedDataPath, "Logs/Test")
+		testLogsDirectory.deleteDir()
 
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
@@ -134,14 +138,115 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
+
+			if (!parseTestSummaries(testLogsDirectory, getDestinations())) {
+				throw new Exception("Not all unit tests are successful!")
+			}
+
+			/*
 			if (!parseResult(outputFile)) {
 				throw new Exception("Not all unit tests are successful!")
 			}
+			*/
 		}
 	}
 
 
+	boolean parseTestSummaries(File testSummariesDirectory, List<Destination> destinations) {
+		long startTime = System.currentTimeMillis()
 
+		this.allResults = new HashMap<Destination, ArrayList<TestClass>>()
+		def testSummariesArray = testSummariesDirectory.list(
+						[accept: { d, f -> f ==~ /.*TestSummaries.plist/ }] as FilenameFilter
+		)
+
+		if (testSummariesArray == null) {
+			return true
+		}
+
+		testSummariesArray.toList().each {
+			def testResult = new XMLPropertyListConfiguration(new File(testSummariesDirectory, it))
+			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
+
+			Destination destination = findDestinationForIdentifier(destinations, identifier)
+			if (destination != null) {
+				def resultList = processTestSummary(testResult.getList("TestableSummaries"))
+				this.allResults.put(destination, resultList)
+			}
+
+		}
+
+		store()
+		long endTime = System.currentTimeMillis();
+		logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime - startTime));
+		if (numberErrors() == 0) {
+			logger.lifecycle("All " + numberSuccess() + " tests were successful");
+		} else {
+			logger.lifecycle(numberSuccess() + " tests were successful, and " + numberErrors() + " failed");
+		}
+
+		return numberErrors() == 0
+	}
+
+
+	List<TestClass> processTestSummary(List<XMLPropertyListConfiguration> list) {
+
+		List<TestClass> resultList = []
+
+		for (entry in list) {
+			List<XMLPropertyListConfiguration> testList = entry.getList("Tests")
+			processTests(testList, resultList)
+		}
+
+		return resultList
+
+	}
+
+	List<TestClass> processTests(List<XMLPropertyListConfiguration> list, List<TestClass> resultList) {
+		for (entry in list) {
+			List<XMLPropertyListConfiguration> testList = entry.getList("Subtests")
+			processSubtests(testList, resultList, entry.getString("TestName"))
+		}
+
+
+	}
+
+
+	List<TestClass> processSubtests(List<XMLPropertyListConfiguration> list, List<TestClass> resultList, String name) {
+
+		TestClass testClass = null
+
+		for (entry in list) {
+			if (entry.getString("TestObjectClass") == "IDESchemeActionTestSummary") {
+				if (testClass == null) {
+					testClass = new TestClass(name: name);
+					resultList << testClass
+				}
+
+				String method = entry.getString("TestName")
+				TestResult testResult = new TestResult(method: method)
+				testResult.success = entry.getString("TestStatus") == "Success"
+				testClass.results << testResult
+
+			} else if (entry.getString("TestObjectClass") == "IDESchemeActionTestSummaryGroup") {
+				List<XMLPropertyListConfiguration> testList = entry.getList("Subtests")
+				processSubtests(testList, resultList, entry.getString("TestName"))
+			}
+
+
+		}
+
+	}
+
+
+	Destination findDestinationForIdentifier(List<Destination> destinations, String identifier) {
+		for (destination in destinations) {
+			if (destination.id == identifier) {
+				return destination
+			}
+		}
+		return null
+	}
 
 	boolean parseResult(File outputFile) {
 		long startTime = System.currentTimeMillis()

@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.tools.DestinationResolver
 import spock.lang.Specification
 
 /**
@@ -65,6 +66,10 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.buildDir)
+	}
+
+	def mockXcodeVersion() {
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
 	}
 
 	def expectedDefaultDirectories() {
@@ -270,8 +275,8 @@ class XcodeTestTaskSpecification extends Specification {
 		def expectedCommandList
 
 		project.xcodebuild.type = 'OSX'
-		project.xcodebuild.target = 'Test';
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+		project.xcodebuild.target = 'Test'
+		mockXcodeVersion()
 
 
 		when:
@@ -327,7 +332,7 @@ class XcodeTestTaskSpecification extends Specification {
 						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
 						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 		)
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+		mockXcodeVersion()
 
 		when:
 		xcodeTestTask.test()
@@ -393,7 +398,7 @@ class XcodeTestTaskSpecification extends Specification {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
 		def expectedCommandList = setupOSXBuild("-destination","platform=OS X,arch=x86_64")
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+		mockXcodeVersion()
 
 
 		when:
@@ -577,7 +582,7 @@ class XcodeTestTaskSpecification extends Specification {
 		]
 		expectedCommandList.addAll(expectedDefaultDirectories())
 
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+		mockXcodeVersion()
 
 
 
@@ -597,4 +602,110 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
+
+
+	def "delete derivedData/Logs/Test before test is executed"() {
+		mockXcodeVersion()
+		project.xcodebuild.target = "Test"
+
+		def testDirectory = new File(project.xcodebuild.derivedDataPath, "Logs/Test")
+		FileUtils.writeStringToFile(new File(testDirectory, "foobar"), "dummy");
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		!testDirectory.exists()
+	}
+
+
+
+	List<Destination> getDestinations() {
+		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
+
+		project.xcodebuild.destination {
+			name = "iPhone 4s"
+		}
+		project.xcodebuild.destination {
+			name = "iPad 2"
+		}
+		DestinationResolver destinationResolver = new DestinationResolver(simulatorControl)
+		return destinationResolver.getDestinations(project.xcodebuild.getXcodebuildParameters())
+	}
+
+
+	def "parse test summary returns success"() {
+		given:
+		mockXcodeVersion()
+		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+
+		when:
+		boolean success = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+
+		then:
+		success == true
+	}
+
+	def "parse test summary and verify result count"() {
+		given:
+
+		mockXcodeVersion()
+		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+
+		when:
+		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+
+		then:
+		xcodeTestTask.allResults.size() == 1
+		xcodeTestTask.allResults.keySet()[0].name == "iPad 2"
+	}
+
+
+	def "parse test summary and verify nummber test results"() {
+		given:
+
+		mockXcodeVersion()
+		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+
+		when:
+		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+
+		def firstKey = xcodeTestTask.allResults.keySet()[0]
+		then:
+		xcodeTestTask.allResults.get(firstKey).size() == 5
+		xcodeTestTask.numberSuccess() == 37
+
+	}
+
+	def "parse test-result.xml gets stored"() {
+		given:
+
+		mockXcodeVersion()
+		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+
+		when:
+		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+
+		def testResult = new File(outputDirectory, "test-results.xml")
+		then:
+		testResult.exists()
+	}
+
+
+	def "parse test summary that has failure"() {
+		given:
+
+		mockXcodeVersion()
+		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Failure")
+
+		when:
+		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+
+		def firstKey = xcodeTestTask.allResults.keySet()[0]
+		then:
+		xcodeTestTask.allResults.get(firstKey).size() == 5
+		xcodeTestTask.numberSuccess() == 36
+		xcodeTestTask.numberErrors() == 1
+
+	}
 }
