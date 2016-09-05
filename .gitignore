@@ -32,3 +32,4 @@ xcuserdata
 ## AppCode settings and files
 .idea/
 *.iml
+local.properties
