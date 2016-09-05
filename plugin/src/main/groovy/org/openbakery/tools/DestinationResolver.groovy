@@ -4,10 +4,8 @@ import org.openbakery.Destination
 import org.openbakery.Devices
 import org.openbakery.Type
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.simulators.SimulatorRuntime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
 /**
  * Created by rene on 10.08.16.
  */
@@ -38,7 +36,7 @@ class DestinationResolver {
 			return availableDestinations
 		}
 
-		if (parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)) {
+		if (isSimulatorFor(parameters)) {
 			// filter only on simulator builds
 
 			logger.debug("is a simulator build")
@@ -91,9 +89,12 @@ class DestinationResolver {
 		return availableDestinations
 	}
 
+	private static boolean isSimulatorFor(XcodebuildParameters parameters) {
+		parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)
+	}
+
 	private List<Destination> findMatchingDestinations(Destination destination, List<Destination> allDestinations) {
 		def result = [];
-
 
 		logger.debug("finding matching destination for: {}", destination)
 
