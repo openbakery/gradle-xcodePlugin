@@ -3,7 +3,6 @@ package org.openbakery.tools
 import org.openbakery.CommandRunner
 import org.openbakery.Destination
 import org.openbakery.Type
-import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.output.OutputAppender
 
 /**
@@ -20,9 +19,7 @@ class Xcodebuild {
 	List<Destination> destinations
 
 
-
-
-	public Xcodebuild(CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, 	List<Destination> destinations) {
+	public Xcodebuild(CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, List<Destination> destinations) {
 		this.commandRunner = commandRunner
 		this.xcode = xcode
 		this.parameters = parameters
@@ -53,7 +50,6 @@ class Xcodebuild {
 		addDestinationSettingsForBuild(commandList)
 		commandRunner.run(directory, commandList, environment, outputAppender)
 	}
-
 
 	def executeTest(String directory, OutputAppender outputAppender, Map<String, String> environment) {
 		validateParameters(directory, outputAppender, environment)
@@ -100,17 +96,18 @@ class Xcodebuild {
 			commandList.add("-target")
 			commandList.add(parameters.target)
 		}
-
-
 	}
 
-
 	def addDisableCodeSigning(ArrayList commandList) {
-		if (!isSimulatorBuildOf(Type.iOS)) {
+		if (!isSimulator()) {
 			// disable codesign when building for OS X and iOS device
 			commandList.add("CODE_SIGN_IDENTITY=")
 			commandList.add("CODE_SIGNING_REQUIRED=NO")
 		}
+	}
+
+	private boolean isSimulator() {
+		isSimulatorBuildOf(Type.iOS) || isSimulatorBuildOf(Type.tvOS)
 	}
 
 	def addBuildPath(ArrayList commandList) {
@@ -150,7 +147,7 @@ class Xcodebuild {
 
 
 	def addDestinationSettingsForBuild(ArrayList commandList) {
-		if (isSimulatorBuildOf(Type.iOS)) {
+		if (isSimulator()) {
 			Destination destination = this.destinations.last()
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
@@ -164,6 +161,7 @@ class Xcodebuild {
 	def addDestinationSettingsForTest(ArrayList commandList) {
 		switch (parameters.type) {
 			case Type.iOS:
+			case Type.tvOS:
 				this.destinations.each { destination ->
 					commandList.add("-destination")
 					commandList.add(getDestinationCommandParameter(destination))
@@ -177,10 +175,8 @@ class Xcodebuild {
 
 			default:
 				break;
-
 		}
 	}
-
 
 	void addCoverageSettings(ArrayList commandList) {
 		if (xcode.version.major < 7) {
@@ -231,8 +227,8 @@ class Xcodebuild {
 	@Override
 	public String toString() {
 		return "Xcodebuild{" +
-						"xcodePath='" + xcodePath + '\'' +
-						parameters +
-						'}';
+				"xcodePath='" + xcodePath + '\'' +
+				parameters +
+				'}';
 	}
 }
