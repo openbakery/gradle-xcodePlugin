@@ -42,8 +42,7 @@ class DestinationResolverSpecification extends Specification {
 
 	def "XcodebuildParameters are created with iOS destination"() {
 		when:
-		File projectDir =  new File("../example/OSX/ExampleOSX")
-		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		Project project = ProjectBuilder.builder().build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.type = Type.iOS
 		extension.destination = ['iPad 2']
