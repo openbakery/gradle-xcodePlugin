@@ -4,5 +4,6 @@ import XCTest
 class Example_tvOS_SwiftTests: XCTestCase {
     
     func testExample() {
+        XCTAssertTrue(true)
     }
 }
