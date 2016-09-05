@@ -38,7 +38,7 @@ class DestinationResolver {
 			return availableDestinations
 		}
 
-		if (parameters.isSimulatorBuildOf(Type.iOS)) {
+		if (parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)) {
 			// filter only on simulator builds
 
 			logger.debug("is a simulator build")

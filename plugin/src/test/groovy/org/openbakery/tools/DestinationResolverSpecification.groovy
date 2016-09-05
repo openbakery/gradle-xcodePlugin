@@ -95,79 +95,104 @@ class DestinationResolverSpecification extends Specification {
 
 	def "available destinations match"() {
 
-			extension.destination {
-				platform = 'iOS Simulator'
-				name = 'iPad Air'
-				os = "9.1"
-			}
-
-			when:
-			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
-
-			then:
-			destinations.size() == 1
-
+		extension.destination {
+			platform = 'iOS Simulator'
+			name = 'iPad Air'
+			os = "9.1"
 		}
 
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
-		def "available destinations not match"() {
-			given:
-			extension.destination {
-				platform = 'iOS Simulator'
-				name = 'iPad Air'
-				os = "8.0"
-			}
+		then:
+		destinations.size() == 1
 
-			when:
-			destinationResolver.getDestinations(extension.getXcodebuildParameters())
+	}
 
-			then:
-			thrown(IllegalStateException)
+
+	def "available destinations not match"() {
+		given:
+		extension.destination {
+			platform = 'iOS Simulator'
+			name = 'iPad Air'
+			os = "8.0"
 		}
 
+		when:
+		destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		thrown(IllegalStateException)
+	}
 
 
-		def "available destinations match simple single"() {
-			given:
-			extension.destination = 'iPad Air'
 
-			when:
-			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+	def "available destinations match simple single"() {
+		given:
+		extension.destination = 'iPad Air'
 
-			then:
-			destinations.size() == 1
-			destinations[0].name == "iPad Air"
-			destinations[0].os == "9.1"
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
-		}
+		then:
+		destinations.size() == 1
+		destinations[0].name == "iPad Air"
+		destinations[0].os == "9.1"
 
-		def "available destinations match simple multiple"() {
-			given:
+	}
 
-			extension.destination = ['iPad Air', 'iPhone 4s']
+	def "available destinations match simple multiple"() {
+		given:
 
-			when:
-			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+		extension.destination = ['iPad Air', 'iPhone 4s']
 
-			then:
-			destinations.size() == 2
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
-		}
+		then:
+		destinations.size() == 2
+
+	}
 
 
-		def "set destinations twice"() {
-			given:
+	def "set destinations twice"() {
+		given:
 
-			extension.destination = ['iPad Air', 'iPhone 5s']
-			extension.destination = ['iPad Air', 'iPhone 4s']
+		extension.destination = ['iPad Air', 'iPhone 5s']
+		extension.destination = ['iPad Air', 'iPhone 4s']
 
-			when:
-			def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
-			then:
-			destinations.size() == 2
+		then:
+		destinations.size() == 2
+		destinations[1].name == 'iPhone 4s'
 
-		}
+	}
 
+	def "resolves tvOS destination from the name"() {
+		given:
+		extension.type = Type.tvOS
+		extension.destination = "Apple TV 1080p"
+
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == "Apple TV 1080p"
+	}
+
+	def "resolves tvOS destinations from the type"() {
+		given:
+		extension.type = Type.tvOS
+
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == "Apple TV 1080p"
+	}
 
 }
