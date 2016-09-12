@@ -2,7 +2,7 @@
 
 Changes
 * XcodebuildTask and XcodeTestTask can now override the global xcodebuild settings for building for supporting multiproject build
-* Added an option that a custom entitlements file can be specified for codesigningcd
+* Added an option that a custom entitlements file can be specified for codesigning
 * SimulatorControl now also creates the tvOS simulator
 * Initial Carthage support. Carthage is not bootstraped, so make sure that Carthage is installed if your project uses it.
 * Embedded provisioning file now honors the team-id when expanding the identifiers
