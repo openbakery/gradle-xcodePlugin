@@ -525,9 +525,9 @@ class SimulatorControlSpecification extends Specification {
 		List<SimulatorDeviceType> deviceTypes = simulatorControl.getDeviceTypes()
 
 		deviceTypes != null
-		deviceTypes.size() == 17
+		deviceTypes.size() == 21
 
-		deviceTypes[14].shortIdentifier == "Apple-TV-1080p"
+		deviceTypes[16].shortIdentifier == "Apple-TV-1080p"
 
 
 	}
@@ -541,7 +541,7 @@ class SimulatorControlSpecification extends Specification {
 		SimulatorRuntime appleTVRuntime = simulatorControl.getMostRecentRuntime(Type.tvOS)
 
 		List<SimulatorDeviceType> deviceTypes = simulatorControl.getDeviceTypes()
-		SimulatorDeviceType deviceType = deviceTypes[14]
+		SimulatorDeviceType deviceType = deviceTypes[16]
 		deviceType.canCreateWithRuntime(appleTVRuntime) == true
 
 	}
@@ -566,8 +566,16 @@ class SimulatorControlSpecification extends Specification {
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 7 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 7", "com.apple.CoreSimulator.SimDeviceType.iPhone-7", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+
+
 		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
 		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+
+
+		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch Series 2 - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch Series 2 - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
 
 		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
 
