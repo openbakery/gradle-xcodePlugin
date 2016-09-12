@@ -77,9 +77,6 @@ class TestClass {
  */
 class XcodeTestTask extends AbstractXcodeBuildTask {
 
-	HashMap<Destination, List<TestClass>> allResults
-
-
 	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
 
 	def TEST_CLASS_PATTERN = ~/-\[([\w\.]*)\s(\w*)\]/
@@ -139,7 +136,19 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
 
-			if (!parseTestSummaries(testLogsDirectory, getDestinations())) {
+			long startTime = System.currentTimeMillis()
+			def allResults = parseTestSummaries(testLogsDirectory, getDestinations())
+			store(allResults)
+			long endTime = System.currentTimeMillis();
+			int numberSuccess = numberSuccess(allResults)
+			int numberErrors = numberErrors(allResults)
+			logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime - startTime));
+			if (numberErrors == 0) {
+				logger.lifecycle("All " + numberSuccess + " tests were successful");
+			} else {
+				logger.lifecycle(numberSuccess + " tests were successful, and " + numberErrors + " failed");
+			}
+			if (numberErrors != 0) {
 				throw new Exception("Not all unit tests are successful!")
 			}
 
@@ -152,16 +161,15 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	boolean parseTestSummaries(File testSummariesDirectory, List<Destination> destinations) {
-		long startTime = System.currentTimeMillis()
+	HashMap<Destination, ArrayList<TestClass>> parseTestSummaries(File testSummariesDirectory, List<Destination> destinations) {
 
-		this.allResults = new HashMap<Destination, ArrayList<TestClass>>()
+		def results = new HashMap<Destination, ArrayList<TestClass>>()
 		def testSummariesArray = testSummariesDirectory.list(
 						[accept: { d, f -> f ==~ /.*TestSummaries.plist/ }] as FilenameFilter
 		)
 
 		if (testSummariesArray == null) {
-			return true
+			return results
 		}
 
 		testSummariesArray.toList().each {
@@ -171,21 +179,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			Destination destination = findDestinationForIdentifier(destinations, identifier)
 			if (destination != null) {
 				def resultList = processTestSummary(testResult.getList("TestableSummaries"))
-				this.allResults.put(destination, resultList)
+				results.put(destination, resultList)
 			}
 
 		}
-
-		store()
-		long endTime = System.currentTimeMillis();
-		logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime - startTime));
-		if (numberErrors() == 0) {
-			logger.lifecycle("All " + numberSuccess() + " tests were successful");
-		} else {
-			logger.lifecycle(numberSuccess() + " tests were successful, and " + numberErrors() + " failed");
-		}
-
-		return numberErrors() == 0
+		return results
 	}
 
 
@@ -248,7 +246,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		return null
 	}
 
-	boolean parseResult(File outputFile) {
+	HashMap<Destination, ArrayList<TestClass>> parseResult(File outputFile) {
 		long startTime = System.currentTimeMillis()
 		logger.debug("parse result from: {}", outputFile)
 		if (!outputFile.exists()) {
@@ -256,7 +254,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			return false;
 		}
 		boolean overallTestSuccess = true;
-		this.allResults = new HashMap<Destination, ArrayList<TestClass>>()
+		def testResults = new HashMap<Destination, ArrayList<TestClass>>()
 
 		def resultList = []
 
@@ -335,11 +333,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 			if( endOfDestination ) {
 				Destination destination = getDestinations()[(testRun - 1)]
 
-				if (this.allResults.containsKey(destination)) {
-					def destinationResultList = this.allResults.get(destination)
+				if (testResults.containsKey(destination)) {
+					def destinationResultList = testResults.get(destination)
 					destinationResultList.addAll(resultList);
 				} else {
-					this.allResults.put(destination, resultList)
+					testResults.put(destination, resultList)
 				}
 
 				resultList = []
@@ -353,20 +351,21 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 		}
-		store()
+		/*
+		store(testResults)
 		long endTime = System.currentTimeMillis();
 		logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime-startTime));
 		if (overallTestSuccess) {
-			logger.lifecycle("All " + numberSuccess() + " tests were successful");
+			logger.lifecycle("All " + numberSuccess(testResults) + " tests were successful");
 		} else {
-			logger.lifecycle(numberSuccess() + " tests were successful, and " + numberErrors() + " failed");
+			logger.lifecycle(numberSuccess(testResults) + " tests were successful, and " + numberErrors() + " failed");
 		}
-
-		return overallTestSuccess;
+		*/
+		return testResults;
 	}
 
 
-	def store() {
+	def store(HashMap<Destination, ArrayList<TestClass>> result) {
 		logger.debug("store to test-result.xml")
 
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
@@ -374,15 +373,15 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		def xmlBuilder = new MarkupBuilder(writer)
 
 		xmlBuilder.testsuites() {
-			for (e in this.allResults) {
+			for (e in result) {
 				String name = e.key.toPrettyString()
 
 				def resultList = e.value
 				int success = 0;
 				int errors = 0;
 				if (resultList != null) {
-					success = numberSuccess(resultList);
-					errors = numberErrors(resultList);
+					success = numberSuccessInResultList(resultList);
+					errors = numberErrorsInResultList(resultList);
 				}
 
 				testsuite(name: name, tests: success, errors: errors, failures: "0", skipped: "0") {
@@ -409,23 +408,24 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	int numberSuccess() {
+
+	int numberSuccess(HashMap<Destination, ArrayList<TestClass>> result) {
 		int success = 0;
-		for (java.util.List list in this.allResults.values()) {
-			success += numberSuccess(list);
+		for (java.util.List list in result.values()) {
+			success += numberSuccessInResultList(list);
 		}
 		return success;
 	}
 
-	int numberErrors() {
+	int numberErrors(HashMap<Destination, ArrayList<TestClass>> result) {
 		int errors = 0;
-		for (java.util.List list in this.allResults.values()) {
-			errors += numberErrors(list);
+		for (java.util.List list in result.values()) {
+			errors += numberErrorsInResultList(list);
 		}
 		return errors;
 	}
 
-	int numberSuccess(java.util.List results) {
+	int numberSuccessInResultList(java.util.List results) {
 		int success = 0;
 		for (TestClass testClass in results) {
 			success += testClass.numberSuccess()
@@ -433,7 +433,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		return success
 	}
 
-	int numberErrors(java.util.List results) {
+	int numberErrorsInResultList(java.util.List results) {
 		int errors = 0;
 		for (TestClass testClass in results) {
 			errors += testClass.numberErrors()

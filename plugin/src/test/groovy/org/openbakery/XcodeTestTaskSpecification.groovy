@@ -172,9 +172,8 @@ class XcodeTestTaskSpecification extends Specification {
 		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 		def destination = simulatorControl.getAllDestinations(Type.iOS)[0]
 		allResults.put(destination, null)
-		xcodeTestTask.allResults = allResults
 		when:
-		xcodeTestTask.store()
+		xcodeTestTask.store(allResults)
 		then:
 		true // no exception should be raised
 	}
@@ -184,24 +183,23 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse success result"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
+
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
 
 		then:
-		success == true
-		xcodeTestTask.numberSuccess() == 2
-		xcodeTestTask.numberErrors() == 0
+		xcodeTestTask.numberSuccess(result) == 2
+		xcodeTestTask.numberErrors(result) == 0
 	}
 
 
 	def "parse failure result"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
 
 		then:
-		success == false
-		xcodeTestTask.numberSuccess() == 0
-		xcodeTestTask.numberErrors() == 2
+		xcodeTestTask.numberSuccess(result) == 0
+		xcodeTestTask.numberErrors(result) == 2
 	}
 
 
@@ -210,35 +208,32 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse failure result with partial suite"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
 		then:
-		success == false
-		xcodeTestTask.numberSuccess() == 0
-		xcodeTestTask.numberErrors() == 2
+		xcodeTestTask.numberSuccess(result) == 0
+		xcodeTestTask.numberErrors(result) == 2
 	}
 
 
 	def "parse success result xcode 6.1"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
 
 		then:
-		success == true
-		xcodeTestTask.numberSuccess() == 8
-		xcodeTestTask.numberErrors() == 0
+		xcodeTestTask.numberSuccess(result) == 8
+		xcodeTestTask.numberErrors(result) == 0
 	}
 
 	def "parse complex test output"() {
 
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
 
 		then:
-		success == true
-		xcodeTestTask.numberErrors() == 0
+		xcodeTestTask.numberErrors(result) == 0
 	}
 
 /*
@@ -258,12 +253,11 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse success result for tests written in swift using Xcode 6.1"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		boolean success = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
 
 		then:
-		success == true
-		xcodeTestTask.numberSuccess() == 2
-		xcodeTestTask.numberErrors() == 0
+		xcodeTestTask.numberSuccess(result) == 2
+		xcodeTestTask.numberErrors(result) == 0
 	}
 
 	
@@ -653,11 +647,11 @@ class XcodeTestTaskSpecification extends Specification {
 		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
 
 		when:
-		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+		def result = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
 
 		then:
-		xcodeTestTask.allResults.size() == 1
-		xcodeTestTask.allResults.keySet()[0].name == "iPad 2"
+		result.size() == 1
+		result.keySet()[0].name == "iPad 2"
 	}
 
 
@@ -668,12 +662,12 @@ class XcodeTestTaskSpecification extends Specification {
 		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
 
 		when:
-		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+		def result = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
 
-		def firstKey = xcodeTestTask.allResults.keySet()[0]
+		def firstKey = result.keySet()[0]
 		then:
-		xcodeTestTask.allResults.get(firstKey).size() == 5
-		xcodeTestTask.numberSuccess() == 37
+		result.get(firstKey).size() == 5
+		xcodeTestTask.numberSuccess(result) == 37
 
 	}
 
@@ -681,10 +675,10 @@ class XcodeTestTaskSpecification extends Specification {
 		given:
 
 		mockXcodeVersion()
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+		project.xcodebuild.target = "Test"
 
 		when:
-		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+		xcodeTestTask.test()
 
 		def testResult = new File(outputDirectory, "test-results.xml")
 		then:
@@ -699,13 +693,13 @@ class XcodeTestTaskSpecification extends Specification {
 		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Failure")
 
 		when:
-		xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+		def result = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
 
-		def firstKey = xcodeTestTask.allResults.keySet()[0]
+		def firstKey = result.keySet()[0]
 		then:
-		xcodeTestTask.allResults.get(firstKey).size() == 5
-		xcodeTestTask.numberSuccess() == 36
-		xcodeTestTask.numberErrors() == 1
+		result.get(firstKey).size() == 5
+		xcodeTestTask.numberSuccess(result) == 36
+		xcodeTestTask.numberErrors(result) == 1
 
 	}
 }
