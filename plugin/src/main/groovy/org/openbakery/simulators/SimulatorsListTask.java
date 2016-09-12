@@ -1,13 +1,13 @@
 package org.openbakery.simulators;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.TaskAction;
-import org.openbakery.*;
-import org.openbakery.tools.Xcode;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.gradle.api.tasks.TaskAction;
+import org.openbakery.Destination;
+import org.openbakery.Type;
+import org.openbakery.XcodePlugin;
 
 /**
  * Created by rene on 13.08.14.
@@ -32,7 +32,7 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 
 	public SimulatorsListTask() {
 
-		setDescription("List all available iOS Simulators");
+		setDescription("List all available Simulators");
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME);
 	}
 
@@ -40,6 +40,8 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 	void list() {
 
 		List<Destination> availableSimulators = getSimulatorControl().getAllDestinations(Type.iOS);
+		List<Destination> tvOsSimulators = getSimulatorControl().getAllDestinations(Type.tvOS);
+        availableSimulators.addAll(tvOsSimulators);
 
 		Collections.sort(availableSimulators, new Comparator<Destination>() {
 			@Override
@@ -57,7 +59,7 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 		for (Destination destination : availableSimulators) {
 
 			if (!currentOS.equals(destination.getOs())) {
-				getLogger().lifecycle("-- iOS {} -- ", destination.getOs());
+				getLogger().lifecycle("-- " + destination.getPlatform()+" {} -- ", destination.getOs());
 				currentOS = destination.getOs();
 			}
 

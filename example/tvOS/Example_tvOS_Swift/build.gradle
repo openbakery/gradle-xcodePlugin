@@ -1,0 +1,11 @@
+apply plugin: org.openbakery.XcodePlugin
+
+xcodebuild {
+  target = 'Example_tvOS_Swift'
+  scheme = 'Example_tvOS_Swift'
+  type = 'tvOS'
+
+  destination {
+    platform='tvOS Simulator'
+  }
+}
