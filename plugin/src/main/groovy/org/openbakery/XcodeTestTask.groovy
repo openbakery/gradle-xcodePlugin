@@ -123,12 +123,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeTestTask.class).start("XcodeTestTask", "XcodeTestTask");
 
+		def destinations = getDestinations()
 
 		try {
 			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, getDestinations())
+			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, destinations)
 
-			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, destinations)
 			logger.debug("Executing xcodebuild with {}", xcodebuild)
 			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
 
@@ -137,7 +138,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} finally {
 
 			long startTime = System.currentTimeMillis()
-			def allResults = parseTestSummaries(testLogsDirectory, getDestinations())
+			def allResults = parseTestSummaries(testLogsDirectory, destinations)
 			store(allResults)
 			long endTime = System.currentTimeMillis();
 			int numberSuccess = numberSuccess(allResults)
@@ -246,15 +247,14 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		return null
 	}
 
-	HashMap<Destination, ArrayList<TestClass>> parseResult(File outputFile) {
-		long startTime = System.currentTimeMillis()
+	HashMap<Destination, ArrayList<TestClass>> parseResult(File outputFile, List<Destination> destinations) {
+		def testResults = new HashMap<Destination, ArrayList<TestClass>>()
 		logger.debug("parse result from: {}", outputFile)
 		if (!outputFile.exists()) {
 			logger.lifecycle("No xcodebuild output file found!");
-			return false;
+			return testResults;
 		}
 		boolean overallTestSuccess = true;
-		def testResults = new HashMap<Destination, ArrayList<TestClass>>()
 
 		def resultList = []
 
@@ -331,7 +331,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
 			if( endOfDestination ) {
-				Destination destination = getDestinations()[(testRun - 1)]
+				Destination destination = destinations[(testRun - 1)]
 
 				if (testResults.containsKey(destination)) {
 					def destinationResultList = testResults.get(destination)
@@ -351,16 +351,6 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 		}
-		/*
-		store(testResults)
-		long endTime = System.currentTimeMillis();
-		logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime-startTime));
-		if (overallTestSuccess) {
-			logger.lifecycle("All " + numberSuccess(testResults) + " tests were successful");
-		} else {
-			logger.lifecycle(numberSuccess(testResults) + " tests were successful, and " + numberErrors() + " failed");
-		}
-		*/
 		return testResults;
 	}
 
@@ -534,5 +524,35 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		return buffer.toString();
 	}
 
+	void mergeResult(HashMap<Destination, ArrayList<TestClass>> fromPlist, HashMap<Destination, ArrayList<TestClass>> fromOutput) {
 
+		fromPlist.each { destination, testClasses ->
+			def secondDestinationClasses = fromOutput.get(destination)
+			if (secondDestinationClasses != null) {
+				mergeTestClasses(testClasses, secondDestinationClasses)
+			}
+		}
+	}
+
+
+	def mergeTestClasses(ArrayList<TestClass> fromPlist, ArrayList<TestClass> fromOutput) {
+		fromPlist.each { testClass ->
+			def testClassFromOutput = fromOutput.find { it.name == testClass.name }
+			if (testClassFromOutput != null) {
+				mergeTestResults(testClass.results, testClassFromOutput.results)
+			}
+
+		}
+
+	}
+
+	def mergeTestResults(List<TestResult> fromPlist, List<TestResult> fromOutput) {
+		fromPlist.each { testResult ->
+			def testResultFromOutput = fromOutput.find { it.method == testResult.method }
+			if (testResultFromOutput != null) {
+				testResult.duration = testResultFromOutput.duration
+				testResult.output = testResultFromOutput.output
+			}
+		}
+	}
 }

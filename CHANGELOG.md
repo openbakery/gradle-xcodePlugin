@@ -1,12 +1,14 @@
 # 0.14.2 ()
 
 Changes
+* Added tvOS support bye Electryc. Issue #295
 * XcodebuildTask and XcodeTestTask can now override the global xcodebuild settings for building for supporting multiproject build
 * Added an option that a custom entitlements file can be specified for codesigning
 * SimulatorControl now also creates the tvOS simulator
 * Initial Carthage support. Carthage is not bootstraped, so make sure that Carthage is installed if your project uses it.
 * Embedded provisioning file now honors the team-id when expanding the identifiers
 * Updated that the test result is not taken from the xcodebuild output, but from the TestSummaries.plist, because there are causes where the xcodebuild output stopps.
+* Test Result from the TestSummaries.plist is merged the the infos from the xcodebuild output like duration and stdout
 
 Note: There is no 0.14.1 version. (Reason is a typo)
 

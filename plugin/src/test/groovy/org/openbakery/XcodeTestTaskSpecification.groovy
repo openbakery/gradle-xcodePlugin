@@ -184,7 +184,7 @@ class XcodeTestTaskSpecification extends Specification {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
 
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"), getDestinations())
 
 		then:
 		xcodeTestTask.numberSuccess(result) == 2
@@ -195,7 +195,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse failure result"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"), getDestinations())
 
 		then:
 		xcodeTestTask.numberSuccess(result) == 0
@@ -208,7 +208,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse failure result with partial suite"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"), getDestinations())
 
 		then:
 		xcodeTestTask.numberSuccess(result) == 0
@@ -219,7 +219,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse success result xcode 6.1"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"), getDestinations())
 
 		then:
 		xcodeTestTask.numberSuccess(result) == 8
@@ -230,7 +230,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"), getDestinations())
 
 		then:
 		xcodeTestTask.numberErrors(result) == 0
@@ -253,7 +253,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse success result for tests written in swift using Xcode 6.1"() {
 		when:
 		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
+		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"), getDestinations())
 
 		then:
 		xcodeTestTask.numberSuccess(result) == 2
@@ -688,7 +688,6 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "parse test summary that has failure"() {
 		given:
-
 		mockXcodeVersion()
 		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Failure")
 
@@ -700,6 +699,45 @@ class XcodeTestTaskSpecification extends Specification {
 		result.get(firstKey).size() == 5
 		xcodeTestTask.numberSuccess(result) == 36
 		xcodeTestTask.numberErrors(result) == 1
+
+	}
+
+	HashMap<Destination, ArrayList<TestClass>> getMergedResult() {
+		mockXcodeVersion()
+		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+
+		def destinations = getDestinations()
+		def resultFromPlist = xcodeTestTask.parseTestSummaries(testSummaryDirectory, destinations)
+		def resultFromOutput = xcodeTestTask.parseResult(new File("src/test/Resource/TestLogs/Success/xcodebuild-output.txt"), destinations)
+		xcodeTestTask.mergeResult(resultFromPlist, resultFromOutput)
+		return resultFromPlist
+	}
+
+
+	def "test merged results"() {
+		when:
+		def mergedResult = getMergedResult()
+
+		def firstKey = mergedResult.keySet()[0]
+		then:
+		mergedResult.get(firstKey).size() == 5
+		xcodeTestTask.numberSuccess(mergedResult) == 37
+
+	}
+
+
+	def "test merged results - has duration"() {
+		when:
+		def mergedResult = getMergedResult()
+
+		def firstKey = mergedResult.keySet()[0]
+		then:
+		mergedResult.get(firstKey).size() == 5
+
+		TestClass testClass = mergedResult.get(firstKey)[0]
+		testClass.results.size() == 1
+		testClass.results[0].duration == 0.01.toFloat()
+		testClass.results[0].output.startsWith("Test Case")
 
 	}
 }
