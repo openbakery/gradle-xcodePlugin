@@ -19,7 +19,7 @@ class AbstractSimulatorTask extends AbstractXcodeTask {
 
 
 	Destination getDestination() {
-		return destinationResolver.getDestinations(project.xcodebuild.getXcodebuildParameters()).first()
+		return getDestinationResolver().getDestinations(project.xcodebuild.getXcodebuildParameters()).first()
 	}
 
 

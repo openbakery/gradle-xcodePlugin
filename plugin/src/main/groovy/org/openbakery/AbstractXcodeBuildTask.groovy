@@ -77,7 +77,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	List<Destination> getDestinations() {
 		if (destinationsCache == null) {
-			destinationsCache = destinationResolver.getDestinations(parameters)
+			destinationsCache = getDestinationResolver().getDestinations(parameters)
 		}
 		return destinationsCache
 	}
