@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.Xcode
 import spock.lang.Specification
 
@@ -44,7 +45,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
-		xcodeBuildTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		xcodeBuildTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
 	}
 
 	def cleanup() {

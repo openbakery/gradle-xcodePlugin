@@ -17,10 +17,9 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	XcodebuildParameters parameters = new XcodebuildParameters()
 
 	SimulatorControl simulatorControl
+	DestinationResolver destinationResolver
 
 	private List<Destination> destinationsCache
-	private DestinationResolver destinationResolverCache
-
 
 	AbstractXcodeBuildTask() {
 		super()
@@ -84,10 +83,10 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	DestinationResolver getDestinationResolver() {
-		if (destinationResolverCache == null) {
-			destinationResolverCache = new DestinationResolver(getSimulatorControl())
+		if (destinationResolver == null) {
+			destinationResolver = new DestinationResolver(getSimulatorControl())
 		}
-		return destinationResolverCache
+		return destinationResolver
 	}
 
 
