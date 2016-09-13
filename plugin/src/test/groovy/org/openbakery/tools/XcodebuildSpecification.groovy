@@ -9,7 +9,7 @@ import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.output.OutputAppender
 import org.openbakery.stubs.SimulatorControlStub
-import org.openbakery.stubs.XcodeStub
+import org.openbakery.stubs.XcodeFake
 import spock.lang.Specification
 
 /**
@@ -32,7 +32,7 @@ class XcodebuildSpecification extends Specification {
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 	}
 
 	def cleanup() {
@@ -550,7 +550,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		extension.destination = ['iPad 2', 'iPhone 4s']
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -591,7 +591,7 @@ class XcodebuildSpecification extends Specification {
 		extension.target = 'Test';
 		extension.scheme = 'myscheme'
 		extension.workspace = 'myworkspace'
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)
@@ -625,7 +625,7 @@ class XcodebuildSpecification extends Specification {
 		extension.target = 'Test';
 		extension.scheme = 'myscheme'
 		extension.workspace = 'myworkspace'
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -657,7 +657,7 @@ class XcodebuildSpecification extends Specification {
 
 		def xcodebuildParameters = extension.xcodebuildParameters
 
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeStub(), xcodebuildParameters, destinationResolver.getDestinations(xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), xcodebuildParameters, destinationResolver.getDestinations(xcodebuildParameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';

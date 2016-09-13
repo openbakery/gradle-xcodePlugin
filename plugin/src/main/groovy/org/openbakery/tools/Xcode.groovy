@@ -2,11 +2,14 @@ package org.openbakery.tools
 
 import org.openbakery.CommandRunner
 import org.openbakery.Version
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Created by rene on 27.06.16.
  */
 class Xcode {
+	private static Logger logger = LoggerFactory.getLogger(Xcode.class)
 
 
 	CommandRunner commandRunner
@@ -20,6 +23,7 @@ class Xcode {
 	}
 
 	public Xcode(CommandRunner commandRunner, String version) {
+		logger.debug("create xcode with version {}", version)
 		this.commandRunner = commandRunner
 		if (version != null) {
 			setVersionFromString(version)
@@ -98,5 +102,14 @@ class Xcode {
 
 	String getSimctl() {
 		return getPath() + "/Contents/Developer/usr/bin/simctl"
+	}
+
+
+	@Override
+	public String toString() {
+		return "Xcode{" +
+						"xcodePath='" + xcodePath + '\'' +
+						", version=" + version +
+						'}';
 	}
 }

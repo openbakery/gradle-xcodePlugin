@@ -19,6 +19,10 @@ class XcodeBuildTaskSpecification extends Specification {
 	XcodeBuildTask xcodeBuildTask
 
 
+	File xcode7_3_1
+	File xcode8
+
+
 	CommandRunner commandRunner = Mock(CommandRunner);
 
 	Destination createDestination(String name, String id) {
@@ -40,12 +44,18 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
-		xcodeBuildTask.xcode.commandRunner = commandRunner
 		xcodeBuildTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
 	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.buildDir)
+
+		if (xcode7_3_1 != null) {
+			FileUtils.deleteDirectory(xcode7_3_1)
+		}
+		if (xcode8 != null) {
+			FileUtils.deleteDirectory(xcode8)
+		}
 	}
 
 	def expectedDefaultDirectories() {
@@ -590,4 +600,30 @@ class XcodeBuildTaskSpecification extends Specification {
 	}
 
 
+
+	def "create xcode lazy"() {
+		given:
+
+		xcode7_3_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode-7.3.1.app")
+		xcode8 = new File(System.getProperty("java.io.tmpdir"), "Xcode-8.app")
+
+		new File(xcode7_3_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcode8, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcode7_3_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		new File(xcode8, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+
+
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcode7_3_1.absolutePath + "\n"  + xcode8.absolutePath
+		commandRunner.runWithResult(xcode7_3_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.3.1\nBuild version 7D1014"
+		commandRunner.runWithResult(xcode8.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
+		commandRunner.runWithResult("xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
+
+		when:
+		project.xcodebuild.version = "7"
+
+		then:
+		xcodeBuildTask.xcode != null
+		xcodeBuildTask.xcode.version.major == 7
+
+	}
 }

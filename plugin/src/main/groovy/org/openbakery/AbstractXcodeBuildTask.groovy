@@ -12,22 +12,18 @@ import org.openbakery.tools.XcodebuildParameters
  * Date: 15.07.13
  * Time: 11:57
  */
-abstract class AbstractXcodeBuildTask extends DefaultTask {
+abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
-	CommandRunner commandRunner
-	Xcode xcode
 	XcodebuildParameters parameters = new XcodebuildParameters()
+
 	SimulatorControl simulatorControl
-	DestinationResolver destinationResolver
+
 	private List<Destination> destinationsCache
+	private DestinationResolver destinationResolverCache
 
 
 	AbstractXcodeBuildTask() {
 		super()
-		commandRunner = new CommandRunner()
-		xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
-		this.simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
-		this.destinationResolver = new DestinationResolver(this.simulatorControl)
 	}
 
 
@@ -86,4 +82,20 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		}
 		return destinationsCache
 	}
+
+	DestinationResolver getDestinationResolver() {
+		if (destinationResolverCache == null) {
+			destinationResolverCache = new DestinationResolver(getSimulatorControl())
+		}
+		return destinationResolverCache
+	}
+
+
+	SimulatorControl getSimulatorControl() {
+		if (simulatorControl == null) {
+			simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
+		}
+		return simulatorControl
+	}
+
 }

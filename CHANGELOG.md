@@ -10,6 +10,9 @@ Changes
 * Updated that the test result is not taken from the xcodebuild output, but from the TestSummaries.plist, because there are causes where the xcodebuild output stopps.
 * Test Result from the TestSummaries.plist is merged the the infos from the xcodebuild output like duration and stdout
 
+Bugfixes
+* `version` parameter for settings the xcode version was ignored
+
 Note: There is no 0.14.1 version. (Reason is a typo)
 
 # 0.14.0 (July 22, 2016)

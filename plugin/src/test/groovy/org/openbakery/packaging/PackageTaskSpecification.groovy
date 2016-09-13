@@ -11,6 +11,8 @@ import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.stubs.XcodeFake
+import org.openbakery.tools.Xcode
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 
@@ -75,6 +77,7 @@ class PackageTaskSpecification extends Specification {
 		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
 		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
 
+		packageTask.xcode = new XcodeFake()
 		//FileUtils.writeStringToFile(entitlementsFile, "")
 
 	}

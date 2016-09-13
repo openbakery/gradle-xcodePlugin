@@ -7,7 +7,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.Destination
 import org.openbakery.Type
 import org.openbakery.Version
-import org.openbakery.stubs.XcodeStub
+import org.openbakery.stubs.XcodeFake
 import org.openbakery.tools.Xcode
 import spock.lang.Specification
 
@@ -33,7 +33,7 @@ class SimulatorControlSpecification extends Specification {
 
 		projectDir.mkdirs()
 
-		simulatorControl = new SimulatorControl(project, commandRunner, new XcodeStub())
+		simulatorControl = new SimulatorControl(project, commandRunner, new XcodeFake())
 
 	}
 

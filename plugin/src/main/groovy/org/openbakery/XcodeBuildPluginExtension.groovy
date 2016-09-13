@@ -488,6 +488,7 @@ class XcodeBuildPluginExtension {
 		if (xcode == null) {
 			xcode = new Xcode(commandRunner, xcodeVersion)
 		}
+		logger.debug("using xcode {}", xcode)
  		return xcode
 	}
 
