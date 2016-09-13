@@ -34,6 +34,7 @@ class AbstractXcodeTaskSpecification extends Specification{
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		xcodeTask.commandRunner = commandRunner
 
 		xcodeTask.plistHelper = new PlistHelper(project, commandRunner)
 	}
