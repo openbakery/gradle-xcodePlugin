@@ -1,7 +1,6 @@
 *.iml
 *.ipr
 *.iws
-
 build
-
+classes
 .idea

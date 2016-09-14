@@ -1,6 +1,9 @@
 ## OS X
 .DS_Store
 
+## created durint test execution
+example/iOS/ExampleWatchkit/userHome/
+
 ## Gradle
 .gradle
 
