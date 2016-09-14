@@ -1,6 +1,7 @@
 apply plugin: org.openbakery.XcodePlugin
 
 xcodebuild {
+	version = '7'
   target = 'Example_tvOS_Swift'
   scheme = 'Example_tvOS_Swift'
   type = 'tvOS'
