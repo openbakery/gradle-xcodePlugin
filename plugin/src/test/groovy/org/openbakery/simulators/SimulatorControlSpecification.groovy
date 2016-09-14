@@ -565,6 +565,10 @@ class SimulatorControlSpecification extends Specification {
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Pro (9.7-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Pro (12.9-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+
+
 
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 7 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 7", "com.apple.CoreSimulator.SimDeviceType.iPhone-7", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
@@ -579,6 +583,38 @@ class SimulatorControlSpecification extends Specification {
 
 		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
 
+	}
+
+
+	def "devices iOS10"() {
+		given:
+		mockXcode8()
+
+		when:
+		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
+
+		then:
+		devices != null
+		devices.size() == 14
+		devices.get(13).name.equals("iPad Pro (12.9 inch)")
+		devices.get(13).identifier.equals("C538D7F8-E581-44FF-9B17-5391F84642FB")
+		devices.get(13).state.equals("Shutdown")
+	}
+
+
+	def "device types iOS10"() {
+		given:
+		mockXcode8()
+
+		when:
+		List<SimulatorDeviceType> deviceTypes = simulatorControl.getDeviceTypes()
+
+		then:
+		deviceTypes != null
+		deviceTypes.size() == 21
+		deviceTypes.get(14).name.equals("iPad Pro (9.7-inch)")
+		deviceTypes.get(14).identifier.equals("com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-")
 	}
 
 }
