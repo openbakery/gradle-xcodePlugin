@@ -19,6 +19,11 @@ class CarthageUpdateTask extends AbstractXcodeTask {
 	@TaskAction
 	void update() {
 
+		File carthageDirectory = new File(project.projectDir, "Carthage")
+		if (carthageDirectory.exists()) {
+			return
+		}
+
 		def carthageCommand = getCarthageCommand()
 
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)

@@ -10,6 +10,7 @@ import org.junit.Test
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
+import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
@@ -260,5 +261,24 @@ class XcodePluginSpecification extends Specification {
 		then:
 
 		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME))
+	}
+
+
+	def "has carthage clean task"() {
+		expect:
+		project.tasks.findByName('carthageClean') instanceof CarthageCleanTask
+	}
+
+	def "clean has carthage clean dependency"() {
+		when:
+		File projectDir = new File("../example/iOS/Example")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		Task cleanTask = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME)
+
+		then:
+
+		cleanTask.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME))
 	}
 }

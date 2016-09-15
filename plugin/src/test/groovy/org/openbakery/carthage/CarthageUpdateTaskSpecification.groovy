@@ -14,6 +14,7 @@ import spock.lang.Specification
 class CarthageUpdateTaskSpecification extends Specification {
 
 
+	File projectDir
 	Project project
 	CarthageUpdateTask carthageUpdateTask;
 
@@ -21,7 +22,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 
 	def setup() {
 
-		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File('build').absoluteFile
@@ -89,6 +90,18 @@ class CarthageUpdateTaskSpecification extends Specification {
 			args -> args[2] instanceof ConsoleOutputAppender
 		}
 
+	}
+
+	def "skip update if Charthage exists"() {
+		given:
+		File cartageDirectory = new File(projectDir, "Carthage")
+		cartageDirectory.mkdirs()
+
+		when:
+		carthageUpdateTask.update()
+
+		then:
+		0 * commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
 	}
 
 }
