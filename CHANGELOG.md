@@ -1,7 +1,9 @@
 # 0.14.2 ()
 
 Changes
-* Added tvOS support bye Electryc. Issue #295
+* Xcode 8 Support
+ * App Bundle should not contain the libswiftRemoteMirror.dylib
+* Added tvOS support by Electryc. Issue #295
 * XcodebuildTask and XcodeTestTask can now override the global xcodebuild settings for building for supporting multiproject build
 * Added an option that a custom entitlements file can be specified for codesigning
 * SimulatorControl now also creates the tvOS simulator
@@ -12,6 +14,7 @@ Changes
 
 Bugfixes
 * `version` parameter for settings the xcode version was ignored
+
 
 Note: There is no 0.14.1 version. (Reason is a typo)
 
