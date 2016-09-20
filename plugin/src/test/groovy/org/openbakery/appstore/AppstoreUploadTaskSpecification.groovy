@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.stubs.XcodeFake
 import org.openbakery.tools.Xcode
 import spock.lang.Specification
 
@@ -18,7 +19,6 @@ class AppstoreUploadTaskSpecification extends Specification {
 	File infoPlist
 
 	CommandRunner commandRunner = Mock(CommandRunner)
-	Xcode xcode = Mock(Xcode)
 	File ipaBundle;
 
 	def setup() {
@@ -62,6 +62,8 @@ class AppstoreUploadTaskSpecification extends Specification {
 		given:
 		project.appstore.username = "me@example.com"
 		project.appstore.password = "1234"
+
+		task.xcode = new XcodeFake()
 
 		when:
 		task.upload()

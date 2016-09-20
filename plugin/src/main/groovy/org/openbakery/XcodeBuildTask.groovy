@@ -51,6 +51,9 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 
 		File outputFile = new File(project.getBuildDir(), "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile)
+
+		logger.debug("using xcode {}", xcode)
+
 		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
 
 		xcodebuild.execute(project.projectDir.absolutePath, createXcodeBuildOutputAppender("XcodeBuildTask") , project.xcodebuild.environment)

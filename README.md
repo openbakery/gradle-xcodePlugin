@@ -15,9 +15,10 @@ Here a brief overview of the features:
 * Override sign settings for builds
 * Perform unit tests
 * Support for multiple Xcodes (on one machine)
-* [Cocoapods](Cocoapods) support
+* [Cocoapods](https://cocoapods.org/) support
+* [Carthage](https://github.com/Carthage/Carthage) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
-* Code coverage support (using [gcovr](http://gcovr.com) )
+* Code coverage support (using [gcovr](http://gcovr.com) or using [CoverageReport](https://github.com/openbakery/CoverageReport) )
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint
 

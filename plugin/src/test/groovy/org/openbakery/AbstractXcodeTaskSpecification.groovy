@@ -22,6 +22,10 @@ class AbstractXcodeTaskSpecification extends Specification{
 
 	File projectDir
 
+	File xcode7_3_1
+	File xcode8
+
+
 	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -30,6 +34,7 @@ class AbstractXcodeTaskSpecification extends Specification{
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		xcodeTask.commandRunner = commandRunner
 
 		xcodeTask.plistHelper = new PlistHelper(project, commandRunner)
 	}
@@ -37,6 +42,14 @@ class AbstractXcodeTaskSpecification extends Specification{
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
+
+		if (xcode7_3_1 != null) {
+			FileUtils.deleteDirectory(xcode7_3_1)
+		}
+		if (xcode8 != null) {
+			FileUtils.deleteDirectory(xcode8)
+		}
+
 	}
 
 
@@ -153,6 +166,33 @@ class AbstractXcodeTaskSpecification extends Specification{
 		then:
 		zipEntries.contains("first.txt")
 		zipEntries.contains("second.txt")
+
+	}
+
+
+	def "create xcode lazy"() {
+		given:
+
+		xcode7_3_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode-7.3.1.app")
+		xcode8 = new File(System.getProperty("java.io.tmpdir"), "Xcode-8.app")
+
+		new File(xcode7_3_1, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcode8, "Contents/Developer/usr/bin").mkdirs()
+		new File(xcode7_3_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+		new File(xcode8, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+
+
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcode7_3_1.absolutePath + "\n"  + xcode8.absolutePath
+		commandRunner.runWithResult(xcode7_3_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.3.1\nBuild version 7D1014"
+		commandRunner.runWithResult(xcode8.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
+		commandRunner.runWithResult("xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
+
+		when:
+		project.xcodebuild.version = "7"
+
+		then:
+		xcodeTask.xcode != null
+		xcodeTask.xcode.version.major == 7
 
 	}
 }

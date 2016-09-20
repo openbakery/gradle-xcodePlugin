@@ -6,10 +6,10 @@ import org.openbakery.tools.Xcode
 /**
  * Created by rene on 27.06.16.
  */
-class XcodeStub extends Xcode {
+class XcodeFake extends Xcode {
 
 
-	public XcodeStub() {
+	public XcodeFake() {
 		super(null)
 	}
 

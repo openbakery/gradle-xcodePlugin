@@ -9,6 +9,7 @@ import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.stubs.XcodeFake
 import spock.lang.Specification
 
 /**
@@ -53,6 +54,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
+		packageTask.xcode = new XcodeFake()
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
@@ -126,6 +128,10 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 	}
 
+	void includeLibswiftRemoteMirrorIntoExampleApp() {
+		FileUtils.writeStringToFile(new File(applicationBundle, "libswiftRemoteMirror.dylib"), "dummy");
+		FileUtils.writeStringToFile(new File(watchkitExtensionBundle, "libswiftRemoteMirror.dylib"), "dummy");
+	}
 
 	List<String> codesignLibCommand(String path) {
 		File payloadApp = new File(packageTask.outputPath, path)
@@ -214,4 +220,29 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 	}
 
+	def "remove libswiftRemoteMirror.dylib from app"() {
+		given:
+		createExampleApp()
+		includeLibswiftRemoteMirrorIntoExampleApp()
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		!(new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/libswiftRemoteMirror.dylib").exists())
+
+	}
+
+	def "remove libswiftRemoteMirror.dylib from app extenstion"() {
+		given:
+		createExampleApp()
+		includeLibswiftRemoteMirrorIntoExampleApp()
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		!(new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex/libswiftRemoteMirror.dylib").exists())
+
+	}
 }

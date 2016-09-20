@@ -320,7 +320,7 @@ class XcodeBuildPluginExtension {
 		this.xcodeVersion = version
 		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
 		xcode = null
-		getXcode()
+		//getXcode()
 	}
 
 
@@ -491,6 +491,7 @@ class XcodeBuildPluginExtension {
 		if (xcode == null) {
 			xcode = new Xcode(commandRunner, xcodeVersion)
 		}
+		logger.debug("using xcode {}", xcode)
  		return xcode
 	}
 

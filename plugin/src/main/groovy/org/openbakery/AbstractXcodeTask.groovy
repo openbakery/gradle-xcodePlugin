@@ -44,7 +44,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(project, commandRunner)
-		xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
 	}
 
 
@@ -284,5 +283,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	File getTemporaryDirectory(String path) {
 		File tmp = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp")
 		return new File(tmp, path)
+	}
+
+
+	Xcode getXcode() {
+		if (xcode == null) {
+			xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
+		}
+		return xcode
 	}
 }

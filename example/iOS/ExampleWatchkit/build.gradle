@@ -38,7 +38,7 @@ xcodebuild {
 	scheme = 'ExampleWatchkit WatchKit App'
 
 		
-	destination = ['iPad 2', 'iPhone 6s' ]
+	destination = ['iPad Air', 'iPhone 6s' ]
 	
 	signing {
 		certificateURI = signingCertificateURI           // e.g 'http://example.com/Provisioning/Development.p12'

@@ -13,14 +13,28 @@ class AbstractSimulatorTask extends AbstractXcodeTask {
 
 	SimulatorControl simulatorControl
 	DestinationResolver destinationResolver
+
 	public AbstractSimulatorTask() {
-		simulatorControl = new SimulatorControl(project, commandRunner, xcode)
-		destinationResolver = new DestinationResolver(simulatorControl)
 	}
 
 
 	Destination getDestination() {
-		return destinationResolver.getDestinations(project.xcodebuild.getXcodebuildParameters()).first()
+		return getDestinationResolver().getDestinations(project.xcodebuild.getXcodebuildParameters()).first()
+	}
+
+
+	DestinationResolver getDestinationResolver() {
+		if (destinationResolver == null) {
+			destinationResolver = new DestinationResolver(getSimulatorControl())
+		}
+		return destinationResolver
+	}
+
+	SimulatorControl getSimulatorControl() {
+		if (simulatorControl == null) {
+			simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
+		}
+		return simulatorControl
 	}
 
 }

@@ -15,6 +15,7 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
+	version = '7'
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	type = 'OSX'

@@ -9,6 +9,7 @@ import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.stubs.XcodeFake
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -58,6 +59,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
+		packageTask.xcode = new XcodeFake()
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 

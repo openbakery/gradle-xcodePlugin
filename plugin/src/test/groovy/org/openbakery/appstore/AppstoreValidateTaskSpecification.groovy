@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
+import org.openbakery.stubs.XcodeFake
 import spock.lang.Specification
 
 
@@ -30,8 +31,7 @@ class AppstoreValidateTaskSpecification extends Specification {
 		task = project.getTasks().getByPath(XcodePlugin.APPSTORE_VALIDATE_TASK_NAME)
 
 		task.commandRunner = commandRunner
-
-
+		task.xcode = new XcodeFake()
 		ipaBundle = new File(project.buildDir, "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")
 

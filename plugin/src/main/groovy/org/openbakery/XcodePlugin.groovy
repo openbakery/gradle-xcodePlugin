@@ -27,7 +27,8 @@ import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
-
+import org.openbakery.carthage.CarthageCleanTask
+import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
 import org.openbakery.configuration.XcodeConfigTask
@@ -81,6 +82,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPLE_DOC_GROUP_NAME = "Appledoc"
 	public static final String COVERAGE_GROUP_NAME = "Coverage"
 	public static final String COCOAPODS_GROUP_NAME = "Cocoapods"
+	public static final String CARTHAGE_GROUP_NAME = "Carthage"
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
 	public static final String ANALYTICS_GROUP_NAME = "Analytics"
 
@@ -123,6 +125,9 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
+	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
+	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
+
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -159,6 +164,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureCoverage(project)
 		configureCpd(project)
 		configureCocoapods(project)
+		configureCarthage(project)
 		configureOCLint(project)
 		configureSimulatorTasks(project)
 		configureProperties(project)
@@ -563,6 +569,19 @@ class XcodePlugin implements Plugin<Project> {
 		}
 
 		project.task(COCOAPODS_UPDATE_TASK_NAME, type: CocoapodsUpdateTask, group: COCOAPODS_GROUP_NAME)
+	}
+
+	private void configureCarthage(Project project) {
+
+		CarthageCleanTask cleanTask = project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
+
+		CarthageUpdateTask task = project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
+		if (task.hasCartfile()) {
+			addDependencyToBuild(project, task);
+			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(cleanTask);
+		}
+
+
 	}
 
 	private void configureOCLint(Project project) {

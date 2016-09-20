@@ -1,5 +1,7 @@
 package org.openbakery.simulators
 
+import org.openbakery.util.StringHelper
+
 /**
  * Created by rene on 30.04.15.
  */
@@ -11,16 +13,19 @@ class SimulatorDeviceType {
 
 	public SimulatorDeviceType(String line) {
 		//iPhone 4s (com.apple.CoreSimulator.SimDeviceType.iPhone-4s)
+		// or
+		// iPad Pro (9.7-inch) (com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-)
+		def tokens = line.split(" ") as List
 
-		def tokenizer = new StringTokenizer(line, "()");
-		if (tokenizer.hasMoreTokens()) {
-			name = tokenizer.nextToken().trim();
+		int index = tokens.size() -1
+
+		if (index < 1) {
+			return
 		}
 
-		if (tokenizer.hasMoreTokens()) {
-			identifier = tokenizer.nextToken().trim();
-			shortIdentifier = identifier - "com.apple.CoreSimulator.SimDeviceType."
-		}
+		identifier = StringHelper.removeBrackets(tokens[index])
+		shortIdentifier = identifier - "com.apple.CoreSimulator.SimDeviceType."
+		name = tokens[0..index-1].join(" ").trim()
 
 	}
 

@@ -88,6 +88,7 @@ class PackageTask extends AbstractDistributeTask {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 				removeFrameworkFromExtensions(bundle)
+				removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
 			}
 
@@ -129,6 +130,13 @@ class PackageTask extends AbstractDistributeTask {
 			}
 		}
 
+	}
+
+	def removeUnneededDylibsFromBundle(File bundle) {
+		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
+		if (libswiftRemoteMirror.exists()) {
+			libswiftRemoteMirror.delete()
+		}
 	}
 
 	File getProvisionFileForBundle(File bundle) {

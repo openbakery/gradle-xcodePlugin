@@ -18,22 +18,17 @@ import org.openbakery.tools.XcodebuildParameters
  * Date: 15.07.13
  * Time: 11:57
  */
-abstract class AbstractXcodeBuildTask extends DefaultTask {
+abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
-	CommandRunner commandRunner
-	Xcode xcode
 	XcodebuildParameters parameters = new XcodebuildParameters()
+
 	SimulatorControl simulatorControl
 	DestinationResolver destinationResolver
-	private List<Destination> destinationsCache
 
+	private List<Destination> destinationsCache
 
 	AbstractXcodeBuildTask() {
 		super()
-		commandRunner = new CommandRunner()
-		xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
-		this.simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
-		this.destinationResolver = new DestinationResolver(this.simulatorControl)
 	}
 
 
@@ -88,7 +83,7 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 
 	List<Destination> getDestinations() {
 		if (destinationsCache == null) {
-			destinationsCache = destinationResolver.getDestinations(parameters)
+			destinationsCache = getDestinationResolver().getDestinations(parameters)
 		}
 		return destinationsCache
 	}
@@ -98,6 +93,20 @@ abstract class AbstractXcodeBuildTask extends DefaultTask {
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start(name, name);
 		return new XcodeBuildOutputAppender(progressLogger, output)
+	}
+	DestinationResolver getDestinationResolver() {
+		if (destinationResolver == null) {
+			destinationResolver = new DestinationResolver(getSimulatorControl())
+		}
+		return destinationResolver
+	}
+
+
+	SimulatorControl getSimulatorControl() {
+		if (simulatorControl == null) {
+			simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
+		}
+		return simulatorControl
 	}
 
 }

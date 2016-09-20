@@ -6,6 +6,8 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.Xcodebuild
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
@@ -499,8 +501,17 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 
 	def "create archive using xcodebuild"() {
+		def commandList
+		def expectedCommandList
+
 		given:
+		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+
 		setupProject()
+
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.type = Type.iOS
 
 		project.xcodebuild.useXcodebuildArchive = true
 
@@ -509,7 +520,26 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.archive()
 
 		then:
-		1 * xcodebuild.executeArchive(_, _, _, _)
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO",
+														 "-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath,
+														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
+														 "OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
+														 "SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
+														 "SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath,
+														 "archive",
+														 "-archivePath",
+														 new File(project.buildDir, "archive/Example.xcarchive").absolutePath
+
+			]
+		}
+		commandList == expectedCommandList
 
 	}
 }

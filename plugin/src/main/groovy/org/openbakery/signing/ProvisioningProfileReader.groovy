@@ -116,6 +116,10 @@ class ProvisioningProfileReader {
 		return config.getString("ApplicationIdentifierPrefix")
 	}
 
+	String getTeamIdentifierPrefix() {
+		return config.getString("TeamIdentifier")
+	}
+
 	File getPlistFromProvisioningProfile() {
 		if (provisioningPlist == null) {
 			// unpack provisioning profile to plain plist
@@ -164,11 +168,9 @@ class ProvisioningProfileReader {
 
 
 		def applicationIdentifier = plistHelper.getValueFromPlist(entitlementFile, "application-identifier")
-		def applicationIdentifierPrefix = null
 		String bundleIdentifierPrefix = ""
 		if (applicationIdentifier != null) {
 			String[] tokens = applicationIdentifier.split("\\.")
-			applicationIdentifierPrefix = tokens[0]
 			for (int i=1; i<tokens.length; i++) {
 				if (tokens[i] == "*") {
 					break
@@ -185,10 +187,17 @@ class ProvisioningProfileReader {
 		}
 
 
+		String applicationIdentifierPrefix = getApplicationIdentifierPrefix()
+		String teamIdentifierPrefix = getTeamIdentifierPrefix()
+		if (teamIdentifierPrefix == null) {
+			teamIdentifierPrefix = applicationIdentifierPrefix
+		}
 
-		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "application-identifier")
-		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.application-identifier")
-		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, "com.apple.developer.ubiquity-kvstore-identifier")
+
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, applicationIdentifierPrefix, "application-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, applicationIdentifierPrefix, "com.apple.application-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, teamIdentifierPrefix, "com.apple.developer.ubiquity-kvstore-identifier")
+		setBundleIdentifierToEntitlementsForValue(entitlementFile, bundleIdentifier, teamIdentifierPrefix, "com.apple.developer.ubiquity-container-identifiers")
 
 
 
@@ -205,7 +214,7 @@ class ProvisioningProfileReader {
 
 	}
 
-	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, value) {
+	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
 
 		if (currentValue == null) {
@@ -216,14 +225,14 @@ class ProvisioningProfileReader {
 			def modifiedValues = []
 			currentValue.each { item ->
 				if (item.toString().endsWith('*')) {
-					modifiedValues << getApplicationIdentifierPrefix() + "." + bundleIdentifier
+					modifiedValues << prefix + "." + bundleIdentifier
 				}
 			}
 			plistHelper.setValueForPlist(entitlementFile, value, modifiedValues)
 
 		} else {
 			if (currentValue.toString().endsWith('*')) {
-				plistHelper.setValueForPlist(entitlementFile, value, getApplicationIdentifierPrefix() + "."  + bundleIdentifier)
+				plistHelper.setValueForPlist(entitlementFile, value, prefix + "."  + bundleIdentifier)
 			}
 		}
 	}

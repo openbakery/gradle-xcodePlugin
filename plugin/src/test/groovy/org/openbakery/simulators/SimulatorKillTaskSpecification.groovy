@@ -35,7 +35,7 @@ class SimulatorKillTaskSpecification extends Specification {
 
 	def "depends on"() {
 		when:
-		def dependsOn  = task.getDependsOn()
+		def dependsOn = task.getDependsOn()
 		then:
 		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
@@ -84,7 +84,27 @@ class SimulatorKillTaskSpecification extends Specification {
 		task.getState().getSkipped() == true
 	}
 
+	def "enabled on tvOS"() {
+		when:
+		project.xcodebuild.type = 'tvOS'
+		project.xcodebuild.simulator = true
 
+		task.execute()
+
+		then:
+		task.getState().getSkipped() == false
+	}
+
+	def "disabled on tvOS"() {
+		when:
+		project.xcodebuild.type = 'tvOS'
+		project.xcodebuild.simulator = false
+
+		task.execute()
+
+		then:
+		task.getState().getSkipped() == true
+	}
 
 	def "test command for iOS kill failed"() {
 
@@ -92,7 +112,7 @@ class SimulatorKillTaskSpecification extends Specification {
 		def commandRunner = Mock(CommandRunner)
 		task.simulatorControl.commandRunner = commandRunner
 
-		commandRunner.run("killall", "iOS Simulator") >>  { throw new CommandRunnerException("failed") }
+		commandRunner.run("killall", "iOS Simulator") >> { throw new CommandRunnerException("failed") }
 		commandRunner.run("killall", "Simulator")
 
 
