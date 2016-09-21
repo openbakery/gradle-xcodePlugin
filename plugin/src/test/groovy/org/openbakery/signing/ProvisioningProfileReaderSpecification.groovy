@@ -381,4 +381,22 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		plistHelper.getValueFromPlist(entitlementsFile, "com.apple.developer.ubiquity-container-identifiers").startsWith("XXXXXZZZZZ.")
 	}
 
+
+	def "get provisioning profile from plist"() {
+		def commandList
+
+		File mobileprovision = new File("src/test/Resource/openbakery-team.mobileprovision")
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision.absolutePath, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		def expectedProvisioningPlist = new File(project.buildDir, "tmp/provision_openbakery-team.plist")
+
+		when:
+		reader.getPlistFromProvisioningProfile()
+
+		then:
+		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
+		commandList == ["security","cms","-D","-i", mobileprovision.absolutePath, "-o", expectedProvisioningPlist.absolutePath]
+
+
+	}
+
 }

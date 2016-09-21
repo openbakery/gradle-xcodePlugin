@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
+import org.openbakery.CommandRunnerException
 import org.openbakery.util.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -123,18 +124,26 @@ class ProvisioningProfileReader {
 	File getPlistFromProvisioningProfile() {
 		if (provisioningPlist == null) {
 			// unpack provisioning profile to plain plist
-			String extractedPlist = commandRunner.runWithResult(["security",
-																													 "cms",
-																													 "-D",
-																													 "-i",
-																													 provisioningProfile.absolutePath])
-
 			String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 			// read temporary plist file
-			provisioningPlist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
+			def outputDirectory = new File(project.buildDir.absolutePath, "tmp")
+			outputDirectory.mkdirs()
+			provisioningPlist = new File(outputDirectory, "provision_" + basename + ".plist")
 
-			// write temporary plist to disk
-			FileUtils.writeStringToFile(provisioningPlist, extractedPlist)
+			try {
+				commandRunner.run(["security",
+													 "cms",
+													 "-D",
+													 "-i",
+													 provisioningProfile.absolutePath,
+													 "-o",
+													 provisioningPlist.absolutePath
+				])
+			} catch (CommandRunnerException ex) {
+				if (!provisioningPlist.exists()) {
+					throw new IllegalStateException("provisioning plist does not exist: " + provisioningPlist)
+				}
+			}
 		}
 		return provisioningPlist
 	}
