@@ -11,9 +11,11 @@ Changes
 * Embedded provisioning file now honors the team-id when expanding the identifiers
 * Updated that the test result is not taken from the xcodebuild output, but from the TestSummaries.plist, because there are causes where the xcodebuild output stopps.
 * Test Result from the TestSummaries.plist is merged the the infos from the xcodebuild output like duration and stdout
+* Archive supports now creating the xcarchive using the xcodebuild command. For this set the parameter `xcodebuild.useXcodebuildArchive` to true. (See issue also #293)
 
 Bugfixes
 * `version` parameter for settings the xcode version was ignored
+* Updated the XcodeBuildArchiveTask that the configured swift toolchain is used, to that the proper swift libs are included into the archive
 
 
 Note: There is no 0.14.1 version. (Reason is a typo)

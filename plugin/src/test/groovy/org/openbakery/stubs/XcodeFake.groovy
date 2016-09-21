@@ -1,5 +1,6 @@
 package org.openbakery.stubs
 
+import org.apache.commons.io.FileUtils
 import org.openbakery.Version
 import org.openbakery.tools.Xcode
 
@@ -8,21 +9,38 @@ import org.openbakery.tools.Xcode
  */
 class XcodeFake extends Xcode {
 
+	String path = "/Applications/Xcode.app"
+	String toolchainDirectory = null
+
+	String versionString = "7.3.1"
+
 
 	public XcodeFake() {
 		super(null)
 	}
 
 	Version getVersion() {
-		return new Version("7.3.1")
+		return new Version(versionString)
 	}
 
 	String getPath() {
-		return "/Applications/Xcode.app"
+		return path
 	}
 
 	String getXcodebuild() {
 		return "xcodebuild"
 	}
 
+	String loadBuildSettings() {
+		File buildSettings = new File("src/test/Resource/xcodebuild-showBuildSettings.txt");
+		return FileUtils.readFileToString(buildSettings)
+	}
+
+	@Override
+	String getToolchainDirectory() {
+		if (toolchainDirectory == null) {
+			toolchainDirectory = new File(path, "Contents/Developer/Toolchains/XcodeDefault.xctoolchain").absolutePath
+		}
+		return toolchainDirectory
+	}
 }

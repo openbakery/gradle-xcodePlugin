@@ -188,9 +188,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 				libNames.add(it.getName())
 			}
 
-			File swiftLibs = new File(xcode.getPath() + "/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos")
+			logger.debug("swiftlibs to add: {}", libNames);
+
+			File swiftLibs = new File(xcode.getToolchainDirectory(), "usr/lib/swift/iphoneos")
 
 			swiftLibs.eachFile() {
+				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
 				if (libNames.contains(it.name)) {
 					copy(it, getSwiftSupportDirectory())
 				}
