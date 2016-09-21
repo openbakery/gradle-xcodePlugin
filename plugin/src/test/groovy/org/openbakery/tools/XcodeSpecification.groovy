@@ -242,4 +242,14 @@ class XcodeSpecification extends Specification {
 		expect:
 		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
 	}
+
+
+	def "get build settings with empty data should not crash"() {
+		given:
+		useDefaultXcode()
+		commandRunner.runWithResult("xcodebuild", "-showBuildSettings") >>  ""
+
+		expect:
+		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+	}
 }

@@ -124,12 +124,11 @@ class Xcode {
 			String[] buildSettingsData = loadBuildSettings().split("\n")
 			for (line in buildSettingsData) {
 				int index = line.indexOf("=")
-
-				String settingsKey = line.substring(0, index).trim()
-				String settingsValue = line.substring(index+1, line.length()).trim()
-
-				buildSettings.put(settingsKey, settingsValue)
-
+				if (index > 0) {
+					String settingsKey = line.substring(0, index).trim()
+					String settingsValue = line.substring(index + 1, line.length()).trim()
+					buildSettings.put(settingsKey, settingsValue)
+				}
 			}
 		}
 		return buildSettings.get(key)
