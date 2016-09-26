@@ -11,7 +11,7 @@ The gxp uses the Apple command line tools (like xcodebuild) to perform the build
 
 Here a brief overview of the features:
 
-* Build iOS, watchOS and Mac projects
+* Build iOS, watchOS, tvOS and Mac projects
 * Override sign settings for builds
 * Perform unit tests
 * Support for multiple Xcodes (on one machine)
@@ -37,7 +37,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.14.0
+### Current stable version is 0.14.2
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
 

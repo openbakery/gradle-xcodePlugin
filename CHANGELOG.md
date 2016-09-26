@@ -1,4 +1,4 @@
-# 0.14.2 ()
+# 0.14.2 (September 26, 2016)
 
 Changes
 * Xcode 8 Support
