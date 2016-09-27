@@ -1,3 +1,8 @@
+# 0.14.3 ()
+
+Changes
+* Cocoapods is now only bootstraped if it does not exist globally
+
 # 0.14.2 (September 26, 2016)
 
 Changes

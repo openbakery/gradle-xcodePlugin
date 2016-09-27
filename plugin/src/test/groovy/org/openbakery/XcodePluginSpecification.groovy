@@ -12,6 +12,7 @@ import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
+import org.openbakery.cocoapods.CocoapodsBootstrapTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
 import org.openbakery.cpd.CpdTask
@@ -244,6 +245,25 @@ class XcodePluginSpecification extends Specification {
 
 		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
 	}
+
+	def "has cocoapods bootstrap task"() {
+		expect:
+		project.tasks.findByName('cocoapodsBootstrap') instanceof CocoapodsBootstrapTask
+	}
+
+	/*
+	def "cocoapodsUpdate has boostrap dependency if cocoapods was not found"() {
+		CommandRunner commandRunner = Mock(CommandRunner)
+		project.commandRunner = commandRunner
+
+		when:
+		CocoapodsBootstrapTask task = project.tasks.findByName('cocoapodsBootstrap')
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		then:
+		task.commandRunner == commandRunner
+	}
+	*/
 
 	def "has carthage task"() {
 		expect:

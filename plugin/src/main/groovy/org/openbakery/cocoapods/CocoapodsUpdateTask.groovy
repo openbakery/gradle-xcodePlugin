@@ -10,8 +10,11 @@ class CocoapodsUpdateTask extends AbstractCocoapodsTask {
 
 	public CocoapodsUpdateTask() {
 		super()
+		addBootstrapDependency()
 		setDescription "Updates the pods for the given project"
 	}
+
+
 
 	@TaskAction
 	void update() throws IOException {

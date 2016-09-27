@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
 
@@ -39,18 +40,26 @@ class CocoapodsInstallTaskSpecification extends Specification {
 
 	def "install pods"() {
 		given:
+		cocoapodsTask.dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 		commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir") >> "/tmp/gems"
 
 		when:
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["gem", "install", "-N", "--user-install", "cocoapods"])
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "setup"], _)
 		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
 
 	}
 
+
+	def "install pods use global pods"() {
+		when:
+		cocoapodsTask.install()
+
+		then:
+		1 * commandRunner.run(["/usr/local/bin/pod", "install"], _)
+
+	}
 
 	def "skip install"() {
 		given:
@@ -64,12 +73,14 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		0 * commandRunner.run("gem", "install", "-N", "--user-install", "cocoapods")
+		0 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
 	}
 
 
 	def "Reinstall Pods"() {
 		given:
+		cocoapodsTask.dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+
 		File podfileLock = new File(project.projectDir , "Podfile.lock")
 		FileUtils.writeStringToFile(podfileLock, "Dummy")
 
@@ -82,14 +93,14 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["gem", "install", "-N", "--user-install", "cocoapods"])
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "setup"], _)
 		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
 
 	}
 
 	def "refresh dependencies"() {
 		given:
+		cocoapodsTask.dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+
 		File podfileLock = new File(project.projectDir , "Podfile.lock")
 		FileUtils.writeStringToFile(podfileLock, "Dummy")
 
@@ -104,8 +115,6 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["gem", "install", "-N", "--user-install", "cocoapods"])
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "setup"], _)
 		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
 
 	}

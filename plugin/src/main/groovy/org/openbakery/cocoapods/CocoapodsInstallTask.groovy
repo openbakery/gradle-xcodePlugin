@@ -34,7 +34,6 @@ public class CocoapodsInstallTask extends AbstractCocoapodsTask {
 			}
 		}
 
-		runInstallCocoapods()
 		runPod("install")
 	}
 

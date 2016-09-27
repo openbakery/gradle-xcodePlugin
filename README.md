@@ -45,7 +45,7 @@ Here a brief overview of the features:
 
 ## Documentation
 
-* [Parameters Documentation](Documentation/Parameters.md)
+* [Documentation](Documentation/)
 
 
 ## Usage

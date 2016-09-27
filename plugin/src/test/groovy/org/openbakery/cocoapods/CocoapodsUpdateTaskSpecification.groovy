@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
 /**
@@ -36,15 +37,53 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 
 	def "update pods"() {
 		given:
+
+		when:
+		cocoapodsTask.update()
+
+		then:
+		1 * commandRunner.run(["/usr/local/bin/pod", "update"], _)
+	}
+
+	def "update pods with user cocoapods"() {
+		given:
+		cocoapodsTask.dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 		commandRunner.runWithResult("ruby", "-rubygems", "-e", "puts Gem.user_dir") >> "/tmp/gems"
 
 		when:
 		cocoapodsTask.update()
 
 		then:
-		1 * commandRunner.run(["gem", "install", "-N", "--user-install", "cocoapods"])
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "setup"], _)
 		1 * commandRunner.run(["/tmp/gems/bin/pod", "update"], _)
-
 	}
+
+	def "depends on"() {
+		when:
+		def dependsOn  = cocoapodsTask.getDependsOn()
+		cocoapodsTask.dependsOn.remove(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+
+		cocoapodsTask.commandRunner = commandRunner
+		commandRunner.runWithResult("which", "pod") >> ""
+		cocoapodsTask.addBootstrapDependency()
+
+		then:
+		dependsOn.contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+	}
+
+
+	def "not depends on bootstrap"() {
+		when:
+		def dependsOn  = cocoapodsTask.getDependsOn()
+		cocoapodsTask.dependsOn.remove(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+
+		cocoapodsTask.commandRunner = commandRunner
+		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
+
+		cocoapodsTask.addBootstrapDependency()
+
+		then:
+		!dependsOn.contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+	}
+
+
 }
