@@ -38,6 +38,17 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
+
+	def "run pod setup"() {
+		given:
+
+		when:
+		cocoapodsTask.install()
+
+		then:
+		1 * commandRunner.run(["/usr/local/bin/pod", "setup"], _)
+	}
+
 	def "install pods"() {
 		given:
 		cocoapodsTask.dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)

@@ -53,9 +53,5 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 		commandRunner.run commandList, new ConsoleOutputAppender(output)
 	}
 
-	def runInstallCocoapods() {
-		logger.lifecycle "Bootstrap cocoapods"
-		commandRunner.run("gem", "install", "-N", "--user-install", "cocoapods")
-		runPod("setup")
-	}
+
 }

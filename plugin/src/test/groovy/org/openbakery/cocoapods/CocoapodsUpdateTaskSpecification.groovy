@@ -37,6 +37,16 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
+	def "run pod setup"() {
+		given:
+
+		when:
+		cocoapodsTask.update()
+
+		then:
+		1 * commandRunner.run(["/usr/local/bin/pod", "setup"], _)
+	}
+
 	def "update pods"() {
 		given:
 

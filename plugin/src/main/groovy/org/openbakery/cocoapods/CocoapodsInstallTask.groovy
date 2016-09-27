@@ -33,7 +33,7 @@ public class CocoapodsInstallTask extends AbstractCocoapodsTask {
 				return
 			}
 		}
-
+		runPod("setup")
 		runPod("install")
 	}
 
