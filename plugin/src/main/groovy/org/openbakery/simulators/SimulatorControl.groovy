@@ -51,10 +51,8 @@ class SimulatorControl {
 
 
 
-	Project project
 
-	public SimulatorControl(Project project, CommandRunner commandRunner, Xcode xcode) {
-		this.project = project
+	public SimulatorControl(CommandRunner commandRunner, Xcode xcode) {
 		this.commandRunner = commandRunner
 		this.xcode = xcode
 	}

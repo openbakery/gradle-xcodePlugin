@@ -10,7 +10,6 @@ import java.util.regex.Matcher
  * User: rene
  * Date: 02.10.13
  * Time: 11:08
- * To change this template use File | Settings | File Templates.
  */
 class XcodeBuildOutputAppender implements OutputAppender {
 

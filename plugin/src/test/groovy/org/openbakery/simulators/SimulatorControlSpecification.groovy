@@ -33,7 +33,7 @@ class SimulatorControlSpecification extends Specification {
 
 		projectDir.mkdirs()
 
-		simulatorControl = new SimulatorControl(project, commandRunner, new XcodeFake())
+		simulatorControl = new SimulatorControl(commandRunner, new XcodeFake())
 
 	}
 
