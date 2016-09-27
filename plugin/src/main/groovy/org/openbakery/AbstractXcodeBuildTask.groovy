@@ -104,7 +104,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	SimulatorControl getSimulatorControl() {
 		if (simulatorControl == null) {
-			simulatorControl = new SimulatorControl(project, this.commandRunner, xcode)
+			simulatorControl = new SimulatorControl(this.commandRunner, xcode)
 		}
 		return simulatorControl
 	}
