@@ -22,6 +22,7 @@ Bugfixes
 * `version` parameter for settings the xcode version was ignored
 * Updated the XcodeBuildArchiveTask that the configured swift toolchain is used, to that the proper swift libs are included into the archive
 * change the plist decode from the provisioning profile that a exit code != 0 does not crash the build: Issue #297
+* Make "derivedDataPath" optional #291
 
 
 Note: There is no 0.14.1 version. (Reason is a typo)
