@@ -2,6 +2,8 @@ package org.openbakery.cocoapods
 
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunner
+import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import org.openbakery.output.ConsoleOutputAppender
 
@@ -14,10 +16,13 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 
 	public void addBootstrapDependency() {
 
-		String result = commandRunner.runWithResult("which", "pod")
-		if (result != "/usr/local/bin/pod") {
+		try {
+			commandRunner.runWithResult("which", "pod")
+		} catch (CommandRunnerException ex) {
+			// pod does not exist so add the dependency
 			dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 		}
+
 
 
 	}

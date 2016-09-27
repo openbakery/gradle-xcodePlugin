@@ -18,7 +18,6 @@ class CocoapodsUpdateTask extends AbstractCocoapodsTask {
 
 	@TaskAction
 	void update() throws IOException {
-		runInstallCocoapods()
 		runPod("update")
 	}
 }

@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
@@ -28,6 +29,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask = project.getTasks().getByPath('cocoapodsUpdate')
 
 		cocoapodsTask.commandRunner = commandRunner
+		cocoapodsTask.dependsOn.remove(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 
 	}
 
@@ -59,22 +61,17 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 
 	def "depends on"() {
 		when:
-		def dependsOn  = cocoapodsTask.getDependsOn()
-		cocoapodsTask.dependsOn.remove(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
-
 		cocoapodsTask.commandRunner = commandRunner
-		commandRunner.runWithResult("which", "pod") >> ""
+		commandRunner.runWithResult("which", "pod") >> { throw new CommandRunnerException() }
 		cocoapodsTask.addBootstrapDependency()
 
 		then:
-		dependsOn.contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+		cocoapodsTask.getDependsOn().contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 	}
 
 
 	def "not depends on bootstrap"() {
 		when:
-		def dependsOn  = cocoapodsTask.getDependsOn()
-		cocoapodsTask.dependsOn.remove(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 
 		cocoapodsTask.commandRunner = commandRunner
 		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
@@ -82,7 +79,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask.addBootstrapDependency()
 
 		then:
-		!dependsOn.contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+		!cocoapodsTask.getDependsOn().contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 	}
 
 
