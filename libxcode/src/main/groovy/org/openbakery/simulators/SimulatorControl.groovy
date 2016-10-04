@@ -1,6 +1,5 @@
 package org.openbakery.simulators
 
-import org.gradle.api.Project
 import org.openbakery.*
 import org.openbakery.tools.Xcode
 import org.slf4j.Logger

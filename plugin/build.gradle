@@ -48,6 +48,7 @@ task wrapper(type: Wrapper) {
 
 configurations {
 	deployerJars
+	includeInJar
 }
 
 repositories {
@@ -58,6 +59,7 @@ repositories {
 dependencies {
 	compile gradleApi()
 	compile localGroovy()
+	includeInJar project(':libxcode')
 	compile 'commons-io:commons-io:2.2'
 	compile 'commons-configuration:commons-configuration:1.10'
 	compile 'commons-collections:commons-collections:3.2.2'
@@ -76,8 +78,14 @@ dependencies {
 	testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
 		exclude module: 'groovy-all'
 	}
+
+	configurations.compile.extendsFrom(configurations.includeInJar)
 }
 
+jar {
+	baseName 'xcode-plugin'
+	from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
+}
 
 uploadArchives {
 	repositories {
