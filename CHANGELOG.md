@@ -2,6 +2,7 @@
 
 Changes
 * Cocoapods is now only bootstraped if it does not exist globally
+* Add that the dSYMs from the framework are also included in the xcarchive
 
 # 0.14.2 (September 26, 2016)
 
