@@ -65,7 +65,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	}
 
-	def "reateInfoPlist"() {
+	def "createInfoPlist"() {
 		given:
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"

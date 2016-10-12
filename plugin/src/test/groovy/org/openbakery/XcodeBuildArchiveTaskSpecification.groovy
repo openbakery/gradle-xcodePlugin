@@ -228,6 +228,21 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		new File(projectDir, "build/archive/Example.xcarchive/dSYMs/Example.app.dSYM").exists()
 	}
 
+	def copyFrameworkDsmys() {
+		given:
+		File extensionDirectory = new File(buildOutputDirectory, "OBInjector/OBInjector.framework.dSYM")
+		extensionDirectory.mkdirs()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File dsymFile = new File(projectDir, "build/archive/Example.xcarchive/dSYMs/OBInjector.framework.dSYM")
+
+		then:
+		dsymFile.exists()
+
+	}
+
 
 	def createInfoPlist() {
 		given:

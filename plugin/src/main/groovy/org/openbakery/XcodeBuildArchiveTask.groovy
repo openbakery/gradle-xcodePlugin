@@ -251,6 +251,17 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	}
 
+
+	def copyDsyms(File archiveDirectory, File dSymDirectory) {
+
+		archiveDirectory.eachFileRecurse(FileType.DIRECTORIES) { directory ->
+			if (directory.toString().toLowerCase().endsWith(".dsym")) {
+				copy(directory, dSymDirectory)
+			}
+		}
+
+	}
+
 	def createEntitlements(File bundle) {
 
 		if (project.xcodebuild.type != Type.iOS) {
@@ -343,14 +354,16 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
 		dSymDirectory.mkdirs()
+		copyDsyms(project.xcodebuild.outputPath, dSymDirectory)
 
 		List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
-
 		for (File bundle : appBundles) {
+			/*
 			File dsymPath = new File(project.xcodebuild.outputPath, bundle.getName() + ".dSYM");
 			if (dsymPath.exists()) {
 				copy(dsymPath, dSymDirectory)
 			}
+			*/
 			createEntitlements(bundle)
 		}
 
