@@ -4,6 +4,9 @@ Changes
 * Cocoapods is now only bootstraped if it does not exist globally
 * Add that the dSYMs from the framework are also included in the xcarchive
 
+Bugfixes
+* Added `clean` to the `xcodebuild -showBuildSettings` command which should fix a hang when using core data: Issue #298
+
 # 0.14.2 (September 26, 2016)
 
 Changes

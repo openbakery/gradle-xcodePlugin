@@ -115,7 +115,7 @@ class Xcode {
 	}
 
 	String loadBuildSettings() {
-		return commandRunner.runWithResult(getXcodebuild(), "-showBuildSettings")
+		return commandRunner.runWithResult(getXcodebuild(), "clean", "-showBuildSettings")
 	}
 
 	String getBuildSetting(String key) {

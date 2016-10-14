@@ -226,7 +226,7 @@ class XcodeSpecification extends Specification {
 	def "get default toolchain directory"() {
 		given:
 		useDefaultXcode()
-		commandRunner.runWithResult("xcodebuild", "-showBuildSettings") >>  "foo=bar"
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >>  "foo=bar"
 
 		expect:
 		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
@@ -237,7 +237,7 @@ class XcodeSpecification extends Specification {
 		given:
 		useDefaultXcode()
 		File buildSettings = new File("src/test/Resource/xcodebuild-showBuildSettings.txt");
-		commandRunner.runWithResult("xcodebuild", "-showBuildSettings") >>  FileUtils.readFileToString(buildSettings)
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >>  FileUtils.readFileToString(buildSettings)
 
 		expect:
 		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
@@ -247,7 +247,7 @@ class XcodeSpecification extends Specification {
 	def "get build settings with empty data should not crash"() {
 		given:
 		useDefaultXcode()
-		commandRunner.runWithResult("xcodebuild", "-showBuildSettings") >>  ""
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >>  ""
 
 		expect:
 		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
