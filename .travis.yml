@@ -5,7 +5,6 @@ sudo: false
 env:
   - TERM=dumb
 
-before_script: cd plugin
 
 script:
   - ./gradlew test --info
