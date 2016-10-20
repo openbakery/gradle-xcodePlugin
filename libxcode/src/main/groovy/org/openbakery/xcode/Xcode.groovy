@@ -1,7 +1,6 @@
-package org.openbakery.tools
+package org.openbakery.xcode
 
 import org.openbakery.CommandRunner
-import org.openbakery.Version
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

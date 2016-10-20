@@ -1,6 +1,5 @@
 package org.openbakery
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.logging.LogLevel
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
@@ -9,9 +8,11 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
 import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.tools.DestinationResolver
-import org.openbakery.tools.Xcode
-import org.openbakery.tools.XcodebuildParameters
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.DestinationResolver
+import org.openbakery.xcode.Devices
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.XcodebuildParameters
 
 /**
  * User: rene
@@ -74,7 +75,9 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 
 	void destination(Closure closure) {
-		parameters.destination(closure)
+		Destination destination = new Destination()
+		ConfigureUtil.configure(closure, destination)
+		setDestination(destination)
 	}
 
 	void setDestination(def destination) {

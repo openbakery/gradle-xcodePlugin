@@ -1,5 +1,7 @@
 package org.openbakery
 
+import org.openbakery.xcode.Devices
+
 /**
  * Created by rene on 08.10.15.
  */

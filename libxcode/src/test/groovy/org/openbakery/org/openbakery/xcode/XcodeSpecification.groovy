@@ -1,8 +1,9 @@
-package org.openbakery.tools
+package org.openbakery.org.openbakery.xcode
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
-import org.openbakery.Version
+import org.openbakery.xcode.Version
+import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
 /**

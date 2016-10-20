@@ -1,15 +1,8 @@
 package org.openbakery.configuration
 
-import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.filefilter.SuffixFileFilter
-import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
-import org.openbakery.CommandRunnerException
-import org.openbakery.Destination
-import org.openbakery.XcodePlugin
 import org.openbakery.XcodeProjectFile
-import org.openbakery.simulators.SimulatorControl
 
 /**
  * User: rene

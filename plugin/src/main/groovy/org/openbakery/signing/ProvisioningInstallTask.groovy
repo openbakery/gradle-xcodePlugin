@@ -17,7 +17,7 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
-import org.openbakery.Type
+import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 
 class ProvisioningInstallTask extends AbstractXcodeTask {

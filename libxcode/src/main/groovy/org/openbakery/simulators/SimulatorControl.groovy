@@ -1,7 +1,10 @@
 package org.openbakery.simulators
 
 import org.openbakery.*
-import org.openbakery.tools.Xcode
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.Version
+import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

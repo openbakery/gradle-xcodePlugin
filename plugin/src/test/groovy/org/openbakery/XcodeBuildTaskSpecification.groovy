@@ -4,8 +4,11 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.SimulatorControlStub
-import org.openbakery.tools.DestinationResolver
-import org.openbakery.tools.Xcode
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.DestinationResolver
+import org.openbakery.xcode.Devices
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
 

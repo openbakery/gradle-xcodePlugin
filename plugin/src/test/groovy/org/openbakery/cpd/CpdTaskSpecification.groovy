@@ -49,13 +49,13 @@ class CpdTaskSpecification extends Specification {
                 dest: new File("${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar")
         ]).times(1)
         antMock.unzip(
-                src: "${destDir}/pmd-bin-4.2.5.zip", dest: "${destDir}/tools", overwrite: 'true'
+                src: "${destDir}/pmd-bin-4.2.5.zip", dest: "${destDir}/xcode", overwrite: 'true'
         ).times(1)
 
         commandRunnerMock.setOutputFile(new File("${project.buildDir}/cpd.xml")).times(1)
         commandRunnerMock.run([
                 'java', '-Xmx512m',
-                '-cp', "\"${destDir}/tools/pmd-4.2.5/lib/a.jar:${destDir}/tools/pmd-4.2.5/lib/b.jar:${destDir}/tools/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",
+                '-cp', "\"${destDir}/xcode/pmd-4.2.5/lib/a.jar:${destDir}/xcode/pmd-4.2.5/lib/b.jar:${destDir}/xcode/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",
                 'net.sourceforge.pmd.cpd.CPD',
                 '--minimum-tokens', '10',
                 '--files', "${project.projectDir}/null", "${project.projectDir}/nullTests",
@@ -88,10 +88,10 @@ class CpdTaskSpecification extends Specification {
 		new File("${destDir}").mkdirs()
 		new File("${destDir}/pmd-bin-4.2.5.zip").text = ""
 		new File("${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar").text = ""
-		new File("${destDir}/tools/pmd-4.2.5/lib").mkdirs()
-		new File("${destDir}/tools/pmd-4.2.5/lib/a.jar").text = ""
-		new File("${destDir}/tools/pmd-4.2.5/lib/b.jar").text = ""
-		new File("${destDir}/tools/pmd-4.2.5/lib/c.jar").text = ""
+		new File("${destDir}/xcode/pmd-4.2.5/lib").mkdirs()
+		new File("${destDir}/xcode/pmd-4.2.5/lib/a.jar").text = ""
+		new File("${destDir}/xcode/pmd-4.2.5/lib/b.jar").text = ""
+		new File("${destDir}/xcode/pmd-4.2.5/lib/c.jar").text = ""
 
 
 		when:
@@ -101,7 +101,7 @@ class CpdTaskSpecification extends Specification {
 		1 * commandRunner.setOutputFile(new File("${project.buildDir}/report/cpd/cpd.xml"))
 		1 * commandRunner.run([
 						'java', '-Xmx512m',
-						'-cp', "\"${destDir}/tools/pmd-4.2.5/lib/a.jar:${destDir}/tools/pmd-4.2.5/lib/b.jar:${destDir}/tools/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",
+						'-cp', "\"${destDir}/xcode/pmd-4.2.5/lib/a.jar:${destDir}/xcode/pmd-4.2.5/lib/b.jar:${destDir}/xcode/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",
 						'net.sourceforge.pmd.cpd.CPD',
 						'--minimum-tokens', '10',
 						'--files', "${project.projectDir}/null", "${project.projectDir}/nullTests",

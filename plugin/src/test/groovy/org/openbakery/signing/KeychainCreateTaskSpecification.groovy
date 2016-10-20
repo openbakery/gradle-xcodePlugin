@@ -3,8 +3,8 @@ package org.openbakery.signing
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.Type
-import org.openbakery.Version
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.Version
 import spock.lang.Specification
 
 class KeychainCreateTaskSpecification extends Specification {

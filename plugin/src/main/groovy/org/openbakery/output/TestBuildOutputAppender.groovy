@@ -1,10 +1,8 @@
 package org.openbakery.output
 
-import org.gradle.api.Project
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.text.StyledTextOutput
-import org.openbakery.Destination
-import org.openbakery.tools.XcodebuildParameters
+import org.openbakery.xcode.Destination
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

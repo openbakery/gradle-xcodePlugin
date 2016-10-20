@@ -3,6 +3,7 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.xcode.Devices
 import spock.lang.Specification
 
 import static org.hamcrest.Matchers.*

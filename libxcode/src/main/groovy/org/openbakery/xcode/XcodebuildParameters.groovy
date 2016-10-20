@@ -1,10 +1,5 @@
-package org.openbakery.tools
+package org.openbakery.xcode
 
-import org.gradle.util.ConfigureUtil
-import org.openbakery.Destination
-import org.openbakery.Devices
-import org.openbakery.Type
-import org.openbakery.XcodeBuildPluginExtension
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -36,6 +31,7 @@ class XcodebuildParameters {
 	public XcodebuildParameters() {
 	}
 
+	/*
 	public XcodebuildParameters(XcodeBuildPluginExtension extension) {
 		scheme = extension.scheme
 		target = extension.target
@@ -55,7 +51,7 @@ class XcodebuildParameters {
 		devices = extension.devices
 		configuredDestinations = extension.destinations
 	}
-
+	*/
 
 
 
@@ -116,31 +112,29 @@ class XcodebuildParameters {
 	}
 
 
-	void destination(Closure closure) {
-		Destination destination = new Destination()
-		ConfigureUtil.configure(closure, destination)
-		if (configuredDestinations == null) {
-			configuredDestinations = [] as Set
-		}
-
-		configuredDestinations << destination
-	}
 
 	void setDestination(def destination) {
 
 		if (destination instanceof List) {
 			configuredDestinations = [] as Set
 			destination.each { singleDestination ->
-				this.destination {
-					name = singleDestination.toString()
-				}
+				setDestination(singleDestination)
 			}
-
 			return
 		}
-		this.destination {
-			name = destination.toString()
+
+		if (configuredDestinations == null) {
+			configuredDestinations = [] as Set
 		}
+
+		if (destination instanceof Destination) {
+			configuredDestinations << destination
+			return
+		}
+
+		def newDestination = new Destination()
+		newDestination.name = destination.toString()
+		configuredDestinations << newDestination
 	}
 
 	boolean isSimulatorBuildOf(Type expectedType) {

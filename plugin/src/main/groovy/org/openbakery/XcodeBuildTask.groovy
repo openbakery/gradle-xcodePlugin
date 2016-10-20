@@ -15,14 +15,8 @@
  */
 package org.openbakery
 
-import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.logging.progress.ProgressLogger
-import org.gradle.internal.logging.progress.ProgressLoggerFactory
-import org.gradle.internal.logging.text.StyledTextOutput
-import org.gradle.internal.logging.text.StyledTextOutputFactory
-import org.openbakery.output.XcodeBuildOutputAppender
-import org.openbakery.tools.Xcodebuild
+import org.openbakery.xcode.Xcodebuild
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
 

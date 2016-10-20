@@ -1,7 +1,7 @@
 package org.openbakery.simulators
 
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.Type
+import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 
 /**

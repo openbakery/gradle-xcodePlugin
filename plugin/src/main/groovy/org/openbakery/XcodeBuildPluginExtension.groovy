@@ -20,24 +20,16 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
-import org.openbakery.simulators.SimulatorControl
-import org.openbakery.simulators.SimulatorDevice
-import org.openbakery.simulators.SimulatorRuntime
-import org.openbakery.tools.DestinationResolver
-import org.openbakery.tools.Xcode
-import org.openbakery.tools.Xcodebuild
-import org.openbakery.tools.XcodebuildParameters
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Devices
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
+import org.openbakery.xcode.XcodebuildParameters
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-public enum Devices {
-	UNIVERSAL,
-	PHONE,
-	PAD,
-	WATCH
-}
 
 /*
 
@@ -242,8 +234,11 @@ class XcodeBuildPluginExtension {
 		return !this.simulator
 	}
 
+
 	void destination(Closure closure) {
-		_parameters.destination(closure)
+		Destination destination = new Destination()
+		ConfigureUtil.configure(closure, destination)
+		setDestination(destination)
 	}
 
 	void setDestination(def destination) {
@@ -472,7 +467,27 @@ class XcodeBuildPluginExtension {
 
 
 	XcodebuildParameters getXcodebuildParameters() {
-		return new XcodebuildParameters(this)
+		def result = new XcodebuildParameters()
+		result.scheme = this.scheme
+		result.target = this.target
+		result.simulator = this.simulator
+		result.type = this.type
+		result.workspace = this.workspace
+		result.configuration = this.configuration
+		result.dstRoot = this.getDstRoot()
+		result.objRoot = this.getObjRoot()
+		result.symRoot = this.getSymRoot()
+		result.sharedPrecompsDir = this.getSharedPrecompsDir()
+		result.derivedDataPath = this.getDerivedDataPath()
+		result.additionalParameters = this.additionalParameters
+		result.devices = this.devices
+		result.configuredDestinations = this.destinations
+
+		if (this.arch != null) {
+			result.arch = this.arch.clone()
+		}
+
+		return result
 	}
 
 }

@@ -1,7 +1,5 @@
-package org.openbakery.tools
+package org.openbakery.xcode
 
-import org.openbakery.Devices
-import org.openbakery.Type
 import spock.lang.Specification
 
 /**

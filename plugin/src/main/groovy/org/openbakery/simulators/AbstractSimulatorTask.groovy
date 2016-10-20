@@ -1,10 +1,8 @@
 package org.openbakery.simulators
 
 import org.openbakery.AbstractXcodeTask
-import org.openbakery.CommandRunner
-import org.openbakery.Destination
-import org.openbakery.XcodePlugin
-import org.openbakery.tools.DestinationResolver
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.DestinationResolver
 
 /**
  * Created by rene on 27.06.16.

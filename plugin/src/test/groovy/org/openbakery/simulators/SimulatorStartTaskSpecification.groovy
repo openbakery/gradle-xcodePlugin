@@ -3,10 +3,10 @@ package org.openbakery.simulators
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.Destination
+import org.openbakery.xcode.Destination
 import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.SimulatorControlStub
-import org.openbakery.tools.DestinationResolver
+import org.openbakery.xcode.DestinationResolver
 import spock.lang.Specification
 
 /**

@@ -5,7 +5,10 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.testdouble.SimulatorControlStub
-import org.openbakery.tools.DestinationResolver
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.DestinationResolver
+import org.openbakery.xcode.Devices
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 /**

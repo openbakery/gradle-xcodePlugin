@@ -57,7 +57,7 @@ class CpdTask extends AbstractXcodeTask {
 	}
 
 	List<String> computeClasspath(File destinationDirectory) {
-		def pmdLibDir = new File(destinationDirectory, "tools/pmd-${PMD_VERSION}/lib")
+		def pmdLibDir = new File(destinationDirectory, "xcode/pmd-${PMD_VERSION}/lib")
 		def obcJarFile = new File(destinationDirectory, "ObjCLanguage-${OBJC_LANG_VERSION}.jar")
 
 		if (pmdLibDir.listFiles()) {
@@ -83,7 +83,7 @@ class CpdTask extends AbstractXcodeTask {
 		def pmdUrl = PMD_SOURCE + "/${PMD_VERSION}/pmd-bin-${PMD_VERSION}.zip"
 		if (!pmdZipFile.exists()) {
 			downloadFile(pmdZipFile, pmdUrl)
-			ant.unzip(src: "${destinationDirectory}/pmd-bin-${PMD_VERSION}.zip", dest: "${destinationDirectory}/tools", overwrite: 'true')
+			ant.unzip(src: "${destinationDirectory}/pmd-bin-${PMD_VERSION}.zip", dest: "${destinationDirectory}/xcode", overwrite: 'true')
 		}
 	}
 }

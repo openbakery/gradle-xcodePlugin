@@ -22,7 +22,9 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
-import org.openbakery.tools.Xcode
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.Version
+import org.openbakery.xcode.Xcode
 import org.openbakery.util.PlistHelper
 
 import java.text.SimpleDateFormat

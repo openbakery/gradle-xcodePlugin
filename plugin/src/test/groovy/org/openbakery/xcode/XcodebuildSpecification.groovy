@@ -1,10 +1,9 @@
-package org.openbakery.tools
+package org.openbakery.xcode
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
-import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.output.OutputAppender

@@ -3,6 +3,9 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Devices
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 /**

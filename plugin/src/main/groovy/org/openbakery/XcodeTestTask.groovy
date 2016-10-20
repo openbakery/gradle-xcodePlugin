@@ -10,12 +10,8 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
-import org.openbakery.output.XcodeBuildOutputAppender
-import org.openbakery.simulators.SimulatorControl
-import org.openbakery.tools.DestinationResolver
-import org.openbakery.tools.Xcodebuild
-import org.openbakery.tools.XcodebuildParameters
-
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Xcodebuild
 
 class TestResult {
 	String method;

@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.gradle.api.tasks.TaskAction;
-import org.openbakery.Destination;
-import org.openbakery.Type;
+import org.openbakery.xcode.Destination;
+import org.openbakery.xcode.Type;
 import org.openbakery.XcodePlugin;
 
 /**

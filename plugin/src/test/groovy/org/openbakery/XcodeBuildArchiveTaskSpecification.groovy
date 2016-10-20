@@ -8,8 +8,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
-import org.openbakery.tools.DestinationResolver
-import org.openbakery.tools.Xcode
+import org.openbakery.xcode.DestinationResolver
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 

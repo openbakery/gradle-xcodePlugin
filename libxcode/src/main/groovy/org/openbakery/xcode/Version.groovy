@@ -1,4 +1,4 @@
-package org.openbakery
+package org.openbakery.xcode
 
 class Version implements Comparable<Version> {
 

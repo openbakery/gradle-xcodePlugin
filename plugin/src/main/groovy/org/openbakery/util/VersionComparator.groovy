@@ -1,6 +1,6 @@
 package org.openbakery.util
 
-import org.openbakery.Version
+import org.openbakery.xcode.Version
 
 /**
  * Created by rene on 29.10.15.

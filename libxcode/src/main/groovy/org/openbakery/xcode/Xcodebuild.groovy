@@ -1,8 +1,6 @@
-package org.openbakery.tools
+package org.openbakery.xcode
 
 import org.openbakery.CommandRunner
-import org.openbakery.Destination
-import org.openbakery.Type
 import org.openbakery.output.OutputAppender
 
 /**

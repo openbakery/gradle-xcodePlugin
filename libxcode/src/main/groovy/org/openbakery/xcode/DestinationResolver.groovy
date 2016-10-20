@@ -1,8 +1,5 @@
-package org.openbakery.tools
+package org.openbakery.xcode
 
-import org.openbakery.Destination
-import org.openbakery.Devices
-import org.openbakery.Type
 import org.openbakery.simulators.SimulatorControl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

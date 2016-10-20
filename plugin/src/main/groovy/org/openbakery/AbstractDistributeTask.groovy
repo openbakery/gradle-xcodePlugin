@@ -145,7 +145,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		).toList()
 
 		if (fileList.isEmpty()) {
-			throw new IllegalStateException("No app	 found")
+			throw new IllegalStateException("No app	found")
 		}
 		return fileList.get(0) - ".app"
 	}

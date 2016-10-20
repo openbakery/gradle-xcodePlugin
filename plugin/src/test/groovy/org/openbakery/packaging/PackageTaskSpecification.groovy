@@ -6,7 +6,7 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.Type
+import org.openbakery.xcode.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub

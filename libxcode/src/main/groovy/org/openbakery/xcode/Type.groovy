@@ -1,4 +1,4 @@
-package org.openbakery
+package org.openbakery.xcode
 
 public enum Type {
 	iOS("iOS"),

@@ -1,12 +1,8 @@
 package org.openbakery.simulators
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.CommandRunner
-import org.openbakery.Destination
-import org.openbakery.Type
+import org.openbakery.xcode.Destination
 import org.openbakery.XcodePlugin
-import org.openbakery.tools.DestinationResolver
 
 class SimulatorStartTask extends AbstractSimulatorTask {
 
