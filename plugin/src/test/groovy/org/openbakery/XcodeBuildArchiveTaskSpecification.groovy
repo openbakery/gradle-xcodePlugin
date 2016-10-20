@@ -344,15 +344,13 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "copy swift with non default toolchain"() {
 		given:
 
-		XcodeFake xcode = new XcodeFake()
-		xcode.path = createXcode("")
+		XcodeFake xcode = createXcode("7")
 		xcode.toolchainDirectory = xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
 		xcodeBuildArchiveTask.xcode = xcode
 		mockSwiftLibs(xcode)
 
 		when:
 		xcodeBuildArchiveTask.archive()
-
 		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
 		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
 		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
