@@ -8,8 +8,8 @@ import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
-import org.openbakery.stubs.PlistHelperStub
-import org.openbakery.stubs.XcodeFake
+import org.openbakery.testdouble.PlistHelperStub
+import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry

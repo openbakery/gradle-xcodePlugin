@@ -10,9 +10,8 @@ import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
-import org.openbakery.stubs.PlistHelperStub
-import org.openbakery.stubs.XcodeFake
-import org.openbakery.tools.Xcode
+import org.openbakery.testdouble.PlistHelperStub
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 

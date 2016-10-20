@@ -5,13 +5,11 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Destination
-import org.openbakery.XcodePlugin
-import org.openbakery.stubs.ProgressLoggerStub
+import org.openbakery.testdouble.ProgressLoggerStub
 import org.junit.Test
 import org.junit.Before
-import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.tools.DestinationResolver
-import org.openbakery.tools.XcodebuildParameters
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

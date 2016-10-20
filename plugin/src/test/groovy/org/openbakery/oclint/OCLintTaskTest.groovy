@@ -2,12 +2,11 @@ package org.openbakery.oclint
 
 import groovy.mock.interceptor.MockFor
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
-import org.openbakery.stubs.AntBuilderStub
+import org.openbakery.testdouble.AntBuilderStub
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

@@ -5,12 +5,11 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.stubs.PlistHelperStub
-import org.openbakery.stubs.SimulatorControlStub
-import org.openbakery.stubs.XcodeFake
+import org.openbakery.testdouble.PlistHelperStub
+import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.DestinationResolver
 import org.openbakery.tools.Xcode
-import org.openbakery.tools.Xcodebuild
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 

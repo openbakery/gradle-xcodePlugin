@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.stubs.AntBuilderStub
+import org.openbakery.testdouble.AntBuilderStub
 import spock.lang.Specification
 
 class CpdTaskSpecification extends Specification {

@@ -5,7 +5,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.stubs.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlStub
 import spock.lang.Specification
 
 /**

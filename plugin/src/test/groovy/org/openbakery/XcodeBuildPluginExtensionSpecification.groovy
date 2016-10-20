@@ -3,8 +3,6 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.simulators.SimulatorControl
-import org.openbakery.stubs.SimulatorControlStub
 import spock.lang.Specification
 
 /**

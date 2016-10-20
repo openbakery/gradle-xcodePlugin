@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.stubs.PlistHelperStub
+import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.XcodeBuildArchiveTask
 import spock.lang.Specification
 

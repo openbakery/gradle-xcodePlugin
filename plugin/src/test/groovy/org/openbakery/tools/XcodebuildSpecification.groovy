@@ -8,8 +8,8 @@ import org.openbakery.Type
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.output.OutputAppender
-import org.openbakery.stubs.SimulatorControlStub
-import org.openbakery.stubs.XcodeFake
+import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 /**

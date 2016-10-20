@@ -4,8 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.stubs.XcodeFake
-import org.openbakery.tools.Xcode
+import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 

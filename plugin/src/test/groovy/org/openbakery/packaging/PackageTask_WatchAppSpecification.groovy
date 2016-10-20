@@ -1,15 +1,14 @@
 package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
-import org.openbakery.stubs.PlistHelperStub
-import org.openbakery.stubs.XcodeFake
+import org.openbakery.testdouble.PlistHelperStub
+import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 /**

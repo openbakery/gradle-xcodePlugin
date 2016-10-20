@@ -4,9 +4,7 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Test
-import org.openbakery.stubs.PlistHelperStub
-import org.openbakery.util.PlistHelper
+import org.openbakery.testdouble.PlistHelperStub
 import spock.lang.Specification
 
 /**

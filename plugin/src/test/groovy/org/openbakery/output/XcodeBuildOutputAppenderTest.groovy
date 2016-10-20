@@ -1,8 +1,7 @@
 package org.openbakery.output
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang.StringUtils
-import org.openbakery.stubs.ProgressLoggerStub
+import org.openbakery.testdouble.ProgressLoggerStub
 import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
