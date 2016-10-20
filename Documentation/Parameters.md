@@ -57,7 +57,7 @@
 
   default value: empty
 
-* identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)'. This parameter is **optional** and only needed if you have more then one identity in the keychain. This is only the case if the _keychain_ parameter is set, and the keychain is not created during the build process.
+* identity - the signing identity e.g. 'iPhone Developer: Rene Piringer (AASDF1234)' or the SHA. With macOS Sierra only the SHA works. This parameter is **optional** and only needed if you have more then one identity in the keychain. This is only the case if the _keychain_ parameter is set, and the keychain is not created during the build process.
 
 	default value: empty
 

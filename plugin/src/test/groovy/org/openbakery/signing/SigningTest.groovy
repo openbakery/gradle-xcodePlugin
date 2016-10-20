@@ -48,7 +48,7 @@ class SigningTest {
 	 }
 
 		signing.commandRunner = commandRunnerMock.proxyInstance()
-		assert signing.identity.equals("Developer ID Application: MyCompany")
+		assert signing.identity.equals("1111222233334444555566667777888899990000")
 		commandRunnerMock.verify signing.commandRunner
 	}
 

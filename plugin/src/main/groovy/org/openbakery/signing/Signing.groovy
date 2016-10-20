@@ -136,7 +136,7 @@ class Signing {
 			def matcher = IDENTITY_PATTERN.matcher(identities)
 			String identity = null
 			if (matcher.find()) {
-				identity = matcher[0][2]
+				identity = matcher[0][1]
 			}
 
 			if (!matcher.find()) {
