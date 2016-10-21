@@ -1,5 +1,8 @@
 package org.openbakery.xcode
 
+import org.openbakery.xcode.Devices
+import org.openbakery.xcode.Type
+import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
 /**

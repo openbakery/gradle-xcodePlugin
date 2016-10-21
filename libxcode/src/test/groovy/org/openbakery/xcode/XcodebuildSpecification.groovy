@@ -1,14 +1,9 @@
 package org.openbakery.xcode
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
+import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
-import org.openbakery.XcodeBuildPluginExtension
-import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.output.OutputAppender
-import org.openbakery.testdouble.SimulatorControlStub
-import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 /**
@@ -22,16 +17,29 @@ class XcodebuildSpecification extends Specification {
 
 	Xcodebuild xcodebuild
 
-	OutputAppender outputAppender = new ConsoleOutputAppender()
-	XcodeBuildPluginExtension extension
+	OutputAppender outputAppender = new OutputAppender() {
+		public void append(String output) {
+		}
+	}
+	XcodebuildParameters parameters
 	DestinationResolver destinationResolver
 
 	def setup() {
-		File projectDir = new File(".")
-		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		parameters = new XcodebuildParameters()
+		parameters.dstRoot = new File("build/dst")
+		parameters.objRoot = new File("build/obj")
+		parameters.symRoot = new File("build/sym")
+		parameters.sharedPrecompsDir = new File("build/shared")
+		parameters.derivedDataPath = new File("build/derivedData")
+		parameters.configuration = "Debug"
+		parameters.simulator = true
+		parameters.type = Type.iOS
+		parameters.destination = [
+						new Destination("iPhone 4s")
+		]
+// iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389
 		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 	}
 
 	def cleanup() {
@@ -135,7 +143,7 @@ class XcodebuildSpecification extends Specification {
 								   "OBJROOT=" + new File("build/myObj").absolutePath,
 								   "SYMROOT=" + new File("build/mySym").absolutePath,
 								   "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
-								   "-destination", "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+									 "-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 			]
 		}
 		commandList == expectedCommandList
@@ -160,7 +168,7 @@ class XcodebuildSpecification extends Specification {
 					"-configuration", "Debug",
 					"-target", 'mytarget'
 			)
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 
@@ -240,7 +248,7 @@ class XcodebuildSpecification extends Specification {
 					"-workspace", 'myworkspace',
 					"-configuration", "Debug",
 					"ARCHS=myarch")
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 
 		}
 		commandList == expectedCommandList
@@ -291,7 +299,7 @@ class XcodebuildSpecification extends Specification {
 					"-scheme", 'myscheme',
 					"-workspace", 'myworkspace',
 					"-configuration", "Debug")
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 
 		}
 		commandList == expectedCommandList
@@ -315,7 +323,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
 					"-configuration", "Debug",
 					"-target", 'mytarget')
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 
@@ -340,7 +348,7 @@ class XcodebuildSpecification extends Specification {
 					"-scheme", 'myscheme',
 					"-workspace", 'myworkspace',
 					"-configuration", 'Debug')
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 	}
@@ -366,7 +374,7 @@ class XcodebuildSpecification extends Specification {
 					"-workspace", 'myworkspace',
 					"-configuration", 'Debug',
 					"ARCHS=i386")
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 	}
@@ -392,7 +400,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList = createCommandWithDefaultDirectories('/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
 					"-configuration", 'Debug',
 					"-target", 'mytarget')
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 	}
@@ -435,7 +443,7 @@ class XcodebuildSpecification extends Specification {
 					"-workspace", 'myworkspace',
 					"-configuration", 'Debug',
 					"foobar")
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 	}
@@ -460,7 +468,7 @@ class XcodebuildSpecification extends Specification {
 					"-workspace", 'myworkspace',
 					"-configuration", 'Debug',
 					"foo", "bar")
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 	}
@@ -547,15 +555,18 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
+		parameters.destination = [
+						new Destination("iPad 2"),
+						new Destination("iPhone 4s")
+		]
 
-		extension.destination = ['iPad 2', 'iPhone 4s']
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.configuredDestinations = extension.getDestinations()
+		//xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)
@@ -585,12 +596,12 @@ class XcodebuildSpecification extends Specification {
 
 
 		given:
-		extension.type = Type.tvOS
-		extension.destination = "Apple TV 1080p"
-		extension.target = 'Test';
-		extension.scheme = 'myscheme'
-		extension.workspace = 'myworkspace'
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		parameters.type = Type.tvOS
+		parameters.destination = "Apple TV 1080p"
+		parameters.target = 'Test';
+		parameters.scheme = 'myscheme'
+		parameters.workspace = 'myworkspace'
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		when:
 		xcodebuild.executeTest("", outputAppender, null)
@@ -619,12 +630,12 @@ class XcodebuildSpecification extends Specification {
 
 
 		given:
-		extension.type = Type.tvOS
-		extension.destination = "Apple TV 1080p"
-		extension.target = 'Test';
-		extension.scheme = 'myscheme'
-		extension.workspace = 'myworkspace'
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), extension.xcodebuildParameters, destinationResolver.getDestinations(extension.xcodebuildParameters))
+		parameters.type = Type.tvOS
+		parameters.destination = "Apple TV 1080p"
+		parameters.target = 'Test';
+		parameters.scheme = 'myscheme'
+		parameters.workspace = 'myworkspace'
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		when:
 		xcodebuild.execute("", outputAppender, null)
@@ -650,19 +661,19 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
+		def destination = new Destination()
+		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
 
-		extension.destination { id = '83384347-6976-4E70-A54F-1CFECD1E02B1' }
-		extension.simulator = false
+		parameters.destination  = [ destination ]
+		parameters.simulator = false
 
-		def xcodebuildParameters = extension.xcodebuildParameters
-
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), xcodebuildParameters, destinationResolver.getDestinations(xcodebuildParameters))
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.configuredDestinations = extension.getDestinations()
+		//xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 		xcodebuild.parameters.simulator = false
 
 		when:
@@ -706,7 +717,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
 					"-configuration", "Debug",
 					"-target", 'mytarget')
-			expectedCommandList << "-destination" << "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
 
@@ -743,7 +754,7 @@ class XcodebuildSpecification extends Specification {
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
 														 "SYMROOT=" + new File("build/mySym").absolutePath,
 														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
-														 "-destination", "platform=iOS Simulator,id=6CAB9FE9-445A-42CA-8215-7FC5179CCA9A",
+														 "-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389",
 														 "archive",
 														 "-archivePath",
 														 "build/archive/myArchive.xcarchive"
@@ -754,4 +765,31 @@ class XcodebuildSpecification extends Specification {
 
 	}
 
+
+	def "get default toolchain directory"() {
+		given:
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> "foo=bar"
+
+		expect:
+		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+	}
+
+
+	def "get default toolchain directory from build settings"() {
+		given:
+		File buildSettings = new File("src/test/Resource/xcodebuild-showBuildSettings.txt");
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> FileUtils.readFileToString(buildSettings)
+
+		expect:
+		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
+	}
+
+
+	def "get build settings with empty data should not crash"() {
+		given:
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> ""
+
+		expect:
+		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+	}
 }

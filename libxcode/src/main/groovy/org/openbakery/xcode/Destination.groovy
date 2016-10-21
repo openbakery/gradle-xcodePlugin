@@ -16,6 +16,10 @@ class Destination {
 	Destination() {
 	}
 
+	Destination(String name) {
+		this.name = name
+	}
+
 	Destination(String platform, String name, String os) {
 		this.platform = platform
 		this.name = name

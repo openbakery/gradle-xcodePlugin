@@ -227,6 +227,7 @@ class Xcodebuild {
 			if (destination.name != null) {
 				destinationParameters << "name=" + destination.name
 			}
+			/*
 			if (destination.arch != null && parameters.availableDestinations.platform.equals("OS X")) {
 				destinationParameters << "arch=" + destination.arch
 			}
@@ -234,6 +235,7 @@ class Xcodebuild {
 			if (destination.os != null && parameters.availableDestinations.platform.equals("iOS Simulator")) {
 				destinationParameters << "OS=" + destination.os
 			}
+			*/
 		}
 		return destinationParameters.join(",")
 	}

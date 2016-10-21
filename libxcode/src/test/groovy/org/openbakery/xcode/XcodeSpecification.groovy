@@ -1,4 +1,4 @@
-package org.openbakery.org.openbakery.xcode
+package org.openbakery.xcode
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
@@ -224,33 +224,5 @@ class XcodeSpecification extends Specification {
 		xcode.getSimctl() == '/Applications/Xcode.app/Contents/Developer/usr/bin/simctl'
 	}
 
-	def "get default toolchain directory"() {
-		given:
-		useDefaultXcode()
-		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >>  "foo=bar"
 
-		expect:
-		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
-	}
-
-
-	def "get default toolchain directory from build settings"() {
-		given:
-		useDefaultXcode()
-		File buildSettings = new File("src/test/Resource/xcodebuild-showBuildSettings.txt");
-		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >>  FileUtils.readFileToString(buildSettings)
-
-		expect:
-		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
-	}
-
-
-	def "get build settings with empty data should not crash"() {
-		given:
-		useDefaultXcode()
-		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >>  ""
-
-		expect:
-		xcode.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
-	}
 }
