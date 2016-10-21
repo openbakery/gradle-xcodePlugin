@@ -31,30 +31,6 @@ class XcodebuildParameters {
 	public XcodebuildParameters() {
 	}
 
-	/*
-	public XcodebuildParameters(XcodeBuildPluginExtension extension) {
-		scheme = extension.scheme
-		target = extension.target
-		simulator = extension.simulator
-		type = extension.type
-		workspace = extension.workspace
-		configuration = extension.configuration
-		dstRoot = extension.dstRoot
-		objRoot = extension.objRoot
-		symRoot = extension.symRoot
-		sharedPrecompsDir = extension.sharedPrecompsDir
-		derivedDataPath = extension.derivedDataPath
-		if (extension.arch != null) {
-			arch = extension.arch.clone()
-		}
-		additionalParameters = extension.additionalParameters
-		devices = extension.devices
-		configuredDestinations = extension.destinations
-	}
-	*/
-
-
-
 	@Override
 	public String toString() {
 		return "XcodebuildParameters {" +

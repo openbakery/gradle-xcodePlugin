@@ -20,18 +20,17 @@ class DestinationResolver {
 
 	List<Destination> getDestinations(XcodebuildParameters parameters) {
 
-
-		def allDestinations = simulatorControl.getAllDestinations(parameters.type)
-		def runtime = simulatorControl.getMostRecentRuntime(parameters.type)
-
 		logger.debug("getAvailableDestinations")
 		def availableDestinations = []
-
-
 		if (parameters.type == Type.OSX) {
 			availableDestinations << new Destination("OS X", "OS X", "10.x")
 			return availableDestinations
 		}
+
+		def allDestinations = simulatorControl.getAllDestinations(parameters.type)
+		def runtime = simulatorControl.getMostRecentRuntime(parameters.type)
+
+
 
 		if (isSimulatorFor(parameters)) {
 			// filter only on simulator builds

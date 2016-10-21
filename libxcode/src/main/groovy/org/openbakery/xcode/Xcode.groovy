@@ -16,8 +16,6 @@ class Xcode {
 	String xcodePath
 	Version version = null
 
-	HashMap<String, String> buildSettings = null
-
 
 	public Xcode(CommandRunner commandRunner) {
 		this(commandRunner, null)
@@ -103,34 +101,6 @@ class Xcode {
 
 	String getSimctl() {
 		return getPath() + "/Contents/Developer/usr/bin/simctl"
-	}
-
-	String getToolchainDirectory() {
-		String buildSetting = getBuildSetting("TOOLCHAIN_DIR")
-		if (buildSetting != null) {
-			return buildSetting
-		}
-		return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
-	}
-
-	String loadBuildSettings() {
-		return commandRunner.runWithResult(getXcodebuild(), "clean", "-showBuildSettings")
-	}
-
-	String getBuildSetting(String key) {
-		if (buildSettings == null) {
-			buildSettings = new HashMap<>()
-			String[] buildSettingsData = loadBuildSettings().split("\n")
-			for (line in buildSettingsData) {
-				int index = line.indexOf("=")
-				if (index > 0) {
-					String settingsKey = line.substring(0, index).trim()
-					String settingsValue = line.substring(index + 1, line.length()).trim()
-					buildSettings.put(settingsKey, settingsValue)
-				}
-			}
-		}
-		return buildSettings.get(key)
 	}
 
 	@Override

@@ -172,7 +172,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 
-	def createFrameworks(def applicationsDirectory) {
+	def createFrameworks(def applicationsDirectory, Xcodebuild xcodebuild) {
 
 		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
 		if (frameworksPath.exists()) {
@@ -185,7 +185,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 			logger.debug("swiftlibs to add: {}", libNames);
 
-			File swiftLibs = new File(xcode.getToolchainDirectory(), "usr/lib/swift/iphoneos")
+			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/iphoneos")
 
 			swiftLibs.eachFile() {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
@@ -332,12 +332,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		logger.debug("Create xcarchive")
 
+		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
+		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
+
 		if (project.xcodebuild.useXcodebuildArchive) {
-			parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 
 			File outputFile = new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
 			commandRunner.setOutputFile(outputFile)
-			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
+
 			xcodebuild.executeArchive(project.projectDir.absolutePath, createXcodeBuildOutputAppender("XcodeBuildArchive"), project.xcodebuild.environment, getArchiveDirectory().absolutePath)
 
 			return
@@ -363,7 +365,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		createInfoPlist(getArchiveDirectory())
-		createFrameworks(getArchiveDirectory())
+		createFrameworks(getArchiveDirectory(), xcodebuild)
 		deleteEmptyFrameworks(getArchiveDirectory())
 		deleteXCTestIfExists(getApplicationsDirectory())
 		deleteFrameworksInExtension(getApplicationsDirectory())

@@ -12,6 +12,8 @@ import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
 import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.Xcodebuild
+import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -51,6 +53,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.plistHelper = plistHelper
 		xcodeBuildArchiveTask.commandRunner = commandRunner
 		xcodeBuildArchiveTask.xcode.commandRunner = commandRunner
+		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphoneos")
 		buildOutputDirectory.mkdirs()
@@ -86,7 +90,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(lib, "foo")
 	}
 
-	def createSwiftLibs(Xcode xcode) {
+	def createSwiftLibs(Xcodebuild xcodebuild) {
 		def swiftLibs = [
 						"libswiftCore.dylib",
 						"libswiftCoreGraphics.dylib",
@@ -98,7 +102,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 						"libswiftUIKit.dylib"
 		]
 
-		File swiftLibsDirectory = new File(xcode.getToolchainDirectory(),  "usr/lib/swift/iphoneos")
+		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/iphoneos")
 		swiftLibsDirectory.mkdirs();
 
 		swiftLibs.each { item ->
@@ -108,13 +112,20 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		return swiftLibs
 	}
 
-	void mockSwiftLibs(Xcode xcode) {
-		def swiftLibs = createSwiftLibs(xcode)
+	void mockSwiftLibs(Xcodebuild xcodebuild) {
+		def swiftLibs = createSwiftLibs(xcodebuild)
 		swiftLibs[0..4].each { item ->
 			File lib = new File(appDirectory, "Frameworks/" + item)
 			FileUtils.writeStringToFile(lib, "foo")
 		}
 	}
+
+	Xcodebuild createXcodeBuild(String version) {
+		XcodeFake xcode = createXcode(version)
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\n"
+		return new Xcodebuild(commandRunner, xcode, new XcodebuildParameters(), [])
+	}
+
 
 	Xcode createXcode(String version) {
 		XcodeFake xcode = new XcodeFake()
@@ -304,8 +315,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "swift framework in App Xcode 6"() {
 		given:
-		xcodeBuildArchiveTask.xcode = createXcode("6")
-		mockSwiftLibs(xcodeBuildArchiveTask.xcode)
+		Xcodebuild xcodebuild = createXcodeBuild("6")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		mockSwiftLibs(xcodebuild)
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -323,8 +335,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy swift framework"() {
 		given:
-		xcodeBuildArchiveTask.xcode = createXcode("7")
-		mockSwiftLibs(xcodeBuildArchiveTask.xcode)
+		Xcodebuild xcodebuild = createXcodeBuild("7")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		mockSwiftLibs(xcodebuild)
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -343,11 +356,12 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy swift with non default toolchain"() {
 		given:
-
 		XcodeFake xcode = createXcode("7")
-		xcode.toolchainDirectory = xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
-		xcodeBuildArchiveTask.xcode = xcode
-		mockSwiftLibs(xcode)
+		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift.xctoolchain\n"
+		Xcodebuild xcodebuild =  new Xcodebuild(commandRunner, xcode, new XcodebuildParameters(), [])
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		mockSwiftLibs(xcodebuild)
+
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -366,8 +380,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "no swift but framework in App Xcode 7"() {
 		given:
 
-		xcodeBuildArchiveTask.xcode = createXcode("7")
-		createSwiftLibs(xcodeBuildArchiveTask.xcode)
+		Xcodebuild xcodebuild = createXcodeBuild("7")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		createSwiftLibs(xcodebuild)
 		createFrameworkLib("myFramework.dylib")
 
 		when:
@@ -499,8 +514,10 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "delete empty frameworks directory"() {
 		given:
-		xcodeBuildArchiveTask.xcode = createXcode("7")
-		createSwiftLibs(xcodeBuildArchiveTask.xcode)
+
+		Xcodebuild xcodebuild = createXcodeBuild("7")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		createSwiftLibs(xcodebuild)
 
 		setupProject()
 		File frameworksDirectory = new File(appDirectory, "Frameworks")
