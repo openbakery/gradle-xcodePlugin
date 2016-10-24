@@ -1,7 +1,19 @@
-apply plugin: org.openbakery.XcodePlugin
+buildscript {
+	repositories {
+		maven {
+			url('http://repository.openbakery.org/')
+		}
+		mavenCentral()
+  }
+
+	dependencies {
+	    classpath "org.openbakery:xcode-plugin:0.14.+"
+	}
+		
+}
+apply plugin: 'org.openbakery.xcode-plugin'
 
 xcodebuild {
-	version = '8'
 	target = 'Example_tvOS_Swift'
 	scheme = 'Example_tvOS_Swift'
 	type = 'tvOS'
