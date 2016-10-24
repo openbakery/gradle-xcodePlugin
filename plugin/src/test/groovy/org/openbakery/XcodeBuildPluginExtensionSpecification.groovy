@@ -24,6 +24,8 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	File xcodebuild5_1
 
 
+	File workspaceDirectory
+
 	def setup() {
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -55,6 +57,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		FileUtils.deleteDirectory(xcodebuild6_1)
 		FileUtils.deleteDirectory(xcodebuild6_0)
 		FileUtils.deleteDirectory(xcodebuild5_1)
+		if (workspaceDirectory != null) {
+			FileUtils.deleteDirectory(workspaceDirectory)
+		}
 		FileUtils.deleteDirectory(projectDir)
 	}
 
@@ -479,6 +484,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
 		extension.type = Type.iOS
+
+		workspaceDirectory = new File(projectDir, "SwiftExample.xcworkspace")
+		workspaceDirectory.mkdirs()
 
 		def parameters = extension.getXcodebuildParameters()
 
