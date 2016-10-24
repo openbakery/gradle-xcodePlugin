@@ -472,7 +472,20 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		parameters.devices ==  Devices.UNIVERSAL
 	}
 
+	def "XcodebuildParameters get workspace from project"() {
 
+		when:
+		File projectDir =  new File("../example/iOS/SwiftExample")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.type = Type.iOS
+
+		def parameters = extension.getXcodebuildParameters()
+
+		then:
+		parameters.workspace == "SwiftExample.xcworkspace"
+
+	}
 
 
 }

@@ -472,7 +472,7 @@ class XcodeBuildPluginExtension {
 		result.target = this.target
 		result.simulator = this.simulator
 		result.type = this.type
-		result.workspace = this.workspace
+		result.workspace = getWorkspace()
 		result.configuration = this.configuration
 		result.dstRoot = this.getDstRoot()
 		result.objRoot = this.getObjRoot()
