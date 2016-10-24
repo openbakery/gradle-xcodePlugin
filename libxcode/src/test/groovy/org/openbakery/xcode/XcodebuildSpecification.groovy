@@ -768,7 +768,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "get default toolchain directory"() {
 		given:
-		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> "foo=bar"
+		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> "foo=bar"
 
 		expect:
 		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
@@ -778,7 +778,7 @@ class XcodebuildSpecification extends Specification {
 	def "get default toolchain directory from build settings"() {
 		given:
 		File buildSettings = new File("src/test/Resource/xcodebuild-showBuildSettings.txt");
-		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> FileUtils.readFileToString(buildSettings)
+		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> FileUtils.readFileToString(buildSettings)
 
 		expect:
 		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
@@ -787,9 +787,34 @@ class XcodebuildSpecification extends Specification {
 
 	def "get build settings with empty data should not crash"() {
 		given:
-		commandRunner.runWithResult("xcodebuild", "clean", "-showBuildSettings") >> ""
+		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> ""
 
 		expect:
 		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
 	}
+
+
+	def "showBuildSettings should include the workspace if present"() {
+		def expectedCommandList
+		def commandList
+		when:
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+
+		xcodebuild.getToolchainDirectory()
+
+		then:
+		1 * commandRunner.runWithResult(_) >> { arguments -> commandList = arguments[0] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 'clean',
+														 '-showBuildSettings',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace']
+		}
+		commandList == expectedCommandList
+
+
+	}
+
 }

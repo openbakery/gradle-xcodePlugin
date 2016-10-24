@@ -172,7 +172,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 
-	def createFrameworks(def applicationsDirectory, Xcodebuild xcodebuild) {
+	def createFrameworks(def applicationsDirectory, Xcodebuild 	xcodebuild) {
 
 		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
 		if (frameworksPath.exists()) {

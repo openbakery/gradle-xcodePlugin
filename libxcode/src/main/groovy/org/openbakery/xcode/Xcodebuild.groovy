@@ -250,7 +250,16 @@ class Xcodebuild {
 		}
 
 		String loadBuildSettings() {
-			return commandRunner.runWithResult(xcode.xcodebuild, "clean", "-showBuildSettings")
+			def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
+
+			if (parameters.scheme != null && parameters.workspace != null) {
+				commandList.add("-scheme");
+				commandList.add(parameters.scheme)
+				commandList.add("-workspace")
+				commandList.add(parameters.workspace)
+			}
+
+			return commandRunner.runWithResult(commandList)
 		}
 
 		private String getBuildSetting(String key) {
