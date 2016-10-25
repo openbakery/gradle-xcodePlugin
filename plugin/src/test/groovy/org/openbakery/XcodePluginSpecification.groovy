@@ -256,6 +256,32 @@ class XcodePluginSpecification extends Specification {
 		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
 	}
 
+	def "xcodetest has cocoapods dependency"() {
+		when:
+		File projectDir = new File("../example/iOS/SwiftExample")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		def task = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME)
+
+		then:
+
+		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
+	}
+
+	def "xcodebuildForTest has cocoapods dependency"() {
+		when:
+		File projectDir = new File("../example/iOS/SwiftExample")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		project.apply plugin: org.openbakery.XcodePlugin
+
+		def task = project.tasks.findByName(XcodePlugin.XCODE_BUILD_FOR_TEST_TASK_NAME)
+
+		then:
+
+		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
+	}
+
 	def "has cocoapods bootstrap task"() {
 		expect:
 		project.tasks.findByName('cocoapodsBootstrap') instanceof CocoapodsBootstrapTask

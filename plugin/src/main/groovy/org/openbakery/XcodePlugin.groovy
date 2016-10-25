@@ -610,6 +610,9 @@ class XcodePlugin implements Plugin<Project> {
 
 		XcodeTestTask testTask = project.getTasks().getByName(XCODE_TEST_TASK_NAME)
 		testTask.dependsOn(task)
+
+		XcodeBuildForTestTask buildForTestTask = project.getTasks().getByName(XCODE_BUILD_FOR_TEST_TASK_NAME)
+		buildForTestTask.dependsOn(task)
 	}
 }
 
