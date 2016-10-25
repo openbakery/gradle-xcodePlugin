@@ -12,8 +12,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 import spock.lang.Specification
 
-import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
 
 /**
  * Created by rene on 25.10.16.
@@ -172,7 +170,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		xcodeBuildForTestTask.buildForTest()
 
 		then:
-		new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle.zip").exists()
+		new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle").exists()
 	}
 
 	def "has test bundle as result for tvOS"() {
@@ -187,7 +185,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		xcodeBuildForTestTask.buildForTest()
 
 		then:
-		new File(project.getBuildDir(), "for-testing/Example-tvOS-Simulator.testbundle.zip").exists()
+		new File(project.getBuildDir(), "for-testing/Example-tvOS-Simulator.testbundle").exists()
 	}
 
 	def "has test bundle as result for iOS Device"() {
@@ -202,7 +200,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		xcodeBuildForTestTask.buildForTest()
 
 		then:
-		new File(project.getBuildDir(), "for-testing/Example-iOS.testbundle.zip").exists()
+		new File(project.getBuildDir(), "for-testing/Example-iOS.testbundle").exists()
 	}
 
 
@@ -225,17 +223,12 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		when:
 		xcodeBuildForTestTask.buildForTest()
 
-		File zipBundle = new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle.zip")
-		ZipFile zip = new ZipFile(zipBundle);
-		List<String> entries = new ArrayList<String>()
-		for (ZipEntry entry : zip.entries()) {
-			entries.add(entry.getName())
-		}
+		File testBundle = new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle")
 
 		then:
-		zipBundle.exists()
-		entries.contains("Example-iOS-Simulator.testbundle/Example.app/")
-		entries.contains("Example-iOS-Simulator.testbundle/Example_iphonesimulator.xctestrun")
+		testBundle.exists()
+		new File(testBundle, "Test-iphonesimulator/Example.app").exists()
+		new File(testBundle, "Example_iphonesimulator.xctestrun").exists()
 	}
 
 

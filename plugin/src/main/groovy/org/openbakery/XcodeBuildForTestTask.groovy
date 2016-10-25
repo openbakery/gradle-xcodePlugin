@@ -66,23 +66,27 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		if (xcrunfile != null) {
 			copy(xcrunfile, testBundleFile)
 			getAppBundles(xcrunfile).each {
-				copy(it, testBundleFile)
+
+				File source = new File(xcrunfile.parentFile, it)
+				String path = new File(it).parent
+				copy(source, new File(testBundleFile, path))
 			}
-			createZip(new File(testBundleFile.absolutePath + ".zip"), testBundleFile)
+			//createZip(new File(testBundleFile.absolutePath + ".zip"), testBundleFile)
 		}
 	}
 
 
-	List<File> getAppBundles(File xcrunfile) {
+	List<String> getAppBundles(File xcrunfile) {
 
-		List<File> result = []
+		List<String> result = []
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(xcrunfile)
 		for (def item : config.getRoot().getChildren()) {
 			if (item.getChildrenCount("TestHostPath") > 0) {
 				List testHostPath = item.getChildren("TestHostPath")
 				if (testHostPath.size() > 0) {
 					String value = testHostPath[0].value - "__TESTROOT__/"
-					result << new File(xcrunfile.parentFile, value)
+					result << value
+					//result << new File(xcrunfile.parentFile, value)
 				}
 			}
 		}
