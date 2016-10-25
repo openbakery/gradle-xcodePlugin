@@ -41,6 +41,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 	}
 
 	def cleanup() {
+		FileUtils.deleteDirectory(project.buildDir)
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
@@ -165,6 +166,8 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		xcodeBuildForTestTask.parameters.simulator = true
 		xcodeBuildForTestTask.parameters.type = Type.iOS
 
+		TestHelper.createFile(new File(project.getBuildDir(), "sym/test.xctestrun"), "<plist version=\"1.0\"></plist>")
+
 		when:
 		xcodeBuildForTestTask.buildForTest()
 
@@ -178,6 +181,8 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		xcodeBuildForTestTask.parameters.simulator = true
 		xcodeBuildForTestTask.parameters.type = Type.tvOS
 
+		TestHelper.createFile(new File(project.getBuildDir(), "sym/test.xctestrun"), "<plist version=\"1.0\"></plist>")
+
 		when:
 		xcodeBuildForTestTask.buildForTest()
 
@@ -190,6 +195,8 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		project.xcodebuild.productName = 'Example'
 		xcodeBuildForTestTask.parameters.simulator = false
 		xcodeBuildForTestTask.parameters.type = Type.iOS
+
+		TestHelper.createFile(new File(project.getBuildDir(), "sym/test.xctestrun"), "<plist version=\"1.0\"></plist>")
 
 		when:
 		xcodeBuildForTestTask.buildForTest()
@@ -209,8 +216,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 
 		File symDirectory = new File(project.getBuildDir(), "sym")
 		File sym = TestHelper.createDummyApp(new File(symDirectory, "Test-iphonesimulator"), "Example")
-
-
 		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
 		FileUtils.copyFile(xctestrun, new File(symDirectory, "Example_iphonesimulator.xctestrun"))
 

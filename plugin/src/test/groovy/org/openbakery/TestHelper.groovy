@@ -28,4 +28,8 @@ class TestHelper {
 
 		return appDirectory
 	}
+
+	static def createFile(File file, String content) {
+		FileUtils.writeStringToFile(file, content)
+	}
 }
