@@ -59,24 +59,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphoneos")
 		buildOutputDirectory.mkdirs()
 
-		appDirectory = new File(buildOutputDirectory, "Example.app")
-		appDirectory.mkdirs()
 
-		File app = new File(appDirectory, "Example")
-		FileUtils.writeStringToFile(app, "dummy")
-
-
-		File dSymDirectory = new File(buildOutputDirectory, "Example.app.dSym")
-		dSymDirectory.mkdirs()
-
-
-		File infoPlist = new File("../example/iOS/Example/Example/Example-Info.plist")
-		FileUtils.copyFile(infoPlist, new File(appDirectory, "Info.plist"))
-
-		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon.png"), "dummy")
-		FileUtils.writeStringToFile(new File(buildOutputDirectory, "Example.app/Icon-72.png"), "dummy")
-
-
+		appDirectory = TestHelper.createDummyApp(buildOutputDirectory, "Example")
 		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
 	}
 

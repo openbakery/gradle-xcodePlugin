@@ -17,6 +17,12 @@ class DestinationResolver {
 	}
 
 
+	List<Destination> allFor(XcodebuildParameters parameters) {
+		if (parameters.type == Type.iOS && !parameters.simulator) {
+			return []
+		}
+		return simulatorControl.getAllDestinations(parameters.type)
+	}
 
 	List<Destination> getDestinations(XcodebuildParameters parameters) {
 
@@ -27,7 +33,7 @@ class DestinationResolver {
 			return availableDestinations
 		}
 
-		def allDestinations = simulatorControl.getAllDestinations(parameters.type)
+		def allDestinations = allFor(parameters)
 		def runtime = simulatorControl.getMostRecentRuntime(parameters.type)
 
 

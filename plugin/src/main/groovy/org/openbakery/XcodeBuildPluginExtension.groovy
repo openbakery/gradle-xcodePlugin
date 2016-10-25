@@ -294,6 +294,11 @@ class XcodeBuildPluginExtension {
 
 
 	String getValueFromInfoPlist(key) {
+		if (infoPlist != null) {
+			File infoPlistFile = new File(project.projectDir, infoPlist)
+			return plistHelper.getValueFromPlist(infoPlistFile, key)
+		}
+		/*
 		try {
 			logger.debug("project.projectDir {}", project.projectDir)
 			File infoPlistFile = new File(project.projectDir, infoPlist)
@@ -306,6 +311,7 @@ class XcodeBuildPluginExtension {
 		} catch (IllegalStateException ex) {
 			return null
 		}
+		*/
 	}
 
 	String getBundleName() {

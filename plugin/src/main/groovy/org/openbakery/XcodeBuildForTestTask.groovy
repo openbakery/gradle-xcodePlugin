@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Xcodebuild
 
@@ -7,6 +8,8 @@ import org.openbakery.xcode.Xcodebuild
  * Created by rene on 25.10.16.
  */
 class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
+
+	File outputDirectory
 
 	XcodeBuildForTestTask() {
 		super()
@@ -18,7 +21,10 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 	}
 
 	Xcodebuild getXcodebuild() {
-		return new Xcodebuild(commandRunner, xcode, parameters, destinations)
+
+
+
+		return new Xcodebuild(commandRunner, xcode, parameters, getDestinationResolver().allFor(parameters))
 	}
 
 	@TaskAction
@@ -29,7 +35,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
 
-		File outputDirectory = new File(project.getBuildDir(), "for-testing");
+		outputDirectory = new File(project.getBuildDir(), "for-testing");
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
@@ -38,5 +44,62 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		commandRunner.setOutputFile(outputFile);
 
 		xcodebuild.executeBuildForTesting(project.projectDir.absolutePath, createXcodeBuildOutputAppender("XcodeBuildForTestTask") , project.xcodebuild.environment)
+
+		createTestBundle()
 	}
+
+	def createTestBundle() {
+		String bundleDirectory = project.xcodebuild.bundleName
+
+		bundleDirectory += "-" + parameters.type
+
+		if (parameters.simulator) {
+			bundleDirectory += "-Simulator"
+		}
+		bundleDirectory += ".testbundle"
+
+		File testBundleFile = new File(outputDirectory, bundleDirectory)
+		testBundleFile.mkdirs()
+
+
+		File xcrunfile = getXcruntestFile()
+		if (xcrunfile != null) {
+			copy(xcrunfile, testBundleFile)
+			getAppBundles(xcrunfile).each {
+				copy(it, testBundleFile)
+			}
+			createZip(new File(testBundleFile.absolutePath + ".zip"), testBundleFile)
+		}
+	}
+
+
+	List<File> getAppBundles(File xcrunfile) {
+
+		List<File> result = []
+		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(xcrunfile)
+		for (def item : config.getRoot().getChildren()) {
+			if (item.getChildrenCount("TestHostPath") > 0) {
+				List testHostPath = item.getChildren("TestHostPath")
+				if (testHostPath.size() > 0) {
+					String value = testHostPath[0].value - "__TESTROOT__/"
+					result << new File(xcrunfile.parentFile, value)
+				}
+			}
+		}
+		return result
+	}
+
+
+	def getXcruntestFile() {
+		def fileList = parameters.symRoot.list(
+						[accept: { d, f -> f ==~ /.*xctestrun/ }] as FilenameFilter
+		)
+
+		if (fileList == null || fileList.toList().isEmpty()) {
+			return null
+		}
+		return new File(parameters.symRoot, fileList.toList().get(0))
+	}
+
+
 }

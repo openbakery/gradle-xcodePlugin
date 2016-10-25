@@ -3,6 +3,7 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
@@ -238,9 +239,10 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 
 	void mockValueFromPlist(String key, String value) {
+		PlistHelperStub plistHelperStub = new PlistHelperStub()
 		File infoPlist = new File(project.projectDir, "Info.plist")
-		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :" + key]
-		commandRunner.runWithResult(commandList) >> value
+		plistHelperStub.setValueForPlist(infoPlist, key, value)
+		extension.plistHelper = plistHelperStub
 	}
 
 	def "test Default Bundle Name Empty"() {
@@ -261,7 +263,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		mockValueFromPlist("CFBundleName", "TestApp2");
 
 		when:
-			String bundleName = extension.getBundleName();
+		String bundleName = extension.getBundleName();
 
 		then:
 		bundleName.equals("TestApp2")
