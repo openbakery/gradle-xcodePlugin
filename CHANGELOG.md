@@ -1,3 +1,12 @@
+# 0.14.4 ()
+
+Changes
+* Added a XcodebuildForTest task that create build for running unit tests (see xcodebuild build-for-testing)
+
+Bugfixes
+* Added the workspace parameter when getting the build settings: Issue #304
+
+
 # 0.14.3 (October 20, 2016)
 
 Changes
