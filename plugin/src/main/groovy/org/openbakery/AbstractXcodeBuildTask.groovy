@@ -97,6 +97,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start(name, name);
 		return new XcodeBuildOutputAppender(progressLogger, output)
 	}
+
 	DestinationResolver getDestinationResolver() {
 		if (destinationResolver == null) {
 			destinationResolver = new DestinationResolver(getSimulatorControl())

@@ -817,4 +817,46 @@ class XcodebuildSpecification extends Specification {
 
 	}
 
+
+	def "run build-for-testing"() {
+		def commandList
+		def expectedCommandList
+
+		def destination = new Destination()
+		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
+
+		parameters.destination = [destination]
+		parameters.simulator = false
+
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.target = 'Test';
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = false
+
+		when:
+		xcodebuild.executeBuildForTesting("", outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+
+		interaction {
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('script', '-q', '/dev/null',
+							"xcodebuild",
+							"-scheme", 'myscheme',
+							"-workspace", "myworkspace",
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"-destination", "id=83384347-6976-4E70-A54F-1CFECD1E02B1")
+			expectedCommandList << "-enableCodeCoverage" << "yes"
+			expectedCommandList << "build-for-testing"
+		}
+
+		commandList == expectedCommandList
+	}
+
 }

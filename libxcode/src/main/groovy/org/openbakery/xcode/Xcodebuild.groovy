@@ -51,7 +51,7 @@ class Xcodebuild {
 		commandRunner.run(directory, commandList, environment, outputAppender)
 	}
 
-	def executeTest(String directory, OutputAppender outputAppender, Map<String, String> environment) {
+	def commandListForTest(String directory, OutputAppender outputAppender, Map<String, String> environment) {
 		validateParameters(directory, outputAppender, environment)
 		def commandList = []
 		commandList << 'script' << '-q' << '/dev/null'
@@ -61,7 +61,18 @@ class Xcodebuild {
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
 		addCoverageSettings(commandList)
+		return commandList
+	}
+
+	def executeTest(String directory, OutputAppender outputAppender, Map<String, String> environment) {
+		def commandList = commandListForTest(directory, outputAppender, environment)
 		commandList << "test"
+		commandRunner.run(directory, commandList, environment, outputAppender)
+	}
+
+	def executeBuildForTesting(String directory, OutputAppender outputAppender, Map<String, String> environment) {
+		def commandList = commandListForTest(directory, outputAppender, environment)
+		commandList << "build-for-testing"
 		commandRunner.run(directory, commandList, environment, outputAppender)
 	}
 
