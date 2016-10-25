@@ -1,8 +1,10 @@
-# 0.14.3 ()
+# 0.14.3 (October 20, 2016)
 
 Changes
-* Cocoapods is now only bootstraped if it does not exist globally
+* Cocoapods is now only bootstraped if it does not exist globally. Issue #299
 * Add that the dSYMs from the framework are also included in the xcarchive
+* User the SHA instead of the developer identifier for codesigning. (Needed for macOS Sierra)
+* Updated the CoverageReport lib that contains fix for issue #303
 
 Bugfixes
 * Added `clean` to the `xcodebuild -showBuildSettings` command which should fix a hang when using core data: Issue #298
