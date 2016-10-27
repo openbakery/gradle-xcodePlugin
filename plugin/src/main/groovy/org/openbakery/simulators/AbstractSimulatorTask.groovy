@@ -9,8 +9,6 @@ import org.openbakery.xcode.DestinationResolver
  */
 class AbstractSimulatorTask extends AbstractXcodeTask {
 
-	SimulatorControl simulatorControl
-	DestinationResolver destinationResolver
 
 	public AbstractSimulatorTask() {
 	}
@@ -21,18 +19,5 @@ class AbstractSimulatorTask extends AbstractXcodeTask {
 	}
 
 
-	DestinationResolver getDestinationResolver() {
-		if (destinationResolver == null) {
-			destinationResolver = new DestinationResolver(getSimulatorControl())
-		}
-		return destinationResolver
-	}
-
-	SimulatorControl getSimulatorControl() {
-		if (simulatorControl == null) {
-			simulatorControl = new SimulatorControl(this.commandRunner, xcode)
-		}
-		return simulatorControl
-	}
 
 }

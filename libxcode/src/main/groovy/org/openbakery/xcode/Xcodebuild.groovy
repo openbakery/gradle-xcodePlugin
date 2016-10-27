@@ -76,6 +76,25 @@ class Xcodebuild {
 		commandRunner.run(directory, commandList, environment, outputAppender)
 	}
 
+	def executeTestWithoutBuilding(String directory, OutputAppender outputAppender, Map<String, String> environment) {
+
+		parameters.xctestrun.each {
+			def commandList = []
+			commandList << 'script' << '-q' << '/dev/null'
+			commandList << xcode.xcodebuild
+			addDestinationSettingsForTest(commandList)
+			addAdditionalParameters(commandList)
+			addCoverageSettings(commandList)
+
+			commandList << "-xctestrun" << it.absolutePath
+			commandList << "test-without-building"
+			commandRunner.run(directory, commandList, environment, outputAppender)
+
+
+		}
+
+	}
+
 	def executeArchive(String directory, OutputAppender outputAppender, Map<String, String> environment, String archivePath) {
 		validateParameters(directory, outputAppender, environment)
 		def commandList = []

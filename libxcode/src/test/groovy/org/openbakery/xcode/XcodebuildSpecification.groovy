@@ -859,4 +859,41 @@ class XcodebuildSpecification extends Specification {
 		commandList == expectedCommandList
 	}
 
+
+	def "run testing-without-build for device"() {
+		given:
+		def commandList
+		def expectedCommandList = []
+
+		def destination = new Destination()
+		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
+		xcodebuild.parameters.destination = [destination]
+		xcodebuild.parameters.simulator = false
+
+		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild.parameters.xctestrun = [
+		        new File("example.xctestrun")
+		]
+
+
+		when:
+		xcodebuild.executeTestWithoutBuilding("", outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		interaction {
+			expectedCommandList << 'script' << '-q' << '/dev/null'
+			expectedCommandList <<  "xcodebuild"
+			expectedCommandList << "-destination" << "id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+			expectedCommandList << "-enableCodeCoverage" << "yes"
+			expectedCommandList << "-xctestrun" << new File("example.xctestrun").absolutePath
+			expectedCommandList << "test-without-building"
+		}
+
+		commandList == expectedCommandList
+
+
+
+	}
 }

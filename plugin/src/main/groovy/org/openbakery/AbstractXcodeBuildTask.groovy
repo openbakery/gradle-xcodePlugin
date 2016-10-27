@@ -23,8 +23,6 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	XcodebuildParameters parameters = new XcodebuildParameters()
 
-	SimulatorControl simulatorControl
-	DestinationResolver destinationResolver
 
 	private List<Destination> destinationsCache
 
@@ -91,6 +89,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		return destinationsCache
 	}
 
+
 	XcodeBuildOutputAppender createXcodeBuildOutputAppender(String name) {
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
@@ -98,19 +97,5 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		return new XcodeBuildOutputAppender(progressLogger, output)
 	}
 
-	DestinationResolver getDestinationResolver() {
-		if (destinationResolver == null) {
-			destinationResolver = new DestinationResolver(getSimulatorControl())
-		}
-		return destinationResolver
-	}
-
-
-	SimulatorControl getSimulatorControl() {
-		if (simulatorControl == null) {
-			simulatorControl = new SimulatorControl(this.commandRunner, xcode)
-		}
-		return simulatorControl
-	}
 
 }

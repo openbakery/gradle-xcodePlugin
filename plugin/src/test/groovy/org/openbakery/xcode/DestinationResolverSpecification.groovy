@@ -87,7 +87,7 @@ class DestinationResolverSpecification extends Specification {
 		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
-		destinations.size() == 22
+		destinations.size() == 12
 
 	}
 

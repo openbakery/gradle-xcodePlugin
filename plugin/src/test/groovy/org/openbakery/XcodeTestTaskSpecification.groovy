@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
+import org.openbakery.test.TestClass
+import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
@@ -168,99 +170,6 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		dependsOn.contains(XcodePlugin.SIMULATORS_KILL_TASK_NAME)
-	}
-
-	def "parse with no result"() {
-		def allResults = [:]
-		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
-		def destination = simulatorControl.getAllDestinations(Type.iOS)[0]
-		allResults.put(destination, null)
-		when:
-		xcodeTestTask.store(allResults)
-		then:
-		true // no exception should be raised
-	}
-
-
-
-	def "parse success result"() {
-		when:
-		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output.txt"), getDestinations())
-
-		then:
-		xcodeTestTask.numberSuccess(result) == 2
-		xcodeTestTask.numberErrors(result) == 0
-	}
-
-
-	def "parse failure result"() {
-		when:
-		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"), getDestinations())
-
-		then:
-		xcodeTestTask.numberSuccess(result) == 0
-		xcodeTestTask.numberErrors(result) == 2
-	}
-
-
-
-
-	def "parse failure result with partial suite"() {
-		when:
-		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"), getDestinations())
-
-		then:
-		xcodeTestTask.numberSuccess(result) == 0
-		xcodeTestTask.numberErrors(result) == 2
-	}
-
-
-	def "parse success result xcode 6.1"() {
-		when:
-		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"), getDestinations())
-
-		then:
-		xcodeTestTask.numberSuccess(result) == 8
-		xcodeTestTask.numberErrors(result) == 0
-	}
-
-	def "parse complex test output"() {
-
-		when:
-		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"), getDestinations())
-
-		then:
-		xcodeTestTask.numberErrors(result) == 0
-	}
-
-/*
-	def "compile error test"() {
-
-		when:
-		String result = xcodeTestTask.getFailureFromLog(new File("src/test/Resource/xcodebuild-output-test-compile-error.txt"))
-
-		then:
-		result.startsWith("Testing failed:");
-		result.split("\n").length == 8
-
-	}
-*/
-
-
-	def "parse success result for tests written in swift using Xcode 6.1"() {
-		when:
-		xcodeTestTask.parameters = project.xcodebuild.xcodebuildParameters
-		def result = xcodeTestTask.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"), getDestinations())
-
-		then:
-		xcodeTestTask.numberSuccess(result) == 2
-		xcodeTestTask.numberErrors(result) == 0
 	}
 
 	
@@ -616,64 +525,6 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
-
-	List<Destination> getDestinations() {
-		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
-
-		project.xcodebuild.destination {
-			name = "iPhone 4s"
-		}
-		project.xcodebuild.destination {
-			name = "iPad 2"
-		}
-		DestinationResolver destinationResolver = new DestinationResolver(simulatorControl)
-		return destinationResolver.getDestinations(project.xcodebuild.getXcodebuildParameters())
-	}
-
-
-	def "parse test summary returns success"() {
-		given:
-		mockXcodeVersion()
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
-
-		when:
-		boolean success = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
-
-		then:
-		success == true
-	}
-
-	def "parse test summary and verify result count"() {
-		given:
-
-		mockXcodeVersion()
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
-
-		when:
-		def result = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
-
-		then:
-		result.size() == 1
-		result.keySet()[0].name == "iPad 2"
-	}
-
-
-	def "parse test summary and verify nummber test results"() {
-		given:
-
-		mockXcodeVersion()
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
-
-		when:
-		def result = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
-
-		def firstKey = result.keySet()[0]
-		then:
-		result.get(firstKey).size() == 5
-		xcodeTestTask.numberSuccess(result) == 37
-
-	}
-
 	def "parse test-result.xml gets stored"() {
 		given:
 
@@ -689,58 +540,19 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
-	def "parse test summary that has failure"() {
+	def "has TestResultParser"() {
 		given:
+
 		mockXcodeVersion()
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Failure")
+		project.xcodebuild.target = "Test"
 
 		when:
-		def result = xcodeTestTask.parseTestSummaries(testSummaryDirectory, getDestinations())
+		xcodeTestTask.test()
 
-		def firstKey = result.keySet()[0]
 		then:
-		result.get(firstKey).size() == 5
-		xcodeTestTask.numberSuccess(result) == 36
-		xcodeTestTask.numberErrors(result) == 1
-
-	}
-
-	HashMap<Destination, ArrayList<TestClass>> getMergedResult() {
-		mockXcodeVersion()
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
-
-		def destinations = getDestinations()
-		def resultFromPlist = xcodeTestTask.parseTestSummaries(testSummaryDirectory, destinations)
-		def resultFromOutput = xcodeTestTask.parseResult(new File("src/test/Resource/TestLogs/Success/xcodebuild-output.txt"), destinations)
-		xcodeTestTask.mergeResult(resultFromPlist, resultFromOutput)
-		return resultFromPlist
-	}
-
-
-	def "test merged results"() {
-		when:
-		def mergedResult = getMergedResult()
-
-		def firstKey = mergedResult.keySet()[0]
-		then:
-		mergedResult.get(firstKey).size() == 5
-		xcodeTestTask.numberSuccess(mergedResult) == 37
-
-	}
-
-
-	def "test merged results - has duration"() {
-		when:
-		def mergedResult = getMergedResult()
-
-		def firstKey = mergedResult.keySet()[0]
-		then:
-		mergedResult.get(firstKey).size() == 5
-
-		TestClass testClass = mergedResult.get(firstKey)[0]
-		testClass.results.size() == 1
-		testClass.results[0].duration == 0.01.toFloat()
-		testClass.results[0].output.startsWith("Test Case")
+		xcodeTestTask.testResultParser instanceof TestResultParser
+		xcodeTestTask.testResultParser.testSummariesDirectory == new File(project.buildDir, "derivedData/Logs/Test")
+		xcodeTestTask.testResultParser.destinations.size() == 2
 
 	}
 }

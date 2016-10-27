@@ -22,6 +22,8 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.simulators.SimulatorControl
+import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
@@ -41,6 +43,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	public PlistHelper plistHelper
 	public Xcode xcode
+	protected SimulatorControl simulatorControl
+	protected DestinationResolver destinationResolver
 
 
 	AbstractXcodeTask() {
@@ -293,5 +297,19 @@ abstract class AbstractXcodeTask extends DefaultTask {
 			xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
 		}
 		return xcode
+	}
+
+	DestinationResolver getDestinationResolver() {
+		if (destinationResolver == null) {
+			destinationResolver = new DestinationResolver(getSimulatorControl())
+		}
+		return destinationResolver
+	}
+
+	SimulatorControl getSimulatorControl() {
+		if (simulatorControl == null) {
+			simulatorControl = new SimulatorControl(this.commandRunner, xcode)
+		}
+		return simulatorControl
 	}
 }

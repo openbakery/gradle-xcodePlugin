@@ -137,6 +137,21 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 
 	}
 
+	def "xcodebuild has all available iOS destinations for most recent runtime"() {
+		when:
+		xcodeBuildForTestTask.parameters.simulator = true
+		xcodeBuildForTestTask.parameters.type = Type.iOS
+		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
+
+		def destinations = xcodeBuildForTestTask.getDestinations()
+
+		then:
+		destinations.size() == 12
+		destinations[0].platform == "iOS Simulator"
+		destinations[0].os == "9.1"
+
+	}
+
 	def "xcodebuild has all available tvOS destinations"() {
 		when:
 		xcodeBuildForTestTask.parameters.type = Type.tvOS

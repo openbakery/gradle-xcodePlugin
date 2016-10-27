@@ -448,6 +448,23 @@ class SimulatorControlSpecification extends Specification {
 		allDestinations[0].id == '8C8C43D3-B53F-4091-8D7C-6A4B38051389'
 	}
 
+
+	def "get all iOS simulator destinations of runtime"() {
+		given:
+		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+
+		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
+		when:
+		List<Destination> allDestinations = simulatorControl.getAllDestinations(Type.iOS, runtime)
+
+		then:
+		allDestinations.size() == 12
+		allDestinations[0].name == 'iPhone 4s'
+		allDestinations[0].platform == 'iOS Simulator'
+		allDestinations[0].id == '8C8C43D3-B53F-4091-8D7C-6A4B38051389'
+	}
+
 	def "get all tvOS simulator destinations"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"

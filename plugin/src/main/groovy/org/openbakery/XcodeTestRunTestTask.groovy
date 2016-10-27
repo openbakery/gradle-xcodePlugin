@@ -1,9 +1,16 @@
 package org.openbakery
 
 import groovy.io.FileType
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.logging.progress.ProgressLogger
+import org.gradle.internal.logging.progress.ProgressLoggerFactory
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
+import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Xcodebuild
 import org.openbakery.xcode.XcodebuildParameters
 
 /**
@@ -13,6 +20,7 @@ import org.openbakery.xcode.XcodebuildParameters
 class XcodeTestRunTestTask extends AbstractXcodeTask {
 
 	XcodebuildParameters parameters = new XcodebuildParameters()
+	private List<Destination> destinationsCache
 
 	Object bundleDirectory
 
@@ -24,11 +32,24 @@ class XcodeTestRunTestTask extends AbstractXcodeTask {
 		this.description = "Create a build for test of the Xcode project"
 	}
 
+
+	TestBuildOutputAppender createOutputAppender(List<Destination> destinations) {
+		String name = getClass().getName()
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(getClass(), LogLevel.LIFECYCLE);
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(getClass()).start(name, name);
+		return new TestBuildOutputAppender(progressLogger, output, destinations)
+	}
+
 	@TaskAction
 	def testRun() {
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 
 		parameters.xctestrun = getXcruntestFiles()
+		def destinations = getDestinations()
+		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, destinations)
+		xcodebuild.executeTestWithoutBuilding(project.projectDir.absolutePath, createOutputAppender(destinations), project.xcodebuild.environment)
+
 	}
 
 	void destination(Closure closure) {

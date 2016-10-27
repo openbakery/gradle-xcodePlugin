@@ -3,6 +3,11 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.output.TestBuildOutputAppender
+import org.openbakery.output.XcodeBuildOutputAppender
+import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.XcodeFake
+import org.openbakery.xcode.DestinationResolver
 import spock.lang.Specification
 
 /**
@@ -24,7 +29,9 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
-		//xcodeBuildForTestTask.commandRunner = commandRunner
+		xcodeTestRunTestTask.commandRunner = commandRunner
+		xcodeTestRunTestTask.xcode = new XcodeFake()
+		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
 
 	}
 
@@ -60,7 +67,7 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 	}
 
 
-	def "set destionation global"() {
+	def "set destination global"() {
 		when:
 		project.xcodebuild.destination = [
 						"iPhone 6"
@@ -108,6 +115,32 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		xcodeTestRunTestTask.parameters.xctestrun[0].path.endsWith("Example.testbundle/Example_iphonesimulator.xctestrun")
 	}
 
+
+	def "run xcodebuild executeTestWithoutBuilding"() {
+		given:
+		def commandList
+		createTestBundle("test")
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains("test-without-building")
+		commandList.contains("-xctestrun")
+
+	}
+
+	def "has output appender"() {
+		def outputAppender
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> outputAppender = arguments[3] }
+		outputAppender instanceof TestBuildOutputAppender
+	}
 
 
 

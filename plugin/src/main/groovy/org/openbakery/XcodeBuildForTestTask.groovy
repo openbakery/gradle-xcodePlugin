@@ -21,9 +21,6 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 	}
 
 	Xcodebuild getXcodebuild() {
-
-
-
 		return new Xcodebuild(commandRunner, xcode, parameters, getDestinationResolver().allFor(parameters))
 	}
 

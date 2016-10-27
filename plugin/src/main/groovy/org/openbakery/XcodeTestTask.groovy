@@ -10,58 +10,13 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
+import org.openbakery.test.TestClass
+import org.openbakery.test.TestResult
+import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Xcodebuild
 
-class TestResult {
-	String method;
-	boolean success;
-	String output = "";
-	float duration;
 
-
-	@Override
-	public java.lang.String toString() {
-		return "TestResult{" +
-						"method='" + method + '\'' +
-						", success=" + success +
-						", output='" + output + '\'' +
-						'}';
-	}
-}
-
-class TestClass {
-	String name
-	List results = []
-
-	int numberSuccess() {
-		int success = 0;
-		for (TestResult result in results) {
-			if (result.success) {
-				success++
-			}
-		}
-		return success;
-	}
-
-	int numberErrors() {
-		int errors = 0;
-		for (TestResult result in results) {
-			if (!result.success) {
-				errors++
-			}
-		}
-		return errors;
-	}
-
-	@Override
-	public java.lang.String toString() {
-		return "TestClass{" +
-						"name='" + name + '\'' +
-						", results=" + results +
-						'}';
-	}
-}
 
 
 
@@ -73,17 +28,11 @@ class TestClass {
  */
 class XcodeTestTask extends AbstractXcodeBuildTask {
 
-	def TEST_CASE_PATTERN = ~/^Test Case '(.*)'(.*)/
-
-	def TEST_CLASS_PATTERN = ~/-\[([\w\.]*)\s(\w*)\]/
-
-	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
-	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
-
-	def DURATION_PATTERN = ~/^\w+\s\((\d+\.\d+).*/
 
 	File outputDirectory = null
 	File testLogsDirectory = null
+
+	TestResultParser testResultParser = null
 
 	XcodeTestTask() {
 		super()
@@ -95,6 +44,13 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		this.description = "Runs the unit tests for the Xcode project"
 	}
 
+	TestBuildOutputAppender createOutputAppender(List<Destination> destinations) {
+		String name = getClass().getName()
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(getClass(), LogLevel.LIFECYCLE);
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(getClass()).start(name, name);
+		return new TestBuildOutputAppender(progressLogger, output, destinations)
+	}
 
 	@TaskAction
 	def test() {
@@ -116,30 +72,23 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
 
-		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
-		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeTestTask.class).start("XcodeTestTask", "XcodeTestTask");
 
 		def destinations = getDestinations()
 
 		try {
-			StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
-			TestBuildOutputAppender outputAppender = new TestBuildOutputAppender(progressLogger, output, destinations)
-
 			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, destinations)
 			logger.debug("Executing xcodebuild with {}", xcodebuild)
-			xcodebuild.executeTest(project.projectDir.absolutePath, outputAppender, project.xcodebuild.environment)
+			xcodebuild.executeTest(project.projectDir.absolutePath, createOutputAppender(destinations), project.xcodebuild.environment)
 
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
 
-			long startTime = System.currentTimeMillis()
-			def allResults = parseTestSummaries(testLogsDirectory, destinations)
-			store(allResults)
-			long endTime = System.currentTimeMillis();
-			int numberSuccess = numberSuccess(allResults)
-			int numberErrors = numberErrors(allResults)
-			logger.lifecycle("Test Results generated in {}\n", DurationFormatUtils.formatDurationHMS(endTime - startTime));
+			testResultParser = new TestResultParser(testLogsDirectory, destinations)
+			testResultParser.parseAndStore(outputDirectory)
+
+			int numberSuccess = testResultParser.numberSuccess()
+			int numberErrors = testResultParser.numberErrors()
 			if (numberErrors == 0) {
 				logger.lifecycle("All " + numberSuccess + " tests were successful");
 			} else {
@@ -149,406 +98,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 				throw new Exception("Not all unit tests are successful!")
 			}
 
-			/*
-			if (!parseResult(outputFile)) {
-				throw new Exception("Not all unit tests are successful!")
-			}
-			*/
 		}
 	}
 
-
-	HashMap<Destination, ArrayList<TestClass>> parseTestSummaries(File testSummariesDirectory, List<Destination> destinations) {
-
-		def results = new HashMap<Destination, ArrayList<TestClass>>()
-		def testSummariesArray = testSummariesDirectory.list(
-						[accept: { d, f -> f ==~ /.*TestSummaries.plist/ }] as FilenameFilter
-		)
-
-		if (testSummariesArray == null) {
-			return results
-		}
-
-		testSummariesArray.toList().each {
-			def testResult = new XMLPropertyListConfiguration(new File(testSummariesDirectory, it))
-			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
-
-			Destination destination = findDestinationForIdentifier(destinations, identifier)
-			if (destination != null) {
-				def resultList = processTestSummary(testResult.getList("TestableSummaries"))
-				results.put(destination, resultList)
-			}
-
-		}
-		return results
-	}
-
-
-	List<TestClass> processTestSummary(List<XMLPropertyListConfiguration> list) {
-
-		List<TestClass> resultList = []
-
-		for (entry in list) {
-			List<XMLPropertyListConfiguration> testList = entry.getList("Tests")
-			processTests(testList, resultList)
-		}
-
-		return resultList
-
-	}
-
-	List<TestClass> processTests(List<XMLPropertyListConfiguration> list, List<TestClass> resultList) {
-		for (entry in list) {
-			List<XMLPropertyListConfiguration> testList = entry.getList("Subtests")
-			processSubtests(testList, resultList, entry.getString("TestName"))
-		}
-
-
-	}
-
-
-	List<TestClass> processSubtests(List<XMLPropertyListConfiguration> list, List<TestClass> resultList, String name) {
-
-		TestClass testClass = null
-
-		for (entry in list) {
-			if (entry.getString("TestObjectClass") == "IDESchemeActionTestSummary") {
-				if (testClass == null) {
-					testClass = new TestClass(name: name);
-					resultList << testClass
-				}
-
-				String method = entry.getString("TestName")
-				TestResult testResult = new TestResult(method: method)
-				testResult.success = entry.getString("TestStatus") == "Success"
-				testClass.results << testResult
-
-			} else if (entry.getString("TestObjectClass") == "IDESchemeActionTestSummaryGroup") {
-				List<XMLPropertyListConfiguration> testList = entry.getList("Subtests")
-				processSubtests(testList, resultList, entry.getString("TestName"))
-			}
-
-
-		}
-
-	}
-
-
-	Destination findDestinationForIdentifier(List<Destination> destinations, String identifier) {
-		for (destination in destinations) {
-			if (destination.id == identifier) {
-				return destination
-			}
-		}
-		return null
-	}
-
-	HashMap<Destination, ArrayList<TestClass>> parseResult(File outputFile, List<Destination> destinations) {
-		def testResults = new HashMap<Destination, ArrayList<TestClass>>()
-		logger.debug("parse result from: {}", outputFile)
-		if (!outputFile.exists()) {
-			logger.lifecycle("No xcodebuild output file found!");
-			return testResults;
-		}
-		boolean overallTestSuccess = true;
-
-		def resultList = []
-
-		int testRun = 0;
-		boolean endOfDestination = false;
-
-		StringBuilder output = new StringBuilder()
-
-		outputFile.eachLine { line ->
-
-
-			def matcher = TEST_CASE_PATTERN.matcher(line)
-			if (matcher.matches()) {
-
-				String message = matcher[0][2].trim()
-
-				def nameMatcher = TEST_CLASS_PATTERN.matcher(matcher[0][1])
-				if (!nameMatcher.matches()) {
-					return
-				}
-
-				String testClassName = nameMatcher[0][1]
-				String method = nameMatcher[0][2]
-
-				if (message.startsWith("started")) {
-					output = new StringBuilder()
-
-
-
-					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
-					if (testClass == null) {
-						testClass = new TestClass(name: testClassName);
-						resultList << testClass
-					}
-					testClass.results << new TestResult(method: method)
-
-				} else {
-					//TestCase testCase = resultMap.get(testClass).find{ testCase -> testCase.method.equals(method) }
-					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
-					if (testClass != null) {
-						TestResult testResult = testClass.results.find { testResult -> testResult.method.equals(method) }
-
-						if (testResult != null) {
-							testResult.output = output.toString()
-
-							testResult.success = !message.toLowerCase().startsWith("failed")
-							if (!testResult.success) {
-								logger.lifecycle("test + " + testResult + "failed!")
-								overallTestSuccess = false;
-							}
-
-							def durationMatcher = DURATION_PATTERN.matcher(message)
-							if (durationMatcher.matches()) {
-								testResult.duration = Float.parseFloat(durationMatcher[0][1])
-							}
-						}
-					} else {
-						logger.lifecycle("No TestClass found for name: " + testClassName + " => " + line)
-					}
-				}
-			}
-
-			def testSuccessMatcher = TEST_SUCCEEDED_PATTERN.matcher(line)
-			def testFailedMatcher = TEST_FAILED_PATTERN.matcher(line)
-
-			if (testSuccessMatcher.matches() || testFailedMatcher.matches()) {
-				testRun ++;
-				endOfDestination = true
-			}
-
-			if (testFailedMatcher.matches()) {
-				overallTestSuccess = false;
-			}
-
-
-			if( endOfDestination ) {
-				Destination destination = destinations[(testRun - 1)]
-
-				if (testResults.containsKey(destination)) {
-					def destinationResultList = testResults.get(destination)
-					destinationResultList.addAll(resultList);
-				} else {
-					testResults.put(destination, resultList)
-				}
-
-				resultList = []
-				endOfDestination = false
-			} else {
-				if (output != null) {
-					if (output.length() > 0) {
-						output.append("\n")
-					}
-					output.append(line)
-				}
-			}
-		}
-		return testResults;
-	}
-
-
-	def store(HashMap<Destination, ArrayList<TestClass>> result) {
-		logger.debug("store to test-result.xml")
-
-		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
-
-		def xmlBuilder = new MarkupBuilder(writer)
-
-		xmlBuilder.testsuites() {
-			for (e in result) {
-				String name = e.key.toPrettyString()
-
-				def resultList = e.value
-				int success = 0;
-				int errors = 0;
-				if (resultList != null) {
-					success = numberSuccessInResultList(resultList);
-					errors = numberErrorsInResultList(resultList);
-				}
-
-				testsuite(name: name, tests: success, errors: errors, failures: "0", skipped: "0") {
-
-					for (TestClass testClass in resultList) {
-
-						for (TestResult testResult in testClass.results) {
-							logger.debug("testResult: {}", testResult)
-							testcase(classname: testClass.name, name: testResult.method, time: testResult.duration) {
-								if (!testResult.success) {
-									error(type: "failure", message: "", testResult.output)
-								}
-								'system-out'(testResult.output)
-							}
-						}
-
-					}
-
-				}
-			}
-		}
-
-
-	}
-
-
-
-	int numberSuccess(HashMap<Destination, ArrayList<TestClass>> result) {
-		int success = 0;
-		for (java.util.List list in result.values()) {
-			success += numberSuccessInResultList(list);
-		}
-		return success;
-	}
-
-	int numberErrors(HashMap<Destination, ArrayList<TestClass>> result) {
-		int errors = 0;
-		for (java.util.List list in result.values()) {
-			errors += numberErrorsInResultList(list);
-		}
-		return errors;
-	}
-
-	int numberSuccessInResultList(java.util.List results) {
-		int success = 0;
-		for (TestClass testClass in results) {
-			success += testClass.numberSuccess()
-		}
-		return success
-	}
-
-	int numberErrorsInResultList(java.util.List results) {
-		int errors = 0;
-		for (TestClass testClass in results) {
-			errors += testClass.numberErrors()
-		}
-		return errors
-	}
-
-	def storeJson() {
-		logger.lifecycle("Saving test results")
-
-		def list = [];
-		for (Destination destination in project.xcodebuild.availableDestinations) {
-
-			def resultList = this.allResults[destination]
-
-			list << [
-						destination:
-							[
-								name : destination.name,
-								platform : destination.platform,
-								arch: destination.arch,
-								id: destination.id,
-								os: destination.os
-							],
-						results:
-							resultList.collect {
-								TestClass t -> [
-									name: t.name,
-									result: t.results.collect {
-										TestResult r ->	[
-											method: r.method,
-											success: r.success,
-											duration: r.duration,
-											output: r.output.split("\n").collect {
-												String s -> escapeString(s)
-											}
-										]
-									}
-								]
-							}
-					]
-
-		}
-
-		def builder = new groovy.json.JsonBuilder()
-		builder(list)
-
-
-		File outputDirectory = new File(project.getBuildDir(), "test");
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
-		}
-
-		new File(outputDirectory, "results.json").withWriter { out ->
-			out.write(builder.toPrettyString())
-		}
-	}
-
-
-	def escapeString(String string) {
-		if (string == null) {
-			return null;
-		}
-		StringBuffer buffer = new StringBuffer();
-
-		for (int i = 0; i < string.length(); i++) {
-			char ch = string.charAt(i);
-			switch (ch) {
-				case '"':
-					buffer.append("\\\"");
-					break;
-				case '\\':
-					buffer.append("\\\\");
-					break;
-				case '\b':
-					buffer.append("\\b");
-					break;
-				case '\f':
-					buffer.append("\\f");
-					break;
-				case '\n':
-					buffer.append("\\n");
-					break;
-				case '\r':
-					buffer.append("\\r");
-					break;
-				case '\t':
-					buffer.append("\\t");
-					break;
-				case '/':
-					buffer.append("\\/");
-					break;
-				default:
-					buffer.append(ch);
-					break;
-			}
-		}
-		return buffer.toString();
-	}
-
-	void mergeResult(HashMap<Destination, ArrayList<TestClass>> fromPlist, HashMap<Destination, ArrayList<TestClass>> fromOutput) {
-
-		fromPlist.each { destination, testClasses ->
-			def secondDestinationClasses = fromOutput.get(destination)
-			if (secondDestinationClasses != null) {
-				mergeTestClasses(testClasses, secondDestinationClasses)
-			}
-		}
-	}
-
-
-	def mergeTestClasses(ArrayList<TestClass> fromPlist, ArrayList<TestClass> fromOutput) {
-		fromPlist.each { testClass ->
-			def testClassFromOutput = fromOutput.find { it.name == testClass.name }
-			if (testClassFromOutput != null) {
-				mergeTestResults(testClass.results, testClassFromOutput.results)
-			}
-
-		}
-
-	}
-
-	def mergeTestResults(List<TestResult> fromPlist, List<TestResult> fromOutput) {
-		fromPlist.each { testResult ->
-			def testResultFromOutput = fromOutput.find { it.method == testResult.method }
-			if (testResultFromOutput != null) {
-				testResult.duration = testResultFromOutput.duration
-				testResult.output = testResultFromOutput.output
-			}
-		}
-	}
 }

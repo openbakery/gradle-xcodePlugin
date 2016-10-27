@@ -409,17 +409,23 @@ class SimulatorControl {
 		def allDestinations = []
 
 		getRuntimes(type).each { runtime ->
-			getDevices(runtime).each { device ->
-				Destination destination = new Destination()
-				destination.platform = type.value + ' Simulator'
-				destination.name = device.name
-				destination.os = runtime.version.toString()
-				destination.id = device.identifier
-				allDestinations << destination
-			}
+			allDestinations.addAll(getAllDestinations(type, runtime))
 		}
 
 		return allDestinations
 	}
 
+	List<Destination> getAllDestinations(Type type, SimulatorRuntime runtime) {
+		def allDestinations = []
+
+		getDevices(runtime).each { device ->
+			Destination destination = new Destination()
+			destination.platform = type.value + ' Simulator'
+			destination.name = device.name
+			destination.os = runtime.version.toString()
+			destination.id = device.identifier
+			allDestinations << destination
+		}
+		return allDestinations
+	}
 }

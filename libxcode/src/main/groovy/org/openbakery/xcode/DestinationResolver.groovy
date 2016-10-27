@@ -21,7 +21,7 @@ class DestinationResolver {
 		if (parameters.type == Type.iOS && !parameters.simulator) {
 			return []
 		}
-		return simulatorControl.getAllDestinations(parameters.type)
+		return simulatorControl.getAllDestinations(parameters.type, simulatorControl.getMostRecentRuntime(parameters.type))
 	}
 
 	List<Destination> getDestinations(XcodebuildParameters parameters) {
