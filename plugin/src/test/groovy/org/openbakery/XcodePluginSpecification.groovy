@@ -117,6 +117,10 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('xcodebuildForTest') instanceof XcodeBuildForTestTask
 	}
 
+	def "contain task xcodetestrun"() {
+		expect:
+		project.tasks.findByName('xcodetestrun') instanceof XcodeTestRunTestTask
+	}
 
 	def "appstoreUploadTask"() {
 		expect:

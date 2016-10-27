@@ -90,6 +90,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
 	public static final String XCODE_BUILD_FOR_TEST_TASK_NAME = "xcodebuildForTest"
+	public static final String XCODE_TEST_RUN_TASK_NAME =  "xcodetestrun"
 	public static final String ARCHIVE_TASK_NAME = "archive"
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String SIMULATORS_CREATE_TASK_NAME = "simulatorsCreate"
@@ -496,6 +497,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureTest(Project project) {
 		project.task(XCODE_TEST_TASK_NAME, type: XcodeTestTask, group: XCODE_GROUP_NAME)
 		project.task(XCODE_BUILD_FOR_TEST_TASK_NAME, type: XcodeBuildForTestTask, group: XCODE_GROUP_NAME)
+		project.task(XCODE_TEST_RUN_TASK_NAME, type: XcodeTestRunTestTask, group: XCODE_GROUP_NAME)
 
 	}
 

@@ -24,8 +24,9 @@ class XcodebuildParameters {
 	File derivedDataPath
 	List<String> arch
 	def additionalParameters
-	Set<Destination> configuredDestinations
+		Set<Destination> configuredDestinations
 	Devices devices
+	List<File> xctestrun
 
 
 	public XcodebuildParameters() {
@@ -48,6 +49,7 @@ class XcodebuildParameters {
 						", arch=" + arch +
 						", additionalParameters=" + additionalParameters +
 						", configuredDestinations=" + configuredDestinations +
+						", xctestrun=" + xctestrun +
 						'}';
 	}
 
