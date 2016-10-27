@@ -1,11 +1,10 @@
 package org.openbakery.test
 
 import org.apache.commons.io.FileUtils
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
-import org.openbakery.xcode.Xcodebuild
 import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
@@ -22,13 +21,13 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Success")
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations())
 	}
 
 
 	List<Destination> getDestinations() {
-		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
+		SimulatorControlFake simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt")
 		XcodebuildParameters parameters = new XcodebuildParameters()
 		parameters.simulator = true
 		parameters.type = Type.iOS
@@ -57,7 +56,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse success result"() {
 		when:
-		def result = testResultParser.parseResult(new File("src/test/Resource/xcodebuild-output.txt"))
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output.txt"))
 
 		then:
 		testResultParser.numberSuccess(result) == 2
@@ -67,7 +66,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse failure result"() {
 		when:
-		def result = testResultParser.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed.txt"))
 
 		then:
 		testResultParser.numberSuccess(result) == 0
@@ -77,7 +76,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse failure result with partial suite"() {
 		when:
-		def result = testResultParser.parseResult(new File("src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
 		then:
 		testResultParser.numberSuccess(result) == 0
@@ -87,7 +86,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse success result xcode 6.1"() {
 		when:
-		def result = testResultParser.parseResult(new File("src/test/Resource/xcodebuild-output-xcode6_1.txt"))
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-xcode6_1.txt"))
 
 		then:
 		testResultParser.numberSuccess(result) == 8
@@ -96,7 +95,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse complex test output"() {
 		when:
-		def result = testResultParser.parseResult(new File("src/test/Resource/xcodebuild-output-complex-test.txt"))
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-complex-test.txt"))
 
 		then:
 		testResultParser.numberErrors(result) == 0
@@ -104,7 +103,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse success result for tests written in swift using Xcode 6.1"() {
 		when:
-		def result = testResultParser.parseResult(new File("src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
 
 		then:
 		testResultParser.numberSuccess(result) == 2
@@ -145,7 +144,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/Failure")
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Failure")
 		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
 
 		when:
@@ -164,7 +163,7 @@ class TestResultParserSpecification extends Specification {
 
 		testResultParser.parse()
 
-		def resultFromOutput = testResultParser.parseResult(new File("src/test/Resource/TestLogs/Success/xcodebuild-output.txt"))
+		def resultFromOutput = testResultParser.parseResult(new File("../plugin/src/test/Resource/TestLogs/Success/xcodebuild-output.txt"))
 		testResultParser.mergeResult(testResultParser.testResults, resultFromOutput)
 		return testResultParser.testResults
 	}
