@@ -13,8 +13,6 @@ class SimulatorsCreateTask extends AbstractSimulatorTask {
 
 	public SimulatorsCreateTask() {
 		setDescription("Delete and creates all iOS Simulators");
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-
 	}
 
 	@TaskAction

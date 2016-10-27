@@ -31,9 +31,7 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 	}
 
 	public SimulatorsListTask() {
-
 		setDescription("List all available Simulators");
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME);
 	}
 
 	@TaskAction

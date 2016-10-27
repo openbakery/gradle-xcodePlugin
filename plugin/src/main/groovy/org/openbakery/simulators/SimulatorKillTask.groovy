@@ -11,7 +11,6 @@ class SimulatorKillTask extends AbstractSimulatorTask {
 
 	public SimulatorKillTask() {
 		setDescription("Deletes contents and settings for all Simulators")
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		this.setOnlyIf {
 			isSimulator()
 		}

@@ -39,7 +39,7 @@ class SimulatorsCreateTaskSpecification extends Specification {
 		when:
 		def dependsOn  = task.getDependsOn()
 		then:
-		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
+		dependsOn.size() == 1
 	}
 
 	def "run"() {

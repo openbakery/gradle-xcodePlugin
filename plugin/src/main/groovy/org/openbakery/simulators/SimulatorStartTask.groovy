@@ -8,7 +8,6 @@ class SimulatorStartTask extends AbstractSimulatorTask {
 
 	public SimulatorStartTask() {
 		setDescription("Start iOS Simulators")
-		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 	}
 
 

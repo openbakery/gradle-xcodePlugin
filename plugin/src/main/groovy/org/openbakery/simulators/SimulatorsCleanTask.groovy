@@ -14,7 +14,6 @@ class SimulatorsCleanTask extends AbstractSimulatorTask {
 
 	public SimulatorsCleanTask() {
 		setDescription("Deletes contents and settings for all iOS Simulators")
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
 

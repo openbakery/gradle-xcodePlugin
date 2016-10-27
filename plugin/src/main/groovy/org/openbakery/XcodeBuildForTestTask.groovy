@@ -17,7 +17,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 			XcodePlugin.XCODE_CONFIG_TASK_NAME,
 			XcodePlugin.SIMULATORS_KILL_TASK_NAME
 		)
-		this.description = "Create a build for test of the Xcode project"
+		this.description = "Build the xcode project and the tests. A testbundle is created that contains the result.	"
 	}
 
 	Xcodebuild getXcodebuild() {
