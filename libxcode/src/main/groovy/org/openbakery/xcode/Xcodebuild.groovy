@@ -83,6 +83,8 @@ class Xcodebuild {
 			commandList << 'script' << '-q' << '/dev/null'
 			commandList << xcode.xcodebuild
 			addDestinationSettingsForTest(commandList)
+			commandList.add("-derivedDataPath")
+			commandList.add(parameters.derivedDataPath.absolutePath)
 			addAdditionalParameters(commandList)
 			addCoverageSettings(commandList)
 

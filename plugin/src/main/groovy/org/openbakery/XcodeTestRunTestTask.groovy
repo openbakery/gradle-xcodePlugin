@@ -9,6 +9,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
 import org.openbakery.output.TestBuildOutputAppender
+import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Xcodebuild
 import org.openbakery.xcode.XcodebuildParameters
@@ -23,6 +24,9 @@ class XcodeTestRunTestTask extends AbstractXcodeTask {
 	private List<Destination> destinationsCache
 
 	Object bundleDirectory
+	TestResultParser testResultParser = null
+	File outputDirectory = null
+
 
 	XcodeTestRunTestTask() {
 		super()
@@ -44,12 +48,39 @@ class XcodeTestRunTestTask extends AbstractXcodeTask {
 	@TaskAction
 	def testRun() {
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
-
 		parameters.xctestrun = getXcruntestFiles()
-		def destinations = getDestinations()
-		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, destinations)
-		xcodebuild.executeTestWithoutBuilding(project.projectDir.absolutePath, createOutputAppender(destinations), project.xcodebuild.environment)
 
+		File testLogsDirectory = new File(parameters.derivedDataPath, "Logs/Test")
+		testLogsDirectory.deleteDir()
+
+		outputDirectory = new File(project.getBuildDir(), "test");
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs()
+		}
+		commandRunner.setOutputFile(new File(outputDirectory, "xcodebuild-output.txt"));
+
+
+		def destinations = getDestinations()
+		try {
+			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, destinations)
+			xcodebuild.executeTestWithoutBuilding(project.projectDir.absolutePath, createOutputAppender(destinations), project.xcodebuild.environment)
+		} catch (CommandRunnerException ex) {
+			throw new Exception("Error attempting to run the unit tests!", ex);
+		} finally {
+			testResultParser = new TestResultParser(testLogsDirectory, destinations)
+			testResultParser.parseAndStore(outputDirectory)
+			int numberSuccess = testResultParser.numberSuccess()
+			int numberErrors = testResultParser.numberErrors()
+			if (numberErrors == 0) {
+				logger.lifecycle("All " + numberSuccess + " tests were successful");
+			} else {
+				logger.lifecycle(numberSuccess + " tests were successful, and " + numberErrors + " failed");
+			}
+			if (numberErrors != 0) {
+				throw new Exception("Not all unit tests are successful!")
+			}
+
+		}
 	}
 
 	void destination(Closure closure) {

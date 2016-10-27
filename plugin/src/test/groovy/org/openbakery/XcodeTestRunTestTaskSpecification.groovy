@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.output.XcodeBuildOutputAppender
+import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.DestinationResolver
@@ -19,8 +20,8 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 	Project project
 	CommandRunner commandRunner = Mock(CommandRunner);
 
-
 	XcodeTestRunTestTask xcodeTestRunTestTask
+	File outputDirectory
 
 	def setup() {
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-projectDir")
@@ -33,10 +34,16 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		xcodeTestRunTestTask.xcode = new XcodeFake()
 		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
 
+
+		outputDirectory = new File(project.buildDir, "test");
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs();
+		}
 	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
+		FileUtils.deleteDirectory(project.buildDir)
 	}
 
 
@@ -142,6 +149,76 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		outputAppender instanceof TestBuildOutputAppender
 	}
 
+	def "delete derivedData/Logs/Test before test is executed"() {
+		project.xcodebuild.target = "Test"
 
+		def testDirectory = new File(project.xcodebuild.derivedDataPath, "Logs/Test")
+		FileUtils.writeStringToFile(new File(testDirectory, "foobar"), "dummy");
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		!testDirectory.exists()
+	}
+
+
+	def fakeTestRun() {
+		xcodeTestRunTestTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+
+		project.xcodebuild.destination {
+			name = "iPad 2"
+		}
+		project.xcodebuild.destination {
+			name = "iPhone 4s"
+		}
+
+
+		xcodeTestRunTestTask.setOutputDirectory(outputDirectory);
+		File xcodebuildOutput = new File(project.buildDir, 'test/xcodebuild-output.txt')
+		FileUtils.writeStringToFile(xcodebuildOutput, "dummy")
+	}
+
+	def "parse test-result.xml gets stored"() {
+		given:
+		project.xcodebuild.target = "Test"
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		def testResult = new File(outputDirectory, "test-results.xml")
+		then:
+		testResult.exists()
+	}
+
+
+	def "has TestResultParser"() {
+		given:
+		project.xcodebuild.target = "Test"
+
+		when:
+		fakeTestRun()
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		xcodeTestRunTestTask.testResultParser instanceof TestResultParser
+		xcodeTestRunTestTask.testResultParser.testSummariesDirectory == new File(project.buildDir, "derivedData/Logs/Test")
+		xcodeTestRunTestTask.testResultParser.destinations.size() == 2
+
+	}
+
+	def "output file was set"() {
+		def givenOutputFile
+		project.xcodebuild.target = "Test"
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		1 * commandRunner.setOutputFile(_) >> { arguments -> givenOutputFile = arguments[0] }
+		givenOutputFile.absolutePath.endsWith("xcodebuild-output.txt")
+		givenOutputFile == new File(project.getBuildDir(), "test/xcodebuild-output.txt")
+
+	}
 
 }

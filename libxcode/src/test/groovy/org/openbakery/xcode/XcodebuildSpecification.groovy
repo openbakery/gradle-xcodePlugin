@@ -886,14 +886,13 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << 'script' << '-q' << '/dev/null'
 			expectedCommandList <<  "xcodebuild"
 			expectedCommandList << "-destination" << "id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "-xctestrun" << new File("example.xctestrun").absolutePath
 			expectedCommandList << "test-without-building"
 		}
 
 		commandList == expectedCommandList
-
-
 
 	}
 }
