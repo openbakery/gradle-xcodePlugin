@@ -308,7 +308,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	SimulatorControl getSimulatorControl() {
 		if (simulatorControl == null) {
-			simulatorControl = new SimulatorControl(this.commandRunner, xcode)
+			simulatorControl = new SimulatorControl(this.commandRunner, getXcode())
 		}
 		return simulatorControl
 	}

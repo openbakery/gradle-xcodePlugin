@@ -3,7 +3,9 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.simulators.SimulatorControl
 import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -13,7 +15,7 @@ import java.util.zip.ZipFile
 /**
  * Created by rene on 01.12.14.
  */
-class AbstractXcodeTaskSpecification extends Specification{
+class AbstractXcodeTaskSpecification extends Specification {
 
 	Project project
 	AbstractXcodeTask xcodeTask;
@@ -138,7 +140,7 @@ class AbstractXcodeTaskSpecification extends Specification{
 		File zipFile = new File(projectDir, "Test.zip")
 
 		when:
-		xcodeTask.createZip(zipFile, zipFile.parentFile,  tmpDirectory)
+		xcodeTask.createZip(zipFile, zipFile.parentFile, tmpDirectory)
 
 		List<String> zipEntries = getZipEntries(zipFile);
 
@@ -159,7 +161,7 @@ class AbstractXcodeTaskSpecification extends Specification{
 		File zipFile = new File(projectDir, "MultipleTest.zip")
 
 		when:
-		xcodeTask.createZip(zipFile, zipFile.parentFile,  firstFile, secondFile)
+		xcodeTask.createZip(zipFile, zipFile.parentFile, firstFile, secondFile)
 
 		List<String> zipEntries = getZipEntries(zipFile);
 
@@ -182,7 +184,7 @@ class AbstractXcodeTaskSpecification extends Specification{
 		new File(xcode8, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 
 
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcode7_3_1.absolutePath + "\n"  + xcode8.absolutePath
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode7_3_1.absolutePath + "\n" + xcode8.absolutePath
 		commandRunner.runWithResult(xcode7_3_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.3.1\nBuild version 7D1014"
 		commandRunner.runWithResult(xcode8.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
 		commandRunner.runWithResult("xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
@@ -194,5 +196,11 @@ class AbstractXcodeTaskSpecification extends Specification{
 		xcodeTask.xcode != null
 		xcodeTask.xcode.version.major == 7
 
+	}
+
+	def "simulator control is initialized"() {
+		expect:
+		xcodeTask.simulatorControl instanceof SimulatorControl
+		xcodeTask.simulatorControl.xcode instanceof Xcode
 	}
 }
