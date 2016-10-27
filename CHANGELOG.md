@@ -3,6 +3,8 @@
 Changes
 * Added a XcodebuildForTest task that create build for running unit tests (see xcodebuild build-for-testing)
   Here a testbundle is created that contains the xctestrun file and the App bundle
+* Added a XcodeTestRunTestTask that executes the unit tests from the test bundle that was created with XcodebuildForTest
+  Here only the tests are executed, no build is taking place here.
 
 Bugfixes
 * Added the workspace parameter when getting the build settings: Issue #304
