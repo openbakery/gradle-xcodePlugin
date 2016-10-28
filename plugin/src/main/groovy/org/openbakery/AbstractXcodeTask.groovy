@@ -25,10 +25,9 @@ import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.xcode.DestinationResolver
-import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
-import org.openbakery.util.PlistHelper
+import org.openbakery.helpers.PlistHelper
 
 import java.text.SimpleDateFormat
 
@@ -50,7 +49,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
-		plistHelper = new PlistHelper(project, commandRunner)
+		plistHelper = new PlistHelper(project.projectDir, commandRunner)
 	}
 
 
@@ -181,8 +180,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	List<File> getAppBundles(File appPath) {
-		ApplicationBundle applicationBundle = new ApplicationBundle(appPath, project.xcodebuild.type, project.xcodebuild.simulator)
-		return applicationBundle.getBundles(project.xcodebuild.applicationBundle.name)
+		ApplicationBundle applicationBundle = new ApplicationBundle(new File(appPath,project.xcodebuild.applicationBundle.name), project.xcodebuild.type, project.xcodebuild.simulator)
+		return applicationBundle.getBundles()
 	}
 
 	File getProvisionFileForIdentifier(String bundleIdentifier) {

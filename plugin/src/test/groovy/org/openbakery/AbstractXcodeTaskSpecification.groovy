@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.util.PlistHelper
+import org.openbakery.helpers.PlistHelper
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
@@ -38,7 +38,7 @@ class AbstractXcodeTaskSpecification extends Specification {
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		xcodeTask.commandRunner = commandRunner
 
-		xcodeTask.plistHelper = new PlistHelper(project, commandRunner)
+		xcodeTask.plistHelper = new PlistHelper(project.projectDir, commandRunner)
 	}
 
 

@@ -12,7 +12,7 @@ import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
-import org.openbakery.util.PlistHelper
+import org.openbakery.helpers.PlistHelper
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -71,7 +71,7 @@ class PackageTaskSpecification extends Specification {
 
 		File entitlementsFile = new File(payloadAppDirectory, "archived-expanded-entitlements.xcent")
 
-		PlistHelper helper = new PlistHelper(project, new CommandRunner())
+		PlistHelper helper = new PlistHelper(project.projectDir, new CommandRunner())
 		helper.createForPlist(entitlementsFile)
 		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
 		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
@@ -564,7 +564,7 @@ class PackageTaskSpecification extends Specification {
 
 	def "getKeychainAccessGroupFromEntitlements"() {
 		given:
-		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+		packageTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
 
 		when:
 		List<String> keychainAccessGroup = packageTask.getKeychainAccessGroupFromEntitlements(payloadAppDirectory)
@@ -579,7 +579,7 @@ class PackageTaskSpecification extends Specification {
 	def "create entitlements with keychain access groups"() {
 		given:
 		mockExampleApp(false, false)
-		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+		packageTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
 
 		when:
 		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
@@ -598,7 +598,7 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.signing.entitlementsFile = "MyCustomEntitlements.plist"
 
 		mockExampleApp(false, false)
-		packageTask.plistHelper = new PlistHelper(project, new CommandRunner())
+		packageTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
 
 		when:
 		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")

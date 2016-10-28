@@ -1,7 +1,6 @@
-package org.openbakery.util
+package org.openbakery.helpers
 
 import org.apache.commons.io.FileUtils
-import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.slf4j.Logger
@@ -14,11 +13,11 @@ class PlistHelper {
 
 	private static Logger logger = LoggerFactory.getLogger(PlistHelper.class)
 
-	private Project project
+	private File projectDirectory
 	private CommandRunner commandRunner
 
-	PlistHelper(Project project, CommandRunner commandRunner) {
-		this.project = project
+	PlistHelper(File projectDirectory, CommandRunner commandRunner) {
+		this.projectDirectory = projectDirectory
 		this.commandRunner = commandRunner
 	}
 /**
@@ -92,7 +91,7 @@ class PlistHelper {
 		if (plist instanceof File) {
 			infoPlistFile = plist
 		} else {
-			infoPlistFile = new File(project.projectDir, plist)
+			infoPlistFile = new File(projectDirectory, plist)
 		}
 		if (!infoPlistFile.exists()) {
 			throw new IllegalStateException("Info Plist does not exist: " + infoPlistFile.absolutePath);
@@ -117,7 +116,7 @@ class PlistHelper {
 		if (plist instanceof File) {
 			infoPlistFile = plist
 		} else {
-			infoPlistFile = new File(project.projectDir, plist)
+			infoPlistFile = new File(projectDirectory, plist)
 		}
 
 		FileUtils.writeStringToFile(infoPlistFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

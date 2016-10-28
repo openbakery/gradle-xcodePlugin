@@ -11,7 +11,7 @@ import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
-import org.openbakery.util.PlistHelper
+import org.openbakery.helpers.PlistHelper
 import org.openbakery.xcode.Xcodebuild
 import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
@@ -124,7 +124,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def setupProject() {
 		CommandRunner commandRunner = new CommandRunner()
 		commandRunner.defaultBaseDirectory = projectDir.absolutePath
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, commandRunner);
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project.projectDir, commandRunner);
 		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
 
 		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
@@ -241,7 +241,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def createInfoPlist() {
 		given:
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project, new CommandRunner())
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 

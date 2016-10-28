@@ -17,16 +17,15 @@ public class ApplicationBundle {
 		this.simulator = simulator
 	}
 
-	List<File> getBundles(String applicationBundleName) {
+	List<File> getBundles() {
 		ArrayList<File> bundles = new ArrayList<File>();
-		File appBundle = new File(this.applicationPath, applicationBundleName)
 
-		addPluginsToAppBundle(appBundle, bundles)
+		addPluginsToAppBundle(applicationPath, bundles)
 
 		if (isDeviceBuildOf(Type.iOS)) {
-			addWatchToAppBundle(appBundle, bundles)
+			addWatchToAppBundle(applicationPath, bundles)
 		}
-		bundles.add(appBundle)
+		bundles.add(applicationPath)
 		return bundles;
 	}
 

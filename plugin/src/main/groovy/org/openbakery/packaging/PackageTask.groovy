@@ -58,9 +58,8 @@ class PackageTask extends AbstractDistributeTask {
 
 		applicationBundleName = applicationName + ".app"
 
-		ApplicationBundle applicationBundle = new ApplicationBundle(applicationFolder, project.xcodebuild.type, project.xcodebuild.simulator)
-		//appBundles = getAppBundles(applicationFolder, applicationBundleName)
-		appBundles = applicationBundle.getBundles(applicationBundleName)
+		ApplicationBundle applicationBundle = new ApplicationBundle(new File(applicationFolder,applicationBundleName) , project.xcodebuild.type, project.xcodebuild.simulator)
+		appBundles = applicationBundle.getBundles()
 
 		File resourceRules = new File(applicationFolder, applicationBundleName + "/ResourceRules.plist")
 		if (resourceRules.exists()) {

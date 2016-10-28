@@ -7,7 +7,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
-import org.openbakery.util.PlistHelper
+import org.openbakery.helpers.PlistHelper
 import spock.lang.Specification
 
 import static org.hamcrest.MatcherAssert.assertThat
@@ -53,7 +53,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File infoPlist = new File("../example/OSX/ExampleOSX/ExampleOSX/Info.plist")
 		FileUtils.copyFile(infoPlist, new File(appDirectory, "" + "Contents/Info.plist"))
 
-		plistHelper = new PlistHelper(project, new CommandRunner())
+		plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
 	}
 
 	def cleanup() {
@@ -211,7 +211,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		commandRunner.runWithResult(_) >> FileUtils.readFileToString(new File("src/test/Resource/entitlements.plist"))
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 
 		def keychainAccessGroups = [
 				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
@@ -260,7 +260,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("DDDDDDDDDD.com.mycompany.*")
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 
 		def keychainAccessGroups = [
 						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
@@ -281,7 +281,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("DDDDDDDDDD.org.openbakery.*")
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 
 		def keychainAccessGroups = [
 						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
@@ -306,7 +306,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 
 		def keychainAccessGroups = [
 						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
@@ -346,7 +346,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 
 		def keychainAccessGroups = [
 						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
@@ -367,7 +367,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
 
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 
 		def keychainAccessGroups = [
 						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
@@ -386,7 +386,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		def commandList
 
 		File mobileprovision = new File("src/test/Resource/openbakery-team.mobileprovision")
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision.absolutePath, project, commandRunner, new PlistHelper(project, new CommandRunner()))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision.absolutePath, project, commandRunner, new PlistHelper(project.projectDir, new CommandRunner()))
 		def expectedProvisioningPlist = new File(project.buildDir, "tmp/provision_openbakery-team.plist")
 
 		when:

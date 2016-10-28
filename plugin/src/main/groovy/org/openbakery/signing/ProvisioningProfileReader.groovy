@@ -21,7 +21,7 @@ import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
-import org.openbakery.util.PlistHelper
+import org.openbakery.helpers.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -44,7 +44,7 @@ class ProvisioningProfileReader {
 	private File provisioningPlist
 
 	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner) {
-		this(provisioningProfile, project, commandRunner, new PlistHelper(project, commandRunner))
+		this(provisioningProfile, project, commandRunner, new PlistHelper(project.projectDir, commandRunner))
 	}
 
 	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner, PlistHelper plistHelper) {
