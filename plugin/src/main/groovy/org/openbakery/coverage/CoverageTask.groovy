@@ -21,7 +21,7 @@ class CoverageTask extends AbstractXcodeTask {
 
 	CoverageTask() {
 		super()
-		dependsOn(XcodePlugin.XCODE_TEST_TASK_NAME)
+		//dependsOn(XcodePlugin.XCODE_TEST_TASK_NAME)
 		this.description = "Runs the gcovr code coverage for the project"
 	}
 
