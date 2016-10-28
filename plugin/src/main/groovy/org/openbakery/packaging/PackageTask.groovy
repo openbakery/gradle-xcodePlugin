@@ -8,6 +8,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
+import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.signing.ProvisioningProfileReader
@@ -57,8 +58,9 @@ class PackageTask extends AbstractDistributeTask {
 
 		applicationBundleName = applicationName + ".app"
 
-
-		appBundles = getAppBundles(applicationFolder, applicationBundleName)
+		ApplicationBundle applicationBundle = new ApplicationBundle(applicationFolder, project.xcodebuild.type, project.xcodebuild.simulator)
+		//appBundles = getAppBundles(applicationFolder, applicationBundleName)
+		appBundles = applicationBundle.getBundles(applicationBundleName)
 
 		File resourceRules = new File(applicationFolder, applicationBundleName + "/ResourceRules.plist")
 		if (resourceRules.exists()) {

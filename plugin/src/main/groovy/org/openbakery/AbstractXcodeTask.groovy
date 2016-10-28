@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
+import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.ProvisioningProfileReader
 import org.openbakery.simulators.SimulatorControl
@@ -180,70 +181,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	List<File> getAppBundles(File appPath) {
-		return getAppBundles(appPath, project.xcodebuild.applicationBundle.name)
-	}
-
-	List<File> getAppBundles(File appPath, String applicationBundleName) {
-
-		ArrayList<File> bundles = new ArrayList<File>();
-
-		File appBundle = new File(appPath, applicationBundleName)
-
-		addPluginsToAppBundle(appBundle, bundles)
-
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-			addWatchToAppBundle(appBundle, bundles)
-		}
-		bundles.add(appBundle)
-		return bundles;
-	}
-
-	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
-		File plugins
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-			plugins = new File(appBundle, "PlugIns")
-		}	else if (project.xcodebuild.type == Type.OSX) {
-			plugins = new File(appBundle, "Contents/PlugIns")
-		} else {
-			return
-		}
-
-		if (plugins.exists()) {
-			for (File pluginBundle : plugins.listFiles()) {
-				if (pluginBundle.isDirectory()) {
-
-					if (pluginBundle.name.endsWith(".framework")) {
-						// Frameworks have to be signed with this path
-						bundles.add(new File(pluginBundle, "/Versions/Current"))
-					}	else if (pluginBundle.name.endsWith(".appex")) {
-
-						for (File appexBundle : pluginBundle.listFiles()) {
-							if (appexBundle.isDirectory() && appexBundle.name.endsWith(".app")) {
-								bundles.add(appexBundle)
-							}
-						}
-						bundles.add(pluginBundle)
-					} else if (pluginBundle.name.endsWith(".app")) {
-						bundles.add(pluginBundle)
-					}
-				}
-			}
-		}
-	}
-
-	private void addWatchToAppBundle(File appBundle, ArrayList<File> bundles) {
-		File watchDirectory
-		watchDirectory = new File(appBundle, "Watch")
-		if (watchDirectory.exists()) {
-			for (File bundle : watchDirectory.listFiles()) {
-				if (bundle.isDirectory()) {
-					if (bundle.name.endsWith(".app")) {
-						addPluginsToAppBundle(bundle, bundles)
-						bundles.add(bundle)
-					}
-				}
-			}
-		}
+		ApplicationBundle applicationBundle = new ApplicationBundle(appPath, project.xcodebuild.type, project.xcodebuild.simulator)
+		return applicationBundle.getBundles(project.xcodebuild.applicationBundle.name)
 	}
 
 	File getProvisionFileForIdentifier(String bundleIdentifier) {
