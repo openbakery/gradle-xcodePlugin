@@ -1,14 +1,18 @@
 package org.openbakery.signing;
 
 import org.openbakery.CommandRunner;
+import org.openbakery.codesign.ProvisioningProfileReader;
+import org.openbakery.helpers.PlistHelper;
+
+import java.io.File;
 
 /**
  * Created by rene on 04.02.16.
  */
 public class ProvisioningProfileReaderIgnoreExpired extends ProvisioningProfileReader {
 
-	public ProvisioningProfileReaderIgnoreExpired(Object provisioningProfile, Object project, CommandRunner commandRunner) {
-		super(provisioningProfile, project, commandRunner);
+	public ProvisioningProfileReaderIgnoreExpired(File provisioningProfile, CommandRunner commandRunner) {
+		super(provisioningProfile, commandRunner);
 	}
 
 	@Override

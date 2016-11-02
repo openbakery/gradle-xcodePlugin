@@ -32,7 +32,7 @@ class HockeyKitArchiveTaskSpecification extends Specification {
 		project.xcodebuild.infoPlist = 'Info.plist'
 
 		hockeyKitArchiveTask = project.getTasks().getByPath('hockeykitArchive')
-		hockeyKitArchiveTask.plistHelper = new PlistHelper(project.projectDir, commandRunner)
+		hockeyKitArchiveTask.plistHelper = new PlistHelper(commandRunner)
 		hockeyKitArchiveTask.commandRunner = commandRunner
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")

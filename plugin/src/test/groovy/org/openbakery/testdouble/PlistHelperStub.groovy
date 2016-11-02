@@ -19,11 +19,11 @@ class PlistHelperStub extends PlistHelper {
 	}
 
 	PlistHelperStub() {
-		super(null, null)
+		super(null)
 	}
 
 	@Override
-	def getValueFromPlist(Object plist, Object key) {
+	def getValueFromPlist(File plist, String key) {
 		if (plistValues.containsKey(key)) {
 			return plistValues.get(key)
 		}
@@ -37,25 +37,22 @@ class PlistHelperStub extends PlistHelper {
 		return null;
 	}
 
-	private String getUniqueKey(plist, key) {
-		if (plist instanceof File) {
-			return ((File) plist).absolutePath + "_" + key;
-		}
-		return plist.toString() + "_" + key;
+	private String getUniqueKey(File plist, key) {
+		return plist.absolutePath + "_" + key
 	}
 
 	@Override
-	void setValueForPlist(def Object plist, String key, List values) {
+	void setValueForPlist(File plist, String key, List values) {
 		plistValues.put(getUniqueKey(plist, key), values)
 	}
 
 	@Override
-	void setValueForPlist(def Object plist, String key, String value) {
+	void setValueForPlist(File plist, String key, String value) {
 		plistValues.put(getUniqueKey(plist, key), value)
 	}
 
 	@Override
-	void commandForPlist(def Object plist, String command) {
+	void commandForPlist(File plist, String command) {
 		plistCommands.add(command)
 	}
 }

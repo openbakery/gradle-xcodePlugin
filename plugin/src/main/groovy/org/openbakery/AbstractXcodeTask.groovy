@@ -22,7 +22,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.packaging.PackageTask
-import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Version
@@ -49,7 +49,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
-		plistHelper = new PlistHelper(project.projectDir, commandRunner)
+		plistHelper = new PlistHelper(commandRunner)
 	}
 
 
@@ -189,7 +189,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner, this.plistHelper)
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, this.commandRunner, this.plistHelper)
 			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
 		}
 

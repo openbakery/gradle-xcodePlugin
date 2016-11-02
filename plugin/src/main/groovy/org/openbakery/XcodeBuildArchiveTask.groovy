@@ -18,7 +18,7 @@ package org.openbakery
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
@@ -292,7 +292,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		String applicationIdentifier = "UNKNOWN00ID"; // if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
 		File provisioningProfile = getProvisionFileForIdentifier(bundleIdentifier)
 		if (provisioningProfile != null && provisioningProfile.exists()) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, project, commandRunner, plistHelper)
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, commandRunner)
 			applicationIdentifier = reader.getApplicationIdentifierPrefix()
 		}
 

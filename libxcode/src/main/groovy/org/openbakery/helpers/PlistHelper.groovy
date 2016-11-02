@@ -13,13 +13,14 @@ class PlistHelper {
 
 	private static Logger logger = LoggerFactory.getLogger(PlistHelper.class)
 
-	private File projectDirectory
 	private CommandRunner commandRunner
 
-	PlistHelper(File projectDirectory, CommandRunner commandRunner) {
-		this.projectDirectory = projectDirectory
+
+	PlistHelper(CommandRunner commandRunner) {
 		this.commandRunner = commandRunner
 	}
+
+
 /**
 	 * Reads the value for the given key from the given plist
 	 *
@@ -29,15 +30,12 @@ class PlistHelper {
  	 *
 	 * @return returns the value for the given key
 	 */
-	def getValueFromPlist(plist, key) {
-		if (plist instanceof File) {
-			plist = plist.absolutePath
-		}
+	def getValueFromPlist(File plist, String key) {
 
 		try {
 			String result = commandRunner.runWithResult([
 					"/usr/libexec/PlistBuddy",
-					plist,
+					plist.absolutePath,
 					"-c",
 					"Print :" + key])
 
@@ -64,62 +62,50 @@ class PlistHelper {
 		}
 	}
 
-	void setValueForPlist(def plist, String key, List values) {
+	void setValueForPlist(File plist, String key, List values) {
 		deleteValueFromPlist(plist, key)
 		addValueForPlist(plist, key, values)
 	}
 
-	void addValueForPlist(def plist, String key, List values) {
+	void addValueForPlist(File plist, String key, List values) {
 		commandForPlist(plist, "Add :" + key + " array")
 		values.eachWithIndex { value, index ->
 			commandForPlist(plist, "Add :" + key + ": string " + value)
 		}
 	}
 
-	void addValueForPlist(def plist, String key, String value) {
+	void addValueForPlist(File plist, String key, String value) {
 		commandForPlist(plist, "Add :" + key + " string " + value)
 	}
 
 
-	void setValueForPlist(def plist, String key, String value) {
+	void setValueForPlist(File plist, String key, String value) {
 		commandForPlist(plist, "Set :" + key + " " + value)
 	}
 
 
-	void commandForPlist(def plist, String command) {
-		File infoPlistFile;
-		if (plist instanceof File) {
-			infoPlistFile = plist
-		} else {
-			infoPlistFile = new File(projectDirectory, plist)
-		}
-		if (!infoPlistFile.exists()) {
-			throw new IllegalStateException("Info Plist does not exist: " + infoPlistFile.absolutePath);
+	void commandForPlist(File plist, String command) {
+		if (!plist.exists()) {
+			throw new IllegalStateException("Info Plist does not exist: " + plist.absolutePath);
 		}
 
 		logger.debug("Set Info Plist Value: {}", command)
 		commandRunner.run([
 				"/usr/libexec/PlistBuddy",
-				infoPlistFile.absolutePath,
+				plist.absolutePath,
 				"-c",
 				command
 		])
 	}
 
-	void deleteValueFromPlist(def plist, String key) {
+	void deleteValueFromPlist(File plist, String key) {
 		commandForPlist(plist, "Delete " + key);
 	}
 
 
-	void createForPlist(def plist) {
-		File infoPlistFile;
-		if (plist instanceof File) {
-			infoPlistFile = plist
-		} else {
-			infoPlistFile = new File(projectDirectory, plist)
-		}
+	void createForPlist(File plist) {
 
-		FileUtils.writeStringToFile(infoPlistFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+		FileUtils.writeStringToFile(plist, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
 				"<plist version=\"1.0\">\n" +
 				"<dict>\n</dict>\n" +

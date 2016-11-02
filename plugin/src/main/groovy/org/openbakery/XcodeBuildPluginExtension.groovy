@@ -123,7 +123,7 @@ class XcodeBuildPluginExtension {
 		this.signing = new Signing(project)
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
-		plistHelper = new PlistHelper(this.project.projectDir, commandRunner)
+		plistHelper = new PlistHelper(commandRunner)
 
 		this.dstRoot = {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")

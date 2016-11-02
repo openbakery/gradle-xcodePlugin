@@ -17,6 +17,8 @@ package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.helpers.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 
@@ -68,7 +70,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
 			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
-			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(mobileProvisionFile, project, this.commandRunner)
+			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, this.plistHelper)
 
 			String uuid = provisioningProfileIdReader.getUUID()
 

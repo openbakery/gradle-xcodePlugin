@@ -124,7 +124,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def setupProject() {
 		CommandRunner commandRunner = new CommandRunner()
 		commandRunner.defaultBaseDirectory = projectDir.absolutePath
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project.projectDir, commandRunner);
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(commandRunner);
 		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
 
 		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
@@ -241,7 +241,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def createInfoPlist() {
 		given:
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(new CommandRunner())
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 

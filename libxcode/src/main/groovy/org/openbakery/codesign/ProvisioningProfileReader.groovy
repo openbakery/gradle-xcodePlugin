@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery.signing
+package org.openbakery.codesign
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.helpers.PlistHelper
@@ -38,16 +37,16 @@ class ProvisioningProfileReader {
 
 	XMLPropertyListConfiguration config
 
-	public Project project
 
 	private File provisioningProfile
 	private File provisioningPlist
 
-	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner) {
-		this(provisioningProfile, project, commandRunner, new PlistHelper(project.projectDir, commandRunner))
+
+	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner) {
+		this(provisioningProfile, commandRunner, new PlistHelper(commandRunner))
 	}
 
-	ProvisioningProfileReader(def provisioningProfile, def project, CommandRunner commandRunner, PlistHelper plistHelper) {
+	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner, PlistHelper plistHelper) {
 		super()
 
 		String text = load(provisioningProfile)
@@ -58,17 +57,11 @@ class ProvisioningProfileReader {
 
 		this.plistHelper = plistHelper
 
-		this.project = project
-
 		checkExpired()
 	}
 
-	String load(def provisioningProfile) {
-		if (!(provisioningProfile instanceof File)) {
-			this.provisioningProfile = new File(provisioningProfile.toString())
-		} else {
-			this.provisioningProfile = provisioningProfile
-		}
+	String load(File provisioningProfile) {
+		this.provisioningProfile = provisioningProfile
 
 		if (!this.provisioningProfile.exists()) {
 			logger.warn("The specified provisioning profile does not exist: " + this.provisioningProfile.absolutePath)
@@ -126,9 +119,9 @@ class ProvisioningProfileReader {
 			// unpack provisioning profile to plain plist
 			String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 			// read temporary plist file
-			def outputDirectory = new File(project.buildDir.absolutePath, "tmp")
-			outputDirectory.mkdirs()
-			provisioningPlist = new File(outputDirectory, "provision_" + basename + ".plist")
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"))
+			provisioningPlist = new File(tmpDir, "provision_" + basename + ".plist")
+			provisioningPlist.deleteOnExit()
 
 			try {
 				commandRunner.run(["security",
@@ -172,6 +165,8 @@ class ProvisioningProfileReader {
 						getPlistFromProvisioningProfile().absolutePath,
 						"-c",
 						"Print Entitlements"])
+
+		//String entitlements = plistHelper.commandForPlist(getPlistFromProvisioningProfile(), "Print Entitlements")
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 
 

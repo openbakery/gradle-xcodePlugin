@@ -71,7 +71,7 @@ class PackageTaskSpecification extends Specification {
 
 		File entitlementsFile = new File(payloadAppDirectory, "archived-expanded-entitlements.xcent")
 
-		PlistHelper helper = new PlistHelper(project.projectDir, new CommandRunner())
+		PlistHelper helper = new PlistHelper(new CommandRunner())
 		helper.createForPlist(entitlementsFile)
 		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
 		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
@@ -115,11 +115,11 @@ class PackageTaskSpecification extends Specification {
 		}
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
 
 		if (withPlugin) {
 			File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
-			plistHelperStub.setValueForPlist(infoPlistWidget.absolutePath, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
+			plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
 		}
 
 
@@ -222,7 +222,7 @@ class PackageTaskSpecification extends Specification {
 		String result = new File('src/test/Resource/entitlements.plist').text
 		commandRunner.runWithResult(commandList) >> result
 		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
-		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
+		File plist = new File(System.getProperty("java.io.tmpdir") + "/provision_" + basename + ".plist")
 		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
 		commandRunner.runWithResult(commandList) >> result
 	}
@@ -564,7 +564,7 @@ class PackageTaskSpecification extends Specification {
 
 	def "getKeychainAccessGroupFromEntitlements"() {
 		given:
-		packageTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
+		packageTask.plistHelper = new PlistHelper(new CommandRunner())
 
 		when:
 		List<String> keychainAccessGroup = packageTask.getKeychainAccessGroupFromEntitlements(payloadAppDirectory)
@@ -579,7 +579,7 @@ class PackageTaskSpecification extends Specification {
 	def "create entitlements with keychain access groups"() {
 		given:
 		mockExampleApp(false, false)
-		packageTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
+		packageTask.plistHelper = new PlistHelper(new CommandRunner())
 
 		when:
 		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
@@ -598,7 +598,7 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.signing.entitlementsFile = "MyCustomEntitlements.plist"
 
 		mockExampleApp(false, false)
-		packageTask.plistHelper = new PlistHelper(project.projectDir, new CommandRunner())
+		packageTask.plistHelper = new PlistHelper(new CommandRunner())
 
 		when:
 		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")

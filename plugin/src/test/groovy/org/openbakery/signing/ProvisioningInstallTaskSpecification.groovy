@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.helpers.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
@@ -52,7 +54,7 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		File testMobileprovision = new File("src/test/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision.absolutePath, project, commandRunner)
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
 		String uuid = provisioningProfileIdReader.getUUID()
 		String name =  "gradle-" + uuid + ".mobileprovision";
 
@@ -76,8 +78,8 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
 
-		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".mobileprovision";
-		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision.absolutePath, project, new CommandRunner()).getUUID() + ".mobileprovision";
+		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision, new CommandRunner()).getUUID() + ".mobileprovision";
+		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision, new CommandRunner()).getUUID() + ".mobileprovision";
 
 		File firstSource = new File(projectDir, "build/provision/" + firstName)
 		File firstDestination = new File(provisionLibraryPath, firstName)

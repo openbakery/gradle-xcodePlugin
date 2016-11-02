@@ -38,7 +38,7 @@ class AbstractXcodeTaskSpecification extends Specification {
 		xcodeTask = project.getTasks().getByPath(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		xcodeTask.commandRunner = commandRunner
 
-		xcodeTask.plistHelper = new PlistHelper(project.projectDir, commandRunner)
+		xcodeTask.plistHelper = new PlistHelper(commandRunner)
 	}
 
 
@@ -57,12 +57,14 @@ class AbstractXcodeTaskSpecification extends Specification {
 
 	def getInfoListValue() {
 		given:
-		def commandList = ["/usr/libexec/PlistBuddy", "Info.plist", "-c", "Print :CFBundleIdentifier"]
+
+		File infoPlist = new File("Info.plist")
+		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :CFBundleIdentifier"]
 		commandRunner.runWithResult(commandList) >> "com.example.Example"
 
 		when:
 		String result;
-		result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
+		result = xcodeTask.plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 
 		then:
 		result.equals("com.example.Example");
@@ -70,7 +72,8 @@ class AbstractXcodeTaskSpecification extends Specification {
 
 	def "getArrayFromInfoListValue"() {
 		given:
-		def commandList = ["/usr/libexec/PlistBuddy", "Info.plist", "-c", "Print :CFBundleIdentifier"]
+		File infoPlist = new File("Info.plist")
+		def commandList = ["/usr/libexec/PlistBuddy", infoPlist.absolutePath, "-c", "Print :CFBundleIdentifier"]
 		commandRunner.runWithResult(commandList) >> "Array {\n" +
 						"    AppIcon29x29\n" +
 						"    AppIcon40x40\n" +
@@ -79,7 +82,7 @@ class AbstractXcodeTaskSpecification extends Specification {
 						"}"
 
 		when:
-		def result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIdentifier")
+		def result = xcodeTask.plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 
 		then:
 		result instanceof List
@@ -94,7 +97,7 @@ class AbstractXcodeTaskSpecification extends Specification {
 		commandRunner.runWithResult(commandList) >> { throw new CommandRunnerException() }
 
 		when:
-		def result = xcodeTask.plistHelper.getValueFromPlist("Info.plist", "CFBundleIconFiles")
+		def result = xcodeTask.plistHelper.getValueFromPlist(new File("Info.plist"), "CFBundleIconFiles")
 
 		then:
 		result == null

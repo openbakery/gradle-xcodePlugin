@@ -137,20 +137,18 @@ class PackageTask_OSXSpecification  extends Specification {
 		}
 
 		File infoPlist = new File(this.appDirectory, "Contents/Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
 
-		plistHelperStub.deleteValueFromPlist(infoPlist.absolutePath, "CFBundleResourceSpecification")
-		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.deleteValueFromPlist(infoPlist, "CFBundleResourceSpecification")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
 
 
 		File mobileprovision = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
 
 		String basename = FilenameUtils.getBaseName(mobileprovision.path)
-		File plist = new File(project.buildDir.absolutePath + "/tmp/provision_" + basename + ".plist")
-		plistHelperStub.setValueForPlist(plist.absolutePath, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
-
-
+		File plist = new File(System.getProperty("java.io.tmpdir") + "/provision_" + basename + ".plist")
+		plistHelperStub.setValueForPlist(plist, "Entitlements:com.apple.application-identifier", "org.openbakery.Example")
 
 		project.xcodebuild.outputPath.mkdirs()
 	}

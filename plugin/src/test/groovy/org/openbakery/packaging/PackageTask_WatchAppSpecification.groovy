@@ -99,7 +99,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
 
 
 		String watchkitAppPath = "Watch/ExampleWatchkit WatchKit App.app"
@@ -107,13 +107,13 @@ class PackageTask_WatchAppSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(watchkitDirectory, "ExampleWatchkit WatchKit App"), "dummy");
 
 		File infoPlistWatchkit = new File(payloadAppDirectory, watchkitAppPath + "/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWatchkit.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp")
+		plistHelperStub.setValueForPlist(infoPlistWatchkit, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp")
 
 
 		FileUtils.writeStringToFile(new File(watchkitExtensionBundle, "ExampleWatchkit WatchKit Extension"), "dummy");
 
 		File infoPlistWatchkitExtension = new File(payloadAppDirectory, watchkitExtensionPath + "/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension.absolutePath, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp.watchkitextension")
+		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp.watchkitextension")
 
 		//File infoPlist = new File(payloadAppDirectory, "Info.plist")
 		//		plistHelperStub.setValueForPlist(infoPlist.absolutePath, "CFBundleIdentifier", "org.openbakery.Example")

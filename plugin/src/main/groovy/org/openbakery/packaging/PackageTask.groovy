@@ -7,11 +7,13 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
+import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.codesign.Codesign
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
-import org.openbakery.signing.ProvisioningProfileReader
+import org.openbakery.codesign.ProvisioningProfileReader
 
 /**
  * Created by rene on 14.11.14.
@@ -84,7 +86,7 @@ class PackageTask extends AbstractDistributeTask {
 			signSettingsAvailable = false;
 		}
 
-
+		Codesign c = new Codesign(project.xcodebuild.signing.identity, project.xcodebuild.type, project.xcodebuild.signing.entitlementsFile, commandRunner)
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -95,6 +97,7 @@ class PackageTask extends AbstractDistributeTask {
 
 			if (signSettingsAvailable) {
 				logger.info("Codesign app: {}", bundle);
+				c.sign(bundle)
 				codesign(bundle)
 			} else {
 				String message = "Bundle not signed: " + bundle
@@ -118,7 +121,7 @@ class PackageTask extends AbstractDistributeTask {
 		if (provisionFile == null) {
 			return false
 		}
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
 		return reader.isAdHoc()
 	}
 
@@ -206,6 +209,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
+	/* -- DELETE ME -- */
 	File createEntitlementsFile(File bundle, String bundleIdentifier) {
 
 		if (project.xcodebuild.signing.entitlementsFile != null) {
@@ -227,7 +231,7 @@ class PackageTask extends AbstractDistributeTask {
 		//def keychainAccessGroup = plistHelper.getValueFromPlist(buildConfiguration.entitlements, "keychain-access-groups")
 		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(bundle)
 
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, project, this.commandRunner, this.plistHelper)
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File entitlementsFile = new File(outputPath, "entitlements_" + basename + ".plist")
 		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup)
@@ -237,6 +241,8 @@ class PackageTask extends AbstractDistributeTask {
 		logger.info("Using entitlementsFile {}", entitlementsFile)
 		return entitlementsFile
 	}
+	/* -- DELETE ME -- */
+
 
 	List<String> getKeychainAccessGroupFromEntitlements(File bundle) {
 
@@ -262,6 +268,8 @@ class PackageTask extends AbstractDistributeTask {
 
 		return result
 	}
+
+	/* -- DELETE ME -- */
 
 	private void codeSignFrameworks(File bundle) {
 
@@ -312,6 +320,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
+
 	private String getIdentifierForBundle(File bundle) {
 		File infoPlist
 
@@ -321,9 +330,12 @@ class PackageTask extends AbstractDistributeTask {
 			infoPlist = new File(bundle, "Contents/Info.plist")
 		}
 
-		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist.absolutePath, "CFBundleIdentifier")
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 		return bundleIdentifier
 	}
+
+	/* -- DELETE ME -- */
+
 
 	private void embedProvisioningProfileToBundle(File bundle) {
 		File mobileProvisionFile = getProvisionFileForBundle(bundle);
