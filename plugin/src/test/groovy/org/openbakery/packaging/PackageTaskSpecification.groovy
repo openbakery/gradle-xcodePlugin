@@ -36,11 +36,14 @@ class PackageTaskSpecification extends Specification {
 	File payloadAppDirectory
 	File archiveDirectory
 	File keychain
+	File tmpDir
 
 	void setup() {
 
+		tmpDir = new File(System.getProperty("java.io.tmpdir"))
+
 		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
-		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
+		projectDir = new File(tmpDir, tmpName)
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
@@ -64,8 +67,10 @@ class PackageTaskSpecification extends Specification {
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
-		keychain = new File(projectDir, "gradle.keychain")
+
+		keychain = new File(tmpDir, "gradle.keychain")
 		FileUtils.writeStringToFile(keychain, "dummy");
+
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.target = "Example"
 
@@ -85,6 +90,7 @@ class PackageTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(archiveDirectory)
 		FileUtils.deleteDirectory(project.buildDir)
 		FileUtils.deleteDirectory(projectDir)
+		keychain.delete()
 	}
 
 	void mockExampleApp(boolean withPlugin, boolean withSwift) {
@@ -198,7 +204,7 @@ class PackageTaskSpecification extends Specification {
 
 	List<String> codesignCommand(String path, String entitlementsName) {
 		File payloadApp = new File(packageTask.outputPath, path)
-		File entitlements = new File(project.buildDir.absolutePath, "package/" + entitlementsName)
+		File entitlements = new File(tmpDir, entitlementsName)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -440,42 +446,6 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
-	def "provisioning match"() {
-		given:
-		File appMobileprovision = new File("src/test/Resource/test.mobileprovision")
-		File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-		File wildcardMobileprovision = new File("src/test/Resource/test-wildcard.mobileprovision")
-
-		when:
-		project.xcodebuild.signing.mobileProvisionFile = appMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = widgetMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = wildcardMobileprovision
-
-
-		then:
-		packageTask.getProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
-		packageTask.getProvisionFileForIdentifier("org.openbakery.ExampleWidget") == widgetMobileprovision
-		packageTask.getProvisionFileForIdentifier("org.openbakery.Test") == wildcardMobileprovision
-		packageTask.getProvisionFileForIdentifier("org.Test") == wildcardMobileprovision
-
-	}
-
-
-	def "provisioning Match more"() {
-		given:
-		File appMobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
-		File wildcardMobileprovision = new File("src/test/Resource/openbakery-wildcard.mobileprovision")
-
-		when:
-		project.xcodebuild.signing.mobileProvisionFile = appMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = wildcardMobileprovision
-
-		then:
-		packageTask.getProvisionFileForIdentifier("org.openbakery.Example") == appMobileprovision
-		packageTask.getProvisionFileForIdentifier("org.openbakery.Example.widget") == wildcardMobileprovision
-		packageTask.getProvisionFileForIdentifier("org.openbakery.Example.extension") == wildcardMobileprovision
-
-	}
 
 
 	def "swift Codesign Libs"() {

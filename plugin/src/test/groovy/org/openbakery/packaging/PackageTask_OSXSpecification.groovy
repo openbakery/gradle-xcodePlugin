@@ -33,13 +33,17 @@ class PackageTask_OSXSpecification  extends Specification {
 	File provisionProfile
 	File keychain
 	File applicationBundle
+	File tmpDir
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
 
 	void setup() {
 
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		tmpDir = new File(System.getProperty("java.io.tmpdir"))
+
+
+		projectDir = new File(tmpDir, "gradle-xcodebuild")
 		FileUtils.deleteDirectory(projectDir)
 		projectDir.mkdirs()
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -95,7 +99,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 	List<String> codesignCommand(String path) {
 		File payloadApp = new File(packageTask.outputPath, path)
-		File entitlements = new File(project.buildDir.absolutePath, "package/entitlements_test-wildcard-mac.plist")
+		File entitlements = new File(tmpDir, "entitlements_test-wildcard-mac.plist")
 
 		def commandList = [
 						"/usr/bin/codesign",

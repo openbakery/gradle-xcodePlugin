@@ -5,7 +5,7 @@
 	<string>Example App</string>
 	<key>ApplicationIdentifierPrefix</key>
 	<array>
-	<string>ABCDEFGHIJK</string>
+	<string>AAAAAAAAAAA</string>
 	</array>
 	<key>CreationDate</key>
 	<date>2016-03-10T12:00:00Z</date>

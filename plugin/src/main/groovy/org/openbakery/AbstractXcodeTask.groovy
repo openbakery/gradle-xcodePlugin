@@ -184,45 +184,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return applicationBundle.getBundles()
 	}
 
-	File getProvisionFileForIdentifier(String bundleIdentifier) {
-
-		def provisionFileMap = [:]
-
-		for (File mobileProvisionFile : project.xcodebuild.signing.mobileProvisionFile) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, this.commandRunner, this.plistHelper)
-			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
-		}
-
-		logger.debug("provisionFileMap: {}", provisionFileMap)
-
-		for ( entry in provisionFileMap ) {
-			if (entry.key.equalsIgnoreCase(bundleIdentifier) ) {
-				return entry.value
-			}
-		}
-
-		// match wildcard
-		for ( entry in provisionFileMap ) {
-			if (entry.key.equals("*")) {
-				return entry.value
-			}
-
-			if (entry.key.endsWith("*")) {
-				String key = entry.key[0..-2].toLowerCase()
-				if (bundleIdentifier.toLowerCase().startsWith(key)) {
-					return entry.value
-				}
-			}
-		}
-
-		def output = services.get(StyledTextOutputFactory).create(PackageTask)
-
-		output.withStyle(StyledTextOutput.Style.Failure).println("No provisioning profile found for bundle identifier " + bundleIdentifier)
-		output.withStyle(StyledTextOutput.Style.Description).println("Available bundle identifier are " + provisionFileMap.keySet())
-
-
-		return null
-	}
 
 	File getTemporaryDirectory(String path) {
 		File tmp = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp")

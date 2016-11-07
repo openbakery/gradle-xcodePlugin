@@ -30,10 +30,12 @@ class PackageTask_WatchKitSpecification extends Specification {
 	File payloadAppDirectory
 	File archiveDirectory
 	File keychain
+	File tmpDir
 
 	void setup() {
+		tmpDir = new File(System.getProperty("java.io.tmpdir"))
 
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		projectDir = new File(tmpDir, "gradle-xcodebuild")
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
@@ -127,7 +129,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 
 	List<String> codesignCommand(String path, String entitlementsName) {
 		File payloadApp = new File(packageTask.outputPath, path)
-		File entitlements = new File(project.buildDir.absolutePath, "package/" + entitlementsName)
+		File entitlements = new File(tmpDir, entitlementsName)
 
 		def commandList = [
 						"/usr/bin/codesign",

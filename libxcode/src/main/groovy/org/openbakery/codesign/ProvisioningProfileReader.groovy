@@ -60,6 +60,42 @@ class ProvisioningProfileReader {
 		checkExpired()
 	}
 
+	static File getProvisionFileForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, PlistHelper plistHelper) {
+		def provisionFileMap = [:]
+
+		for (File mobileProvisionFile : mobileProvisionFiles) {
+			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, commandRunner, plistHelper)
+			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+		}
+
+		logger.debug("provisionFileMap: {}", provisionFileMap)
+
+		for (entry in provisionFileMap) {
+			if (entry.key.equalsIgnoreCase(bundleIdentifier)) {
+				return entry.value
+			}
+		}
+
+		// match wildcard
+		for (entry in provisionFileMap) {
+			if (entry.key.equals("*")) {
+				return entry.value
+			}
+
+			if (entry.key.endsWith("*")) {
+				String key = entry.key[0..-2].toLowerCase()
+				if (bundleIdentifier.toLowerCase().startsWith(key)) {
+					return entry.value
+				}
+			}
+		}
+
+		logger.info("No provisioning profile found for bundle identifier {}",  bundleIdentifier)
+		logger.info("Available bundle identifier are {}" + provisionFileMap.keySet())
+
+		return null
+	}
+
 	String load(File provisioningProfile) {
 		this.provisioningProfile = provisioningProfile
 
