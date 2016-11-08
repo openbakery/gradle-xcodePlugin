@@ -50,8 +50,8 @@ dependencies {
 
 jar {
 	baseName 'xcode-plugin'
-	from project.sourceSets.main.allSource
-	from project(":libxcode").sourceSets.main.allSource
+	from project.sourceSets.main.output
+	from project(":libxcode").sourceSets.main.output
 	//from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
