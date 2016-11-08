@@ -5,7 +5,6 @@ plugins {
 }
 
 
-def versionNumber = '0.14.0'
 def publishURL = System.getenv("PUBLISH_URL")
 def publishUser = System.getenv("PUBLISH_USER")
 def publishPassword = System.getenv("PUBLISH_PASSWORD")
@@ -19,28 +18,16 @@ if (project.hasProperty("publishUser")) {
 if (project.hasProperty("publishPassword")) {
 	publishPassword = project.publishPassword
 }
-if (project.hasProperty("versionNumber")) {
-	versionNumber = project.versionNumber 
-}
-if (project.hasProperty("versionSuffix")) {
-	versionNumber += project.versionSuffix 
-}
-if (project.hasProperty("buildNumber")) {
-	versionNumber += "." + project.buildNumber 
-}
 
 
-group = 'org.openbakery'
-version = versionNumber
+
 cobertura.coverageFormats = ['html', 'xml']
 
-apply plugin: 'java-gradle-plugin'
-apply plugin: 'groovy'
 apply plugin: 'maven'
 
-
-sourceCompatibility = "1.6"
-targetCompatibility = "1.6" 
+repositories {
+	mavenCentral()
+}
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.14'
@@ -48,46 +35,24 @@ task wrapper(type: Wrapper) {
 
 configurations {
 	deployerJars
-	includeInJar
-	includeInTest
 }
 
-repositories {
-	mavenCentral()
-}
 
 
 dependencies {
 	compile gradleApi()
-	compile localGroovy()
-	includeInJar project(':libxcode')
-	includeInTest project(':libtest')
-	compile 'commons-io:commons-io:2.2'
-	compile 'commons-configuration:commons-configuration:1.10'
-	compile 'commons-collections:commons-collections:3.2.2'
 	compile 'org.apache.httpcomponents:httpclient:4.4.1'
 	compile 'org.apache.httpcomponents:httpmime:4.4.1'
 	compile 'org.pegdown:pegdown:1.5.+'
-	compile 'ch.qos.logback:logback-core:1.0.13'
 	compile 'org.openbakery.coverage:CoverageReport:0.9.3'
-	testCompile 'junit:junit:4.12'
-	testCompile 'org.hamcrest:hamcrest-all:1.3'
-	testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
-	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-	testCompile 'org.objenesis:objenesis:1.2'
-	testCompile 'cglib:cglib-nodep:2.2.2'
 	deployerJars 'org.apache.maven.wagon:wagon-ssh:2.10'
-	testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
-		exclude module: 'groovy-all'
-	}
-
-	configurations.compile.extendsFrom(configurations.includeInJar)
-	configurations.testCompile.extendsFrom(configurations.includeInTest)
 }
 
 jar {
 	baseName 'xcode-plugin'
-	from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
+	from project.sourceSets.main.allSource
+	from project(":libxcode").sourceSets.main.allSource
+	//from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 uploadArchives {
@@ -136,7 +101,6 @@ pluginBundle {
 		xcodePlugin {
 			id = 'org.openbakery.xcode-plugin'
 			displayName = 'Gradle Xcode plugin'
-			version = versionNumber
 		}
 	}
 }
