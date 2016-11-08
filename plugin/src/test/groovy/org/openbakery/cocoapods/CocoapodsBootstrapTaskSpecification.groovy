@@ -47,6 +47,8 @@ class CocoapodsBootstrapTaskSpecification extends Specification {
 
 
 	def "task executes pod setup"() {
+		given:
+		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
 
 		when:
 		cocoapodsBootstrapTask.bootstrap()

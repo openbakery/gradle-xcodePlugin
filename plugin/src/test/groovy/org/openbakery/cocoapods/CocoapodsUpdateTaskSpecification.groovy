@@ -39,6 +39,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 
 	def "run pod setup"() {
 		given:
+		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
 
 		when:
 		cocoapodsTask.update()
@@ -49,6 +50,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 
 	def "update pods"() {
 		given:
+		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
 
 		when:
 		cocoapodsTask.update()
@@ -92,5 +94,28 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		!cocoapodsTask.getDependsOn().contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 	}
 
+
+	def "not depends on bootstrap, pod install locally"() {
+		when:
+
+		cocoapodsTask.commandRunner = commandRunner
+		commandRunner.runWithResult("which", "pod") >> "/Users/build/.rvm/gems/ruby-2.3.0/bin/pod"
+
+		cocoapodsTask.addBootstrapDependency()
+
+		then:
+		!cocoapodsTask.getDependsOn().contains(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
+	}
+
+
+	def "runPod install locally"() {
+		when:
+		commandRunner.runWithResult("which", "pod") >> "/Users/build/.rvm/gems/ruby-2.3.0/bin/pod"
+		cocoapodsTask.runPod("setup")
+
+		then:
+		1 * commandRunner.run(["/Users/build/.rvm/gems/ruby-2.3.0/bin/pod", "setup"], _)
+
+	}
 
 }

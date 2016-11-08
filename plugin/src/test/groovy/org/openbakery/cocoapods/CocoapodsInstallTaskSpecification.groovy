@@ -41,6 +41,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 
 	def "run pod setup"() {
 		given:
+		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
 
 		when:
 		cocoapodsTask.install()
@@ -64,6 +65,9 @@ class CocoapodsInstallTaskSpecification extends Specification {
 
 
 	def "install pods use global pods"() {
+		given:
+		commandRunner.runWithResult("which", "pod") >> "/usr/local/bin/pod"
+
 		when:
 		cocoapodsTask.install()
 

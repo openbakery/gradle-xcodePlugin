@@ -1,4 +1,4 @@
 rootProject.name = 'xcode-plugin'
 
-include 'libxcode', 'plugin'
+include 'libtest', 'libxcode', 'plugin'
 

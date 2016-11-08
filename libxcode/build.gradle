@@ -1,4 +1,10 @@
+apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
+
+configurations {
+	includeInTest
+}
+
 
 repositories {
 	mavenCentral()
@@ -6,9 +12,12 @@ repositories {
 
 dependencies {
 	compile localGroovy()
+	includeInTest project(':libtest')
+
 	compile 'commons-io:commons-io:2.2'
 	compile 'commons-configuration:commons-configuration:1.10'
 	compile 'commons-collections:commons-collections:3.2.2'
+	compile 'commons-codec:commons-codec:1.10'
 	compile 'ch.qos.logback:logback-core:1.0.13'
 	compile 'org.slf4j:slf4j-api:1.7.21'
 
@@ -20,4 +29,7 @@ dependencies {
 	testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
 		exclude module: 'groovy-all'
 	}
+	configurations.testCompile.extendsFrom(configurations.includeInTest)
+
 }
+

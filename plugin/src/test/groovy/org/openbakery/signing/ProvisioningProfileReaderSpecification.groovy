@@ -63,7 +63,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	def "read UUID from file"() {
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("src/test/Resource/test.mobileprovision"), new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
 
 		then:
 		reader.getUUID() == "FFFFFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF"
@@ -71,7 +71,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	def "read application identifier prefix"() {
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("src/test/Resource/test.mobileprovision"), new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
 		then:
 		reader.getApplicationIdentifierPrefix().equals("AAAAAAAAAAA")
 	}
@@ -79,7 +79,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	def "read application identifier"() {
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("src/test/Resource/test.mobileprovision"), new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
 		then:
 		reader.getApplicationIdentifier() == "org.openbakery.Example"
 	}
@@ -209,7 +209,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	def "extract Entitlements test application identifier"() {
 		given:
 		File mobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
-		commandRunner.runWithResult(_) >> FileUtils.readFileToString(new File("src/test/Resource/entitlements.plist"))
+		commandRunner.runWithResult(_) >> FileUtils.readFileToString(new File("../libtest/src/main/Resource/entitlements.plist"))
 
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
@@ -324,7 +324,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	def "is ad-hoc profile"() {
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("src/test/Resource/test.mobileprovision"), new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
 
 		then:
 		reader.isAdHoc() == true
@@ -333,7 +333,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	def "is not ad-hoc profile"() {
 		when:
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("src/test/Resource/Appstore.mobileprovision"), new CommandRunner())
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/Appstore.mobileprovision"), new CommandRunner())
 
 		then:
 		reader.isAdHoc() == false
@@ -404,7 +404,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	def "provisioning match"() {
 		given:
-		File appMobileprovision = new File("src/test/Resource/test.mobileprovision")
+		File appMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		File wildcardMobileprovision = new File("src/test/Resource/test-wildcard.mobileprovision")
 

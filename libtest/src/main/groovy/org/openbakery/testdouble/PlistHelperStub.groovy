@@ -42,6 +42,16 @@ class PlistHelperStub extends PlistHelper {
 	}
 
 	@Override
+	void addValueForPlist(File plist, String key, List values) {
+		plistValues.put(getUniqueKey(plist, key), values)
+	}
+
+	@Override
+	void addValueForPlist(File plist, String key, String value) {
+		plistValues.put(getUniqueKey(plist, key), value)
+	}
+
+	@Override
 	void setValueForPlist(File plist, String key, List values) {
 		plistValues.put(getUniqueKey(plist, key), values)
 	}

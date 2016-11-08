@@ -192,7 +192,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 
-
+/*
 	List<String> getKeychainAccessGroupFromEntitlements(File bundle) {
 
 		List<String> result = []
@@ -216,6 +216,21 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		return result
+	}
+	*/
+
+
+	private String getIdentifierForBundle(File bundle) {
+		File infoPlist
+
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+			infoPlist = new File(bundle, "Info.plist");
+		} else {
+			infoPlist = new File(bundle, "Contents/Info.plist")
+		}
+
+		String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
+		return bundleIdentifier
 	}
 
 

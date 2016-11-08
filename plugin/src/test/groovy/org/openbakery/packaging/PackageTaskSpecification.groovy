@@ -74,13 +74,14 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.target = "Example"
 
+		/*
 		File entitlementsFile = new File(payloadAppDirectory, "archived-expanded-entitlements.xcent")
 
 		PlistHelper helper = new PlistHelper(new CommandRunner())
 		helper.createForPlist(entitlementsFile)
 		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
 		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
-
+*/
 		packageTask.xcode = new XcodeFake()
 		//FileUtils.writeStringToFile(entitlementsFile, "")
 
@@ -98,7 +99,7 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
-
+ /* use ApplicationDummy from libtest */
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework, boolean adHoc) {
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
@@ -154,9 +155,9 @@ class PackageTaskSpecification extends Specification {
 
 		File mobileprovision = null
 		if (adHoc) {
-			mobileprovision = new File("src/test/Resource/test.mobileprovision")
+			mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		} else {
-			mobileprovision = new File("src/test/Resource/Appstore.mobileprovision")
+			mobileprovision = new File("../libtest/src/main/Resource/Appstore.mobileprovision")
 		}
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
 		mockEntitlementsFromPlist(mobileprovision)
@@ -166,8 +167,6 @@ class PackageTaskSpecification extends Specification {
 			project.xcodebuild.signing.mobileProvisionFile = widgetMobileprovision
 			mockEntitlementsFromPlist(widgetMobileprovision)
 		}
-
-
 	}
 
 	def mockXcodeVersion() {
@@ -225,7 +224,7 @@ class PackageTaskSpecification extends Specification {
 
 	void mockEntitlementsFromPlist(File provisioningProfile) {
 		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
-		String result = new File('src/test/Resource/entitlements.plist').text
+		String result = new File('../libtest/src/main/Resource/entitlements.plist').text
 		commandRunner.runWithResult(commandList) >> result
 		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
 		File plist = new File(System.getProperty("java.io.tmpdir") + "/provision_" + basename + ".plist")
@@ -349,7 +348,7 @@ class PackageTaskSpecification extends Specification {
 		given:
 		mockExampleApp(false, false)
 
-		File mobileprovision = new File("src/test/Resource/test.mobileprovision")
+		File mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
 
 		when:
@@ -367,7 +366,7 @@ class PackageTaskSpecification extends Specification {
 		given:
 		mockExampleApp(true, false)
 
-		File firstMobileprovision = new File("src/test/Resource/test.mobileprovision")
+		File firstMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionFile = firstMobileprovision
 		project.xcodebuild.signing.mobileProvisionFile = secondMobileprovision
@@ -532,51 +531,5 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
-	def "getKeychainAccessGroupFromEntitlements"() {
-		given:
-		packageTask.plistHelper = new PlistHelper(new CommandRunner())
-
-		when:
-		List<String> keychainAccessGroup = packageTask.getKeychainAccessGroupFromEntitlements(payloadAppDirectory)
-
-		then:
-		keychainAccessGroup.size() == 3
-		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)org.openbakery.Example"
-		keychainAccessGroup[1] == "\$(AppIdentifierPrefix)org.openbakery.ExampleWidget"
-		keychainAccessGroup[2] == "BBBBBBBBBB.org.openbakery.Foobar"
-	}
-
-	def "create entitlements with keychain access groups"() {
-		given:
-		mockExampleApp(false, false)
-		packageTask.plistHelper = new PlistHelper(new CommandRunner())
-
-		when:
-		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
-
-		then:
-		entitlementsFile.exists()
-		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
-		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.ExampleWidget")
-
-	}
-
-
-	def "use custom entitlements file"() {
-		given:
-
-		project.xcodebuild.signing.entitlementsFile = "MyCustomEntitlements.plist"
-
-		mockExampleApp(false, false)
-		packageTask.plistHelper = new PlistHelper(new CommandRunner())
-
-		when:
-		File entitlementsFile = packageTask.createEntitlementsFile(payloadAppDirectory, "org.openbakery.Example")
-
-		then:
-		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
-
-
-	}
 
 }

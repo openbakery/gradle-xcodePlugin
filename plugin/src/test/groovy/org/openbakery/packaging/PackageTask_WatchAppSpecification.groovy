@@ -90,6 +90,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 	}
 
+	/* use ApplicationDummy from libtest */
 	void createExampleApp() {
 
 
@@ -124,7 +125,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		project.xcodebuild.outputPath.mkdirs()
 
 
-		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/test.mobileprovision")
+		project.xcodebuild.signing.mobileProvisionFile = new File("../libtest/src/main/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/exampleWatchkit.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/exampleWatchkitExtension.mobileprovision")
 

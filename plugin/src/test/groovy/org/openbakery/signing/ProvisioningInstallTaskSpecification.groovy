@@ -51,7 +51,7 @@ class ProvisioningInstallTaskSpecification extends Specification {
 
 	def "single ProvisioningProfile"() {
 
-		File testMobileprovision = new File("src/test/Resource/test.mobileprovision")
+		File testMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
 		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
@@ -74,7 +74,7 @@ class ProvisioningInstallTaskSpecification extends Specification {
 
 	def "multiple ProvisioningProfiles"() {
 
-		File firstMobileprovision = new File("src/test/Resource/test.mobileprovision")
+		File firstMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
 

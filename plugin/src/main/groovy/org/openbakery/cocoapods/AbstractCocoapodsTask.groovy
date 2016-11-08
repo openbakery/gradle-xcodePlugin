@@ -40,7 +40,7 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 				podCommand = podPath + "/bin/pod"
 			} else {
 				// use global install cocoapods
-				podCommand = "/usr/local/bin/pod"
+				podCommand = commandRunner.runWithResult("which", "pod") //"/usr/local/bin/pod"
 			}
 		}
 		logger.lifecycle "Run pod " + parameter

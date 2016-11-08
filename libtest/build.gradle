@@ -1,0 +1,20 @@
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'groovy'
+
+configurations {
+	includeInJar
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile localGroovy()
+	includeInJar project(':libxcode')
+	compile 'commons-io:commons-io:2.2'
+	compile 'commons-configuration:commons-configuration:1.10'
+	compile 'commons-collections:commons-collections:3.2.2'
+	configurations.compile.extendsFrom(configurations.includeInJar)
+
+}

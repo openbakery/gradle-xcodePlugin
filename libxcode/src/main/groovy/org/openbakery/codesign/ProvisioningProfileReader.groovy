@@ -164,7 +164,7 @@ class ProvisioningProfileReader {
 													 "cms",
 													 "-D",
 													 "-i",
-													 provisioningProfile.absolutePath,
+													 provisioningProfile.getCanonicalPath(),
 													 "-o",
 													 provisioningPlist.absolutePath
 				])
