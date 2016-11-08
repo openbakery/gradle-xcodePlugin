@@ -55,6 +55,13 @@ jar {
 	//from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	from project(":libxcode").sourceSets.main.allSource
+	classifier = 'sources'
+}
+
+
 uploadArchives {
 	repositories {
 		mavenDeployer {
@@ -85,10 +92,6 @@ uploadArchives {
 }
 
 
-task sourcesJar(type: Jar) {
-	from sourceSets.main.allSource
-	classifier = 'sources'
-}
 
 
 pluginBundle {

@@ -50,7 +50,7 @@ allprojects {
 
 project(':plugin') {
 	dependencies {
-		compile project(':libxcode')
+		compileOnly project(':libxcode')
 		testCompile project(':libtest')
 	}
 }
