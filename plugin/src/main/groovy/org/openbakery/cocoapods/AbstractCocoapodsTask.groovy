@@ -1,5 +1,6 @@
 package org.openbakery.cocoapods
 
+import org.codehaus.groovy.tools.shell.Command
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunner
@@ -40,7 +41,13 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 				podCommand = podPath + "/bin/pod"
 			} else {
 				// use global install cocoapods
-				podCommand = commandRunner.runWithResult("which", "pod") //"/usr/local/bin/pod"
+				try {
+					podCommand = commandRunner.runWithResult("which", "pod")
+				} catch (CommandRunnerException ex) {
+					// try to use the global install cocoapods if all went wrong
+					podCommand = "/usr/local/bin/pod"
+				}
+
 			}
 		}
 		logger.lifecycle "Run pod " + parameter

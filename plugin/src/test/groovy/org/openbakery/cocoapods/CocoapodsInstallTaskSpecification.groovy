@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
@@ -131,6 +132,18 @@ class CocoapodsInstallTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
+	}
+
+
+	def "/usr/local/bin/pod available but not in path"() {
+		given:
+		commandRunner.runWithResult("which", "pod") >> { throw new CommandRunnerException() }
+
+		when:
+		cocoapodsTask.install()
+
+		then:
+		1 * commandRunner.run(["/usr/local/bin/pod", "install"], _)
 
 	}
 }
