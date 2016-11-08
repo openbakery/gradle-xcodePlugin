@@ -43,13 +43,12 @@ class KeychainCleanupTaskSpecification extends Specification {
 
 	def "delete keychain OS X 10.8"() {
 		given:
-		System.setProperty("os.version", "10.8.0");
-		String userHome = System.getProperty("user.home")
-		String loginKeychain = userHome + "/Library/Keychains/login.keychain"
+		System.setProperty("os.version", "10.8.0")
+		String loginKeychain = AbstractKeychainTask.loginKeychainPath()
 
 		String result = "    \""+ loginKeychain + "\"\n" +
 										"    \"/Library/Keychains/" + XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE + "delete-me.keychain\"\n" +
-										"    \"/Library/Keychains/System.keychain\"";
+										"    \"/Library/Keychains/System.keychain\""
 		commandRunner.runWithResult(["security", "list-keychains"]) >> result
 
 		when:
@@ -62,13 +61,13 @@ class KeychainCleanupTaskSpecification extends Specification {
 
 	def "delete keychain OS X 10.9"() {
 		given:
-		System.setProperty("os.version", "10.9.0");
-		String userHome = System.getProperty("user.home")
-		String loginKeychain = userHome + "/Library/Keychains/login.keychain"
+		System.setProperty("os.version", "10.9.0")
 
-		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"\n" +
+		String loginKeychain = AbstractKeychainTask.loginKeychainPath()
+
+		String result = "    \""+ loginKeychain + "\n" +
 										"    \"/Library/Keychains/" + XcodeBuildPluginExtension.KEYCHAIN_NAME_BASE + "delete-me.keychain\"\n" +
-										"    \"/Library/Keychains/System.keychain\"";
+										"    \"/Library/Keychains/System.keychain\""
 
 		commandRunner.runWithResult(["security", "list-keychains"]) >> result
 
@@ -81,8 +80,7 @@ class KeychainCleanupTaskSpecification extends Specification {
 	}
 
 	String getSecurityList() {
-		String userHome = System.getProperty("user.home")
-		String loginKeychain = userHome + "/Library/Keychains/login.keychain"
+		String loginKeychain = AbstractKeychainTask.loginKeychainPath()
 
 		return  "    \""+ loginKeychain + "\n" +
 						"    \"/Users/me/Go/pipelines/Build-Appstore/build/codesign/gradle-1431356246879.keychain\"\n" +
@@ -95,8 +93,7 @@ class KeychainCleanupTaskSpecification extends Specification {
 
 	def "keychain list update"() {
 		given:
-		String userHome = System.getProperty("user.home")
-		String loginKeychain = userHome + "/Library/Keychains/login.keychain"
+		String loginKeychain = AbstractKeychainTask.loginKeychainPath()
 
 		commandRunner.runWithResult(["security", "list-keychains"]) >> getSecurityList()
 
@@ -117,23 +114,23 @@ class KeychainCleanupTaskSpecification extends Specification {
 		List<String> keychainList = keychainCleanupTask.getKeychainList()
 
 		then:
-		keychainList.size == 1
+		keychainList.size() == 1
 	}
 
 
 	def "remove only missing keychain in list"() {
 		given:
 		System.setProperty("os.version", "10.9.0");
-		String userHome = System.getProperty("user.home")
-		String loginKeychain = userHome + "/Library/Keychains/login.keychain"
+		String loginKeychain = AbstractKeychainTask.loginKeychainPath()
 
 		File keychainFile = new File(project.buildDir, "gradle.keychain");
 		FileUtils.writeStringToFile(keychainFile, "dummy");
 
 		String keychainFileName = keychainFile.absolutePath
+        System.out.println("test gradle kc file is : it " + keychainFileName + " it exits: " + keychainFile.exists())
 
 		String result = "    \"" + loginKeychain + "\n" +
-										"    \"" + keychainFileName + "\n" +
+                                        "    \"" + keychainFileName + "\n" +
 										"    \"/Library/Keychains/System.keychain\"";
 
 		commandRunner.runWithResult(["security", "list-keychains"]) >> result
