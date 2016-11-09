@@ -21,7 +21,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 	}
 
 	Xcodebuild getXcodebuild() {
-		return new Xcodebuild(commandRunner, xcode, parameters, getDestinationResolver().allFor(parameters))
+		return new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, getDestinationResolver().allFor(parameters))
 	}
 
 	@TaskAction
@@ -40,7 +40,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
 
-		xcodebuild.executeBuildForTesting(project.projectDir.absolutePath, createXcodeBuildOutputAppender("XcodeBuildForTestTask") , project.xcodebuild.environment)
+		xcodebuild.executeBuildForTesting(createXcodeBuildOutputAppender("XcodeBuildForTestTask") , project.xcodebuild.environment)
 
 		createTestBundle()
 	}

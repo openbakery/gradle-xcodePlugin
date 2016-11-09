@@ -12,23 +12,25 @@ class Xcodebuild {
 
 	HashMap<String, String> buildSettings = null
 
+	File projectDirectory
 	String xcodePath
 	Xcode xcode
-
 	XcodebuildParameters parameters
 	List<Destination> destinations
 
 
-	public Xcodebuild(CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, List<Destination> destinations) {
+
+	public Xcodebuild(File projectDirectory, CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, List<Destination> destinations) {
+		this.projectDirectory = projectDirectory
 		this.commandRunner = commandRunner
 		this.xcode = xcode
 		this.parameters = parameters
 		this.destinations = destinations
 	}
 
-	def validateParameters(String directory, OutputAppender outputAppender, Map<String, String> environment) {
-		if (directory == null) {
-			throw new IllegalArgumentException("directory must not be null");
+	def validateParameters(OutputAppender outputAppender, Map<String, String> environment) {
+		if (this.projectDirectory == null) {
+			throw new IllegalArgumentException("projectDirectory must not be null");
 		}
 
 		if (outputAppender == null) {
@@ -40,19 +42,20 @@ class Xcodebuild {
 		}
 	}
 
-	def execute(String directory, OutputAppender outputAppender, Map<String, String> environment) {
-		validateParameters(directory, outputAppender, environment)
+	def execute(OutputAppender outputAppender, Map<String, String> environment) {
+		validateParameters(outputAppender, environment)
 		def commandList = []
 		addBuildSettings(commandList)
 		addDisableCodeSigning(commandList)
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
 		addDestinationSettingsForBuild(commandList)
-		commandRunner.run(directory, commandList, environment, outputAppender)
+
+		commandRunner.run(projectDirectory.absolutePath, commandList, environment, outputAppender)
 	}
 
-	def commandListForTest(String directory, OutputAppender outputAppender, Map<String, String> environment) {
-		validateParameters(directory, outputAppender, environment)
+	def commandListForTest(OutputAppender outputAppender, Map<String, String> environment) {
+		validateParameters(outputAppender, environment)
 		def commandList = []
 		commandList << 'script' << '-q' << '/dev/null'
 		addBuildSettings(commandList)
@@ -64,19 +67,19 @@ class Xcodebuild {
 		return commandList
 	}
 
-	def executeTest(String directory, OutputAppender outputAppender, Map<String, String> environment) {
-		def commandList = commandListForTest(directory, outputAppender, environment)
+	def executeTest(OutputAppender outputAppender, Map<String, String> environment) {
+		def commandList = commandListForTest(outputAppender, environment)
 		commandList << "test"
-		commandRunner.run(directory, commandList, environment, outputAppender)
+		commandRunner.run(this.projectDirectory.absolutePath, commandList, environment, outputAppender)
 	}
 
-	def executeBuildForTesting(String directory, OutputAppender outputAppender, Map<String, String> environment) {
-		def commandList = commandListForTest(directory, outputAppender, environment)
+	def executeBuildForTesting(OutputAppender outputAppender, Map<String, String> environment) {
+		def commandList = commandListForTest(outputAppender, environment)
 		commandList << "build-for-testing"
-		commandRunner.run(directory, commandList, environment, outputAppender)
+		commandRunner.run(this.projectDirectory.absolutePath, commandList, environment, outputAppender)
 	}
 
-	def executeTestWithoutBuilding(String directory, OutputAppender outputAppender, Map<String, String> environment) {
+	def executeTestWithoutBuilding(OutputAppender outputAppender, Map<String, String> environment) {
 
 		parameters.xctestrun.each {
 			def commandList = []
@@ -90,15 +93,15 @@ class Xcodebuild {
 
 			commandList << "-xctestrun" << it.absolutePath
 			commandList << "test-without-building"
-			commandRunner.run(directory, commandList, environment, outputAppender)
+			commandRunner.run(this.projectDirectory.absolutePath, commandList, environment, outputAppender)
 
 
 		}
 
 	}
 
-	def executeArchive(String directory, OutputAppender outputAppender, Map<String, String> environment, String archivePath) {
-		validateParameters(directory, outputAppender, environment)
+	def executeArchive(OutputAppender outputAppender, Map<String, String> environment, String archivePath) {
+		validateParameters(outputAppender, environment)
 		def commandList = []
 		addBuildSettings(commandList)
 		addDisableCodeSigning(commandList)
@@ -108,7 +111,7 @@ class Xcodebuild {
 		commandList << "archive"
 		commandList << '-archivePath'
 		commandList << archivePath
-		commandRunner.run(directory, commandList, environment, outputAppender)
+		commandRunner.run(this.projectDirectory.absolutePath, commandList, environment, outputAppender)
 	}
 
 
@@ -291,7 +294,7 @@ class Xcodebuild {
 				commandList.add(parameters.workspace)
 			}
 
-			return commandRunner.runWithResult(commandList)
+			return commandRunner.runWithResult(this.projectDirectory.absolutePath, commandList)
 		}
 
 		private String getBuildSetting(String key) {

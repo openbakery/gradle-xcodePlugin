@@ -106,8 +106,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Xcodebuild createXcodeBuild(String version) {
 		XcodeFake xcode = createXcode(version)
-		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\n"
-		return new Xcodebuild(commandRunner, xcode, new XcodebuildParameters(), [])
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\n"
+		return new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 	}
 
 
@@ -341,8 +341,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "copy swift with non default toolchain"() {
 		given:
 		XcodeFake xcode = createXcode("7")
-		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift.xctoolchain\n"
-		Xcodebuild xcodebuild =  new Xcodebuild(commandRunner, xcode, new XcodebuildParameters(), [])
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift.xctoolchain\n"
+		Xcodebuild xcodebuild =  new Xcodebuild(new File("."),, commandRunner, xcode, new XcodebuildParameters(), [])
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 		mockSwiftLibs(xcodebuild)
 

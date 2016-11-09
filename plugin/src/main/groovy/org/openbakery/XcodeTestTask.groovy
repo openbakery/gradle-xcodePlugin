@@ -76,9 +76,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		def destinations = getDestinations()
 
 		try {
-			Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, destinations)
+			Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, destinations)
 			logger.debug("Executing xcodebuild with {}", xcodebuild)
-			xcodebuild.executeTest(project.projectDir.absolutePath, createOutputAppender(destinations), project.xcodebuild.environment)
+			xcodebuild.executeTest(createOutputAppender(destinations), project.xcodebuild.environment)
 
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);

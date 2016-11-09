@@ -39,7 +39,7 @@ class XcodebuildSpecification extends Specification {
 		]
 // iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389
 		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("buildDirectory"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 	}
 
 	def cleanup() {
@@ -59,7 +59,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "IllegalArgumentException thrown when no scheme or target given"() {
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		IllegalArgumentException e = thrown()
@@ -97,7 +97,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.simulator = false
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -129,7 +129,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.sharedPrecompsDir = new File("build/myShared").absoluteFile
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -159,7 +159,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.target = target
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -183,7 +183,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.simulator = false
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -209,7 +209,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.type = Type.OSX
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -238,7 +238,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -265,7 +265,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.arch = ['armv', 'armv7s']
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -290,7 +290,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.workspace = 'myworkspace'
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -315,7 +315,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.workspace = 'myworkspace'
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -339,7 +339,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.simulator = true
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -364,7 +364,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.arch = ['i386'];
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -392,7 +392,7 @@ class XcodebuildSpecification extends Specification {
 		when:
 		xcodebuild.xcode = new Xcode(commandRunner, "5B1008")
 
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -415,7 +415,7 @@ class XcodebuildSpecification extends Specification {
 		}
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		thrown(CommandRunnerException)
@@ -433,7 +433,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.additionalParameters = 'foobar';
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -458,7 +458,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.additionalParameters = ['foo', 'bar']
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -476,25 +476,27 @@ class XcodebuildSpecification extends Specification {
 
 	def "set execution directory"() {
 		def directory
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
-		xcodebuild.execute("foobar", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> directory = arguments[0] }
-		directory == "foobar"
+		directory.endsWith("foobar")
 	}
 
 	def "directory must not be null"() {
+		xcodebuild = new Xcodebuild(null, commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
-		xcodebuild.execute(null, outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		IllegalArgumentException e = thrown()
-		e.message == "directory must not be null"
+		e.message == "projectDirectory must not be null"
 	}
 
 
@@ -502,7 +504,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
-		xcodebuild.execute("", null, null)
+		xcodebuild.execute(null, null)
 
 		then:
 		IllegalArgumentException e = thrown()
@@ -515,7 +517,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.scheme = 'myscheme'
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> givenOutputAppender = arguments[3] }
@@ -530,7 +532,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.target = 'Test';
 
 		when:
-		xcodebuild.executeTest("", outputAppender, null)
+		xcodebuild.executeTest(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -560,7 +562,7 @@ class XcodebuildSpecification extends Specification {
 						new Destination("iPhone 4s")
 		]
 
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -569,7 +571,7 @@ class XcodebuildSpecification extends Specification {
 		//xcodebuild.parameters.configuredDestinations = extension.getDestinations()
 
 		when:
-		xcodebuild.executeTest("", outputAppender, null)
+		xcodebuild.executeTest(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -601,10 +603,10 @@ class XcodebuildSpecification extends Specification {
 		parameters.target = 'Test';
 		parameters.scheme = 'myscheme'
 		parameters.workspace = 'myworkspace'
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		when:
-		xcodebuild.executeTest("", outputAppender, null)
+		xcodebuild.executeTest(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -635,10 +637,10 @@ class XcodebuildSpecification extends Specification {
 		parameters.target = 'Test';
 		parameters.scheme = 'myscheme'
 		parameters.workspace = 'myworkspace'
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -667,7 +669,7 @@ class XcodebuildSpecification extends Specification {
 		parameters.destination  = [ destination ]
 		parameters.simulator = false
 
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -677,7 +679,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.simulator = false
 
 		when:
-		xcodebuild.executeTest("", outputAppender, null)
+		xcodebuild.executeTest(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -709,7 +711,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.workspace = 'myworkspace'
 
 		when:
-		xcodebuild.execute("", outputAppender, null)
+		xcodebuild.execute(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -740,7 +742,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.sharedPrecompsDir = new File("build/myShared").absoluteFile
 
 		when:
-		xcodebuild.executeArchive("", outputAppender, null, "build/archive/myArchive.xcarchive")
+		xcodebuild.executeArchive(outputAppender, null, "build/archive/myArchive.xcarchive")
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -768,7 +770,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "get default toolchain directory"() {
 		given:
-		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> "foo=bar"
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> "foo=bar"
 
 		expect:
 		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
@@ -778,7 +780,7 @@ class XcodebuildSpecification extends Specification {
 	def "get default toolchain directory from build settings"() {
 		given:
 		File buildSettings = new File("src/test/Resource/xcodebuild-showBuildSettings.txt");
-		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> FileUtils.readFileToString(buildSettings)
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> FileUtils.readFileToString(buildSettings)
 
 		expect:
 		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/Swift_2.3.xctoolchain"
@@ -787,7 +789,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "get build settings with empty data should not crash"() {
 		given:
-		commandRunner.runWithResult(["xcodebuild", "clean", "-showBuildSettings"]) >> ""
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> ""
 
 		expect:
 		xcodebuild.getToolchainDirectory() == "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
@@ -804,7 +806,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.getToolchainDirectory()
 
 		then:
-		1 * commandRunner.runWithResult(_) >> { arguments -> commandList = arguments[0] }
+		1 * commandRunner.runWithResult(_, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = ['xcodebuild',
 														 'clean',
@@ -813,8 +815,6 @@ class XcodebuildSpecification extends Specification {
 														 "-workspace", 'myworkspace']
 		}
 		commandList == expectedCommandList
-
-
 	}
 
 
@@ -828,7 +828,7 @@ class XcodebuildSpecification extends Specification {
 		parameters.destination = [destination]
 		parameters.simulator = false
 
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -837,7 +837,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.simulator = false
 
 		when:
-		xcodebuild.executeBuildForTesting("", outputAppender, null)
+		xcodebuild.executeBuildForTesting(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -870,14 +870,14 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.destination = [destination]
 		xcodebuild.parameters.simulator = false
 
-		xcodebuild = new Xcodebuild(commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 		xcodebuild.parameters.xctestrun = [
 		        new File("example.xctestrun")
 		]
 
 
 		when:
-		xcodebuild.executeTestWithoutBuilding("", outputAppender, null)
+		xcodebuild.executeTestWithoutBuilding(outputAppender, null)
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -895,4 +895,93 @@ class XcodebuildSpecification extends Specification {
 		commandList == expectedCommandList
 
 	}
+
+
+
+	def "run command in directory"() {
+		def commandList
+		def directory
+
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = false
+
+		when:
+		xcodebuild.execute(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments ->
+			directory = arguments[0]
+			commandList = arguments[1]
+		}
+
+		directory.endsWith("buildDirectory")
+
+		commandList == createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
+				"-scheme", 'myscheme',
+				"-workspace", 'myworkspace',
+				"-configuration", "Debug",
+				"CODE_SIGN_IDENTITY=",
+				"CODE_SIGNING_REQUIRED=NO"
+		)
+
+	}
+
+	def "set execution directory for archive"() {
+		def directory
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		when:
+		xcodebuild.executeArchive(outputAppender, null, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> directory = arguments[0] }
+		directory.endsWith("foobar")
+	}
+
+	def "set execution directory for executeBuildForTesting"() {
+		def directory
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		when:
+		xcodebuild.executeBuildForTesting(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> directory = arguments[0] }
+		directory.endsWith("foobar")
+	}
+
+	def "set execution directory for executeTest"() {
+		def directory
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		when:
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.executeTest(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> directory = arguments[0] }
+		directory.endsWith("foobar")
+	}
+
+
+	def "set execution directory for showBuildSettings"() {
+		def directory
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		when:
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+
+		xcodebuild.getToolchainDirectory()
+
+		then:
+		1 * commandRunner.runWithResult(_, _) >> { arguments -> directory = arguments[0] }
+		directory.endsWith("foobar")
+	}
+
+
 }

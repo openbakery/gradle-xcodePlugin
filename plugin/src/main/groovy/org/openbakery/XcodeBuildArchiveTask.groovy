@@ -333,14 +333,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		logger.debug("Create xcarchive")
 
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
-		Xcodebuild xcodebuild = new Xcodebuild(commandRunner, xcode, parameters, getDestinations())
+		Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, getDestinations())
 
 		if (project.xcodebuild.useXcodebuildArchive) {
 
 			File outputFile = new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
 			commandRunner.setOutputFile(outputFile)
 
-			xcodebuild.executeArchive(project.projectDir.absolutePath, createXcodeBuildOutputAppender("XcodeBuildArchive"), project.xcodebuild.environment, getArchiveDirectory().absolutePath)
+			xcodebuild.executeArchive(createXcodeBuildOutputAppender("XcodeBuildArchive"), project.xcodebuild.environment, getArchiveDirectory().absolutePath)
 
 			return
 		}
