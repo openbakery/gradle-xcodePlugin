@@ -75,8 +75,7 @@ class KeychainCreateTaskSpecification extends Specification {
 
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 
-		String userHome = System.getProperty("user.home")
-		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"";
+		String result = "    \"" + AbstractKeychainTask.loginKeychainPath() + "\"";
 		commandRunner.runWithResult( ["security", "list-keychains"]) >> result
 
 		when:
@@ -84,7 +83,7 @@ class KeychainCreateTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"])
-		1 * commandRunner.run(["security", "list-keychains", "-s", userHome + "/Library/Keychains/login.keychain", project.xcodebuild.signing.keychainPathInternal.toString()])
+		1 * commandRunner.run(["security", "list-keychains", "-s", AbstractKeychainTask.loginKeychainPath(), project.xcodebuild.signing.keychainPathInternal.toString()])
 	}
 
 }

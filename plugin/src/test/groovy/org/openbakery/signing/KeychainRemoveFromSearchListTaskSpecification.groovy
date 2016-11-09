@@ -32,13 +32,25 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 		task = project.tasks.findByName(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME);
 		task.commandRunner = commandRunner
 
-		String userHome = System.getProperty("user.home")
-		loginKeychain = userHome + "/Library/Keychains/login.keychain"
-
+		loginKeychain = AbstractKeychainTask.loginKeychainPath()
 	}
+
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.buildDir)
+	}
+
+	def "Login keychain extension can be .keychain or .keychain-db"() {
+		given:
+		String userHome = System.getProperty("user.home")
+		String loginKeychain = userHome + AbstractKeychainTask.COMMON_SYSTEM_KC_NAME
+
+		when:
+		true
+
+		then:
+        AbstractKeychainTask.loginKeychainPath() == loginKeychain || AbstractKeychainTask.loginKeychainPath() == (loginKeychain + '-db')
+		task.group == XcodePlugin.XCODE_GROUP_NAME
 	}
 
 	def "check group"() {
