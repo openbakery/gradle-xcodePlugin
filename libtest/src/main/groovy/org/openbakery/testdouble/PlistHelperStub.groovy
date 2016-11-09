@@ -1,6 +1,6 @@
 package org.openbakery.testdouble
 
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 
 /**
  * Created by rene on 01.09.15.

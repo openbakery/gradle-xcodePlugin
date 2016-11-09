@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

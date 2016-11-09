@@ -1,4 +1,4 @@
-package org.openbakery.helpers
+package org.openbakery.util
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner

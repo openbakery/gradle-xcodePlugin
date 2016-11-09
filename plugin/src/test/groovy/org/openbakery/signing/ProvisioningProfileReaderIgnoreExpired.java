@@ -2,7 +2,6 @@ package org.openbakery.signing;
 
 import org.openbakery.CommandRunner;
 import org.openbakery.codesign.ProvisioningProfileReader;
-import org.openbakery.helpers.PlistHelper;
 
 import java.io.File;
 

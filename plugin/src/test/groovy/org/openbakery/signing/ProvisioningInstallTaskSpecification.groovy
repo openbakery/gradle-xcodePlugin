@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.helpers.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import spock.lang.Specification

@@ -11,7 +11,7 @@ import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Xcodebuild
 import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification

@@ -25,7 +25,7 @@ import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
 import org.openbakery.xcode.XcodebuildParameters
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -18,7 +18,6 @@ package org.openbakery.signing
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.helpers.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 

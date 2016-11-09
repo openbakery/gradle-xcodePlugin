@@ -8,7 +8,7 @@ import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 
 import static org.hamcrest.MatcherAssert.assertThat

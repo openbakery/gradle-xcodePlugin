@@ -18,16 +18,12 @@ package org.openbakery
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
-import org.gradle.internal.logging.text.StyledTextOutput
-import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.bundle.ApplicationBundle
-import org.openbakery.packaging.PackageTask
-import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 
 import java.text.SimpleDateFormat
 

@@ -2,7 +2,7 @@ package org.openbakery.codesign
 
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodeFake

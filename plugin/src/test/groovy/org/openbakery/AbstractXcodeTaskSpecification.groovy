@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.helpers.PlistHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
