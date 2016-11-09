@@ -18,7 +18,7 @@ import org.openbakery.xcode.XcodebuildParameters
  * User: rene
  * Date: 25/10/16
  */
-class XcodeTestRunTestTask extends AbstractXcodeTask {
+class XcodeTestRunTask extends AbstractXcodeTask {
 
 	XcodebuildParameters parameters = new XcodebuildParameters()
 	private List<Destination> destinationsCache
@@ -28,7 +28,7 @@ class XcodeTestRunTestTask extends AbstractXcodeTask {
 	File outputDirectory = null
 
 
-	XcodeTestRunTestTask() {
+	XcodeTestRunTask() {
 		super()
 		dependsOn(
 			XcodePlugin.SIMULATORS_KILL_TASK_NAME

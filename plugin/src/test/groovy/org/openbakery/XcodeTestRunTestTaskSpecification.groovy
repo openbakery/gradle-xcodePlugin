@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.output.TestBuildOutputAppender
-import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
@@ -20,7 +19,7 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 	Project project
 	CommandRunner commandRunner = Mock(CommandRunner);
 
-	XcodeTestRunTestTask xcodeTestRunTestTask
+	XcodeTestRunTask xcodeTestRunTestTask
 	File outputDirectory
 
 	def setup() {
@@ -49,7 +48,7 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 
 	def "instance is of type XcodeBuildForTestTask"() {
 		expect:
-		xcodeTestRunTestTask instanceof  XcodeTestRunTestTask
+		xcodeTestRunTestTask instanceof  XcodeTestRunTask
 	}
 
 

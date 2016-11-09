@@ -497,7 +497,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureTest(Project project) {
 		project.task(XCODE_TEST_TASK_NAME, type: XcodeTestTask, group: XCODE_GROUP_NAME)
 		project.task(XCODE_BUILD_FOR_TEST_TASK_NAME, type: XcodeBuildForTestTask, group: XCODE_GROUP_NAME)
-		project.task(XCODE_TEST_RUN_TASK_NAME, type: XcodeTestRunTestTask, group: XCODE_GROUP_NAME)
+		project.task(XCODE_TEST_RUN_TASK_NAME, type: XcodeTestRunTask, group: XCODE_GROUP_NAME)
 
 	}
 

@@ -6,7 +6,6 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.TaskDependency
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Test
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
@@ -26,31 +25,7 @@ import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
 import spock.lang.Specification
 
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.contains
 import static org.hamcrest.Matchers.hasItem
-import static org.hamcrest.Matchers.hasItem
-import static org.hamcrest.Matchers.hasItem
-import static org.hamcrest.Matchers.hasItem
-import static org.hamcrest.Matchers.instanceOf
-import static org.hamcrest.Matchers.instanceOf
-import static org.hamcrest.Matchers.instanceOf
-import static org.hamcrest.Matchers.instanceOf
-import static org.hamcrest.Matchers.is
-import static org.hamcrest.Matchers.is
-import static org.hamcrest.Matchers.is
-import static org.hamcrest.Matchers.is
-import static org.hamcrest.Matchers.is
-import static org.hamcrest.Matchers.is
 
 /**
  * Created by rene on 19.02.16.
@@ -119,7 +94,7 @@ class XcodePluginSpecification extends Specification {
 
 	def "contain task xcodetestrun"() {
 		expect:
-		project.tasks.findByName('xcodetestrun') instanceof XcodeTestRunTestTask
+		project.tasks.findByName('xcodetestrun') instanceof XcodeTestRunTask
 	}
 
 	def "appstoreUploadTask"() {
