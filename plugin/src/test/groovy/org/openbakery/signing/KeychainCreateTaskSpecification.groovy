@@ -1,5 +1,6 @@
 package org.openbakery.signing
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
@@ -16,7 +17,12 @@ class KeychainCreateTaskSpecification extends Specification {
 	File keychainDestinationFile
 	File certificateFile
 
+	File tmpDirectory
+	File loginKeychain
+
 	def setup() {
+		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild')
+
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
@@ -26,12 +32,18 @@ class KeychainCreateTaskSpecification extends Specification {
 
 		certificateFile = File.createTempFile("test", ".cert")
 		keychainDestinationFile = new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName())
+
+		loginKeychain = new File(tmpDirectory, "login.keychain")
+		FileUtils.writeStringToFile(loginKeychain, "dummy")
+
 	}
 
 	def cleanup() {
 		certificateFile.delete()
 		new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName()).delete()
 		project.xcodebuild.signing.keychainPathInternal.delete()
+		FileUtils.deleteDirectory(tmpDirectory)
+
 	}
 
 	def "OSVersion"() {
@@ -76,7 +88,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
 
 		String userHome = System.getProperty("user.home")
-		String result = "    \""+ userHome + "/Library/Keychains/login.keychain\"";
+		String result = "    \""+ loginKeychain.absolutePath + "\"";
 		commandRunner.runWithResult( ["security", "list-keychains"]) >> result
 
 		when:
@@ -84,7 +96,7 @@ class KeychainCreateTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"])
-		1 * commandRunner.run(["security", "list-keychains", "-s", userHome + "/Library/Keychains/login.keychain", project.xcodebuild.signing.keychainPathInternal.toString()])
+		1 * commandRunner.run(["security", "list-keychains", "-s", loginKeychain.absolutePath, project.xcodebuild.signing.keychainPathInternal.toString()])
 	}
 
 }

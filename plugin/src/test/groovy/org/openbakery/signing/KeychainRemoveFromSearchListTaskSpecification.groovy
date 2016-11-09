@@ -18,27 +18,32 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 	Project project
 
 	KeychainRemoveFromSearchListTask task
-
-	String loginKeychain
+	File tmpDirectory
+	File loginKeychain
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
 		File projectDir = new File("../example/iOS/ExampleWatchkit")
+
+		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild')
+
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.buildDir = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/build').absoluteFile
+		project.buildDir = new File(tmpDirectory, 'build').absoluteFile
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		task = project.tasks.findByName(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME);
 		task.commandRunner = commandRunner
 
-		String userHome = System.getProperty("user.home")
-		loginKeychain = userHome + "/Library/Keychains/login.keychain"
+		loginKeychain = new File(tmpDirectory, "login.keychain")
+		FileUtils.writeStringToFile(loginKeychain, "dummy")
+
 
 	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.buildDir)
+		FileUtils.deleteDirectory(tmpDirectory)
 	}
 
 	def "check group"() {
@@ -54,7 +59,7 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("    \"")
-		builder.append(loginKeychain)
+		builder.append(loginKeychain.absolutePath)
 		builder.append("\"\n")
 
 
@@ -85,7 +90,7 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
-		commandList == ["security", "list-keychains", "-s", loginKeychain]
+		commandList == ["security", "list-keychains", "-s", loginKeychain.absolutePath]
 
 	}
 
@@ -103,7 +108,7 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
-		commandList == ["security", "list-keychains", "-s", loginKeychain, dummyKeychain.getAbsolutePath()]
+		commandList == ["security", "list-keychains", "-s", loginKeychain.absolutePath, dummyKeychain.getAbsolutePath()]
 	}
 
 
@@ -123,7 +128,7 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
-		commandList == ["security", "list-keychains", "-s", loginKeychain]
+		commandList == ["security", "list-keychains", "-s", loginKeychain.absolutePath]
 	}
 
 
@@ -142,7 +147,7 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
-		commandList == ["security", "list-keychains", "-s", loginKeychain]
+		commandList == ["security", "list-keychains", "-s", loginKeychain.absolutePath]
 	}
 
 
