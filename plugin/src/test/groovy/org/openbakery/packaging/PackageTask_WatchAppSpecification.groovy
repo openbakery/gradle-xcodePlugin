@@ -35,7 +35,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 	File watchkitExtensionBundle
 	String watchkitExtensionPath
 	File tmpDir
-
+	File outputPath
 
 	void setup() {
 		tmpDir = new File(System.getProperty("java.io.tmpdir"))
@@ -62,7 +62,9 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
-		File payloadDirectory = new File(packageTask.outputPath, "Payload")
+		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+
+		File payloadDirectory = new File(outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "ExampleWatchKit.app");
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
@@ -137,7 +139,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 	}
 
 	List<String> codesignLibCommand(String path) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -154,7 +156,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 	}
 
 	List<String> codesignCommand(String path, String entitlementsName) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 		File entitlements = new File(tmpDir, entitlementsName)
 
 		def commandList = [
@@ -176,13 +178,12 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 
 	def "codesign watchkit app"() {
+		given:
+		createExampleApp()
 		//def commandList
 		def codesignAppCommand = codesignCommand("Payload/ExampleWatchKit.app", "entitlements_test.plist")
 		def codesignWatchKitAppCommand = codesignCommand("Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app", "entitlements_exampleWatchkit.plist")
 		def codesignWatchKitExtensionCommand = codesignCommand("Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex", "entitlements_exampleWatchkitExtension.plist")
-
-		given:
-		createExampleApp()
 
 		when:
 		packageTask.packageApplication()
@@ -206,7 +207,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/Frameworks/MyFramework.framework").exists()
+		new File(outputPath, "Payload/ExampleWatchKit.app/Frameworks/MyFramework.framework").exists()
 	}
 
 	def "do not copy frameworks in app extension"() {
@@ -219,7 +220,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		!(new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/" + watchkitExtensionPath + "/Frameworks").exists())
+		!(new File(outputPath, "Payload/ExampleWatchKit.app/" + watchkitExtensionPath + "/Frameworks").exists())
 
 	}
 
@@ -232,7 +233,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		!(new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/libswiftRemoteMirror.dylib").exists())
+		!(new File(outputPath, "Payload/ExampleWatchKit.app/libswiftRemoteMirror.dylib").exists())
 
 	}
 
@@ -245,7 +246,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		!(new File(packageTask.outputPath, "Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex/libswiftRemoteMirror.dylib").exists())
+		!(new File(outputPath, "Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex/libswiftRemoteMirror.dylib").exists())
 
 	}
 }

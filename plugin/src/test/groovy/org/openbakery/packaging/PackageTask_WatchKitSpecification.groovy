@@ -31,6 +31,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 	File archiveDirectory
 	File keychain
 	File tmpDir
+	File outputPath
 
 	void setup() {
 		tmpDir = new File(System.getProperty("java.io.tmpdir"))
@@ -57,7 +58,9 @@ class PackageTask_WatchKitSpecification extends Specification {
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
-		File payloadDirectory = new File(packageTask.outputPath, "Payload")
+		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+
+		File payloadDirectory = new File(outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
@@ -107,11 +110,13 @@ class PackageTask_WatchKitSpecification extends Specification {
 		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/exampleWatchkit.mobileprovision")
 		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/exampleWatchkitExtension.mobileprovision")
 
+
+
 	}
 
 
 	List<String> codesignLibCommand(String path) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -128,7 +133,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 	}
 
 	List<String> codesignCommand(String path, String entitlementsName) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 		File entitlements = new File(tmpDir, entitlementsName)
 
 		def commandList = [
@@ -182,9 +187,9 @@ class PackageTask_WatchKitSpecification extends Specification {
 		packageTask.packageApplication()
 
 		then:
-		new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision").exists()
-		new File(packageTask.outputPath, "Payload/Example.app/PlugIns/Example WatchKit Extension.appex/Example WatchKit App.app/embedded.mobileprovision").exists()
-		new File(packageTask.outputPath, "Payload/Example.app/PlugIns/Example WatchKit Extension.appex/embedded.mobileprovision").exists()
+		new File(outputPath, "Payload/Example.app/embedded.mobileprovision").exists()
+		new File(outputPath, "Payload/Example.app/PlugIns/Example WatchKit Extension.appex/Example WatchKit App.app/embedded.mobileprovision").exists()
+		new File(outputPath, "Payload/Example.app/PlugIns/Example WatchKit Extension.appex/embedded.mobileprovision").exists()
 
 	}
 }

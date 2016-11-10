@@ -34,6 +34,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	File keychain
 	File applicationBundle
 	File tmpDir
+	File outputPath
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
 
@@ -69,7 +70,9 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
 
-		appDirectory = new File(packageTask.outputPath, "Example.app");
+		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+
+		appDirectory = new File(outputPath, "Example.app");
 
 		provisionProfile = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 
@@ -81,7 +84,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 
 	List<String> codesignLibCommand(String path) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -98,7 +101,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	}
 
 	List<String> codesignCommand(String path) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 		File entitlements = new File(tmpDir, "entitlements_test-wildcard-mac.plist")
 
 		def commandList = [
@@ -274,8 +277,8 @@ class PackageTask_OSXSpecification  extends Specification {
 		given:
 		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
 
-		File sourceFile = new File(packageTask.outputPath, "Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
-		File symLinkTo = new File(packageTask.outputPath, "Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/")
+		File sourceFile = new File(outputPath, "Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
+		File symLinkTo = new File(outputPath, "Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/")
 		symLinkTo.mkdirs()
 		CommandRunner c = new CommandRunner()
 
@@ -309,7 +312,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		when:
 		packageTask.packageApplication()
-		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
+		File embedProvisioningProfile = new File(outputPath, "/Example.app/Contents/embedded.provisionprofile")
 
 		then:
 		!embedProvisioningProfile.exists()
@@ -326,7 +329,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		when:
 		packageTask.packageApplication()
 
-		File embedProvisioningProfile = new File(packageTask.outputPath, "/Example.app/Contents/embedded.provisionprofile")
+		File embedProvisioningProfile = new File(outputPath, "/Example.app/Contents/embedded.provisionprofile")
 
 		then:
 		!embedProvisioningProfile.exists()
@@ -355,7 +358,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		when:
 		packageTask.packageApplication()
 
-		File outputFile = new File(packageTask.outputPath, "Example.zip")
+		File outputFile = new File(outputPath, "Example.zip")
 		zipEntries = getZipEntries(outputFile)
 
 		then:
