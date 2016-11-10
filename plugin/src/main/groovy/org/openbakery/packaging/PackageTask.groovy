@@ -22,7 +22,7 @@ class PackageTask extends AbstractDistributeTask {
 
 
 	public static final String PACKAGE_PATH = "package"
-	File outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
+	File outputPath
 
 
 	private List<File> appBundles
@@ -51,6 +51,7 @@ class PackageTask extends AbstractDistributeTask {
 			logger.lifecycle("not a device build, so no codesign and packaging needed");
 			return;
 		}
+		outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
 
 
 		File applicationFolder = createApplicationFolder();

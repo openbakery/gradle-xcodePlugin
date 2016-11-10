@@ -36,6 +36,7 @@ class PackageTaskSpecification extends Specification {
 	File archiveDirectory
 	File keychain
 	File tmpDir
+	File outputPath
 
 	void setup() {
 
@@ -59,10 +60,6 @@ class PackageTaskSpecification extends Specification {
 
 		packageTask.commandRunner = commandRunner
 
-		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
-
-		File payloadDirectory = new File(packageTask.outputPath, "Payload")
-		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
@@ -73,21 +70,14 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.target = "Example"
 
-		/*
-		File entitlementsFile = new File(payloadAppDirectory, "archived-expanded-entitlements.xcent")
-
-		PlistHelper helper = new PlistHelper(new CommandRunner())
-		helper.createForPlist(entitlementsFile)
-		helper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
-		helper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
-*/
 		packageTask.xcode = new XcodeFake()
-		//FileUtils.writeStringToFile(entitlementsFile, "")
 
 	}
 
 	def cleanup() {
-		FileUtils.deleteDirectory(archiveDirectory)
+		if (archiveDirectory != null) {
+			FileUtils.deleteDirectory(archiveDirectory)
+		}
 		FileUtils.deleteDirectory(project.buildDir)
 		FileUtils.deleteDirectory(projectDir)
 		keychain.delete()
@@ -100,6 +90,14 @@ class PackageTaskSpecification extends Specification {
 
  /* use ApplicationDummy from libtest */
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework, boolean adHoc) {
+		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+
+		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
+
+		File payloadDirectory = new File(outputPath, "Payload")
+		payloadAppDirectory = new File(payloadDirectory, "Example.app");
+
+
 		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
 		// create dummy app
 
@@ -183,7 +181,7 @@ class PackageTaskSpecification extends Specification {
 
 
 	List<String> codesignLibCommand(String path) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 
 		def commandList = [
 						"/usr/bin/codesign",
@@ -201,7 +199,7 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	List<String> codesignCommand(String path, String entitlementsName) {
-		File payloadApp = new File(packageTask.outputPath, path)
+		File payloadApp = new File(outputPath, path)
 		File entitlements = new File(tmpDir, entitlementsName)
 
 		def commandList = [
@@ -312,7 +310,7 @@ class PackageTaskSpecification extends Specification {
 		when:
 		packageTask.packageApplication()
 
-		File payloadDirectory = new File(packageTask.outputPath, "Payload")
+		File payloadDirectory = new File(outputPath, "Payload")
 
 		then:
 		payloadDirectory.exists()
@@ -353,7 +351,7 @@ class PackageTaskSpecification extends Specification {
 		when:
 		packageTask.packageApplication()
 
-		File embedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision")
+		File embedProvisioningProfile = new File(outputPath, "Payload/Example.app/embedded.mobileprovision")
 
 		then:
 		embedProvisioningProfile.exists()
@@ -373,8 +371,8 @@ class PackageTaskSpecification extends Specification {
 		when:
 		packageTask.packageApplication()
 
-		File firstEmbedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/embedded.mobileprovision")
-		File secondEmbedProvisioningProfile = new File(packageTask.outputPath, "Payload/Example.app/PlugIns/ExampleTodayWidget.appex/embedded.mobileprovision")
+		File firstEmbedProvisioningProfile = new File(outputPath, "Payload/Example.app/embedded.mobileprovision")
+		File secondEmbedProvisioningProfile = new File(outputPath, "Payload/Example.app/PlugIns/ExampleTodayWidget.appex/embedded.mobileprovision")
 
 		then:
 		firstEmbedProvisioningProfile.exists()
@@ -404,11 +402,10 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	def testSignMultiple() {
-		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
-		def codesignWidgetCommand = codesignCommand("Payload/Example.app/PlugIns/ExampleTodayWidget.appex", "entitlements_test1.plist")
-
 		given:
 		mockExampleApp(true, false)
+		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
+		def codesignWidgetCommand = codesignCommand("Payload/Example.app/PlugIns/ExampleTodayWidget.appex", "entitlements_test1.plist")
 
 		when:
 		packageTask.packageApplication()
@@ -447,13 +444,11 @@ class PackageTaskSpecification extends Specification {
 
 
 	def "swift Codesign Libs"() {
+		given:
+		mockExampleApp(false, true)
 		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
 		def codesignLibCore = codesignLibCommand("Payload/Example.app/Frameworks/libswiftCore.dylib")
 		def codesignLibCoreGraphics = codesignLibCommand("Payload/Example.app/Frameworks/libswiftCoreGraphics.dylib")
-
-		given:
-
-		mockExampleApp(false, true)
 
 		when:
 		packageTask.packageApplication()
@@ -466,11 +461,10 @@ class PackageTaskSpecification extends Specification {
 
 
 	def "codesign Framework"() {
-		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
-		def codesignFramework = codesignLibCommand("Payload/Example.app/Frameworks/My.framework")
-
 		given:
 		mockExampleApp(false, true, true, true)
+		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
+		def codesignFramework = codesignLibCommand("Payload/Example.app/Frameworks/My.framework")
 
 		when:
 		packageTask.packageApplication()
@@ -529,6 +523,18 @@ class PackageTaskSpecification extends Specification {
 		plistHelperStub.plistCommands.get(0).equals("Delete CFBundleResourceSpecification")
 	}
 
+
+	def "change build path"() {
+		project.buildDir = new File(projectDir, 'foobar').absoluteFile
+		mockExampleApp(false, false)
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+
+		packageTask.outputPath.absolutePath.contains("foobar")
+	}
 
 
 }

@@ -194,4 +194,22 @@ class DestinationResolverSpecification extends Specification {
 		destinations[0].name == "Apple TV 1080p"
 	}
 
+
+	def "resolve iPad Pro (12.9 inch)"() {
+		given:
+		simulatorControl = new SimulatorControlStub("simctl-list-xcode8.txt")
+		destinationResolver = new DestinationResolver(simulatorControl)
+		extension.destination = ['iPad Pro (12.9 inch)']
+
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == 'iPad Pro (12.9 inch)'
+		destinations[0].id == 'C538D7F8-E581-44FF-9B17-5391F84642FB'
+
+
+	}
+
 }

@@ -9,7 +9,7 @@ Changes
 Bugfixes
 * Added the workspace parameter when getting the build settings: Issue #304
 * Fixed archive fails when executed outside the build directory: Issue #312
-
+* Fixed that the build directory can be changed for the package task: Issue #314
 
 # 0.14.3 (October 20, 2016)
 
