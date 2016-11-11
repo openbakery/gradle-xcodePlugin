@@ -30,6 +30,7 @@
 		A7148CFD18A397570010B761 /* ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A7148CFC18A397570010B761 /* ExampleTests.m */; };
 		A7304B491D1AD1210075EBF1 /* Example WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A55E38A21B276F4C00EAF0B8 /* Example WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A7304B4C1D1AD1210075EBF1 /* Example WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A55E38B11B276F4C00EAF0B8 /* Example WatchKit App.app */; };
+		A758368D1DD64A5E00449D21 /* SampleImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A758368C1DD64A5E00449D21 /* SampleImages.xcassets */; };
 		D99F95471A0EBB11007BB79F /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D99F95461A0EBB11007BB79F /* NotificationCenter.framework */; };
 		D99F954D1A0EBB11007BB79F /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D99F954C1A0EBB11007BB79F /* TodayViewController.m */; };
 		D99F954F1A0EBB11007BB79F /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D99F954E1A0EBB11007BB79F /* MainInterface.storyboard */; };
@@ -139,6 +140,7 @@
 		A7148CF818A397570010B761 /* ExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ExampleTests-Info.plist"; sourceTree = "<group>"; };
 		A7148CFA18A397570010B761 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A7148CFC18A397570010B761 /* ExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExampleTests.m; sourceTree = "<group>"; };
+		A758368C1DD64A5E00449D21 /* SampleImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = SampleImages.xcassets; sourceTree = "<group>"; };
 		BF6E865BC7270A1D7B3681B1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		D530D64C26790DFD000613A6 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D99F95451A0EBB11007BB79F /* ExampleTodayWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExampleTodayWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -289,6 +291,7 @@
 				A7148CE718A397560010B761 /* SecondViewController.m */,
 				A7148CE918A397560010B761 /* Images.xcassets */,
 				A7148CD218A397560010B761 /* Supporting Files */,
+				A758368C1DD64A5E00449D21 /* SampleImages.xcassets */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -440,6 +443,9 @@
 		A7148CC018A397560010B761 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					SampleImages,
+				);
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Rene Pirringer";
 				TargetAttributes = {
@@ -510,6 +516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7148CE218A397560010B761 /* Main_iPad.storyboard in Resources */,
+				A758368D1DD64A5E00449D21 /* SampleImages.xcassets in Resources */,
 				A7148CEA18A397560010B761 /* Images.xcassets in Resources */,
 				A7148CDF18A397560010B761 /* Main_iPhone.storyboard in Resources */,
 				A7148CD618A397560010B761 /* InfoPlist.strings in Resources */,
@@ -817,6 +824,7 @@
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
+				ON_DEMAND_RESOURCES_INITIAL_INSTALL_TAGS = SampleImages;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "${TARGET_NAME}";
@@ -835,6 +843,7 @@
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
+				ON_DEMAND_RESOURCES_INITIAL_INSTALL_TAGS = SampleImages;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "${TARGET_NAME}";
@@ -928,6 +937,7 @@
 				GCC_PREFIX_HEADER = "Example/Example-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "Example/Example-Info.plist";
+				ON_DEMAND_RESOURCES_INITIAL_INSTALL_TAGS = SampleImages;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
 				PRODUCT_NAME = "${TARGET_NAME}";
