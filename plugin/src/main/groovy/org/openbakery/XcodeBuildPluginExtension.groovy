@@ -405,7 +405,7 @@ class XcodeBuildPluginExtension {
 			if (settings != null) {
 
 				if (settings.bundleIdentifier == null) {
-					String identifier = plistHelper.getValueFromPlist(settings.infoplist, "CFBundleIdentifier")
+					String identifier = plistHelper.getValueFromPlist(new File(settings.infoplist), "CFBundleIdentifier")
 					if (identifier != null && identifier.equalsIgnoreCase(bundleIdentifier)) {
 						result = settings
 						return true
