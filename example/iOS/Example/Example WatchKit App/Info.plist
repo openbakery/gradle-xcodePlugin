@@ -28,7 +28,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>org.openbakery.Example</string>
+	<string>org.openbakery.test.Example</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>
