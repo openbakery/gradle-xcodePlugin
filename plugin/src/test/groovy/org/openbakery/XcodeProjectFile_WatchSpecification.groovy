@@ -122,10 +122,10 @@ class XcodeProjectFile_WatchSpecification extends Specification {
 		then:
 		projectSettings["ExampleWatchkit"] instanceof BuildTargetConfiguration
 		projectSettings["ExampleWatchkit"].buildSettings["Debug"].infoplist == "ExampleWatchkit/Info.plist"
-		projectSettings["ExampleWatchkit"].buildSettings["Debug"].bundleIdentifier == "org.openbakery.Example"
+		projectSettings["ExampleWatchkit"].buildSettings["Debug"].bundleIdentifier == "org.openbakery.test.Example"
 		projectSettings["ExampleWatchkit"].buildSettings["Debug"].productName == "ExampleWatchkit"
 		projectSettings["ExampleWatchkit"].buildSettings["Release"].infoplist == "ExampleWatchkit/Info.plist"
-		projectSettings["ExampleWatchkit"].buildSettings["Release"].bundleIdentifier == "org.openbakery.Example"
+		projectSettings["ExampleWatchkit"].buildSettings["Release"].bundleIdentifier == "org.openbakery.test.Example"
 		projectSettings["ExampleWatchkit"].buildSettings["Release"].productName == "ExampleWatchkit"
 		projectSettings["ExampleWatchkit"].buildSettings["Release"].sdkRoot == "iphoneos"
 		projectSettings["ExampleWatchkit"].buildSettings["Release"].devices == Devices.UNIVERSAL
@@ -140,10 +140,10 @@ class XcodeProjectFile_WatchSpecification extends Specification {
 		then:
 		projectSettings["ExampleWatchkit WatchKit App"] instanceof BuildTargetConfiguration
 		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Debug"].infoplist == "ExampleWatchkit WatchKit App/Info.plist"
-		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Debug"].bundleIdentifier == "org.openbakery.Example.watchkitapp"
+		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Debug"].bundleIdentifier == "org.openbakery.test.Example.watchkitapp"
 		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Debug"].productName == "ExampleWatchkit WatchKit App"
 		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Release"].infoplist == "ExampleWatchkit WatchKit App/Info.plist"
-		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Release"].bundleIdentifier == "org.openbakery.Example.watchkitapp"
+		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Release"].bundleIdentifier == "org.openbakery.test.Example.watchkitapp"
 		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Release"].productName == "ExampleWatchkit WatchKit App"
 		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Release"].sdkRoot == "watchos"
 		projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Release"].devices == Devices.WATCH

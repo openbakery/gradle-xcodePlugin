@@ -672,7 +672,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "ExampleWatchkit WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
@@ -691,7 +691,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "ExampleWatchkit WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
@@ -709,7 +709,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IBSC_MODULE = ExampleWatchkit_WatchKit_Extension;
 				INFOPLIST_FILE = "ExampleWatchkit WatchKit App/Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -726,7 +726,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				IBSC_MODULE = ExampleWatchkit_WatchKit_Extension;
 				INFOPLIST_FILE = "ExampleWatchkit WatchKit App/Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -747,7 +747,7 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = ExampleWatchkit/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ExampleWatchkit/ExampleWatchkit-Bridging-Header.h";
@@ -767,7 +767,7 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = ExampleWatchkit/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ExampleWatchkit/ExampleWatchkit-Bridging-Header.h";
@@ -781,7 +781,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = ExampleWatchkitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.ExampleWatchkitTests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.ExampleWatchkitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ExampleWatchkit.app/ExampleWatchkit";
@@ -794,7 +794,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = ExampleWatchkitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.ExampleWatchkitTests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.ExampleWatchkitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ExampleWatchkit.app/ExampleWatchkit";
@@ -810,7 +810,7 @@
 				INFOPLIST_FILE = "ExampleWatchKit Today Extension/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.todayextension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example.watchkitapp.todayextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -828,7 +828,7 @@
 				INFOPLIST_FILE = "ExampleWatchKit Today Extension/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.Example.watchkitapp.todayextension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.Example.watchkitapp.todayextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;

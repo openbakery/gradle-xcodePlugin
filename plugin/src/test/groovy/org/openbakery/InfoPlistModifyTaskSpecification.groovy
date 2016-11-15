@@ -49,13 +49,13 @@ class InfoPlistModifyTaskSpecification extends Specification{
 
 	def "modify BundleIdentifier"() {
 		given:
-		project.infoplist.bundleIdentifier = 'org.openbakery.Example'
+		project.infoplist.bundleIdentifier = 'org.openbakery.test.Example'
 
 		when:
 		task.prepare()
 
 		then:
-		plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier") == 'org.openbakery.Example'
+		plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier") == 'org.openbakery.test.Example'
 
 	}
 

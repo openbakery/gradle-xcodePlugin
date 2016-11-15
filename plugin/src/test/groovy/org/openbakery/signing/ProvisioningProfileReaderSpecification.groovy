@@ -81,7 +81,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
 		then:
-		reader.getApplicationIdentifier() == "org.openbakery.Example"
+		reader.getApplicationIdentifier() == "org.openbakery.test.Example"
 	}
 
 
@@ -116,7 +116,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"<plist version=\"1.0\">\n" +
 				"<dict>\n" +
 				"\t<key>com.apple.application-identifier</key>\n" +
-				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.test.Example</string>\n" +
 				"\t<key>com.apple.developer.aps-environment</key>\n" +
 				"\t<string>development</string>\n" +
 				"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
@@ -135,7 +135,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
 				"\t<array/>\n" +
 				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
-				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.test.Example</string>\n" +
 				"</dict>\n" +
 				"</plist>\n"
 
@@ -144,7 +144,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", null)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null)
 
 		then:
 		entitlementsFile.exists()
@@ -159,7 +159,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"<plist version=\"1.0\">\n" +
 				"<dict>\n" +
 				"\t<key>com.apple.application-identifier</key>\n" +
-				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.test.Example</string>\n" +
 				"\t<key>com.apple.developer.aps-environment</key>\n" +
 				"\t<string>development</string>\n" +
 				"\t<key>com.apple.developer.icloud-container-development-container-identifiers</key>\n" +
@@ -178,10 +178,10 @@ class ProvisioningProfileReaderSpecification extends Specification {
 				"\t<key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
 				"\t<array/>\n" +
 				"\t<key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
-				"\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t<string>Z7L2YCUH45.org.openbakery.test.Example</string>\n" +
 				"\t<key>keychain-access-groups</key>\n" +
 				"\t<array>\n" +
-				"\t\t<string>Z7L2YCUH45.org.openbakery.Example</string>\n" +
+				"\t\t<string>Z7L2YCUH45.org.openbakery.test.Example</string>\n" +
 				"\t\t<string>Z7L2YCUH45.org.openbakery.Test</string>\n" +
 				"\t\t<string>AAAAAAAAAA.com.example.Test</string>\n" +
 				"\t</array>\n" +
@@ -192,13 +192,13 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired(new File("src/test/Resource/test-wildcard-mac-development.provisionprofile"), new CommandRunner())
 
 		def keychainAccessGroups = [
-				"Z7L2YCUH45.org.openbakery.Example",
+				"Z7L2YCUH45.org.openbakery.test.Example",
 				"Z7L2YCUH45.org.openbakery.Test",
 				"AAAAAAAAAA.com.example.Test",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()
@@ -215,17 +215,17 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Test",
 				"CCCCCCCCCC.com.example.Test",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()
-		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.test.Example")
 		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Test")
 		entitlementsFile.text.contains("CCCCCCCCCC.com.example.Test")
 	}
@@ -264,11 +264,11 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner)
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
 
 		then:
 		thrown(IllegalStateException.class)
@@ -285,16 +285,16 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()
-		entitlementsFile.text.contains("AAAAAAAAAAA.org.openbakery.Example")
-		plistHelper.getValueFromPlist(entitlementsFile, "application-identifier").startsWith("AAAAAAAAAAA.org.openbakery.Example")
+		entitlementsFile.text.contains("AAAAAAAAAAA.org.openbakery.test.Example")
+		plistHelper.getValueFromPlist(entitlementsFile, "application-identifier").startsWith("AAAAAAAAAAA.org.openbakery.test.Example")
 
 	}
 
@@ -304,21 +304,21 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		given:
 		File mobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
 
-		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
+		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.test.Example.*")
 
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example.widget", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()
-		entitlementsFile.text.contains("AAAAAAAAAAA.org.openbakery.Example.widget")
+		entitlementsFile.text.contains("AAAAAAAAAAA.org.openbakery.test.Example.widget")
 	}
 
 
@@ -344,17 +344,17 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		given:
 		File mobileprovision = new File("src/test/Resource/openbakery-team.mobileprovision")
 
-		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
+		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.test.Example.*")
 
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example.widget", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()
@@ -365,17 +365,17 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		given:
 		File mobileprovision = new File("src/test/Resource/openbakery-team.mobileprovision")
 
-		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.Example.*")
+		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier("AAAAAAAAAAA.org.openbakery.test.Example.*")
 
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Example",
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.Example.widget", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups)
 
 		then:
 		entitlementsFile.exists()
@@ -416,8 +416,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		then:
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.Example", list, commandRunner, plistHelper) == appMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.ExampleWidget", list, commandRunner, plistHelper) == widgetMobileprovision
+		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example", list, commandRunner, plistHelper) == appMobileprovision
+		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.ExampleWidget", list, commandRunner, plistHelper) == widgetMobileprovision
 		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.Test", list, commandRunner, plistHelper) == wildcardMobileprovision
 		ProvisioningProfileReader.getProvisionFileForIdentifier("org.Test", list, commandRunner, plistHelper) == wildcardMobileprovision
 
@@ -436,9 +436,9 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		then:
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.Example", list, commandRunner, plistHelper) == appMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.Example.widget", list, commandRunner, plistHelper) == wildcardMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.Example.extension", list, commandRunner, plistHelper) == wildcardMobileprovision
+		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example", list, commandRunner, plistHelper) == appMobileprovision
+		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example.widget", list, commandRunner, plistHelper) == wildcardMobileprovision
+		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example.extension", list, commandRunner, plistHelper) == wildcardMobileprovision
 
 	}
 

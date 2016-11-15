@@ -119,11 +119,11 @@ class PackageTaskSpecification extends Specification {
 		}
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
 
 		if (withPlugin) {
 			File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
-			plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
+			plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.test.ExampleWidget")
 		}
 
 

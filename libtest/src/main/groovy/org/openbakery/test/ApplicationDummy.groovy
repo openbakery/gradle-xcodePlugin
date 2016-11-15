@@ -43,7 +43,7 @@ class ApplicationDummy {
 		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
 
 		File mobileprovision = null
 		if (adHoc) {
@@ -60,7 +60,7 @@ class ApplicationDummy {
 		FileUtils.writeStringToFile(new File(widgetsDirectory, "ExampleTodayWidget"), "dummy");
 
 		File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.ExampleWidget")
+		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.test.ExampleWidget")
 
 
 		File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")

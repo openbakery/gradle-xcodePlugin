@@ -6,11 +6,11 @@
 	<dict>
 		<key>BundleIdentifiersForCrashReportEmphasis</key>
 		<array>
-			<string>org.openbakery.Example.watchkitapp</string>
-			<string>org.openbakery.Example.watchkitapp.watchkitextension</string>
-			<string>org.openbakery.Example</string>
-			<string>org.openbakery.ExampleTests</string>
-			<string>org.openbakery.Example.Widget</string>
+			<string>org.openbakery.test.Example.watchkitapp</string>
+			<string>org.openbakery.test.Example.watchkitapp.watchkitextension</string>
+			<string>org.openbakery.test.Example</string>
+			<string>org.openbakery.test.ExampleTests</string>
+			<string>org.openbakery.test.Example.Widget</string>
 		</array>
 		<key>ClangProfileDataGenerationFilePath</key>
 		<string>__DERIVEDDATA__/Build/Intermediates/CodeCoverage/ProfileData</string>
@@ -48,7 +48,7 @@
 		<key>TestBundlePath</key>
 		<string>__TESTHOST__/PlugIns/ExampleTests.xctest</string>
 		<key>TestHostBundleIdentifier</key>
-		<string>org.openbakery.Example</string>
+		<string>org.openbakery.test.Example</string>
 		<key>TestHostPath</key>
 		<string>__TESTROOT__/Test-iphonesimulator/Example.app</string>
 		<key>TestingEnvironmentVariables</key>
@@ -73,11 +73,11 @@
 	<dict>
 		<key>BundleIdentifiersForCrashReportEmphasis</key>
 		<array>
-			<string>org.openbakery.Example.watchkitapp</string>
-			<string>org.openbakery.Example.watchkitapp.watchkitextension</string>
-			<string>org.openbakery.Example</string>
-			<string>org.openbakery.ExampleTests</string>
-			<string>org.openbakery.Example.Widget</string>
+			<string>org.openbakery.test.Example.watchkitapp</string>
+			<string>org.openbakery.test.Example.watchkitapp.watchkitextension</string>
+			<string>org.openbakery.test.Example</string>
+			<string>org.openbakery.test.ExampleTests</string>
+			<string>org.openbakery.test.Example.Widget</string>
 		</array>
 		<key>ClangProfileDataGenerationFilePath</key>
 		<string>__DERIVEDDATA__/Build/Intermediates/CodeCoverage/ProfileData</string>
@@ -115,7 +115,7 @@
 		<key>TestBundlePath</key>
 		<string>__TESTHOST__/PlugIns/ExampleTests.xctest</string>
 		<key>TestHostBundleIdentifier</key>
-		<string>org.openbakery.Example</string>
+		<string>org.openbakery.test.Example</string>
 		<key>TestHostPath</key>
 		<string>__TESTROOT__/Test-iphonesimulator/Example.app</string>
 		<key>TestingEnvironmentVariables</key>

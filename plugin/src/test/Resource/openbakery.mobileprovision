@@ -16,12 +16,12 @@
 	<key>Entitlements</key>
 	<dict>
 		<key>application-identifier</key>
-		<string>AAAAAAAAAAA.org.openbakery.Example</string>
+		<string>AAAAAAAAAAA.org.openbakery.test.Example</string>
 		<key>get-task-allow</key>
 		<false/>
 		<key>keychain-access-groups</key>
 		<array>
-			<string>AAAAAAAAAAA.org.openbakery.Example</string>
+			<string>AAAAAAAAAAA.org.openbakery.test.Example</string>
 		</array>
 	</dict>
 	<key>ExpirationDate</key>

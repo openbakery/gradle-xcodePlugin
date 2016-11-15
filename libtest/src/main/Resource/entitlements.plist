@@ -3,7 +3,7 @@
 <plist version="1.0">
 	<dict>
 		<key>application-identifier</key>
-		<string>AAAAAAAAAAA.org.openbakery.Example</string>
+		<string>AAAAAAAAAAA.org.openbakery.test.Example</string>
 		<key>com.apple.developer.team-identifier</key>
     <string>BBBBBBBBBB</string>
 		<key>get-task-allow</key>

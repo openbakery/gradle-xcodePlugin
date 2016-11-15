@@ -4,8 +4,8 @@
 <dict>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)org.openbakery.Example</string>
-		<string>$(AppIdentifierPrefix)org.openbakery.ExampleWidget</string>
+		<string>$(AppIdentifierPrefix)org.openbakery.test.Example</string>
+		<string>$(AppIdentifierPrefix)org.openbakery.test.ExampleWidget</string>
 		<string>$(AppIdentifierPrefix)org.openbakery.Test</string>
 	</array>
 </dict>

@@ -1,6 +1,7 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
+import org.openbakery.util.PlistHelper
 
 /**
  * Created by rene on 25.10.16.
@@ -21,7 +22,12 @@ class TestHelper {
 
 
 		File infoPlist = new File("../example/iOS/Example/Example/Example-Info.plist")
-		FileUtils.copyFile(infoPlist, new File(appDirectory, "Info.plist"))
+		File destinationInfoPlist = new File(appDirectory, "Info.plist")
+		FileUtils.copyFile(infoPlist, destinationInfoPlist)
+
+		PlistHelper plistHelper = new PlistHelper(new CommandRunner())
+		plistHelper.setValueForPlist(destinationInfoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
+
 
 		FileUtils.writeStringToFile(new File(destinationDirectory, "${name}.app/Icon.png"), "dummy")
 		FileUtils.writeStringToFile(new File(destinationDirectory, "${name}.app/Icon-72.png"), "dummy")

@@ -88,7 +88,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
 
 
 		String watchkitExtensionPath = "PlugIns/Example WatchKit Extension.appex"
@@ -96,11 +96,11 @@ class PackageTask_WatchKitSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(watchkitExtensionDirectory, "Example WatchKit App.app/Example WatchKit App"), "dummy");
 		FileUtils.writeStringToFile(new File(watchkitExtensionDirectory, "Example WatchKit Extension"), "dummy");
 		File infoPlistWatchkit = new File(payloadAppDirectory, watchkitExtensionPath + "/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWatchkit, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp.watchkitextension")
+		plistHelperStub.setValueForPlist(infoPlistWatchkit, "CFBundleIdentifier", "org.openbakery.test.Example.watchkitapp.watchkitextension")
 
 
 		File infoPlistWatchkitExtension = new File(payloadAppDirectory, watchkitExtensionPath + "/Example WatchKit App.app/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension, "CFBundleIdentifier", "org.openbakery.Example.watchkitapp")
+		plistHelperStub.setValueForPlist(infoPlistWatchkitExtension, "CFBundleIdentifier", "org.openbakery.test.Example.watchkitapp")
 
 
 		project.xcodebuild.outputPath.mkdirs()

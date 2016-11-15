@@ -29,8 +29,8 @@ class CodesignSpecification extends  Specification {
 
 		File entitlementsFile = new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
 		plistHelper.createForPlist(entitlementsFile)
-		plistHelper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.Example")
-		plistHelper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.Example", "AAAAAAAAAA.org.openbakery.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
+		plistHelper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.test.Example")
+		plistHelper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.test.Example", "AAAAAAAAAA.org.openbakery.test.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
 
 		codesign = new Codesign(
 						new XcodeFake(),
@@ -70,8 +70,8 @@ class CodesignSpecification extends  Specification {
 
 		then:
 		keychainAccessGroup.size() == 3
-		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)org.openbakery.Example"
-		keychainAccessGroup[1] == "\$(AppIdentifierPrefix)org.openbakery.ExampleWidget"
+		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)org.openbakery.test.Example"
+		keychainAccessGroup[1] == "\$(AppIdentifierPrefix)org.openbakery.test.ExampleWidget"
 		keychainAccessGroup[2] == "BBBBBBBBBB.org.openbakery.Foobar"
 	}
 
@@ -84,12 +84,12 @@ class CodesignSpecification extends  Specification {
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.Example")
+		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.test.Example")
 
 		then:
 		entitlementsFile.exists()
-		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.Example")
-		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.ExampleWidget")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.test.Example")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.test.ExampleWidget")
 	}
 
 
@@ -110,7 +110,7 @@ class CodesignSpecification extends  Specification {
 		//packageTask.plistHelper = new PlistHelper(new CommandRunner())
 
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.Example")
+		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.test.Example")
 
 		then:
 		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")

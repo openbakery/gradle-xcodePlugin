@@ -128,7 +128,10 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
 
 		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
-		FileUtils.copyFile(infoPlist, new File(projectDir, "ExampleWatchkit/Info.plist"))
+		File destinationInfoPlist = new File(projectDir, "ExampleWatchkit/Info.plist")
+		FileUtils.copyFile(infoPlist, destinationInfoPlist)
+
+		xcodeBuildArchiveTask.plistHelper.setValueForPlist(destinationInfoPlist, "CFBundleIdentifier", "org.openbakery.test.ExampleWatchkit")
 
 		project.xcodebuild.target = "ExampleWatchkit"
 		project.xcodebuild.configuration = "Debug"
@@ -256,7 +259,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		then:
 		infoPlist.exists()
 		config.getString("ApplicationProperties.ApplicationPath") == "Applications/Example.app"
-		config.getString("ApplicationProperties.CFBundleIdentifier") == "org.openbakery.Example"
+		config.getString("ApplicationProperties.CFBundleIdentifier") == "org.openbakery.test.Example"
 		config.getString("ApplicationProperties.CFBundleShortVersionString") == "1.0"
 		config.getString("ApplicationProperties.CFBundleVersion") == "1.0"
 		config.getString("ApplicationProperties.SigningIdentity") == "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
@@ -460,8 +463,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		entitlements.exists()
 		entitlements.isFile()
 
-		entitlements.text.contains("<key>application-identifier</key>\n\t<string>UNKNOWN00ID.org.openbakery.Example</string>")
-		entitlements.text.contains("<array>\n\t\t<string>UNKNOWN00ID.org.openbakery.Example</string>")
+		entitlements.text.contains("<key>application-identifier</key>\n\t<string>UNKNOWN00ID.org.openbakery.test.Example</string>")
+		entitlements.text.contains("<array>\n\t\t<string>UNKNOWN00ID.org.openbakery.test.Example</string>")
 	}
 
 	def "copy entitlements if present"() {
@@ -478,8 +481,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		entitlements.exists()
 		entitlements.isFile()
 
-		entitlements.text.contains("<key>application-identifier</key>\n\t<string>AAAAAAAAAAA.org.openbakery.Example</string>")
-		entitlements.text.contains("<array>\n\t\t<string>AAAAAAAAAAA.org.openbakery.Example</string>")
+		entitlements.text.contains("<key>application-identifier</key>\n\t<string>AAAAAAAAAAA.org.openbakery.test.Example</string>")
+		entitlements.text.contains("<array>\n\t\t<string>AAAAAAAAAAA.org.openbakery.test.Example</string>")
 	}
 
 	def "copy entitlements but there are non"() {
