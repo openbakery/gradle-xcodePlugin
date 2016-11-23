@@ -1,12 +1,15 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.DestinationResolver
 import spock.lang.Specification
 
@@ -14,16 +17,19 @@ import spock.lang.Specification
  * User: rene
  * Date: 25/10/16
  */
-class XcodeTestRunTestTaskSpecification extends Specification {
+class XcodeTestRunTaskSpecification extends Specification {
 
 	Project project
 	CommandRunner commandRunner = Mock(CommandRunner);
 
 	XcodeTestRunTask xcodeTestRunTestTask
 	File outputDirectory
+	File tmpDir
+
 
 	def setup() {
-		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-projectDir")
+		tmpDir = new File(System.getProperty("java.io.tmpdir"), "gxp")
+		File projectDir = new File(tmpDir, "gradle-projectDir")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 
 		project.apply plugin: org.openbakery.XcodePlugin
@@ -34,15 +40,16 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
 
 
-		outputDirectory = new File(project.buildDir, "test");
+		outputDirectory = new File(project.buildDir, "test")
 		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs();
+			outputDirectory.mkdirs()
 		}
+
+
 	}
 
 	def cleanup() {
-		FileUtils.deleteDirectory(project.projectDir)
-		FileUtils.deleteDirectory(project.buildDir)
+		FileUtils.deleteDirectory(tmpDir)
 	}
 
 
@@ -103,7 +110,6 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		testBundle.mkdirs()
 		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
 		FileUtils.copyFile(xctestrun, new File(testBundle, "Example_iphonesimulator.xctestrun"))
-
 	}
 
 
@@ -227,7 +233,7 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.destination {
 			platform = "iOS Simulator"
-			name = "iPad Ard"
+			name = "iPad Air"
 		}
 		project.evaluate()
 
@@ -264,4 +270,123 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 		xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME))
 	}
 
+
+	def "has codesign"() {
+		when:
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS"
+			name = "Dummy"
+		}
+		project.evaluate()
+
+		then:
+		xcodeTestRunTestTask.getCodesign() != null
+	}
+
+	def "simulator has no codesign"() {
+		when:
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS Simulator"
+			name = "iPad Air"
+		}
+		project.evaluate()
+
+		then:
+		xcodeTestRunTestTask.getCodesign() == null
+	}
+
+
+	def createTestBundleForDeviceBuild() {
+		File bundleDirectory = new File(project.getProjectDir(), "for-testing")
+		File testBundle = new File(bundleDirectory, "DemoApp-iOS.testbundle")
+		File appBundle = new File(testBundle, "Debug-iphoneos/DemoApp.app")
+		appBundle.mkdirs()
+
+		def frameworks = ["IDEBundleInjection.framework", "OBTableViewController.framework", "XCTest.framework"]
+		for (String framework : frameworks) {
+			File frameworkBundle = new File(appBundle, "Frameworks/" + framework)
+			frameworkBundle.mkdirs()
+		}
+		File xctestrun = new File("../libtest/src/main/Resource/DemoApp_iphoneos10.1-arm64.xctestrun")
+		FileUtils.copyFile(xctestrun, new File(testBundle, "DemoApp_iphoneos10.1-arm64.xctestrun"))
+
+		File infoPlist = new File(appBundle, "Info.plist")
+		PlistHelper helper = new PlistHelper(new CommandRunner())
+		helper.create(infoPlist)
+		helper.addValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
+
+		return bundleDirectory
+	}
+
+
+	void mockEntitlementsFromPlist(File provisioningProfile) {
+		def commandList = ['security', 'cms', '-D', '-i', provisioningProfile.absolutePath]
+		String result = new File('../libtest/src/main/Resource/entitlements.plist').text
+		commandRunner.runWithResult(commandList) >> result
+		String basename = FilenameUtils.getBaseName(provisioningProfile.path)
+		File plist = new File(tmpDir, "/provision_" + basename + ".plist")
+		commandList = ['/usr/libexec/PlistBuddy', '-x', plist.absolutePath, '-c', 'Print Entitlements']
+		commandRunner.runWithResult(commandList) >> result
+	}
+
+
+	def "bundle is codesigned"() {
+		given:
+		def commandList
+		def bundleDirectory = createTestBundleForDeviceBuild()
+		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
+		mockEntitlementsFromPlist(mobileprovision)
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS"
+			name = "Dummy"
+		}
+		xcodeTestRunTestTask
+		project.evaluate()
+
+		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory )
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+
+		4 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
+		commandList.contains("/usr/bin/codesign")
+	}
+
+
+
+	def "sign test bundle path"() {
+		given:
+		def bundleDirectory = createTestBundleForDeviceBuild()
+		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
+		mockEntitlementsFromPlist(mobileprovision)
+		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS"
+			name = "Dummy"
+		}
+		xcodeTestRunTestTask
+		project.evaluate()
+		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory )
+
+		def codesign = Mock(Codesign)
+		xcodeTestRunTestTask.codesign = codesign
+
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		1 * codesign.sign(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"))
+		1 * codesign.sign(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"))
+
+	}
 }

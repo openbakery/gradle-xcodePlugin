@@ -56,16 +56,16 @@ public class Codesign {
 
 			File frameworksDirectory
 			if (this.type == Type.iOS) {
-				frameworksDirectory = new File(bundle, "Frameworks");
+				frameworksDirectory = new File(bundle, "Frameworks")
 			} else {
-				frameworksDirectory = new File(bundle, "Contents/Frameworks");
+				frameworksDirectory = new File(bundle, "Contents/Frameworks")
 			}
 
 			if (frameworksDirectory.exists()) {
 
 				FilenameFilter filter = new FilenameFilter() {
 					public boolean accept(File dir, String name) {
-						return name.toLowerCase().endsWith(".dylib") || name.toLowerCase().endsWith(".framework");
+						return name.toLowerCase().endsWith(".dylib") || name.toLowerCase().endsWith(".framework")
 					}
 				};
 
@@ -124,7 +124,7 @@ public class Codesign {
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, this.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		if (provisionFile == null) {
 			if (this.type == Type.iOS) {
-				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
+					throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
 			}
 			// on OS X this is valid
 			return null

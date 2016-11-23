@@ -28,7 +28,7 @@ class CodesignSpecification extends  Specification {
 		plistHelper = new PlistHelper(new CommandRunner())
 
 		File entitlementsFile = new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
-		plistHelper.createForPlist(entitlementsFile)
+		plistHelper.create(entitlementsFile)
 		plistHelper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.test.Example")
 		plistHelper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.test.Example", "AAAAAAAAAA.org.openbakery.test.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
 

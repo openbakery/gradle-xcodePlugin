@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Tests</key>
+	<dict>
+		<key>BundleIdentifiersForCrashReportEmphasis</key>
+		<array>
+			<string>com.elo.OBTableViewController</string>
+			<string>org.openbakery.DemoApp</string>
+			<string>org.openbakery.Tests</string>
+		</array>
+		<key>ClangProfileDataGenerationFilePath</key>
+		<string>__DERIVEDDATA__/Build/Intermediates/CodeCoverage/ProfileData</string>
+		<key>ClangProfileFilePath</key>
+		<string>__DERIVEDDATA__/Build/Intermediates/CodeCoverage/Coverage.profdata</string>
+		<key>CommandLineArguments</key>
+		<array/>
+		<key>DependentProductPaths</key>
+		<array>
+			<string>__TESTROOT__/Debug-iphoneos/DemoApp.app</string>
+			<string>__TESTROOT__/Debug-iphoneos/OBTableViewController.framework</string>
+			<string>__TESTROOT__/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest</string>
+		</array>
+		<key>EnvironmentVariables</key>
+		<dict>
+			<key>DYLD_FRAMEWORK_PATH</key>
+			<string>/Users/user/workspace/openbakery/OBTableViewController/build/sym/Debug-iphoneos</string>
+			<key>DYLD_LIBRARY_PATH</key>
+			<string>/Users/user/workspace/openbakery/OBTableViewController/build/sym/Debug-iphoneos</string>
+			<key>OS_ACTIVITY_DT_MODE</key>
+			<string>YES</string>
+			<key>__XCODE_BUILT_PRODUCTS_DIR_PATHS</key>
+			<string>/Users/user/workspace/openbakery/OBTableViewController/build/sym/Debug-iphoneos</string>
+			<key>__XPC_DYLD_FRAMEWORK_PATH</key>
+			<string>/Users/user/workspace/openbakery/OBTableViewController/build/sym/Debug-iphoneos</string>
+			<key>__XPC_DYLD_LIBRARY_PATH</key>
+			<string>/Users/user/workspace/openbakery/OBTableViewController/build/sym/Debug-iphoneos</string>
+		</dict>
+		<key>IsAppHostedTestBundle</key>
+		<true/>
+		<key>ProductModuleName</key>
+		<string>Tests</string>
+		<key>TestBundlePath</key>
+		<string>__TESTHOST__/PlugIns/Tests.xctest</string>
+		<key>TestHostBundleIdentifier</key>
+		<string>org.openbakery.DemoApp</string>
+		<key>TestHostPath</key>
+		<string>__TESTROOT__/Debug-iphoneos/DemoApp.app</string>
+		<key>TestingEnvironmentVariables</key>
+		<dict>
+			<key>DYLD_FRAMEWORK_PATH</key>
+			<string>__TESTROOT__/Debug-iphoneos:__PLATFORMS__/iPhoneOS.platform/Developer/Library/Frameworks</string>
+			<key>DYLD_INSERT_LIBRARIES</key>
+			<string>__PLATFORMS__/iPhoneOS.platform/Developer/Library/PrivateFrameworks/IDEBundleInjection.framework/IDEBundleInjection</string>
+			<key>DYLD_LIBRARY_PATH</key>
+			<string>__TESTROOT__/Debug-iphoneos:__PLATFORMS__/iPhoneOS.platform/Developer/Library/Frameworks</string>
+			<key>XCInjectBundleInto</key>
+			<string>__TESTHOST__/DemoApp</string>
+			<key>XCODE_DBG_XPC_EXCLUSIONS</key>
+			<string>com.apple.dt.xctestSymbolicator</string>
+		</dict>
+		<key>ToolchainsSettingValue</key>
+		<array/>
+	</dict>
+</dict>
+</plist>

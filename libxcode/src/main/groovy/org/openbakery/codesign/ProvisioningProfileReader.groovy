@@ -18,7 +18,7 @@ package org.openbakery.codesign
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.util.PlistHelper

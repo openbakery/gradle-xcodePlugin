@@ -32,10 +32,6 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	def create() {
 
 
-		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			logger.lifecycle("The simulator build does not need a keychain");
-			return
-		}
 
 		if (project.xcodebuild.signing.keychain) {
 			if (!project.xcodebuild.signing.keychain.exists()) {

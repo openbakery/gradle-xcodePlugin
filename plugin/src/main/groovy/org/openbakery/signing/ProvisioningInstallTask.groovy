@@ -15,6 +15,7 @@
  */
 package org.openbakery.signing
 
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.codesign.ProvisioningProfileReader
@@ -31,9 +32,6 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		super()
 		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
 		this.description = "Installs the given provisioning profile"
-		this.setOnlyIf {
-			return !project.xcodebuild.simulator
-		}
 	}
 
 
@@ -56,10 +54,6 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 	@TaskAction
 	def install() {
 
-		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			logger.lifecycle("The simulator build does not need a provisioning profile")
-			return
-		}
 
 		if (project.xcodebuild.signing.mobileProvisionURI == null) {
 			logger.lifecycle("No provisioning profile specifed so do nothing here")
@@ -69,20 +63,16 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
 			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
 
+
+
 			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, this.plistHelper)
 
 			String uuid = provisioningProfileIdReader.getUUID()
 
 
-
+			String extension = FilenameUtils.getExtension(mobileProvisionFile)
 			String mobileProvisionName
-
-			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-				mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".mobileprovision"
-			} else {
-				mobileProvisionName = PROVISIONING_NAME_BASE + uuid + ".provisionprofile"
-			}
-
+			mobileProvisionName = PROVISIONING_NAME_BASE + uuid + "." + extension
 
 
 			File downloadedFile = new File(mobileProvisionFile)

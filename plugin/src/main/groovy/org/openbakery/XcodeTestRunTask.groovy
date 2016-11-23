@@ -8,6 +8,7 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
+import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
@@ -27,6 +28,7 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 	TestResultParser testResultParser = null
 	File outputDirectory = null
 
+	Codesign codesign = null
 
 	XcodeTestRunTask() {
 		super()
@@ -60,6 +62,23 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 		commandRunner.setOutputFile(new File(outputDirectory, "xcodebuild-output.txt"));
 
 
+		if (runOnDevice()) {
+			logger.lifecycle("Perform codesign")
+			Codesign codesign = getCodesign()
+
+			parameters.xctestrun.each() {
+
+				String appBundle = getBundleFromFile(it, "TestHostPath")
+				File appBundleFile = new File(it.parentFile, appBundle)
+				codesign.sign(appBundleFile)
+
+				String testBundle = getBundleFromFile(it, "TestBundlePath")
+				File testBundleFile = new File(appBundleFile, testBundle)
+				codesign.sign(testBundleFile)
+			}
+
+		}
+
 		def destinations = getDestinations()
 		try {
 			Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, destinations)
@@ -81,6 +100,17 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 			}
 
 		}
+	}
+
+	String getBundleFromFile(File file, String key) {
+		String bundle = plistHelper.getValueFromPlist(file, "Tests:" + key)
+		if (bundle.startsWith("__TESTROOT__/")) {
+			bundle = bundle - "__TESTROOT__/"
+		}
+		if (bundle.startsWith("__TESTHOST__/")) {
+			bundle = bundle - "__TESTHOST__/"
+		}
+		return bundle
 	}
 
 	void destination(Closure closure) {
@@ -134,5 +164,14 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 		}
 
 		return false
+	}
+
+	Codesign getCodesign() {
+		if (runOnDevice()) {
+			if (codesign == null) {
+				codesign = new Codesign(xcode, project.xcodebuild.signing.identity, project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.entitlementsFile, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+			}
+		}
+		return codesign
 	}
 }

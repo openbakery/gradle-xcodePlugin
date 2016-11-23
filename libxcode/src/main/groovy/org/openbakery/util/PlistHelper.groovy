@@ -45,12 +45,12 @@ class PlistHelper {
 
 			if (result.startsWith("Array {")) {
 
-				ArrayList<String> resultArray = new ArrayList<String>();
+				ArrayList<String> resultArray = new ArrayList<String>()
 
-				String[] tokens = result.split("\n");
+				String[] tokens = result.split("\n")
 
 				for (int i = 1; i < tokens.length - 1; i++) {
-					resultArray.add(tokens[i].trim());
+					resultArray.add(tokens[i].trim())
 				}
 				return resultArray
 			}
@@ -103,7 +103,7 @@ class PlistHelper {
 	}
 
 
-	void createForPlist(File plist) {
+	void create(File plist) {
 
 		FileUtils.writeStringToFile(plist, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +

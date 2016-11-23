@@ -32,7 +32,6 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.simulator = false
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
@@ -98,7 +97,38 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		secondFile.exists()
 		1 * commandRunner.run(["/bin/ln", "-s", firstSource.absolutePath, firstDestination.absolutePath])
 		1 * commandRunner.run(["/bin/ln", "-s", secondSource.absolutePath, secondDestination.absolutePath])
+	}
 
 
+	def "mobileProvisionFile has mobileprovision extension"() {
+		given:
+		File testMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
+		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
+
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
+		String uuid = provisioningProfileIdReader.getUUID()
+
+		when:
+		provisioningInstallTask.install()
+
+		then:
+		project.xcodebuild.signing.mobileProvisionFile.size == 1
+		project.xcodebuild.signing.mobileProvisionFile[0].toString().endsWith(uuid + ".mobileprovision")
+	}
+
+	def "has provisionprofile extension"() {
+		given:
+		File testMobileprovision = new File("../plugin/src/test/Resource/test-wildcard-mac.provisionprofile")
+		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
+
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
+		String uuid = provisioningProfileIdReader.getUUID()
+
+		when:
+		provisioningInstallTask.install()
+
+		then:
+		project.xcodebuild.signing.mobileProvisionFile.size == 1
+		project.xcodebuild.signing.mobileProvisionFile[0].toString().endsWith(uuid + ".provisionprofile")
 	}
 }
