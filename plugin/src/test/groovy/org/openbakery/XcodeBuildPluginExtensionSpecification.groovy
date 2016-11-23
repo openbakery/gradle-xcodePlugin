@@ -310,6 +310,24 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+	def "get build configuration for bundle identifier with missing info plist"() {
+		given:
+		HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
+		BuildTargetConfiguration buildTargetConfiguration = new BuildTargetConfiguration();
+		BuildConfiguration release = new BuildConfiguration();
+		buildTargetConfiguration.buildSettings["Debug"] = release
+		projectSettings.put("ExampleWatchkit", buildTargetConfiguration);
+
+
+		extension.projectSettings = projectSettings
+
+		when:
+		def configuration = extension.getBuildConfiguration("org.openbakery.test.Example")
+
+		then:
+		configuration == null
+	}
+
 
 	def "test simulator as string: true"() {
 		when:

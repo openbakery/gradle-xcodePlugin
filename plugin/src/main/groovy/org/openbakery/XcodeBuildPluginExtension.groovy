@@ -394,23 +394,23 @@ class XcodeBuildPluginExtension {
 		if (buildTargetConfiguration != null) {
 			return buildTargetConfiguration.buildSettings[configuration];
 		}
-		throw new IllegalStateException("No build configuration found for + target '" + parameters.target + "' and configuration '" + configuration + "'");
+		throw new IllegalStateException("No build configuration found for + target '" + parameters.target + "' and configuration '" + configuration + "'")
 	}
 
 	BuildConfiguration getBuildConfiguration(String bundleIdentifier) {
 		BuildConfiguration result = null
 		projectSettings.each() { target, buildTargetConfiguration ->
-			BuildConfiguration settings = buildTargetConfiguration.buildSettings[configuration];
+			BuildConfiguration settings = buildTargetConfiguration.buildSettings[configuration]
 
 			if (settings != null) {
 
-				if (settings.bundleIdentifier == null) {
+				if (settings.bundleIdentifier == null && settings.infoplist != null) {
 					String identifier = plistHelper.getValueFromPlist(new File(settings.infoplist), "CFBundleIdentifier")
 					if (identifier != null && identifier.equalsIgnoreCase(bundleIdentifier)) {
 						result = settings
 						return true
 					}
-				} else if (settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
+				} else if (settings.bundleIdentifier != null && settings.bundleIdentifier.equalsIgnoreCase(bundleIdentifier)) {
 					result = settings
 					return true
 				}
