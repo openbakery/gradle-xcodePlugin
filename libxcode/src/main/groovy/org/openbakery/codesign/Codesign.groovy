@@ -117,6 +117,10 @@ public class Codesign {
 
 	File createEntitlementsFile(File bundle, String bundleIdentifier) {
 
+		if (bundleIdentifier == null) {
+			return null
+		}
+
 		if (entitlementsFile != null) {
 			return entitlementsFile
 		}

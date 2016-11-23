@@ -355,7 +355,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 		then:
 
-		4 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
+		5 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
 		commandList.contains("/usr/bin/codesign")
 	}
 
