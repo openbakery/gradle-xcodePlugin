@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodePlugin
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 import spock.lang.Specification
@@ -36,6 +37,11 @@ class KeychainCreateTaskSpecification extends Specification {
 		loginKeychain = new File(tmpDirectory, "login.keychain")
 		FileUtils.writeStringToFile(loginKeychain, "dummy")
 
+		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
+		project.xcodebuild.signing.certificatePassword = "password"
+		project.xcodebuild.signing.timeout = null
+
 	}
 
 	def cleanup() {
@@ -45,6 +51,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(tmpDirectory)
 
 	}
+
 
 	def "OSVersion"() {
 		System.setProperty("os.version", "10.9.0");
@@ -64,10 +71,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		given:
 		System.setProperty("os.version", "10.8.0");
 
-		project.xcodebuild.type = Type.OSX
-		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
-		project.xcodebuild.signing.certificatePassword = "password"
-		project.xcodebuild.signing.timeout = null
+		mockListKeychains()
 
 		when:
 		keychainCreateTask.create()
@@ -77,19 +81,18 @@ class KeychainCreateTaskSpecification extends Specification {
 		1 * commandRunner.run(["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"])
 	}
 
+
+	def mockListKeychains() {
+		String result = "    \""+ loginKeychain.absolutePath + "\"";
+		commandRunner.runWithResult( ["security", "list-keychains"]) >> result
+	}
+
 	def "create with OS X 10.9"() {
 		given:
 		System.setProperty("os.version", "10.9.0");
-		project.xcodebuild.type = Type.OSX
-		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
-		project.xcodebuild.signing.certificatePassword = "password"
-		project.xcodebuild.signing.timeout = null
 
 		project.xcodebuild.signing.keychainPathInternal.createNewFile()
-
-		String userHome = System.getProperty("user.home")
-		String result = "    \""+ loginKeychain.absolutePath + "\"";
-		commandRunner.runWithResult( ["security", "list-keychains"]) >> result
+		mockListKeychains()
 
 		when:
 		keychainCreateTask.create()
@@ -99,4 +102,28 @@ class KeychainCreateTaskSpecification extends Specification {
 		1 * commandRunner.run(["security", "list-keychains", "-s", loginKeychain.absolutePath, project.xcodebuild.signing.keychainPathInternal.toString()])
 	}
 
+
+	def "cleanup first"() {
+		given:
+		File toBeDeleted = new File(project.xcodebuild.signing.signingDestinationRoot, "my.keychain")
+		FileUtils.writeStringToFile(toBeDeleted, "dummy")
+		mockListKeychains()
+
+		when:
+		keychainCreateTask.create()
+
+		then:
+		!toBeDeleted.exists()
+
+	}
+
+
+	def "depends on"() {
+		when:
+		def dependsOn = keychainCreateTask.getDependsOn()
+		then:
+		dependsOn.size() == 1
+		!dependsOn.contains(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
+
+	}
 }

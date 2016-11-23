@@ -220,4 +220,48 @@ class XcodeTestRunTestTaskSpecification extends Specification {
 
 	}
 
+
+
+	def "simulator build has no keychain dependency"() {
+		when:
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS Simulator"
+			name = "iPad Ard"
+		}
+		project.evaluate()
+
+		then:
+		!xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME))
+		!xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME))
+	}
+
+	def "when keychain dependency then also has finalized keychain remove"() {
+		when:
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS"
+			name = "Dummy"
+		}
+		project.evaluate()
+
+		then:
+		xcodeTestRunTestTask.finalizedBy.values.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+	}
+
+
+	def "has keychain dependency if device run"() {
+		when:
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.destination {
+			platform = "iOS"
+			name = "Dummy"
+		}
+		project.evaluate()
+
+		then:
+		xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME))
+		xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME))
+	}
+
 }

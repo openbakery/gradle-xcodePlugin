@@ -227,6 +227,7 @@ class XcodePluginSpecification extends Specification {
 		File projectDir = new File("../example/iOS/SwiftExample")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
+		project.evaluate()
 
 		XcodeBuildTask task = project.tasks.findByName('xcodebuild')
 
@@ -240,6 +241,7 @@ class XcodePluginSpecification extends Specification {
 		File projectDir = new File("../example/iOS/SwiftExample")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
+		project.evaluate()
 
 		def task = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME)
 
@@ -253,6 +255,7 @@ class XcodePluginSpecification extends Specification {
 		File projectDir = new File("../example/iOS/SwiftExample")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
+		project.evaluate()
 
 		def task = project.tasks.findByName(XcodePlugin.XCODE_BUILD_FOR_TEST_TASK_NAME)
 
@@ -260,6 +263,7 @@ class XcodePluginSpecification extends Specification {
 
 		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
 	}
+
 
 	def "has cocoapods bootstrap task"() {
 		expect:
@@ -319,4 +323,6 @@ class XcodePluginSpecification extends Specification {
 
 		cleanTask.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME))
 	}
+
+
 }

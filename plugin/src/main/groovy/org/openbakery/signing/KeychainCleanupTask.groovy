@@ -31,14 +31,9 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 	def clean() {
 		if (project.xcodebuild.signing.keychain) {
 			logger.debug("Nothing to cleanup")
-			return;
+			return
 		}
-
-		project.xcodebuild.signing.signingDestinationRoot.deleteDir()
-
-		removeGradleKeychainsFromSearchList()
-
-
+		cleanupKeychain()
 	}
 
 }

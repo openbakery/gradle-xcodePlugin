@@ -125,4 +125,14 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 		}
 		return result
 	}
+
+	boolean runOnDevice() {
+		for (Destination destination : getDestinations()) {
+			if (destination.platform.equalsIgnoreCase("ios")) {
+				return true
+			}
+		}
+
+		return false
+	}
 }

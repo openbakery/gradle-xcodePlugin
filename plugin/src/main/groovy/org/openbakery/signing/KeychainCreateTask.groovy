@@ -26,12 +26,6 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	KeychainCreateTask() {
 		super()
 		this.description = "Create a keychain that is used for signing the app"
-
-		dependsOn(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
-
-		this.setOnlyIf {
-			return !project.xcodebuild.simulator
-		}
 	}
 
 	@TaskAction
@@ -39,7 +33,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 
 		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			logger.lifecycle("The simulator build does not need a provisioning profile");
+			logger.lifecycle("The simulator build does not need a keychain");
 			return
 		}
 
@@ -61,6 +55,9 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		if (project.xcodebuild.signing.certificatePassword == null) {
 			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificatePassword is missing")
 		}
+
+		// first cleanup old keychain
+		cleanupKeychain()
 
 		def certificateFile = download(project.xcodebuild.signing.signingDestinationRoot, project.xcodebuild.signing.certificateURI)
 

@@ -429,11 +429,13 @@ class XcodePlugin implements Plugin<Project> {
 
 			configureCarthageDependencies(project)
 			configureCocoapodsDependencies(project)
+			configureTestRunDependencies(project)
 		}
 
 	}
 
-	def void configureExtensions(Project project) {
+
+	void configureExtensions(Project project) {
 		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
@@ -443,6 +445,16 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 		project.extensions.create("oclint", OCLintPluginExtension, project)
+	}
+
+
+	private void configureTestRunDependencies(Project project) {
+		for (XcodeTestRunTask xcodeTestRunTask : project.getTasks().withType(XcodeTestRunTask.class)) {
+			if (xcodeTestRunTask.runOnDevice()) {
+				xcodeTestRunTask.dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+				xcodeTestRunTask.finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+			}
+		}
 	}
 
 	private void configureBuild(Project project) {

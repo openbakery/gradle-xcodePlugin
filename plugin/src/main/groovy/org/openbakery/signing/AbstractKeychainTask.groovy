@@ -55,4 +55,12 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 		}
 		setKeychainList(keychainList)
 	}
+
+	def cleanupKeychain() {
+		project.xcodebuild.signing.signingDestinationRoot.deleteDir()
+		removeGradleKeychainsFromSearchList()
+	}
+
+
+
 }
