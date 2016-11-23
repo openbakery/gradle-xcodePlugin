@@ -291,6 +291,8 @@ class XcodePluginSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
+		project.evaluate()
+
 		XcodeBuildTask task = project.tasks.findByName('xcodebuild')
 
 		then:
@@ -309,6 +311,7 @@ class XcodePluginSpecification extends Specification {
 		File projectDir = new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
+		project.evaluate()
 
 		Task cleanTask = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME)
 

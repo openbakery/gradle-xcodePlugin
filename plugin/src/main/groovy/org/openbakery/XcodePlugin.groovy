@@ -426,6 +426,9 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			testTask.dependsOn(XCODE_TEST_TASK_NAME)
 
+
+			configureCarthageDependencies(project)
+			configureCocoapodsDependencies(project)
 		}
 
 	}
@@ -567,26 +570,31 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureCocoapods(Project project) {
-		CocoapodsInstallTask task = project.task(COCOAPODS_INSTALL_TASK_NAME, type: CocoapodsInstallTask, group: COCOAPODS_GROUP_NAME)
-		if (task.hasPodfile()) {
-			addDependencyToBuild(project, task)
-		}
-
+		project.task(COCOAPODS_INSTALL_TASK_NAME, type: CocoapodsInstallTask, group: COCOAPODS_GROUP_NAME)
 		project.task(COCOAPODS_BOOTSTRAP_TASK_NAME, type: CocoapodsBootstrapTask, group: COCOAPODS_GROUP_NAME)
 		project.task(COCOAPODS_UPDATE_TASK_NAME, type: CocoapodsUpdateTask, group: COCOAPODS_GROUP_NAME)
 	}
 
-	private void configureCarthage(Project project) {
-
-		CarthageCleanTask cleanTask = project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
-
-		CarthageUpdateTask task = project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
-		if (task.hasCartfile()) {
-			addDependencyToBuild(project, task)
-			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(cleanTask);
+	private configureCocoapodsDependencies(Project project) {
+		CocoapodsInstallTask cocoapodsInstallTask = project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME)
+		if (cocoapodsInstallTask.hasPodfile()) {
+			addDependencyToBuild(project, cocoapodsInstallTask)
 		}
+	}
 
+	private void configureCarthage(Project project) {
+		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
+	}
 
+	private configureCarthageDependencies(Project project) {
+		CarthageUpdateTask carthageUpdateTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME)
+		CarthageCleanTask carthageCleanTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME)
+
+		if (carthageUpdateTask.hasCartfile()) {
+			addDependencyToBuild(project, carthageUpdateTask)
+			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(carthageCleanTask);
+		}
 	}
 
 	private void configureOCLint(Project project) {
@@ -607,6 +615,7 @@ class XcodePlugin implements Plugin<Project> {
 
 
 	private void addDependencyToBuild(Project project, Task task) {
+		logger.info("add task dependency for {}", task)
 
 		for (Task buildTask : project.getTasks().withType(XcodeBuildTask.class)) {
 			buildTask.dependsOn(task)
@@ -616,7 +625,9 @@ class XcodePlugin implements Plugin<Project> {
 			testTask.dependsOn(task)
 		}
 
+
 		for (Task buildForTestTask : project.getTasks().withType(XcodeBuildForTestTask.class)) {
+			logger.info("add task depencency for {}", buildForTestTask)
 			buildForTestTask.dependsOn(task)
 		}
 
