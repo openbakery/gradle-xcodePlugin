@@ -24,8 +24,6 @@ class CarthageCleanTaskSpecification extends Specification {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		carthageCleanTask = project.getTasks().getByPath('carthageClean')
-
-
 	}
 
 

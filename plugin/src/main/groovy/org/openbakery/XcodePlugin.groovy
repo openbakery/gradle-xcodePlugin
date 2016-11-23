@@ -569,7 +569,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCocoapods(Project project) {
 		CocoapodsInstallTask task = project.task(COCOAPODS_INSTALL_TASK_NAME, type: CocoapodsInstallTask, group: COCOAPODS_GROUP_NAME)
 		if (task.hasPodfile()) {
-			addDependencyToBuild(project, task);
+			addDependencyToBuild(project, task)
 		}
 
 		project.task(COCOAPODS_BOOTSTRAP_TASK_NAME, type: CocoapodsBootstrapTask, group: COCOAPODS_GROUP_NAME)
@@ -582,7 +582,7 @@ class XcodePlugin implements Plugin<Project> {
 
 		CarthageUpdateTask task = project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
 		if (task.hasCartfile()) {
-			addDependencyToBuild(project, task);
+			addDependencyToBuild(project, task)
 			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(cleanTask);
 		}
 
@@ -607,14 +607,19 @@ class XcodePlugin implements Plugin<Project> {
 
 
 	private void addDependencyToBuild(Project project, Task task) {
-		XcodeBuildTask buildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
-		buildTask.dependsOn(task)
 
-		XcodeTestTask testTask = project.getTasks().getByName(XCODE_TEST_TASK_NAME)
-		testTask.dependsOn(task)
+		for (Task buildTask : project.getTasks().withType(XcodeBuildTask.class)) {
+			buildTask.dependsOn(task)
+		}
 
-		XcodeBuildForTestTask buildForTestTask = project.getTasks().getByName(XCODE_BUILD_FOR_TEST_TASK_NAME)
-		buildForTestTask.dependsOn(task)
+		for (Task testTask : project.getTasks().withType(XcodeTestTask.class)) {
+			testTask.dependsOn(task)
+		}
+
+		for (Task buildForTestTask : project.getTasks().withType(XcodeBuildForTestTask.class)) {
+			buildForTestTask.dependsOn(task)
+		}
+
 	}
 }
 
