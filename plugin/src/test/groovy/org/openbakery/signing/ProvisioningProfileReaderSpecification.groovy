@@ -109,6 +109,26 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	}
 
+	def "extract Entitlements has nothing to extract"() {
+		File provisioningProfile = new File("src/test/Resource/test-wildcard-mac-development.provisionprofile")
+		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired(provisioningProfile, commandRunner, new PlistHelper(new CommandRunner()))
+
+		commandRunner.runWithResult([
+								"/usr/libexec/PlistBuddy",
+								"-x",
+								provisioningProfile.absolutePath,
+								"-c",
+								"Print Entitlements"]) >> null
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+
+		expect:
+		// no exception should be thrown!
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null)
+
+
+	}
+
 	def "extract Entitlements"() {
 		given:
 		String expectedContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

@@ -18,6 +18,7 @@ package org.openbakery.codesign
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.util.PlistHelper
@@ -195,13 +196,18 @@ class ProvisioningProfileReader {
 	}
 
 	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups) {
+		File plistFromProvisioningProfile = getPlistFromProvisioningProfile()
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
 						"-x",
-						getPlistFromProvisioningProfile().absolutePath,
+						plistFromProvisioningProfile.absolutePath,
 						"-c",
 						"Print Entitlements"])
 
+		if (StringUtils.isEmpty(entitlements)) {
+			logger.debug("No entitlements found in {}", plistFromProvisioningProfile)
+			return
+		}
 		//String entitlements = plistHelper.commandForPlist(getPlistFromProvisioningProfile(), "Print Entitlements")
 		FileUtils.writeStringToFile(entitlementFile, entitlements.toString())
 
