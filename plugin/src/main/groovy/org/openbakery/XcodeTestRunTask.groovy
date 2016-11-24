@@ -12,6 +12,7 @@ import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 import org.openbakery.xcode.XcodebuildParameters
 
@@ -139,22 +140,11 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	}
 
 	boolean runOnDevice() {
-		for (File xctestrun : getXcruntestFiles()) {
-			if (xctestrun.getName().contains("iphoneos")) {
-				return true
-			}
+		if (parameters.type != Type.OSX) {
+			// os x does not have a simulator
+			return !parameters.simulator
 		}
-		/* change to use the filename of the xcruntest that is more reliable then the destinations
-
-
-		for (Destination destination : getDestinations()) {
-			if (destination.platform.equalsIgnoreCase("ios")) {
-				return true
-			}
-		}
-		*/
-
-		return false
+		return true
 	}
 
 	Codesign getCodesign() {

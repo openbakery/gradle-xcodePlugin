@@ -241,13 +241,13 @@ class Xcodebuild {
 
 	boolean isSimulatorBuildOf(Type expectedType) {
 		if (parameters.type != expectedType) {
-			return false;
+			return false
 		}
 		if (parameters.type != Type.OSX) {
 			// os x does not have a simulator
 			return parameters.simulator
 		}
-		return false;
+		return false
 	}
 
 	protected String getDestinationCommandParameter(Destination destination) {

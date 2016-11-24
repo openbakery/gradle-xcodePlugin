@@ -235,6 +235,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 			platform = "iOS Simulator"
 			name = "iPad Air"
 		}
+		xcodeTestRunTestTask.simulator = true
 		project.evaluate()
 
 		then:
@@ -281,6 +282,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 	def "simulator has no codesign"() {
 		when:
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.simulator = true
 		xcodeTestRunTestTask.destination {
 			platform = "iOS Simulator"
 			name = "iPad Air"
