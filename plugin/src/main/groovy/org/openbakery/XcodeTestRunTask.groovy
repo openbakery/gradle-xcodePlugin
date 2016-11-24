@@ -19,9 +19,8 @@ import org.openbakery.xcode.XcodebuildParameters
  * User: rene
  * Date: 25/10/16
  */
-class XcodeTestRunTask extends AbstractXcodeTask {
+class XcodeTestRunTask extends AbstractXcodeBuildTask {
 
-	XcodebuildParameters parameters = new XcodebuildParameters()
 	private List<Destination> destinationsCache
 
 	Object bundleDirectory
@@ -113,23 +112,6 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 		return bundle
 	}
 
-	void destination(Closure closure) {
-		Destination destination = new Destination()
-		ConfigureUtil.configure(closure, destination)
-		setDestination(destination)
-	}
-
-	void setDestination(def destination) {
-		parameters.setDestination(destination)
-	}
-
-	List<Destination> getDestinations() {
-		if (destinationsCache == null) {
-			destinationsCache = getDestinationResolver().getDestinations(parameters)
-		}
-		return destinationsCache
-	}
-
 
 	void setBundleDirectory(Object bundleDirectory) {
 		this.bundleDirectory = bundleDirectory
@@ -157,11 +139,20 @@ class XcodeTestRunTask extends AbstractXcodeTask {
 	}
 
 	boolean runOnDevice() {
+		for (File xctestrun : getXcruntestFiles()) {
+			if (xctestrun.getName().contains("iphoneos")) {
+				return true
+			}
+		}
+		/* change to use the filename of the xcruntest that is more reliable then the destinations
+
+
 		for (Destination destination : getDestinations()) {
 			if (destination.platform.equalsIgnoreCase("ios")) {
 				return true
 			}
 		}
+		*/
 
 		return false
 	}

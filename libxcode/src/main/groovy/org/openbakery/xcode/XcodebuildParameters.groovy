@@ -24,7 +24,7 @@ class XcodebuildParameters {
 	File derivedDataPath
 	List<String> arch
 	def additionalParameters
-		Set<Destination> configuredDestinations
+	Set<Destination> configuredDestinations
 	Devices devices
 	List<File> xctestrun
 
@@ -118,9 +118,9 @@ class XcodebuildParameters {
 	boolean isSimulatorBuildOf(Type expectedType) {
 		if (this.type != expectedType) {
 			logger.debug("is no simulator build")
-			return false;
+			return false
 		}
 		logger.debug("is simulator build {}", this.simulator)
-		return this.simulator;
+		return this.simulator
 	}
 }

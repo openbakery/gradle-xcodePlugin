@@ -244,11 +244,9 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "when keychain dependency then also has finalized keychain remove"() {
 		when:
+		def bundleDirectory = createTestBundleForDeviceBuild()
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
-		xcodeTestRunTestTask.destination {
-			platform = "iOS"
-			name = "Dummy"
-		}
+		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory)
 		project.evaluate()
 
 		then:
@@ -258,11 +256,9 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "has keychain dependency if device run"() {
 		when:
+		def bundleDirectory = createTestBundleForDeviceBuild()
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
-		xcodeTestRunTestTask.destination {
-			platform = "iOS"
-			name = "Dummy"
-		}
+		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory)
 		project.evaluate()
 
 		then:
@@ -273,11 +269,9 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "has codesign"() {
 		when:
+		def bundleDirectory = createTestBundleForDeviceBuild()
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
-		xcodeTestRunTestTask.destination {
-			platform = "iOS"
-			name = "Dummy"
-		}
+		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory)
 		project.evaluate()
 
 		then:
@@ -345,7 +339,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 			platform = "iOS"
 			name = "Dummy"
 		}
-		xcodeTestRunTestTask
+		xcodeTestRunTestTask.simulator = false
 		project.evaluate()
 
 		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory )
@@ -367,13 +361,12 @@ class XcodeTestRunTaskSpecification extends Specification {
 		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		mockEntitlementsFromPlist(mobileprovision)
 		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
-
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.destination {
 			platform = "iOS"
 			name = "Dummy"
 		}
-		xcodeTestRunTestTask
+		xcodeTestRunTestTask.simulator = false
 		project.evaluate()
 		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory )
 
