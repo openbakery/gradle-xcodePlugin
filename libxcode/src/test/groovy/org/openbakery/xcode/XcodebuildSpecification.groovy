@@ -135,15 +135,17 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = ['xcodebuild',
-								   "-scheme", 'myscheme',
-								   "-workspace", 'myworkspace',
-								   "-configuration", "Debug",
-								   "-derivedDataPath", new File("build/myDerivedData").absolutePath,
-								   "DSTROOT=" + new File("build/myDst").absolutePath,
-								   "OBJROOT=" + new File("build/myObj").absolutePath,
-								   "SYMROOT=" + new File("build/mySym").absolutePath,
-								   "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
-									 "-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO",
+														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
+														 "DSTROOT=" + new File("build/myDst").absolutePath,
+														 "OBJROOT=" + new File("build/myObj").absolutePath,
+														 "SYMROOT=" + new File("build/mySym").absolutePath,
+														 "SHARED_PRECOMPS_DIR=" + new File("build/myShared").absolutePath,
+														 "-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 			]
 		}
 		commandList == expectedCommandList
@@ -165,8 +167,10 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
-					"-configuration", "Debug",
-					"-target", 'mytarget'
+							"-configuration", "Debug",
+							"-target", 'mytarget',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
 			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
@@ -272,10 +276,12 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-					"-scheme", 'myscheme',
-					"-workspace", 'myworkspace',
-					"-configuration", "Debug",
-					"ARCHS=myarch")
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", "Debug",
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"ARCHS=myarch")
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 
 		}
@@ -324,9 +330,12 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-					"-scheme", 'myscheme',
-					"-workspace", 'myworkspace',
-					"-configuration", "Debug")
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", "Debug",
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
+			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 
 		}
@@ -349,8 +358,11 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
-					"-configuration", "Debug",
-					"-target", 'mytarget')
+							"-configuration", "Debug",
+							"-target", 'mytarget',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
+			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -373,9 +385,12 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-					"-scheme", 'myscheme',
-					"-workspace", 'myworkspace',
-					"-configuration", 'Debug')
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
+			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -398,10 +413,12 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-					"-scheme", 'myscheme',
-					"-workspace", 'myworkspace',
-					"-configuration", 'Debug',
-					"ARCHS=i386")
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"ARCHS=i386")
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -426,8 +443,11 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDefaultDirectories('/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
-					"-configuration", 'Debug',
-					"-target", 'mytarget')
+							"-configuration", 'Debug',
+							"-target", 'mytarget',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
+			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -467,10 +487,12 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-					"-scheme", 'myscheme',
-					"-workspace", 'myworkspace',
-					"-configuration", 'Debug',
-					"foobar")
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"foobar")
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -492,10 +514,12 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-					"-scheme", 'myscheme',
-					"-workspace", 'myworkspace',
-					"-configuration", 'Debug',
-					"foo", "bar")
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"foo", "bar")
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -607,12 +631,14 @@ class XcodebuildSpecification extends Specification {
 
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('script', '-q', '/dev/null',
-					"xcodebuild",
-					"-scheme", 'myscheme',
-					"-workspace", "myworkspace",
-					"-configuration", 'Debug',
-					"-destination", "platform=iOS Simulator,id=D72F7CC6-8426-4E0A-A234-34747B1F30DD",
-					"-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389")
+							"xcodebuild",
+							"-scheme", 'myscheme',
+							"-workspace", "myworkspace",
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"-destination", "platform=iOS Simulator,id=D72F7CC6-8426-4E0A-A234-34747B1F30DD",
+							"-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389")
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -642,11 +668,13 @@ class XcodebuildSpecification extends Specification {
 
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('script', '-q', '/dev/null',
-					"xcodebuild",
-					"-scheme", 'myscheme',
-					"-workspace", "myworkspace",
-					"-configuration", 'Debug',
-					"-destination", "platform=tvOS Simulator,id=4395107C-169C-43D7-A403-C9030B6A205D")
+							"xcodebuild",
+							"-scheme", 'myscheme',
+							"-workspace", "myworkspace",
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO",
+							"-destination", "platform=tvOS Simulator,id=4395107C-169C-43D7-A403-C9030B6A205D")
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -676,10 +704,13 @@ class XcodebuildSpecification extends Specification {
 
 		interaction {
 			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories(
-					"xcodebuild",
-					"-scheme", 'myscheme',
-					"-workspace", "myworkspace",
-					"-configuration", 'Debug')
+							"xcodebuild",
+							"-scheme", 'myscheme',
+							"-workspace", "myworkspace",
+							"-configuration", 'Debug',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
+			)
 			expectedCommandList << "-destination" << "platform=tvOS Simulator,id=4395107C-169C-43D7-A403-C9030B6A205D"
 		}
 
@@ -745,8 +776,11 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = createCommandWithDefaultDirectories('xcodebuild',
-					"-configuration", "Debug",
-					"-target", 'mytarget')
+							"-configuration", "Debug",
+							"-target", 'mytarget',
+							"CODE_SIGN_IDENTITY=",
+							"CODE_SIGNING_REQUIRED=NO"
+			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
 		commandList == expectedCommandList
@@ -779,6 +813,8 @@ class XcodebuildSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO",
 														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
 														 "DSTROOT=" + new File("build/myDst").absolutePath,
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
@@ -788,7 +824,6 @@ class XcodebuildSpecification extends Specification {
 														 "archive",
 														 "-archivePath",
 														 "build/archive/myArchive.xcarchive"
-
 			]
 		}
 		commandList == expectedCommandList

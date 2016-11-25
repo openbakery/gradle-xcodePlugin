@@ -225,6 +225,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
+															 "CODE_SIGN_IDENTITY=",
+															 "CODE_SIGNING_REQUIRED=NO"
 		]
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
@@ -484,6 +486,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", "Foobar",
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
+															 "CODE_SIGN_IDENTITY=",
+															 "CODE_SIGNING_REQUIRED=NO",
 															 "-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
 		]
 		expectedCommandList.addAll(expectedDefaultDirectories())
