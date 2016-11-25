@@ -149,11 +149,8 @@ class Xcodebuild {
 	}
 
 	def addDisableCodeSigning(ArrayList commandList) {
-		if (!isSimulator()) {
-			// disable codesign when building for OS X and iOS device
-			commandList.add("CODE_SIGN_IDENTITY=")
-			commandList.add("CODE_SIGNING_REQUIRED=NO")
-		}
+		commandList.add("CODE_SIGN_IDENTITY=")
+		commandList.add("CODE_SIGNING_REQUIRED=NO")
 	}
 
 	private boolean isSimulator() {

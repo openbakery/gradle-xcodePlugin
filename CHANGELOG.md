@@ -5,6 +5,7 @@ Changes
   Here a testbundle is created that contains the xctestrun file and the App bundle
 * Added a XcodeTestRunTestTask that executes the unit tests from the test bundle that was created with XcodebuildForTest
   Here only the tests are executed, no build is taking place here.
+* Codesign is also disabled for iOS simulator builds
 
 Bugfixes
 * Added the workspace parameter when getting the build settings: Issue #304

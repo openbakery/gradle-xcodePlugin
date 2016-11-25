@@ -227,6 +227,34 @@ class XcodebuildSpecification extends Specification {
 		commandList == expectedCommandList
 	}
 
+	def "no codesign for iOS simualtor build"() {
+		def commandList
+		def expectedCommandList
+
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.simulator = true
+
+		when:
+		xcodebuild.execute(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
+					"-scheme", 'myscheme',
+					"-workspace", 'myworkspace',
+					"-configuration", "Debug",
+					"CODE_SIGN_IDENTITY=",
+					"CODE_SIGNING_REQUIRED=NO"
+			)
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
+
+		}
+		commandList == expectedCommandList
+	}
+
 	def "run command with arch"() {
 
 		def commandList
