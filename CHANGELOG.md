@@ -1,4 +1,4 @@
-# 0.14.4 ()
+# 0.14.4 (November 29, 2016)
 
 Changes
 * Added a XcodebuildForTest task that create build for running unit tests (see xcodebuild build-for-testing)
@@ -11,6 +11,7 @@ Bugfixes
 * Added the workspace parameter when getting the build settings: Issue #304
 * Fixed archive fails when executed outside the build directory: Issue #312
 * Fixed that the build directory can be changed for the package task: Issue #314
+* Unit test on the device is now possible again with the new XcodebuildForTest and XcodeTestRunTestTask: Issue #274
 
 # 0.14.3 (October 20, 2016)
 
