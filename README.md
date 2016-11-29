@@ -37,7 +37,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.14.3
+### Current stable version is 0.14.4
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
 
@@ -56,7 +56,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.14.3"
+  id "org.openbakery.xcode-plugin" version "0.14.4"
 }
 
 xcodebuild {
