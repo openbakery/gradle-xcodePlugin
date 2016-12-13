@@ -74,6 +74,10 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			setKeychainList(keychainList)
 		}
 
+		if (getOSVersion().minor >= 12) {
+			commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", "-D", "-t", "private"])
+		}
+
 		// Set a custom timeout on the keychain if requested
 		if (project.xcodebuild.signing.timeout != null) {
 			commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])

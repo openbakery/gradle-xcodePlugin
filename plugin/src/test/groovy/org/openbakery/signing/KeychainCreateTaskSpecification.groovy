@@ -126,4 +126,37 @@ class KeychainCreateTaskSpecification extends Specification {
 		!dependsOn.contains(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
 
 	}
+
+
+	def "create with macOS 10.12.0 set-key-partition-list"() {
+		given:
+		System.setProperty("os.version", "10.12.0");
+
+		mockListKeychains()
+
+		when:
+		keychainCreateTask.create()
+
+		then:
+		1 * commandRunner.run(["security", "create-keychain", "-p", "This_is_the_default_keychain_password", project.xcodebuild.signing.keychainPathInternal.toString()])
+		1 * commandRunner.run(["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"])
+		1 * commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", "-D", "-t", "private"])
+	}
+
+
+	def "create with macOS 10.11.0 NOT set-key-partition-list"() {
+		given:
+		System.setProperty("os.version", "10.11.0");
+
+		mockListKeychains()
+
+		when:
+		keychainCreateTask.create()
+
+		then:
+		1 * commandRunner.run(["security", "create-keychain", "-p", "This_is_the_default_keychain_password", project.xcodebuild.signing.keychainPathInternal.toString()])
+		1 * commandRunner.run(["security", "-v", "import",  keychainDestinationFile.toString(), "-k", project.xcodebuild.signing.keychainPathInternal.toString(), "-P", "password", "-T", "/usr/bin/codesign"])
+		0 * commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", "-D", "-t", "private"])
+	}
+
 }
