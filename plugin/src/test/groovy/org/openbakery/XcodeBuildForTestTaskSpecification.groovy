@@ -7,6 +7,7 @@ import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
@@ -141,12 +142,30 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		when:
 		xcodeBuildForTestTask.parameters.simulator = true
 		xcodeBuildForTestTask.parameters.type = Type.iOS
+		Destination destination = new Destination()
+		destination.os = "9.1"
+		xcodeBuildForTestTask.parameters.setDestination(destination)
 		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
 
 		def destinations = xcodeBuildForTestTask.getDestinations()
 
 		then:
 		destinations.size() == 12
+		destinations[0].platform == "iOS Simulator"
+		destinations[0].os == "9.1"
+
+	}
+
+	def "xcodebuild has all available iOS destinations with multiple SDKs "() {
+		when:
+		xcodeBuildForTestTask.parameters.simulator = true
+		xcodeBuildForTestTask.parameters.type = Type.iOS
+		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
+
+		def destinations = xcodeBuildForTestTask.getDestinations()
+
+		then:
+		destinations.size() == 22
 		destinations[0].platform == "iOS Simulator"
 		destinations[0].os == "9.1"
 

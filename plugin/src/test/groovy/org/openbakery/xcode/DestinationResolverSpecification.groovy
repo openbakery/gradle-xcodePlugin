@@ -87,6 +87,20 @@ class DestinationResolverSpecification extends Specification {
 		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
+		destinations.size() == 22
+
+	}
+
+	def "available destinations default for 9.1 SDK"() {
+		extension.destination {
+			os = "9.1"
+		}
+
+		when:
+
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
 		destinations.size() == 12
 
 	}
