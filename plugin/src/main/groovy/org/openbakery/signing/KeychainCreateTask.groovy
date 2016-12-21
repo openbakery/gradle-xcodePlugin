@@ -57,30 +57,25 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 		def certificateFile = download(project.xcodebuild.signing.signingDestinationRoot, project.xcodebuild.signing.certificateURI)
 
-		def keychainPath = project.xcodebuild.signing.keychainPathInternal.absolutePath
+		File keychain = project.xcodebuild.signing.keychainPathInternal
 
-		logger.debug("Create Keychain: {}", keychainPath)
-
-		if (!new File(keychainPath).exists()) {
-			commandRunner.run(["security", "create-keychain", "-p", project.xcodebuild.signing.keychainPassword, keychainPath])
-		}
-		commandRunner.run(["security", "-v", "import", certificateFile, "-k", keychainPath, "-P", project.xcodebuild.signing.certificatePassword, "-T", "/usr/bin/codesign"])
+		security.createKeychain(keychain, project.xcodebuild.signing.keychainPassword)
+		security.importCertificate(new File(certificateFile), project.xcodebuild.signing.certificatePassword, keychain)
 
 
 		if (getOSVersion().minor >= 9) {
-
-			def keychainList = getKeychainList()
-			keychainList.add(keychainPath)
+			List<File> keychainList = getKeychainList()
+			keychainList.add(keychain)
 			setKeychainList(keychainList)
 		}
 
 		if (getOSVersion().minor >= 12) {
-			commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", "-D", "-t", "private"])
+			security.setPartitionList(keychain, project.xcodebuild.signing.keychainPassword)
 		}
 
 		// Set a custom timeout on the keychain if requested
 		if (project.xcodebuild.signing.timeout != null) {
-			commandRunner.run(["security", "-v", "set-keychain-settings", "-lut", project.xcodebuild.signing.timeout.toString(), keychainPath])
+			security.setTimeout(project.xcodebuild.signing.timeout, keychain)
 		}
 	}
 

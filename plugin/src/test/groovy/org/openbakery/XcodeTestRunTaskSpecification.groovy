@@ -38,6 +38,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.commandRunner = commandRunner
 		xcodeTestRunTestTask.xcode = new XcodeFake()
 		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
+		project.xcodebuild.signing.identity = "my identity"
 
 
 		outputDirectory = new File(project.buildDir, "test")

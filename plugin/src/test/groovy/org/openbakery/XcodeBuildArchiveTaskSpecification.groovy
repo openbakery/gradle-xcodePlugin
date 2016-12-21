@@ -48,6 +48,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		project.xcodebuild.type = Type.iOS
 		project.xcodebuild.simulator = false
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
+		project.xcodebuild.signing.identity = "my identity"
+
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 		xcodeBuildArchiveTask.plistHelper = plistHelper

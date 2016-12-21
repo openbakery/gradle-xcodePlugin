@@ -19,6 +19,7 @@ package org.openbakery
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.codesign.Security
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Version
@@ -41,11 +42,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	public Xcode xcode
 	protected SimulatorControl simulatorControl
 	protected DestinationResolver destinationResolver
+	Security security
 
 
 	AbstractXcodeTask() {
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(commandRunner)
+		security = new Security(commandRunner)
 	}
 
 
@@ -206,5 +209,12 @@ abstract class AbstractXcodeTask extends DefaultTask {
 			simulatorControl = new SimulatorControl(this.commandRunner, getXcode())
 		}
 		return simulatorControl
+	}
+
+	String getSigningIdentity() {
+		if (project.xcodebuild.signing.identity != null) {
+			return project.xcodebuild.signing.identity
+		}
+		return security.getIdentity(project.xcodebuild.signing.getKeychainPathInternal())
 	}
 }

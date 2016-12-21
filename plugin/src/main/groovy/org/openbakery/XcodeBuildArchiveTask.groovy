@@ -139,9 +139,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			content.append("		<string>" + bundleVersion + "</string>\n")
 		}
 
-		if (project.xcodebuild.getSigning().getIdentity()) {
+		if (getSigningIdentity()) {
 			content.append("		<key>SigningIdentity</key>\n")
-			content.append("		<string>" + project.xcodebuild.getSigning().getIdentity() + "</string>\n")
+			content.append("		<string>" + getSigningIdentity() + "</string>\n")
 
 		}
 

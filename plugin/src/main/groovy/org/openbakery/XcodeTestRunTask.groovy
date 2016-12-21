@@ -7,14 +7,12 @@ import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
-import org.gradle.util.ConfigureUtil
 import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
-import org.openbakery.xcode.XcodebuildParameters
 
 /**
  * User: rene
@@ -150,7 +148,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	Codesign getCodesign() {
 		if (runOnDevice()) {
 			if (codesign == null) {
-				codesign = new Codesign(xcode, project.xcodebuild.signing.identity, project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.entitlementsFile, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+				codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.entitlementsFile, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
 			}
 		}
 		return codesign

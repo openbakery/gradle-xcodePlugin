@@ -34,7 +34,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.type = Type.OSX
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
-
+		project.xcodebuild.signing.identity = "my identity"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 		xcodeBuildArchiveTask.commandRunner = commandRunner

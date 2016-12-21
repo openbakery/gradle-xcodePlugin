@@ -127,26 +127,6 @@ class Signing {
 	}
 
 	String getIdentity() {
-
-		def IDENTITY_PATTERN = ~/\s*\d+\)\s*(\w+)\s*\"(.*)\"/
-
-		if (this.identity == null) {
-			String identities = commandRunner.runWithResult(["security", "find-identity", "-v", "-p", "codesigning", getKeychainPathInternal().absolutePath])
-
-			def matcher = IDENTITY_PATTERN.matcher(identities)
-			String identity = null
-			if (matcher.find()) {
-				identity = matcher[0][1]
-			}
-
-			if (!matcher.find()) {
-				// only use the identify if only one was found!!!
-				// otherwise leave it to the default value null
-				this.identity = identity
-			}
-
-
-		}
 		return this.identity
 	}
 

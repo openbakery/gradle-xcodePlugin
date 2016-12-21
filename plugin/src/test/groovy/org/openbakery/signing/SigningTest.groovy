@@ -34,41 +34,4 @@ class SigningTest {
 		assert signing.identity.equals("Me!")
 	}
 
-	@Test
-	void testSingleIdentity() {
-		def commandRunnerMock = new MockFor(CommandRunner)
-
-		commandRunnerMock.demand.runWithResult { parameters ->
-			def expectedParameters = ["security", "find-identity", "-v", "-p", "codesigning", signing.keychainPathInternal.absolutePath ]
-			if (parameters.equals(expectedParameters)) {
-				return FileUtils.readFileToString(new File("src/test/Resource/security-find-identity-single.txt"))
-			}
-			println "parameters expected: " + expectedParameters
-			println "but was: " + parameters
-	 }
-
-		signing.commandRunner = commandRunnerMock.proxyInstance()
-		assert signing.identity.equals("1111222233334444555566667777888899990000")
-		commandRunnerMock.verify signing.commandRunner
-	}
-
-
-	@Test
-	void testMultipleIdentity() {
-		def commandRunnerMock = new MockFor(CommandRunner)
-
-		commandRunnerMock.demand.runWithResult { parameters ->
-			def expectedParameters = ["security", "find-identity", "-v", "-p", "codesigning", signing.keychainPathInternal.absolutePath ]
-			if (parameters.equals(expectedParameters)) {
-				return FileUtils.readFileToString(new File("src/test/Resource/security-find-identity-multiple.txt"))
-			}
-			println "parameters expected: " + expectedParameters
-			println "but was: " + parameters
-	 }
-
-		signing.commandRunner = commandRunnerMock.proxyInstance()
-		assert signing.identity == null
-		commandRunnerMock.verify signing.commandRunner
-	}
-
 }

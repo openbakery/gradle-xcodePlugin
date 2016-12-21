@@ -36,6 +36,7 @@ class KeychainCleanupTaskSpecification extends Specification {
 
 		keychainCleanupTask = project.tasks.findByName(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME);
 		keychainCleanupTask.commandRunner = commandRunner
+		keychainCleanupTask.security.commandRunner = commandRunner
 
 
 		certificateFile = File.createTempFile("test", ".cert")

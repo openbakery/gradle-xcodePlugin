@@ -11,7 +11,6 @@ import spock.lang.Specification
 class AbstractDistributeTaskSpecification extends Specification {
 
 	Project project
-
 	AbstractDistributeTask distributeTask
 
 

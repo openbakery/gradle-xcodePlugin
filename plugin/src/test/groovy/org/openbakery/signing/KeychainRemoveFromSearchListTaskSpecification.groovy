@@ -34,6 +34,7 @@ class KeychainRemoveFromSearchListTaskSpecification extends Specification {
 
 		task = project.tasks.findByName(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME);
 		task.commandRunner = commandRunner
+		task.security.commandRunner = commandRunner
 
 		loginKeychain = new File(tmpDirectory, "login.keychain")
 		FileUtils.writeStringToFile(loginKeychain, "dummy")

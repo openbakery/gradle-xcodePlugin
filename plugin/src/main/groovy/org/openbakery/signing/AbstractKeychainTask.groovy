@@ -3,6 +3,7 @@ package org.openbakery.signing
 import org.apache.commons.lang.StringUtils
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.codesign.Security
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,34 +14,19 @@ import org.openbakery.XcodeBuildPluginExtension
  */
 abstract class AbstractKeychainTask extends AbstractXcodeTask {
 
+	Security security
 
-	List<String> getKeychainList() {
-		String keychainList = commandRunner.runWithResult(["security", "list-keychains"])
-
-		List<String> result = []
-
-		for (String keychain in keychainList.split("\n")) {
-			String trimmedKeychain = keychain.replaceAll(/^\s*\"|\"$/, "")
-			if (!trimmedKeychain.equals("/Library/Keychains/System.keychain")) {
-				File keychainFile = new File(trimmedKeychain)
-				if (keychainFile.exists()) {
-					result.add(trimmedKeychain);
-				}
-			}
-		}
-		return result;
+	AbstractKeychainTask() {
+		security = new Security(commandRunner)
 	}
 
-	def setKeychainList(keychainList) {
-		def commandList = [
-						"security",
-						"list-keychains",
-						"-s"
-		]
-		for (String keychain in keychainList) {
-			commandList.add(keychain);
-		}
-		commandRunner.run(commandList)
+
+	List<File> getKeychainList() {
+		return security.getKeychainList()
+	}
+
+	def setKeychainList(List<File> keychainList) {
+		security.setKeychainList(keychainList)
 	}
 
 	/**
@@ -48,10 +34,10 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 	 * @return
 	 */
 	def removeGradleKeychainsFromSearchList() {
-		List<String>keychainList = getKeychainList();
+		List<File>keychainList = getKeychainList()
 		logger.debug("project.xcodebuild.signing.keychain should not be removed: {}", project.xcodebuild.signing.keychainPathInternal)
 		if (project.xcodebuild.signing.keychainPathInternal != null) {
-			keychainList.remove(project.xcodebuild.signing.keychainPathInternal.absolutePath)
+			keychainList.remove(project.xcodebuild.signing.keychainPathInternal)
 		}
 		setKeychainList(keychainList)
 	}
