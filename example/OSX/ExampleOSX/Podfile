@@ -1,5 +1,5 @@
 
 target "ExampleOSX" do
-	pod 'Sparkle', '~> 1.9'
+	pod 'Sparkle', '~> 1.15'
 end
 
