@@ -46,8 +46,8 @@ class PackageTask extends AbstractDistributeTask {
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
-			logger.lifecycle("not a device build, so no codesign and packaging needed");
-			return;
+			logger.lifecycle("not a device build, so no codesign and packaging needed")
+			return
 		}
 		outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
 
@@ -107,9 +107,9 @@ class PackageTask extends AbstractDistributeTask {
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 
 			boolean isAdHoc = isAdHoc(appBundle)
-			createIpa(applicationFolder, !isAdHoc);
+			createIpa(applicationFolder, !isAdHoc)
 		} else {
-			createPackage(appBundle);
+			createPackage(appBundle)
 		}
 
 	}
@@ -234,16 +234,16 @@ class PackageTask extends AbstractDistributeTask {
 
 
 	private void embedProvisioningProfileToBundle(File bundle) {
-		File mobileProvisionFile = getProvisionFileForBundle(bundle);
+		File mobileProvisionFile = getProvisionFileForBundle(bundle)
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 
 			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
 			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
 
-			logger.info("provision profile - {}", embeddedProvisionFile);
+			logger.info("provision profile - {}", embeddedProvisionFile)
 
-			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile);
+			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
 		}
 	}
 

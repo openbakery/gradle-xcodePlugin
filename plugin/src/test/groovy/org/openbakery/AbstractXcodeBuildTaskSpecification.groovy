@@ -48,14 +48,31 @@ class AbstractXcodeBuildTaskSpecification extends Specification {
 	}
 
 	def "test get identity read from keychain"() {
-		when:
+		given:
+		File keychain = new File(projectDir, "my.keychain")
+		FileUtils.writeStringToFile(keychain, "dummy")
+		project.xcodebuild.signing.keychain = keychain
 		project.xcodebuild.signing.identity = null
 
+		when:
 		Security security = Mock(Security)
 		security.getIdentity(project.xcodebuild.signing.getKeychainPathInternal()) >> "my identity from security"
 		xcodeBuildTask.security = security
 
 		then:
 		xcodeBuildTask.getSigningIdentity() == "my identity from security"
+
+		cleanup:
+		keychain.delete()
 	}
+
+	def "test get identity null and keychain does not exist should return null"() {
+		when:
+		project.xcodebuild.signing.identity = null
+		project.xcodebuild.signing.keychain = new File("my.keychain")
+
+		then:
+		xcodeBuildTask.getSigningIdentity() == null
+	}
+
 }

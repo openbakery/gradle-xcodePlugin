@@ -215,6 +215,9 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (project.xcodebuild.signing.identity != null) {
 			return project.xcodebuild.signing.identity
 		}
-		return security.getIdentity(project.xcodebuild.signing.getKeychainPathInternal())
+		if (project.xcodebuild.signing.getKeychainPathInternal().exists()) {
+			return security.getIdentity(project.xcodebuild.signing.getKeychainPathInternal())
+		}
+		return null
 	}
 }
