@@ -154,7 +154,7 @@ class SecuritySpecification extends Specification {
 		security.importCertificate(certificate, "certificatePassword", keychain)
 
 		then:
-		1 * commandRunner.run(["security", "-v", "import", certificate, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
+		1 * commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
 
 		cleanup:
 		keychain.delete()
@@ -175,7 +175,7 @@ class SecuritySpecification extends Specification {
 		then:
 		def exception = thrown(IllegalArgumentException)
 		exception.message == "Given keychain does not exist"
-		0 * commandRunner.run(["security", "-v", "import", certificate, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
+		0 * commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
 
 		cleanup:
 		certificate.delete()
@@ -193,7 +193,7 @@ class SecuritySpecification extends Specification {
 		then:
 		def exception = thrown(IllegalArgumentException)
 		exception.message == "Given certificate does not exist"
-		0 * commandRunner.run(["security", "-v", "import", certificate, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
+		0 * commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
 
 		cleanup:
 		keychain.delete()

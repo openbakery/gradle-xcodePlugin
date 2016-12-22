@@ -102,7 +102,7 @@ class Security {
 			throw new IllegalArgumentException("Given keychain does not exist")
 		}
 		logger.debug("importCertificate")
-		commandRunner.run(["security", "-v", "import", certificate, "-k", keychain.absolutePath, "-P", certificatePassword, "-T", "/usr/bin/codesign"])
+		commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", certificatePassword, "-T", "/usr/bin/codesign"])
 	}
 
 	String getIdentity(File keychain) {
