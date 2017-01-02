@@ -5,6 +5,7 @@ Changes
 
 Bugfixes
 * Fixed signing when using macOS Sierra: Issue #316
+* Include the onDemandResources when creating the archive and package: Issue #309
 
 # 0.14.4 (November 29, 2016)
 
