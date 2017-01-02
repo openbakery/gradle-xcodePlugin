@@ -203,7 +203,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy OnDemandResources"() {
 		when:
-		TestHelper.createOnDemandResources(appDirectory.parentFile)
+		TestHelper.createOnDemandResources(appDirectory)
 		xcodeBuildArchiveTask.archive()
 
 		File onDemandResourcesDirectory = new File(projectDir, "build/archive/Example.xcarchive/Products/OnDemandResources")
@@ -212,6 +212,17 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		then:
 		onDemandResourcesDirectory.exists()
 		infoPlist_onDemandResourcesDirectory.exists()
+	}
+
+	def "copy OnDemandResources.plist"() {
+		when:
+		TestHelper.createOnDemandResources(appDirectory)
+		xcodeBuildArchiveTask.archive()
+
+		File onDemandResourcesPlist = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/OnDemandResources.plist")
+
+		then:
+		onDemandResourcesPlist.exists()
 	}
 
 	def "copy Dsym"() {

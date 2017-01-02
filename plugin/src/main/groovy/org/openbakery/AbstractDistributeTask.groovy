@@ -13,8 +13,16 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 	private File archiveDirectory;
 
+	File getProductsDirectory() {
+		File productsDirectory = new File(getArchiveDirectory(), "Products")
+		if (!productsDirectory.exists()) {
+			throw new IllegalStateException("products directory not found: " + productsDirectory.absolutePath)
+		}
+		return productsDirectory
+	}
+
 	File getApplicationBundleDirectory() {
-		File appBundleDirectory = new File(getArchiveDirectory(), "Products/Applications/" + getApplicationNameFromArchive() + ".app")
+		File appBundleDirectory = new File(getProductsDirectory(), "Applications/" + getApplicationNameFromArchive() + ".app")
 		if (!appBundleDirectory.exists()) {
 			throw new IllegalStateException("app directory not found: " + appBundleDirectory.absolutePath);
 		}

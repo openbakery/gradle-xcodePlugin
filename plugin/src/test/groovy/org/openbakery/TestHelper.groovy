@@ -40,7 +40,10 @@ class TestHelper {
 	}
 
 	static def createOnDemandResources(File destinationDirectory) {
-		File onDemandResourcesDirectory = new File(destinationDirectory, "OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
+		File onDemandResourcesPlist = new File(destinationDirectory, "OnDemandResources.plist")
+		FileUtils.writeStringToFile(onDemandResourcesPlist, "dummy")
+
+		File onDemandResourcesDirectory = new File(destinationDirectory.parentFile, "OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
 		onDemandResourcesDirectory.mkdirs()
 		File infoPlist_onDemandResourcesDirectory = new File(onDemandResourcesDirectory, "Info.plist")
 		FileUtils.writeStringToFile(infoPlist_onDemandResourcesDirectory, "dummy")

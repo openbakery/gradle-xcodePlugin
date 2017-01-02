@@ -59,7 +59,15 @@ class PackageTask extends AbstractDistributeTask {
 
 		applicationBundleName = applicationName + ".app"
 
-		ApplicationBundle applicationBundle = new ApplicationBundle(new File(applicationFolder,applicationBundleName) , project.xcodebuild.type, project.xcodebuild.simulator)
+		File applicationPath = new File(applicationFolder, applicationBundleName)
+
+		// copy onDemandResources
+		File onDemandResources = new File(getProductsDirectory(), "OnDemandResources")
+		if (onDemandResources.exists()) {
+			copy(onDemandResources, applicationPath)
+		}
+
+		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator)
 		appBundles = applicationBundle.getBundles()
 
 		File resourceRules = new File(applicationFolder, applicationBundleName + "/ResourceRules.plist")

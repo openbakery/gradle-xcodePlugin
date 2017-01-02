@@ -109,9 +109,9 @@ class PackageTaskSpecification extends Specification {
 			appDirectory.mkdirs();
 		}
 
-		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
-		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy");
-		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
+		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy")
+		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy")
+		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy")
 
 		if (withPlugin) {
 			File widgetsDirectory = new File(applicationBundle, widgetPath)
@@ -164,6 +164,13 @@ class PackageTaskSpecification extends Specification {
 			project.xcodebuild.signing.mobileProvisionFile = widgetMobileprovision
 			mockEntitlementsFromPlist(widgetMobileprovision)
 		}
+
+		// onDemandResources
+
+		FileUtils.writeStringToFile(new File(appDirectory, "OnDemandResources.plist"), "dummy")
+		File onDemandResources = new File(archiveDirectory, "Products/OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
+		onDemandResources.mkdirs()
+		FileUtils.writeStringToFile(new File(onDemandResources, "Info.plist"), "dummy")
 	}
 
 	def mockXcodeVersion() {
@@ -537,4 +544,25 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
+
+	def "copy OnDemandResources"() {
+		given:
+		mockExampleApp(false, false)
+
+		when:
+		packageTask.packageApplication()
+
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
+		assert ipaBundle.exists()
+
+		ZipFile zipFile = new ZipFile(ipaBundle)
+		List<String> entries = new ArrayList<String>()
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+
+		then:
+		entries.contains("Payload/Example.app/OnDemandResources.plist")
+		entries.contains("Payload/Example.app/OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack/Info.plist")
+	}
 }
