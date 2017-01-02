@@ -1,3 +1,11 @@
+# 0.14.5 (TBA)
+
+Changes
+* Upgraded to OCLint 0.11: Issue #332
+
+Bugfixes
+* Fixed signing when using macOS Sierra: Issue #316
+
 # 0.14.4 (November 29, 2016)
 
 Changes

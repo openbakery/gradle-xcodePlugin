@@ -26,17 +26,20 @@ class OCLintTaskTest {
 	OCLintTask ocLintTask
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
-	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.3/oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
-	String filename = "oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
-	String oclintPath = 'oclint-0.10.3'
+	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
+	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-16.0.0.tar.gz"
+	String filename = "oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
+	String oclintPath = 'oclint-0.11'
 
 	File tmpDirectory
 	File outputDirectory
 
+	String savedOSVersion
 
 	def commandRunnerMock
 	@Before
 	void setUp() {
+		savedOSVersion = System.getProperty("os.version")
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir.mkdirs()
@@ -55,6 +58,7 @@ class OCLintTaskTest {
 
 	@After
 	void cleanup() {
+		System.setProperty("os.version", savedOSVersion)
 		FileUtils.deleteDirectory(projectDir)
 	}
 
@@ -81,16 +85,23 @@ class OCLintTaskTest {
 	@Test
 	void download() {
 		mockCommandRunner()
-
 		ocLintTask.run()
-
-
-		assertThat(antBuilderStub.get.size(), is(1));
+		assertThat(antBuilderStub.get.size(), is(1))
 		def getCall = antBuilderStub.get.first()
-		assertThat(getCall, hasEntry("src", downloadURL));
-
+		assertThat(getCall, hasEntry("src", downloadURL))
 		File downloadDirectory = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp/oclint")
-		assertThat(getCall, hasEntry("dest", downloadDirectory));
+		assertThat(getCall, hasEntry("dest", downloadDirectory))
+	}
+
+
+	@Test
+	void downloadOnSierra() {
+		System.setProperty("os.version", "10.12.0")
+		mockCommandRunner()
+		ocLintTask.run()
+		assertThat(antBuilderStub.get.size(), is(1))
+		def getCall = antBuilderStub.get.first()
+		assertThat(getCall, hasEntry("src", downloadURLForSierra))
 	}
 
 	void mockUntar() {
@@ -357,4 +368,7 @@ class OCLintTaskTest {
 
 		commandRunnerMock.verify ocLintTask.commandRunner
 	}
+
+
+
 }

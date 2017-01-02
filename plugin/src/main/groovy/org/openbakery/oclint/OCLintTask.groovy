@@ -11,9 +11,8 @@ class OCLintTask extends AbstractXcodeTask {
 
 	File outputDirectory
 
-	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.10.3/oclint-0.10.3-x86_64-darwin-15.5.0.tar.gz"
-	String oclintDirectoryName = "oclint-0.10.3"
-	String archiveName = FilenameUtils.getName(downloadURL)
+	String oclintDirectoryName = "oclint-0.11"
+
 
 	File oclintBinDirectory
 
@@ -28,7 +27,10 @@ class OCLintTask extends AbstractXcodeTask {
 		if (!tmpDirectory.exists()) {
 			tmpDirectory.mkdirs()
 		}
+
+		String downloadURL = downloadURL()
 		ant.get(src: downloadURL, dest: tmpDirectory, verbose:true)
+		String archiveName = FilenameUtils.getName(downloadURL)
 
 
 		def command = [
@@ -43,6 +45,13 @@ class OCLintTask extends AbstractXcodeTask {
 		return tmpDirectory
 	}
 
+
+	def downloadURL() {
+		if (getOSVersion().minor >= 12) {
+			return "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-16.0.0.tar.gz"
+		}
+		return "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
+	}
 
 	@TaskAction
 	def run() {
