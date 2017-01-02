@@ -38,4 +38,11 @@ class TestHelper {
 	static def createFile(File file, String content) {
 		FileUtils.writeStringToFile(file, content)
 	}
+
+	static def createOnDemandResources(File destinationDirectory) {
+		File onDemandResourcesDirectory = new File(destinationDirectory, "OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
+		onDemandResourcesDirectory.mkdirs()
+		File infoPlist_onDemandResourcesDirectory = new File(onDemandResourcesDirectory, "Info.plist")
+		FileUtils.writeStringToFile(infoPlist_onDemandResourcesDirectory, "dummy")
+	}
 }

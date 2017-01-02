@@ -347,7 +347,15 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 		// create xcarchive
+		// copy application bundle
 		copy(project.xcodebuild.applicationBundle, getApplicationsDirectory())
+
+		File onDemandResources = new File(project.xcodebuild.outputPath, "OnDemandResources")
+		if (onDemandResources.exists()) {
+			copy(onDemandResources, getProductsDirectory())
+		}
+
+		// copy onDemandResources
 
 		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
 		dSymDirectory.mkdirs()
@@ -391,8 +399,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 	}
 
+	File getProductsDirectory() {
+		File productsDirectory = new File(getArchiveDirectory(), "Products")
+		productsDirectory.mkdirs()
+		return productsDirectory
+	}
+
 	File getApplicationsDirectory() {
-		File applicationsDirectory = new File(getArchiveDirectory(), "Products/Applications")
+		File applicationsDirectory = new File(getProductsDirectory(), "Applications")
 		applicationsDirectory.mkdirs()
 		return applicationsDirectory
 	}

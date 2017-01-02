@@ -97,6 +97,7 @@ tasks.addRule("Pattern: configure/<TargetName>: " + configureDescription) { Stri
 		task(taskName, dependsOn:['clean']) {
       def configurationName = (taskName - 'configure/')
       xcodebuild {
+				simulator = false
         configuration = 'Release'
         scheme = configurationName
         target = configurationName
