@@ -61,6 +61,7 @@ class PackageTaskSpecification extends Specification {
 		packageTask.commandRunner = commandRunner
 
 
+
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
 

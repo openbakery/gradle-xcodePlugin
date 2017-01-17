@@ -2,6 +2,7 @@
 
 Changes
 * Upgraded to OCLint 0.11: Issue #332
+* Better output when compiling swift source file that also shows errors and warnings.
 
 Bugfixes
 * Fixed signing when using macOS Sierra: Issue #316
