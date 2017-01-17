@@ -76,7 +76,10 @@ class XcodeBuildOutputAppenderTest {
 					"                                               ^ ~~~~~~~~~~~~~\n" +
 					"2 warnings generated.\n" +
 					"\n" +
-					"Ld /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Products/Debug-iphonesimulator/UnitTests.octest/UnitTests normal i386"
+					"** BUILD SUCCEEDED **\n" +
+					"\n" +
+					"\n" +
+					"foobar"
 
 	def linkData = "\n" +
 					"Ld build/DUMMY.build/Release-iphoneos/MyApp.build/Objects-normal/armv7/MyApp normal armv7\n" +
@@ -112,7 +115,10 @@ class XcodeBuildOutputAppenderTest {
 					"/Users/me/project/Example/Test/UIControls/BadgeViewTest.swift:104:46: error: cannot convert value of type 'Matcher<UIColor>' to expected argument type 'Matcher<_>'\n" +
 					"                assertThat(badgeView.valueLabel.textColor, equalTo(UIColor.red))\n" +
 					"                                                           ^~~~~~~~~~~~~~~~~~~~\n" +
-					""
+					"** TEST BUILD FAILED **\n" +
+					"\n" +
+					"\n" +
+					"The following build commands failed:"
 
 
 
@@ -200,6 +206,20 @@ class XcodeBuildOutputAppenderTest {
 		assert output.toString().contains("                                                           ^~~~~~~~~~~~~~~~~~~~")
 	}
 
+	@Test
+	void testErrorSwiftOutput_FinishedOnFailedMessage() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender = new XcodeBuildOutputAppender(output)
+
+		for (String line in swiftData.split("\n")) {
+			appender.append(line)
+		}
+
+		assert !output.toString().contains("** TEST BUILD FAILED **")
+		assert !output.toString().contains("The following build commands failed:")
+	}
+
 
 	@Test
 	void testWarning() {
@@ -228,6 +248,23 @@ class XcodeBuildOutputAppenderTest {
 		assert output.toString().contains("        myDetailViewController.barServer = barServerStub;")
 		assert output.toString().contains("                                               ^ ~~~~~~~~~~~~~")
 	}
+
+	@Test
+	void testWarningOutput_FinishedOnSuccessMessage() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender = new XcodeBuildOutputAppender(output)
+
+		for (String line in warningData.split("\n")) {
+			appender.append(line)
+		}
+
+
+		assert !output.toString().contains("BUILD SUCCEEDED")
+		assert !output.toString().contains("foobar")
+	}
+
+
 
 	@Test
 	void testLinking() {

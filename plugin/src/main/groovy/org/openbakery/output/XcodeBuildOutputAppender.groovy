@@ -108,6 +108,8 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			error = true
 		} else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
 			warning = true
+		} else if (isFinished(line)) {
+			outputState = OutputState.OK
 		}
 
 		switch (outputState) {
@@ -149,6 +151,21 @@ class XcodeBuildOutputAppender implements OutputAppender {
 		output.println()
 	}
 
+
+	boolean isFinished(String line) {
+		if (line.startsWith("**")) {
+
+			if (line.endsWith("BUILD SUCCEEDED **")) {
+				return true
+			}
+
+			if (line.endsWith("BUILD FAILED **")) {
+				return true
+			}
+
+		}
+		return false
+	}
 
 	boolean hasError(String line) {
 		return hasToken(line, "error:")
