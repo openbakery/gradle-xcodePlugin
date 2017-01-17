@@ -25,37 +25,6 @@ class XcodeBuildOutputAppenderTest {
 					"ProcessPCH /Users/dummy/workspace/FOO/bar-ios/build/shared/Pods-CocoaLumberjack-prefix-crkolbbjqcaxufaqpbbmhpjgletu/Pods-CocoaLumberjack-prefix.pch.pch Pods-CocoaLumberjack-prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler"
 
 
-	@Test
-	void testCompile_fullProgress() {
-		StyledTextOutputStub output = new StyledTextOutputStub()
-
-		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(output)
-		appender.fullProgress = true
-
-		for (String line in data.split("\n")) {
-			appender.append(line)
-		}
-
-		String expected = "      OK - Compile: FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m\n";
-		assertThat(output.toString(), is(equalTo(expected)))
-
-	}
-
-
-	@Test
-	void testCompile_complex() {
-
-		StyledTextOutputStub output = new StyledTextOutputStub()
-		ProgressLoggerStub progress = new ProgressLoggerStub()
-		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(progress, output)
-		for (String line : data.split("\n")) {
-			appender.append(line);
-		}
-		assertThat(progress.progress, hasItem("Compile FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m"))
-	}
-
-
-
 
 	def errorData = "CompileC /Users/dummy/Library/Developer/Xcode/DerivedData/FOO-fbukaldjlcdhljciwtwjdjdwjfqy/Build/Intermediates/FOO.build/Debug-iphonesimulator/FOO-DMS.build/Objects-normal/i386/UIService.o Core/Source/Services/UIService.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler\n" +
 					"    cd /Users/dummy/workspace/FOO/bar-ios\n" +
@@ -137,6 +106,58 @@ class XcodeBuildOutputAppenderTest {
 					"** BUILD FAILED **"
 
 
+	def swiftData = "CompileSwift normal x86_64 /Users/me/project/Example/Test/UIControls/BadgeViewTest.swift\n" +
+					"    cd /Users/groundskeeper/Go/pipelines/Example-9-Branch-Build-Test\n" +
+					"    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift -frontend -c /Users/me/project/Example/Test/Views/GridViewTest.swift /Users/me/project/Example/Test/UIControls/ActionPanelTest.swift -target x86_64-apple-ios9.0 -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator10.1.sdk -I /Users/me/project/Example/build/sym/Debug-iphonesimulator -F /Users/me/project/Example/build/sym/Debug-iphonesimulator -F /Users/me/project/Example/build/sym/Debug-iphonesimulator/SwiftHamcrest -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -enable-testing -g -module-cache-path /Users/me/project/Example/build/derivedData/ModuleCache -profile-generate -profile-coverage-mapping -D COCOAPODS -serialize-debugging-options -serialize-debugging-options -Xcc -I/Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/ExampleCommon-Tests-generated-files.hmap -Xcc -I/Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/ExampleCommon-Tests-own-target-headers.hmap -Xcc -I/Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/ExampleCommon-Tests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/me/project/Example/build/obj/Example.build/all-product-headers.yaml -Xcc -iquote -Xcc /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/ExampleCommon-Tests-project-headers.hmap -Xcc -I/Users/me/project/Example/build/sym/Debug-iphonesimulator/include -Xcc -I/Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/DerivedSources/x86_64 -Xcc -I/Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/DerivedSources -Xcc -DDEBUG=1 -Xcc -DCOCOAPODS=1 -Xcc -working-directory/Users/groundskeeper/Go/pipelines/Example-9-Branch-Build-Test -emit-module-doc-path /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/Objects-normal/x86_64/BadgeViewTest~partial.swiftdoc -Onone -module-name ExampleCommon_Tests -emit-module-path /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/Objects-normal/x86_64/BadgeViewTest~partial.swiftmodule -serialize-diagnostics-path /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/Objects-normal/x86_64/BadgeViewTest.dia -emit-dependencies-path /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/Objects-normal/x86_64/BadgeViewTest.d -emit-reference-dependencies-path /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/Objects-normal/x86_64/BadgeViewTest.swiftdeps -o /Users/me/project/Example/build/obj/Example.build/Debug-iphonesimulator/ExampleCommon-Tests.build/Objects-normal/x86_64/BadgeViewTest.o\n" +
+					"/Users/me/project/Example/Test/UIControls/BadgeViewTest.swift:104:46: error: cannot convert value of type 'Matcher<UIColor>' to expected argument type 'Matcher<_>'\n" +
+					"                assertThat(badgeView.valueLabel.textColor, equalTo(UIColor.red))\n" +
+					"                                                           ^~~~~~~~~~~~~~~~~~~~\n" +
+					""
+
+
+
+	@Test
+	void testCompile_fullProgress() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(output)
+		appender.fullProgress = true
+
+		for (String line in data.split("\n")) {
+			appender.append(line)
+		}
+
+		String expected = "      OK - Compile: FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m\n";
+		assertThat(output.toString(), is(equalTo(expected)))
+
+	}
+
+
+	@Test
+	void testCompile_complex() {
+
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(progress, output)
+		for (String line : data.split("\n")) {
+			appender.append(line)
+		}
+		assertThat(progress.progress, hasItem("Compile FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m"))
+	}
+
+
+
+	@Test
+	void testCompile_swift() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+		ProgressLoggerStub progress = new ProgressLoggerStub()
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(progress, output)
+		for (String line : swiftData.split("\n")) {
+			appender.append(line)
+		}
+		assertThat(progress.progress, hasItem("Compile /Users/me/project/Example/Test/UIControls/BadgeViewTest.swift"))
+	}
+
 	@Test
 	void testError() {
 		StyledTextOutputStub output = new StyledTextOutputStub()
@@ -149,6 +170,34 @@ class XcodeBuildOutputAppenderTest {
 
 		String expected = "   ERROR - Compile: Core/Source/Services/UIService.m\n"
 		assert output.toString().startsWith(expected) : "Expected: " + expected  + " but was " + output.toString()
+	}
+
+	@Test
+	void testErrorSwift() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(output)
+
+		for (String line in swiftData.split("\n")) {
+			appender.append(line)
+		}
+
+		String expected = "   ERROR - Compile: /Users/me/project/Example/Test/UIControls/BadgeViewTest.swift\n"
+		assert output.toString().startsWith(expected) : "Expected: " + expected  + " but was " + output.toString()
+	}
+
+
+	@Test
+	void testErrorSwiftOutput() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(output)
+
+		for (String line in swiftData.split("\n")) {
+			appender.append(line)
+		}
+		assert output.toString().contains("                assertThat(badgeView.valueLabel.textColor, equalTo(UIColor.red))")
+		assert output.toString().contains("                                                           ^~~~~~~~~~~~~~~~~~~~")
 	}
 
 
@@ -166,6 +215,19 @@ class XcodeBuildOutputAppenderTest {
 		assert output.toString().startsWith(expected): "Expected: " + expected + " but was " + output.toString()
 	}
 
+	@Test
+	void testWarningOutput() {
+		StyledTextOutputStub output = new StyledTextOutputStub()
+
+		XcodeBuildOutputAppender appender = new XcodeBuildOutputAppender(output)
+
+		for (String line in warningData.split("\n")) {
+			appender.append(line)
+		}
+
+		assert output.toString().contains("        myDetailViewController.barServer = barServerStub;")
+		assert output.toString().contains("                                               ^ ~~~~~~~~~~~~~")
+	}
 
 	@Test
 	void testLinking() {

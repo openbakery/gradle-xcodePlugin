@@ -13,14 +13,16 @@ import java.util.regex.Matcher
  */
 class XcodeBuildOutputAppender implements OutputAppender {
 
+	enum OutputState {
+	  OK, ERROR, WARNING
+	}
 
 	String command = null
 	String currentSourceFile
-	StringBuilder outputText = new StringBuilder()
-	boolean hasOutput = false
 	boolean warning = false
 	boolean error = false
-	boolean fullProgress = false;
+	boolean fullProgress = false
+	OutputState outputState = OutputState.OK
 	ProgressLogger progressLogger
 
 	StyledTextOutput output
@@ -38,8 +40,6 @@ class XcodeBuildOutputAppender implements OutputAppender {
 
 	void reset() {
 		currentSourceFile = null
-		outputText = new StringBuilder()
-		hasOutput = false
 		error = false
 		warning = false
 		command = null
@@ -47,12 +47,6 @@ class XcodeBuildOutputAppender implements OutputAppender {
 
 	@Override
 	void append(String line) {
-
-		if (hasOutput) {
-			outputText.append("\n")
-			outputText.append(line)
-		}
-
 		if (line.startsWith("CompileC")) {
 
 			int sourceFileStartIndex = line.indexOf(".o ")+3
@@ -69,18 +63,25 @@ class XcodeBuildOutputAppender implements OutputAppender {
 
 			if (sourceFileStartIndex < sourceFileEndIndex && sourceFileEndIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, sourceFileEndIndex)
-				command = "Compile"
-
-
+				setCommand("Compile")
 			}
+		} else if (line.startsWith("CompileSwift")) {
+			int sourceFileStartIndex = line.lastIndexOf(" ")+1
+			int sourceFileEndIndex = line.indexOf(".swift")+6
+
+			if (sourceFileStartIndex < sourceFileEndIndex && sourceFileEndIndex <= line.length()) {
+				currentSourceFile = line.substring(sourceFileStartIndex, sourceFileEndIndex)
+				setCommand("Compile")
+			}
+
 		} else if (line.startsWith("CompileStoryboard") || line.startsWith("CompileXIB")) {
 			int sourceFileStartIndex = line.indexOf(" ")+1
 			if (sourceFileStartIndex < line.length()) {
 				currentSourceFile = line.substring(sourceFileStartIndex, line.length())
-				command = "Compile"
+				setCommand("Compile")
 			}
 		} else if (line.startsWith("Ld")) {
-			command = "Linking"
+			setCommand("Linking")
 			String[] tokens = line.split(" ");
 			if (tokens.length > 1) {
 				currentSourceFile = tokens[1];
@@ -88,12 +89,18 @@ class XcodeBuildOutputAppender implements OutputAppender {
 		} else if (line.startsWith("CreateUniversalBinary")) {
 			progressLogger.progress("Create Binary")
 		} else if (line.startsWith("Code Sign error:")) {
-
-			command = "CodeSign"
+			setCommand("CodeSign")
 			error = true
-			hasOutput = true
-			outputText.append("\n")
-			outputText.append(line)
+			outputState = OutputState.ERROR
+			printOutput()
+		} else if (hasError(line)) {
+			outputState = OutputState.ERROR
+			error = true
+			printOutput()
+		} else if (hasWarning(line)) {
+			outputState = OutputState.WARNING
+			warning = true
+			printOutput()
 		} else if ((currentSourceFile != null || command != null) && line.equals("")) {
 			printOutput()
 			reset()
@@ -101,9 +108,21 @@ class XcodeBuildOutputAppender implements OutputAppender {
 			error = true
 		} else if (line.endsWith("warnings generated.") || line.endsWith("warning generated.")) {
 			warning = true
-		} else if (!hasOutput && currentSourceFile != null && line.contains(currentSourceFile) && !line.startsWith(" ")) {
-			hasOutput = true
 		}
+
+		switch (outputState) {
+			case OutputState.ERROR:
+				output.withStyle(StyledTextOutput.Style.Failure).text(line)
+				output.withStyle(StyledTextOutput.Style.Failure).text("\n")
+				break
+			case OutputState.WARNING:
+				output.withStyle(StyledTextOutput.Style.Identifier).text(line)
+				output.withStyle(StyledTextOutput.Style.Identifier).text("\n")
+				break
+			default:
+				break
+		}
+
 		if (progressLogger != null && command != null && currentSourceFile != null) {
 			progressLogger.progress(command + " " +  currentSourceFile)
 		}
@@ -125,11 +144,34 @@ class XcodeBuildOutputAppender implements OutputAppender {
 		output.text(command)
 		if (currentSourceFile != null) {
 			output.text(": ")
-			output.text(currentSourceFile);
+			output.text(currentSourceFile)
 		}
-		output.println();
-		if (hasOutput) {
-			output.println(outputText.toString())
+		output.println()
+	}
+
+
+	boolean hasError(String line) {
+		return hasToken(line, "error:")
+	}
+
+	boolean hasWarning(String line) {
+		return hasToken(line, "warning:")
+	}
+
+	boolean hasToken(String line, String token) {
+		if (line != null && currentSourceFile) {
+			String[] tokens = line.split(" ")
+			if (tokens.length > 1) {
+				if (tokens[0].contains(currentSourceFile) && tokens[1].contains(token)) {
+					return true
+				}
+			}
 		}
+		return false
+	}
+
+	void setCommand(String command) {
+		this.command = command
+		outputState = OutputState.OK
 	}
 }
