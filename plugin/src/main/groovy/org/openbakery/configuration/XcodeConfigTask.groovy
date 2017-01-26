@@ -20,7 +20,10 @@ class XcodeConfigTask extends AbstractXcodeTask {
 
 	@TaskAction
 	void configuration() {
-		def projectFile = new File(project.xcodebuild.projectFile, "project.pbxproj")
+		String absolutePath = "${project.projectDir.absolutePath}/${project.xcodebuild.projectFile}"
+		this.project.logger.debug "projectFile: ${project.xcodebuild.projectFile}"
+		this.project.logger.debug "absolutePath: " + absolutePath
+		def projectFile = new File(absolutePath, "project.pbxproj")
 		xcodeProjectFile = new XcodeProjectFile(project, projectFile)
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
