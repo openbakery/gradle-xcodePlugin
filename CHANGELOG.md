@@ -1,4 +1,4 @@
-# 0.14.5 (TBA)
+# 0.14.5 (January 26, 2017)
 
 Changes
 * Upgraded to OCLint 0.11: Issue #332
