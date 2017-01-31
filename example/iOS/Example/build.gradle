@@ -8,18 +8,21 @@ Create a gradle.properties and add the following values:
 
 Example.AdHoc.SigningCertificateURI=http://.../Development.p12  // file:// urls also works here
 Example.AdHoc.SigningCertificatePassword=mySecrect
-Example.AdHoc.SigningMobileProvisionURI_0=http://.../Development.mobileprovision
+Example.AdHoc.SigningMobileProvisionURI=http://.../Example.mobileprovision
+Example.AdHoc.SigningMobileProvisionURIWatchkit=http://.../ExampleWatchkit.mobileprovision
+Example.AdHoc.SigningMobileProvisionURIWatchKitExtension=http://.../ExampleWatchKitExtension.mobileprovision 
+Example.AdHoc.SigningMobileProvisionURIWidget=http://.../ExampleWidget.mobileprovision
 
 Then run: 'gradle package/Example/AdHoc
 
 
 */
 
-
 buildscript {
 	repositories {
 		maven {
-			url('http://repository.openbakery.org')
+			//url('http://repository.openbakery.org')
+			url('file:///Users/rene/workspace/openbakery/xcodePlugin/repository')
 		}
 		mavenCentral()
   }
@@ -42,6 +45,10 @@ xcodebuild {
 	destination = ['iPad Air', 'iPhone 6s' ]
 }
 
+infoplist {
+	// override the bundle identifier that was specified in the xcode project.
+	bundleIdentifier= 'org.openbakery.gxp.Example'
+}
 
 coverage {
 	outputFormat = 'html'
@@ -75,21 +82,71 @@ def getPropertyForComponents(List<String> components) {
 		}
 		return result
 	}
-	/*	
-	println propertyName
 
-  if (!project.hasProperty(propertyName)) {
-    components.pop()
-    propertyName = components.join('.')
-		
-  }
-	*/
 
   if (!project.hasProperty(propertyName)) {
 		logger.warn("No property defined with name " + propertyName)
 	}
   return project.hasProperty(propertyName) ? project.property(propertyName) : ""
 }
+
+
+
+def printBundleIdentifier(File infoPlist) {
+	PlistHelper plistHelper = new PlistHelper(new CommandRunner())
+	println "BundleIdentifier in " + infoPlist + ": " + plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
+}
+
+
+import org.openbakery.util.PlistHelper
+import org.openbakery.CommandRunner
+
+task updateInfoPlist() {
+	doLast {
+		PlistHelper plistHelper = new PlistHelper(new CommandRunner())
+		File infoPlist = new File('Example/Example-Info.plist')
+		def version = ""
+		def shortVersionString = ""
+		if (project.hasProperty("infoplist.version")) {
+			version = infoplist.version
+		} else {
+			version = plistHelper.getValueFromPlist(infoPlist, "CFBundleVersion")
+		}
+		if (project.hasProperty("infoplist.shortVersionString")) {
+			shortVersionString = infoplist.shortVersionString
+		} else {
+			shortVersionString = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString")
+		}
+		
+		println "Version: " + version
+		println "ShortVersionString: " + shortVersionString
+
+		File infoPlistTodayWidget = new File('ExampleTodayWidget/Info.plist')
+		plistHelper.setValueForPlist(infoPlistTodayWidget, "CFBundleIdentifier", infoplist.bundleIdentifier + ".Widget")
+		plistHelper.setValueForPlist(infoPlistTodayWidget, "CFBundleShortVersionString", shortVersionString)
+		plistHelper.setValueForPlist(infoPlistTodayWidget, "CFBundleVersion", version)
+
+		File infoPlistWatchkit = new File('Example WatchKit App/Info.plist')
+		plistHelper.setValueForPlist(infoPlistWatchkit, "CFBundleIdentifier", infoplist.bundleIdentifier + ".watchkitapp")
+		plistHelper.setValueForPlist(infoPlistWatchkit, "CFBundleShortVersionString", shortVersionString)
+		plistHelper.setValueForPlist(infoPlistWatchkit, "CFBundleVersion", version)
+		plistHelper.setValueForPlist(infoPlistWatchkit, "WKCompanionAppBundleIdentifier", infoplist.bundleIdentifier)
+
+
+		File infoPlistWatchkitExtenstion = new File('Example WatchKit Extension/Info.plist')
+		plistHelper.setValueForPlist(infoPlistWatchkitExtenstion, "CFBundleIdentifier", infoplist.bundleIdentifier + ".watchkitapp.watchkitextension")
+		plistHelper.setValueForPlist(infoPlistWatchkitExtenstion, "CFBundleShortVersionString", shortVersionString)
+		plistHelper.setValueForPlist(infoPlistWatchkitExtenstion, "CFBundleVersion", version)
+		plistHelper.setValueForPlist(infoPlistWatchkitExtenstion, "NSExtension:NSExtensionAttributes:WKAppBundleIdentifier", infoplist.bundleIdentifier + ".watchkitapp")
+
+
+		printBundleIdentifier(infoPlist)
+		printBundleIdentifier(infoPlistTodayWidget)
+		printBundleIdentifier(infoPlistWatchkit)
+		printBundleIdentifier(infoPlistWatchkitExtenstion)
+	}
+}
+
 
 
 tasks.addRule("Pattern: configure/<TargetName>: " + configureDescription) { String taskName ->
@@ -103,6 +160,8 @@ tasks.addRule("Pattern: configure/<TargetName>: " + configureDescription) { Stri
         target = configurationName
       }
 		}
+		infoplistModify.dependsOn updateInfoPlist
+		
     tasks[taskName].mustRunAfter(clean)
 	}
 }
@@ -131,7 +190,12 @@ tasks.addRule("Pattern: package/<TargetName>/<Properties>: " + packageDescriptio
   			signing {
   				certificateURI = getPropertyForComponents([targetName, properties, 'SigningCertificateURI'])
   				certificatePassword = getPropertyForComponents([targetName, properties, 'SigningCertificatePassword'])
-  				mobileProvisionURI = getPropertyForComponents([targetName, properties, 'SigningMobileProvisionURI'])
+  				mobileProvisionURI = [
+						getPropertyForComponents([targetName, properties, 'SigningMobileProvisionURI']),
+						getPropertyForComponents([targetName, properties, 'SigningMobileProvisionURIWatchkit']),
+						getPropertyForComponents([targetName, properties, 'SigningMobileProvisionURIWatchKitExtension']),
+						getPropertyForComponents([targetName, properties, 'SigningMobileProvisionURIWidget'])
+					]
   			}
   		}
     }

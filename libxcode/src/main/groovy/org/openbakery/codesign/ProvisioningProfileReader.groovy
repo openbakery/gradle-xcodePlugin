@@ -50,7 +50,9 @@ class ProvisioningProfileReader {
 	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner, PlistHelper plistHelper) {
 		super()
 
+		logger.debug("load provisioningProfile: {}", provisioningProfile)
 		String text = load(provisioningProfile)
+		logger.debug("provisioningProfile content:\n{}\n--- END ---", text)
 		config = new XMLPropertyListConfiguration()
 		config.load(new StringReader(text))
 
@@ -258,6 +260,11 @@ class ProvisioningProfileReader {
 			plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 		}
 
+
+		if (logger.isDebugEnabled()) {
+			String entitlementsContent = FileUtils.readLines(entitlementFile)
+			logger.debug("entitlements content\n{}", entitlementsContent)
+		}
 	}
 
 	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {

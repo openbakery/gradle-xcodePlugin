@@ -116,14 +116,17 @@ public class Codesign {
 	}
 
 	File createEntitlementsFile(File bundle, String bundleIdentifier) {
-
 		if (bundleIdentifier == null) {
+			logger.debug("createEntitlementsFile no bundleIdentifier specified")
 			return null
 		}
 
 		if (entitlementsFile != null) {
+			logger.debug("createEntitlementsFile no entitlementsFile specified")
 			return entitlementsFile
 		}
+
+		logger.debug("createEntitlementsFile for identifier {} and bundle {}", bundleIdentifier, bundle)
 
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, this.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		if (provisionFile == null) {
@@ -148,6 +151,7 @@ public class Codesign {
 		entitlementsFile.deleteOnExit()
 
 		logger.info("Using entitlementsFile {}", entitlementsFile)
+
 		return entitlementsFile
 	}
 

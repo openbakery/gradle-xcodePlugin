@@ -17,6 +17,7 @@ package org.openbakery
 
 
 import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Security
@@ -92,11 +93,20 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	 * @return
 	 */
 	def download(File toDirectory, String address) {
+		if (StringUtils.isEmpty(address)) {
+			throw new IllegalArgumentException("Cannot download, because no address was given")
+		}
+
 		if (!toDirectory.exists()) {
 			toDirectory.mkdirs()
 		}
 
-		ant.get(src: address, dest: toDirectory.getPath(), verbose:true)
+		try {
+			ant.get(src: address, dest: toDirectory.getPath(), verbose:true)
+		} catch (Exception ex) {
+			logger.error("cannot download file from the given location: {}", address)
+			throw ex
+		}
 
 		File destinationFile = new File(toDirectory, FilenameUtils.getName(address))
 		return destinationFile.absolutePath
