@@ -3,7 +3,6 @@ package org.openbakery
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
-import org.openbakery.util.VariableResolver
 import org.openbakery.xcode.Devices
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -72,8 +71,27 @@ class XcodeProjectFile {
 		return projectSettings
 	}
 
+
+	BuildTargetConfiguration getBuildTargetConfiguration(String target) {
+		HashMap<String, BuildTargetConfiguration> settings = getProjectSettings()
+		if (settings.containsKey(target)) {
+			return settings[target]
+		}
+		return null
+	}
+
+
+	BuildConfiguration getBuildConfiguration(String target, String configuration) {
+		BuildTargetConfiguration settings = getBuildTargetConfiguration(target)
+		if (settings != null && settings.buildSettings.containsKey(configuration)) {
+			return settings.buildSettings[configuration]
+		}
+		return null
+	}
+
+	/* remove this method and update project.xcodebuild settings on the proper places */
 	void parse() {
-		this.project.logger.info("Parse project file: " + projectFile.absolutePath)
+		this.project.logger.debug("Parse project file: " + projectFile.absolutePath)
 		if (!this.projectFile.exists()) {
 			throw new IllegalArgumentException("Project file does not exist: " + this.projectFile)
 		}
@@ -82,55 +100,26 @@ class XcodeProjectFile {
 			throw new IllegalArgumentException("'xcodebuild.target' is null");
 		}
 
-
-		loadConfig()
-
+		BuildConfiguration settings = getBuildConfiguration(project.xcodebuild.target, project.xcodebuild.configuration)
 		logger.debug("rootObjectKey {}", rootObjectKey);
+		verifyTarget(project.xcodebuild.target)
 
-		verifyTarget()
-
-
-		String type = getValueFromTarget(".productType")
-		if (type.endsWith("-extension")) {
-			project.xcodebuild.productType = "appex"
-		}
-
-
-		String buildConfiguration = getBuildConfiguration()
 
 		if (StringUtils.isEmpty(project.xcodebuild.productName)) {
-			String key = "objects." + buildConfiguration + ".buildSettings.PRODUCT_NAME"
-			VariableResolver resolver = new VariableResolver(project);
-			project.xcodebuild.productName = resolver.resolve(getString(key))
+			project.xcodebuild.productName = settings.productName
 		}
-
-		String rootBuildConfigurationsItem = getRootBuildConfigurationsItem()
-
-		String sdkRoot = getString("objects.${buildConfiguration}.buildSettings.SDKROOT")
-		if (sdkRoot == null) {
-			sdkRoot = getString("objects." + rootBuildConfigurationsItem + ".buildSettings.SDKROOT")
-		}
+		project.xcodebuild.productType = settings.productType
+		String sdkRoot = settings.sdkRoot
 
 		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
 			this.isOSX = true
 		} else {
-
-			String devicesString = getString("objects.${buildConfiguration}.buildSettings.TARGETED_DEVICE_FAMILY")
-
-			if (devicesString.equals("1")) {
-				project.xcodebuild.devices = Devices.PHONE;
-			} else if (devicesString.equals("2")) {
-				project.xcodebuild.devices = Devices.PAD;
-			} else if (devicesString.equals("4")) {
-				project.xcodebuild.devices = Devices.WATCH;
-			}
-
+			project.xcodebuild.devices = settings.devices
 		}
 
 		if (project.xcodebuild.infoPlist == null) {
-			String key = "objects." + buildConfiguration + ".buildSettings.INFOPLIST_FILE"
-			project.xcodebuild.infoPlist = getString(key)
-			logger.info("infoPlist: {}", project.xcodebuild.infoPlist)
+			project.xcodebuild.infoPlist = settings.infoplist
+			logger.debug("infoPlist: {}", project.xcodebuild.infoPlist)
 		}
 
 	}
@@ -146,27 +135,36 @@ class XcodeProjectFile {
 		return targets;
 	}
 
-	void updateBuildSettings(BuildConfiguration buildSettings, String config, String target, String targetName) {
+	void updateBuildSettings(BuildConfiguration buildSettings, String config, String targetIdentifier, String targetName) {
 
-		String buildConfiguration = getBuildConfiguration(target, config)
-		buildSettings.infoplist = getBuildSetting(buildConfiguration, target, "INFOPLIST_FILE")
-		buildSettings.bundleIdentifier = getBuildSetting(buildConfiguration, target, "PRODUCT_BUNDLE_IDENTIFIER")
-		buildSettings.productName = getBuildSetting(buildConfiguration, target, "PRODUCT_NAME")
+		String buildConfiguration = createBuildConfiguration(targetIdentifier, config)
+		buildSettings.infoplist = getBuildSetting(buildConfiguration, "INFOPLIST_FILE")
+		buildSettings.bundleIdentifier = getBuildSetting(buildConfiguration, "PRODUCT_BUNDLE_IDENTIFIER")
+		buildSettings.productName = getBuildSetting(buildConfiguration, "PRODUCT_NAME")
 		if (buildSettings.productName != null && buildSettings.productName.contains('$(TARGET_NAME)')) {
 			buildSettings.productName = buildSettings.productName.replace('$(TARGET_NAME)', targetName)
 		}
-		buildSettings.sdkRoot = getBuildSetting(buildConfiguration, target, "SDKROOT")
-		buildSettings.entitlements = getBuildSetting(buildConfiguration, target, "CODE_SIGN_ENTITLEMENTS")
+		buildSettings.sdkRoot = getBuildSetting(buildConfiguration, "SDKROOT")
+		buildSettings.entitlements = getBuildSetting(buildConfiguration, "CODE_SIGN_ENTITLEMENTS")
 
-		String deviceFamily =  getBuildSetting(buildConfiguration, target, "TARGETED_DEVICE_FAMILY")
-		if (deviceFamily.equals("1")) {
-			buildSettings.devices = Devices.PHONE;
-		} else if (deviceFamily.equals("2")) {
-			buildSettings.devices = Devices.PAD;
-		} else if (deviceFamily.equals("4")) {
-			buildSettings.devices = Devices.WATCH;
+
+		String type = getValueFromTarget(targetName, ".productType")
+		if (type != null && type.endsWith("-extension")) {
+			buildSettings.productType = "appex"
 		} else {
-			buildSettings.devices = Devices.UNIVERSAL;
+			buildSettings.productType = "app"
+		}
+
+
+		String deviceFamily =  getBuildSetting(buildConfiguration, "TARGETED_DEVICE_FAMILY")
+		if (deviceFamily == "1") {
+			buildSettings.devices = Devices.PHONE
+		} else if (deviceFamily == "2") {
+			buildSettings.devices = Devices.PAD
+		} else if (deviceFamily == "4") {
+			buildSettings.devices = Devices.WATCH
+		} else {
+			buildSettings.devices = Devices.UNIVERSAL
 		}
 
 	}
@@ -176,47 +174,46 @@ class XcodeProjectFile {
 		BuildTargetConfiguration result = new BuildTargetConfiguration()
 
 		for (String configurationName : buildConfigurationNames) {
-			BuildConfiguration buildConfiguration = new BuildConfiguration();
-			updateBuildSettings(buildConfiguration, configurationName, target, "");
-			result.buildSettings[configurationName] = buildConfiguration;
+			BuildConfiguration buildConfiguration = new BuildConfiguration(target)
+			updateBuildSettings(buildConfiguration, configurationName, target, "")
+			result.buildSettings[configurationName] = buildConfiguration
 		}
 		return result
 	}
 
-	BuildTargetConfiguration createBuildConfiguration(String target, String targetName, BuildTargetConfiguration projectBuildConfiguration) {
+	BuildTargetConfiguration createBuildConfiguration(String targetIdentifier, String target, BuildTargetConfiguration projectBuildConfiguration) {
 		BuildTargetConfiguration result = new BuildTargetConfiguration()
 
 		projectBuildConfiguration.buildSettings.each { buildConfigurationName, buildConfiguration ->
-			BuildConfiguration configuration = new BuildConfiguration(buildConfiguration)
-			updateBuildSettings(configuration, buildConfigurationName, target, targetName)
+			BuildConfiguration configuration = new BuildConfiguration(target, buildConfiguration)
+			configuration.targetIdentifier = targetIdentifier
+			updateBuildSettings(configuration, buildConfigurationName, targetIdentifier, target)
 			result.buildSettings[buildConfigurationName] = configuration
 		}
 
 		return result
 	}
 
-	String getBuildSetting(String buildConfiguration, String target, String key) {
+	String getBuildSetting(String buildConfiguration, String key) {
 		return getString("objects.${buildConfiguration}.buildSettings.${key}")
 	}
 
-	void verifyTarget() {
-		String forTargetName = project.xcodebuild.target
+	void verifyTarget(String forTargetName) {
 		List<String> list = getList("objects." + rootObjectKey + ".targets")
 		for (target in list) {
 			def targetName = getString("objects." + target + ".name")
-			if (targetName.equals(forTargetName)) {
-				return;
+			if (targetName == forTargetName) {
+				return
 			}
 		}
-		throw new IllegalArgumentException("Target '" + project.xcodebuild.target + "' not found in project")
+		throw new IllegalArgumentException("Target '" + forTargetName + "' not found in project")
 	}
 
-	String getValueFromTarget(String key) {
-		String forTargetName = project.xcodebuild.target
+	String getValueFromTarget(String forTargetName, String key) {
 		List<String> list = getList("objects." + rootObjectKey + ".targets")
 		for (target in list) {
 			def targetName = getString("objects." + target + ".name")
-			if (targetName.equals(forTargetName)) {
+			if (targetName == forTargetName) {
 				return getString("objects." + target + key)
 			}
 		}
@@ -224,10 +221,10 @@ class XcodeProjectFile {
 	}
 
 
-	List<String> getBuildConfigurationNames(String target) {
+	List<String> getBuildConfigurationNames(String targetIdentifier) {
 
 		ArrayList<String> result = new ArrayList<>()
-		String buildConfigurationList = getString("objects." + target + ".buildConfigurationList")
+		String buildConfigurationList = getString("objects." + targetIdentifier + ".buildConfigurationList")
 		def buildConfigurations = getList("objects." + buildConfigurationList + ".buildConfigurations")
 		for (buildConfigurationsItem in buildConfigurations) {
 			def buildName = getString("objects." + buildConfigurationsItem + ".name")
@@ -236,9 +233,7 @@ class XcodeProjectFile {
 		return result
 	}
 
-	String getBuildConfiguration(String target, String configuration) {
-
-
+	String createBuildConfiguration(String target, String configuration) {
 		String buildConfigurationList = getString("objects." + target + ".buildConfigurationList")
 		def buildConfigurations = getList("objects." + buildConfigurationList + ".buildConfigurations")
 		for (buildConfigurationsItem in buildConfigurations) {
@@ -250,25 +245,6 @@ class XcodeProjectFile {
 		}
 		return null
 	}
-
-	String getBuildConfiguration() {
-		String forTargetName = project.xcodebuild.target
-
-		List<String> list = getList("objects." + rootObjectKey + ".targets")
-		for (target in list) {
-			def targetName = getString("objects." + target + ".name")
-			if (targetName.equals(forTargetName)) {
-				return getBuildConfiguration(target, project.xcodebuild.configuration)
-			}
-		}
-		throw new IllegalArgumentException("No Build configuration for for target: " + forTargetName)
-	}
-
-
-	String getRootBuildConfigurationsItem() {
-		return getBuildConfiguration(rootObjectKey, project.xcodebuild.configuration)
-	}
-
 
 	private List getList(String key) {
 		List result = config.getList(key)

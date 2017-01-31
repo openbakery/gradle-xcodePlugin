@@ -462,6 +462,12 @@
 					A7148CC718A397560010B761 = {
 						DevelopmentTeam = ED5DV56QPQ;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 0;
 							};

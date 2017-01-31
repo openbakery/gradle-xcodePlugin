@@ -67,9 +67,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	HashMap<String, BuildTargetConfiguration> createProjectSettings() {
 		HashMap<String, BuildTargetConfiguration> result = new HashMap<>()
 
-		BuildTargetConfiguration appConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration release = new BuildConfiguration();
-		BuildConfiguration debug = new BuildConfiguration();
+		BuildTargetConfiguration appConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration release = new BuildConfiguration("Example")
+		BuildConfiguration debug = new BuildConfiguration("Example")
 		appConfiguration.buildSettings["Release"] = release
 		appConfiguration.buildSettings["Debug"] = debug
 
@@ -84,9 +84,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		release.devices = Devices.UNIVERSAL
 
 
-		BuildTargetConfiguration watchAppConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration watchAppConfigurationRelease = new BuildConfiguration();
-		BuildConfiguration watchAppConfigurationDebug = new BuildConfiguration();
+		BuildTargetConfiguration watchAppConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration watchAppConfigurationRelease = new BuildConfiguration("ExampleWatchkit WatchKit App")
+		BuildConfiguration watchAppConfigurationDebug = new BuildConfiguration("ExampleWatchkit WatchKit App")
 		watchAppConfiguration.buildSettings["Release"] = watchAppConfigurationRelease
 		watchAppConfiguration.buildSettings["Debug"] = watchAppConfigurationDebug
 
@@ -100,9 +100,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		watchAppConfigurationRelease.sdkRoot = "watchos"
 		watchAppConfigurationRelease.devices = Devices.WATCH
 
-		BuildTargetConfiguration extensionConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration extenstionConfigurationRelease = new BuildConfiguration();
-		BuildConfiguration extenstionConfigurationDebug = new BuildConfiguration();
+		BuildTargetConfiguration extensionConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration extenstionConfigurationRelease = new BuildConfiguration("ExampleWatchkit WatchKit Extension")
+		BuildConfiguration extenstionConfigurationDebug = new BuildConfiguration("ExampleWatchkit WatchKit Extension")
 		extensionConfiguration.buildSettings["Release"] = extenstionConfigurationRelease
 		extensionConfiguration.buildSettings["Debug"] = extenstionConfigurationDebug
 
@@ -117,9 +117,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extenstionConfigurationRelease.devices = Devices.WATCH
 
 
-		result.put("ExampleWatchkit", appConfiguration);
-		result.put("ExampleWatchkit WatchKit App", watchAppConfiguration);
-		result.put("ExampleWatchkit WatchKit Extension", extensionConfiguration);
+		result.put("ExampleWatchkit", appConfiguration)
+		result.put("ExampleWatchkit WatchKit App", watchAppConfiguration)
+		result.put("ExampleWatchkit WatchKit Extension", extensionConfiguration)
 
 		return result
 	}
@@ -313,10 +313,10 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	def "get build configuration for bundle identifier with missing info plist"() {
 		given:
 		HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
-		BuildTargetConfiguration buildTargetConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration release = new BuildConfiguration();
+		BuildTargetConfiguration buildTargetConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration release = new BuildConfiguration("ExampleWatchkit")
 		buildTargetConfiguration.buildSettings["Debug"] = release
-		projectSettings.put("ExampleWatchkit", buildTargetConfiguration);
+		projectSettings.put("ExampleWatchkit", buildTargetConfiguration)
 
 
 		extension.projectSettings = projectSettings
