@@ -35,7 +35,7 @@ class ApplicationDummy {
 		// create dummy app
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
-			appDirectory.mkdirs();
+			appDirectory.mkdirs()
 		}
 
 		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");

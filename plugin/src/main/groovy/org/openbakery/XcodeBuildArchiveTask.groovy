@@ -363,12 +363,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
 		for (File bundle : appBundles) {
-			/*
-			File dsymPath = new File(project.xcodebuild.outputPath, bundle.getName() + ".dSYM");
-			if (dsymPath.exists()) {
-				copy(dsymPath, dSymDirectory)
-			}
-			*/
 			createEntitlements(bundle)
 		}
 

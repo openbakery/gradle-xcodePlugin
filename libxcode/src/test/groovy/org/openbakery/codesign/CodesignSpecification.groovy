@@ -1,5 +1,7 @@
 package org.openbakery.codesign
 
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import org.openbakery.util.PlistHelper
@@ -116,6 +118,25 @@ class CodesignSpecification extends  Specification {
 		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
 	}
 
+
+
+	def "create entitlements were merged with xcent"() {
+		given:
+		applicationDummy.create()
+
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+		FileUtils.copyFile(new File("../plugin/src/test/Resource/archived-expanded-entitlements.xcent"), new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent"))
+
+		when:
+
+		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.test.Example")
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
+
+	}
 
 
 }

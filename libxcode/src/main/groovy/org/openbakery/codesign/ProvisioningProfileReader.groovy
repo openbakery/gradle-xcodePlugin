@@ -197,7 +197,8 @@ class ProvisioningProfileReader {
 		return value
 	}
 
-	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups) {
+	/* xcent is the archive entitlements */
+	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups, File xcent) {
 		File plistFromProvisioningProfile = getPlistFromProvisioningProfile()
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
@@ -265,7 +266,41 @@ class ProvisioningProfileReader {
 			String entitlementsContent = FileUtils.readLines(entitlementFile)
 			logger.debug("entitlements content\n{}", entitlementsContent)
 		}
+
+
+		// copy the missing values that are in the xcent to the entitlements for signing
+		List<String>keys = getMissingKeys(entitlementFile, xcent)
+
+		if (keys.size() > 0) {
+			logger.info("Found some entitlements settings in the archived entitlements that are missing in the provisioning profile so this values will be added")
+		}
+		for (String key in keys) {
+			logger.info("add to entitlement: {}", key)
+			Object value = plistHelper.getValueFromPlist(xcent, key)
+			plistHelper.addValueForPlist(entitlementFile, key, value)
+		}
+
 	}
+
+
+	List<String> getMissingKeys(File entitlementFile, File xcentFile) {
+		if (xcentFile == null) {
+			return []
+		}
+
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementFile)
+		XMLPropertyListConfiguration xcent = new XMLPropertyListConfiguration(xcentFile)
+
+		def result = new ArrayList<String>()
+		for (String key in xcent.getKeys()) {
+			if (!entitlements.containsKey(key)) {
+				result << key.replace("..", ".") // the . in the key from the common configuration is escaped with a . so replace .. with .
+			}
+		}
+
+		return result
+	}
+
 
 	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)

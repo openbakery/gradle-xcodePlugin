@@ -1,5 +1,6 @@
 package org.openbakery.signing
 
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -124,7 +125,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		expect:
 		// no exception should be thrown!
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, null)
 
 
 	}
@@ -164,11 +165,24 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, null)
 
 		then:
 		entitlementsFile.exists()
 		entitlementsFile.text == expectedContents
+	}
+
+	def "extract Entitlements 2"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired(new File("src/test/Resource/test-wildcard-mac-development.provisionprofile"), new CommandRunner())
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, null)
+
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getString("com..apple..application-identifier") == "Z7L2YCUH45.org.openbakery.test.Example"
 	}
 
 
@@ -218,11 +232,33 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
 
 		then:
 		entitlementsFile.exists()
 		entitlementsFile.text == expectedContents
+	}
+
+	def "extract Entitlements with keychain access group 2"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired(new File("src/test/Resource/test-wildcard-mac-development.provisionprofile"), new CommandRunner())
+
+		def keychainAccessGroups = [
+				"Z7L2YCUH45.org.openbakery.test.Example",
+				"Z7L2YCUH45.org.openbakery.Test",
+				"AAAAAAAAAA.com.example.Test",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
+
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getList("keychain-access-groups").contains("Z7L2YCUH45.org.openbakery.test.Example")
+		entitlements.getList("keychain-access-groups").contains("Z7L2YCUH45.org.openbakery.Test")
+		entitlements.getList("keychain-access-groups").contains("AAAAAAAAAA.com.example.Test")
 	}
 
 
@@ -241,7 +277,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
 
 		then:
 		entitlementsFile.exists()
@@ -288,7 +324,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
 
 		then:
 		thrown(IllegalStateException.class)
@@ -309,7 +345,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
 
 		then:
 		entitlementsFile.exists()
@@ -334,7 +370,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups, null)
 
 		then:
 		entitlementsFile.exists()
@@ -374,7 +410,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups, null)
 
 		then:
 		entitlementsFile.exists()
@@ -395,7 +431,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups, null)
 
 		then:
 		entitlementsFile.exists()
@@ -461,6 +497,31 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example.extension", list, commandRunner, plistHelper) == wildcardMobileprovision
 
 	}
+
+
+	def "extract Entitlements and merge Example.entitlements"() {
+		given:
+		File mobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
+		commandRunner.runWithResult(_) >> FileUtils.readFileToString(new File("../libtest/src/main/Resource/entitlements.plist"))
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
+
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		File xcent = new File("src/test/Resource/archived-expanded-entitlements.xcent")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, xcent)
+
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getList("com..apple..developer..associated-domains").contains("webcredentials:example.com")
+		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
+		entitlements.getBoolean("com..apple..developer..siri") == true
+
+	}
+
 
 }
 

@@ -147,12 +147,22 @@ public class Codesign {
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
 		File entitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
-		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup)
+		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup, getXcentFile(bundle))
 		entitlementsFile.deleteOnExit()
 
 		logger.info("Using entitlementsFile {}", entitlementsFile)
 
 		return entitlementsFile
+	}
+
+	File getXcentFile(File bundle) {
+		def fileList = bundle.list(
+						[accept: { d, f -> f ==~ /.*xcent/ }] as FilenameFilter
+		).toList()
+		if (fileList.isEmpty()) {
+			return null
+		}
+		return new File(bundle, fileList.get(0))
 	}
 
 
