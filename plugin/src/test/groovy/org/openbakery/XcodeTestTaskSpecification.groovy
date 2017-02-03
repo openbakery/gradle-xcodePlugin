@@ -200,6 +200,8 @@ class XcodeTestTaskSpecification extends Specification {
 														 "-target", 'Test',
 														 "CODE_SIGN_IDENTITY=",
 														 "CODE_SIGNING_REQUIRED=NO",
+														 "CODE_SIGN_ENTITLEMENTS=",
+															"CODE_SIGNING_ALLOWED=NO",
 														 "-destination",
 														 "platform=OS X,arch=x86_64",
 														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
@@ -226,7 +228,9 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
 															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO"
+															 "CODE_SIGNING_REQUIRED=NO",
+															 "CODE_SIGN_ENTITLEMENTS=",
+																"CODE_SIGNING_ALLOWED=NO",
 		]
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
@@ -295,7 +299,9 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
 															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO"
+															 "CODE_SIGNING_REQUIRED=NO",
+															 "CODE_SIGN_ENTITLEMENTS=",
+																"CODE_SIGNING_ALLOWED=NO",
 		]
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
@@ -488,6 +494,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-configuration", 'Debug',
 															 "CODE_SIGN_IDENTITY=",
 															 "CODE_SIGNING_REQUIRED=NO",
+															 "CODE_SIGN_ENTITLEMENTS=",
+																"CODE_SIGNING_ALLOWED=NO",
 															 "-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
 		]
 		expectedCommandList.addAll(expectedDefaultDirectories())
