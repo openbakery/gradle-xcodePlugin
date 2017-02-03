@@ -8,6 +8,10 @@
 build/
 *.orig
 
+## Test generated
+caches
+*.dylib*
+
 ## Various settings
 *.pbxuser
 !default.pbxuser
