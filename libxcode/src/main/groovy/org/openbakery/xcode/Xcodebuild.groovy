@@ -151,9 +151,8 @@ class Xcodebuild {
 	def addDisableCodeSigning(ArrayList commandList) {
 		commandList.add("CODE_SIGN_IDENTITY=")
 		commandList.add("CODE_SIGNING_REQUIRED=NO")
-		commandList.add("CODE_SIGN_ENTITLEMENTS=")
-		commandList.add("CODE_SIGNING_ALLOWED=NO")
-
+		//commandList.add("CODE_SIGN_ENTITLEMENTS=")
+		//commandList.add("CODE_SIGNING_ALLOWED=NO")
 	}
 
 	private boolean isSimulator() {

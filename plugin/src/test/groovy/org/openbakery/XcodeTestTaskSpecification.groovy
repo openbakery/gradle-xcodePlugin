@@ -87,6 +87,16 @@ class XcodeTestTaskSpecification extends Specification {
 		]
 	}
 
+
+	def expectedCodesignSettings() {
+		return [
+						"CODE_SIGN_IDENTITY=",
+						"CODE_SIGNING_REQUIRED=NO",
+//					 "CODE_SIGN_ENTITLEMENTS=",
+//					 "CODE_SIGNING_ALLOWED=NO",
+		]
+	}
+
 	def "has xcode"() {
 		expect:
 		xcodeTestTask.xcode != null
@@ -198,17 +208,16 @@ class XcodeTestTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 														 "-sdk", "macosx",
 														 "-target", 'Test',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
+														 ]
+			expectedCommandList.addAll(expectedCodesignSettings())
+			expectedCommandList.addAll([
 														 "-destination",
 														 "platform=OS X,arch=x86_64",
 														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
 														 "OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
 														 "SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
 														 "SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath
-			]
+			])
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -227,11 +236,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO",
-															 "CODE_SIGN_ENTITLEMENTS=",
-																"CODE_SIGNING_ALLOWED=NO",
 		]
+		expectedCommandList.addAll(expectedCodesignSettings())
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
@@ -298,11 +304,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO",
-															 "CODE_SIGN_ENTITLEMENTS=",
-																"CODE_SIGNING_ALLOWED=NO",
 		]
+		expectedCommandList.addAll(expectedCodesignSettings())
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
@@ -492,12 +495,9 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", "Foobar",
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO",
-															 "CODE_SIGN_ENTITLEMENTS=",
-																"CODE_SIGNING_ALLOWED=NO",
-															 "-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
 		]
+		expectedCommandList.addAll(expectedCodesignSettings())
+		expectedCommandList.addAll(["-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"])
 		expectedCommandList.addAll(expectedDefaultDirectories())
 
 		mockXcodeVersion()

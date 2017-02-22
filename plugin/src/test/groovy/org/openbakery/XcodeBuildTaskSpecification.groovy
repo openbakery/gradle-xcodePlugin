@@ -71,6 +71,15 @@ class XcodeBuildTaskSpecification extends Specification {
 		]
 	}
 
+	def expectedCodesignSettings() {
+		return [
+						"CODE_SIGN_IDENTITY=",
+						"CODE_SIGNING_REQUIRED=NO",
+//					 "CODE_SIGN_ENTITLEMENTS=",
+//					 "CODE_SIGNING_ALLOWED=NO",
+		]
+	}
+
 	def expectedDerivedDataPath() {
 		return [
 						"-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath
@@ -125,8 +134,6 @@ class XcodeBuildTaskSpecification extends Specification {
 						"-configuration", "Debug",
 						"CODE_SIGN_IDENTITY=",
 						"CODE_SIGNING_REQUIRED=NO",
-						"CODE_SIGN_ENTITLEMENTS=",
-						"CODE_SIGNING_ALLOWED=NO",
 		)
 
 	}
@@ -159,8 +166,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", "Debug",
 														 "CODE_SIGN_IDENTITY=",
 															"CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
 														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
 														 "DSTROOT=" + new File("build/myDst").absolutePath,
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
@@ -190,11 +195,8 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['xcodebuild',
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-														 "CODE_SIGNING_ALLOWED=NO",
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
@@ -224,8 +226,6 @@ class XcodeBuildTaskSpecification extends Specification {
 															 "-configuration", "Debug",
 															 "CODE_SIGN_IDENTITY=",
 															 "CODE_SIGNING_REQUIRED=NO",
-															 "CODE_SIGN_ENTITLEMENTS=",
-															 "CODE_SIGNING_ALLOWED=NO",
 				]
 				expectedCommandList.addAll(expectedDerivedDataPath())
 				expectedCommandList.addAll(expectedDefaultDirectories())
@@ -251,11 +251,8 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-														 "CODE_SIGNING_ALLOWED=NO"
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
@@ -285,12 +282,9 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-														 "CODE_SIGNING_ALLOWED=NO",
-														 "ARCHS=myarch"
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
+			expectedCommandList.add("ARCHS=myarch")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
@@ -322,12 +316,9 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
-														 "ARCHS=armv armv7s"
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
+			expectedCommandList.add("ARCHS=armv armv7s")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
@@ -353,11 +344,8 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
@@ -385,11 +373,8 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['xcodebuild',
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
@@ -416,11 +401,8 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", 'Debug',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
@@ -449,12 +431,9 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", 'Debug',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
-														 "ARCHS=i386"
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
+			expectedCommandList.add("ARCHS=i386")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
@@ -484,11 +463,8 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList = ['/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
 														 "-configuration", 'Debug',
 														 "-target", 'mytarget',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-															"CODE_SIGNING_ALLOWED=NO",
 			]
+			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}

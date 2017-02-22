@@ -104,8 +104,8 @@ class XcodebuildSpecification extends Specification {
 	def addDisabledCodesigningParameters(def command) {
 		command << "CODE_SIGN_IDENTITY="
 		command << "CODE_SIGNING_REQUIRED=NO"
-		command << "CODE_SIGN_ENTITLEMENTS="
-		command << "CODE_SIGNING_ALLOWED=NO"
+		//command << "CODE_SIGN_ENTITLEMENTS=" // disable for no, should be only done by build for test
+		//command << "CODE_SIGNING_ALLOWED=NO"
 	}
 
 
@@ -163,8 +163,6 @@ class XcodebuildSpecification extends Specification {
 														 "-configuration", "Debug",
 														 "CODE_SIGN_IDENTITY=",
 														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGN_ENTITLEMENTS=",
-														 "CODE_SIGNING_ALLOWED=NO",
 														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
 														 "DSTROOT=" + new File("build/myDst").absolutePath,
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
@@ -647,7 +645,7 @@ class XcodebuildSpecification extends Specification {
 							"xcodebuild",
 							"-scheme", 'myscheme',
 							"-workspace", "myworkspace",
-							"-configuration", 'Debug') 
+							"-configuration", 'Debug')
 			expectedCommandList <<"-destination" << "platform=iOS Simulator,id=D72F7CC6-8426-4E0A-A234-34747B1F30DD"
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 			addDerivedDataPathParameters(expectedCommandList)
