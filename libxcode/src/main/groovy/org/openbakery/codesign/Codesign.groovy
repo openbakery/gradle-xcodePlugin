@@ -137,17 +137,17 @@ public class Codesign {
 			return null
 		}
 
+
 		// set keychain access group
 
-		//BuildConfiguration buildConfiguration = project.xcodebuild.getBuildConfiguration()
-		//def keychainAccessGroup = plistHelper.getValueFromPlist(buildConfiguration.entitlements, "keychain-access-groups")
-		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(bundle)
+		File xcentFile = getXcentFile(bundle)
+		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(xcentFile)
 
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
 		File entitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
-		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup, getXcentFile(bundle))
+		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup, xcentFile)
 		entitlementsFile.deleteOnExit()
 
 		logger.info("Using entitlementsFile {}", entitlementsFile)
@@ -166,11 +166,10 @@ public class Codesign {
 	}
 
 
-	List<String> getKeychainAccessGroupFromEntitlements(File bundle) {
+	List<String> getKeychainAccessGroupFromEntitlements(File entitlementsFile) {
 
 		List<String> result = []
-		File entitlementsFile = new File(bundle, "archived-expanded-entitlements.xcent")
-		if (!entitlementsFile.exists()) {
+		if (entitlementsFile == null || !entitlementsFile.exists()) {
 			return result
 		}
 

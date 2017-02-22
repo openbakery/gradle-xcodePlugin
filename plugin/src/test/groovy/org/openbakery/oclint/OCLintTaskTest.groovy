@@ -28,7 +28,7 @@ class OCLintTaskTest {
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
 	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
-	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-16.0.0.tar.gz"
+	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.11.1/oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"
 	String oclintPath = 'oclint-0.11'
 
 	File tmpDirectory
@@ -76,7 +76,7 @@ class OCLintTaskTest {
 	@Test
 	void filenameFromURL() {
 		// just make sure that the filename function does the right thing ;-)
-		assertThat(filename(downloadURLForSierra), equalTo("oclint-0.11-x86_64-darwin-16.0.0.tar.gz"))
+		assertThat(filename(downloadURLForSierra), equalTo("oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"))
 	}
 
 	@Test

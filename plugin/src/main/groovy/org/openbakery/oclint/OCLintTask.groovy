@@ -48,7 +48,7 @@ class OCLintTask extends AbstractXcodeTask {
 
 	def downloadURL() {
 		if (getOSVersion().minor >= 12) {
-			return "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-16.0.0.tar.gz"
+			return "https://github.com/oclint/oclint/releases/download/v0.11.1/oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"
 		}
 		return "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
 	}

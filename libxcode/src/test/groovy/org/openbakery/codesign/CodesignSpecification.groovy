@@ -68,7 +68,8 @@ class CodesignSpecification extends  Specification {
 		applicationDummy.create()
 
 		when:
-		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(applicationDummy.payloadAppDirectory)
+		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
+		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(xcentFile)
 
 		then:
 		keychainAccessGroup.size() == 3

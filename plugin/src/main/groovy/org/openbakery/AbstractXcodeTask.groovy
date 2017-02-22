@@ -125,7 +125,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		if (scanner.hasNext()) {
 			result.maintenance = scanner.nextInt();
 		}
-		return result;
+		return result
 	}
 
 
