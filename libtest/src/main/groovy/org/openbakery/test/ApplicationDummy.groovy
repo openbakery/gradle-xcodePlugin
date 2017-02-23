@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.PlistHelperStub
+import org.openbakery.util.PlistHelper
 
 /**
  * Created by rene on 08.11.16.
@@ -38,12 +39,18 @@ class ApplicationDummy {
 			appDirectory.mkdirs()
 		}
 
-		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy");
-		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy");
-		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy");
+		String bundleIdentifier =  "org.openbakery.test.Example"
 
-		File infoPlist = new File(payloadAppDirectory, "Info.plist")
-		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
+		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy")
+		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy")
+
+		File infoPlist = new File(appDirectory, "Info.plist")
+
+		PlistHelper helper = new PlistHelper(new CommandRunner())
+		helper.create(infoPlist)
+		helper.addValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
+
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
 		File mobileprovision = null
 		if (adHoc) {

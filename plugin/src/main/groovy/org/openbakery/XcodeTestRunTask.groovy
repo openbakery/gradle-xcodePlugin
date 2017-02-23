@@ -148,7 +148,10 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	Codesign getCodesign() {
 		if (runOnDevice()) {
 			if (codesign == null) {
-				codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.entitlementsFile, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+				codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+				if (project.xcodebuild.signing.hasEntitlementsFile()) {
+					codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
+				}
 			}
 		}
 		return codesign

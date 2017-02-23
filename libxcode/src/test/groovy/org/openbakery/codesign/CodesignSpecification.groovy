@@ -38,7 +38,6 @@ class CodesignSpecification extends  Specification {
 						new XcodeFake(),
 						"",
 						keychainPath,
-						null,
 						applicationDummy.mobileProvisionFile,
 						Type.iOS,
 						commandRunner,
@@ -86,8 +85,9 @@ class CodesignSpecification extends  Specification {
 
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
+		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.test.Example")
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", xcentFile)
 
 		then:
 		entitlementsFile.exists()
@@ -96,29 +96,31 @@ class CodesignSpecification extends  Specification {
 	}
 
 
-	def "use custom entitlements file"() {
+	def "use entitlements file"() {
 		given:
 		applicationDummy.create()
+		File useEntitlementsFile = new File(tmpDirectory, "MyCustomEntitlements.plist")
+		FileUtils.writeStringToFile(useEntitlementsFile, "foobar")
+		codesign.useEntitlements(useEntitlementsFile)
 
-		codesign = new Codesign(
-						new XcodeFake(),
-						"",
-						keychainPath,
-						new File(tmpDirectory, "MyCustomEntitlements.plist"),
-						applicationDummy.mobileProvisionFile,
-						Type.iOS,
-						commandRunner,
-						plistHelper)
-
-		//packageTask.plistHelper = new PlistHelper(new CommandRunner())
+		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
 
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.test.Example")
-
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", xcentFile)
 		then:
 		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
+		cleanup:
+		useEntitlementsFile.delete()
 	}
 
+	def "use entitlements file does not exist"() {
+		given:
+		applicationDummy.create()
+		when:
+		codesign.useEntitlements(new File(tmpDirectory, "MyCustomEntitlements.plist"))
+		then:
+		thrown(IllegalArgumentException)
+	}
 
 
 	def "create entitlements were merged with xcent"() {
@@ -126,11 +128,12 @@ class CodesignSpecification extends  Specification {
 		applicationDummy.create()
 
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
-		FileUtils.copyFile(new File("../plugin/src/test/Resource/archived-expanded-entitlements.xcent"), new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent"))
+		File xcent =  new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
+		FileUtils.copyFile(new File("../plugin/src/test/Resource/archived-expanded-entitlements.xcent"), xcent)
 
 		when:
 
-		File entitlementsFile = codesign.createEntitlementsFile(applicationDummy.payloadAppDirectory, "org.openbakery.test.Example")
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", xcent)
 		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
 
 		then:

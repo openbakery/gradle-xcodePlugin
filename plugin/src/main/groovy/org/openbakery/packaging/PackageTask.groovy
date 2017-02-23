@@ -93,7 +93,12 @@ class PackageTask extends AbstractDistributeTask {
 			signSettingsAvailable = false;
 		}
 
-		Codesign codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.entitlementsFile, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+		Codesign codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+		if (project.xcodebuild.signing.hasEntitlementsFile()) {
+			codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
+		}
+
+
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -103,7 +108,7 @@ class PackageTask extends AbstractDistributeTask {
 			}
 
 			if (signSettingsAvailable) {
-				logger.info("Codesign app: {}", bundle);
+				logger.info("Codesign app: {}", bundle)
 				codesign.sign(bundle)
 			} else {
 				String message = "Bundle not signed: " + bundle

@@ -17,6 +17,9 @@ public class Codesign {
 
 	String identity
 	Type type
+	/*
+	 	user this entitlements file for codesigning, nothing is extracted from the mobile provisioning profile
+	 */
 	File entitlementsFile
 	private CommandRunner commandRunner
 	PlistHelper plistHelper
@@ -25,16 +28,23 @@ public class Codesign {
 	Xcode xcode
 
 
-	public Codesign(Xcode xcode, String identity, File keychainPath,  File entitlementsFile, List<File> mobileProvisionFiles, Type type, CommandRunner commandRunner, PlistHelper plistHelper) {
+	public Codesign(Xcode xcode, String identity, File keychainPath, List<File> mobileProvisionFiles, Type type, CommandRunner commandRunner, PlistHelper plistHelper) {
 		this.xcode = xcode
 		this.identity = identity
 		this.keychainPath = keychainPath
 		this.type = type
 		this.commandRunner = commandRunner
-		this.entitlementsFile = entitlementsFile
 		this.mobileProvisionFiles = mobileProvisionFiles
 		this.plistHelper = plistHelper
 	}
+
+	void useEntitlements(File entitlementsFile) {
+		if (entitlementsFile == null || !entitlementsFile.exists()) {
+			throw new IllegalArgumentException("given entitlements file does not exist: " + entitlementsFile)
+		}
+		this.entitlementsFile = entitlementsFile
+	}
+
 
 	void sign(File bundle) {
 		logger.debug("Codesign with Identity: {}", identity)
@@ -43,12 +53,17 @@ public class Codesign {
 
 		logger.debug("Codesign {}", bundle)
 
-		String bundleIdentifier = getIdentifierForBundle(bundle)
-		if (bundleIdentifier == null) {
-			logger.debug("bundleIdentifier not found in bundle {}", bundle)
+		File entitlements = this.entitlementsFile
+
+		if (entitlements == null) {
+			logger.debug("createEntitlementsFile no entitlementsFile specified")
+			File xcentFile = getXcentFile(bundle)
+			String bundleIdentifier = getIdentifierForBundle(bundle)
+			entitlements = createEntitlementsFile(bundleIdentifier, xcentFile)
 		}
 
-		performCodesign(bundle, createEntitlementsFile(bundle, bundleIdentifier))
+
+		performCodesign(bundle, entitlements)
 
 	}
 
@@ -115,9 +130,11 @@ public class Codesign {
 		return bundleIdentifier
 	}
 
-	File createEntitlementsFile(File bundle, String bundleIdentifier) {
+
+	File createEntitlementsFile(String bundleIdentifier, File xcentFile) {
+		// the settings from the xcent file are merge with the settings from entitlements from the provisioning profile
 		if (bundleIdentifier == null) {
-			logger.debug("createEntitlementsFile no bundleIdentifier specified")
+			logger.debug("not bundleIdentifier specified")
 			return null
 		}
 
@@ -126,43 +143,41 @@ public class Codesign {
 			return entitlementsFile
 		}
 
-		logger.debug("createEntitlementsFile for identifier {} and bundle {}", bundleIdentifier, bundle)
+		logger.debug("createEntitlementsFile for identifier {}", bundleIdentifier)
 
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, this.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		if (provisionFile == null) {
 			if (this.type == Type.iOS) {
-					throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
+				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
 			}
 			// on OS X this is valid
 			return null
 		}
 
-
 		// set keychain access group
 
-		File xcentFile = getXcentFile(bundle)
 		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(xcentFile)
 
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
-		File entitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
-		reader.extractEntitlements(entitlementsFile, bundleIdentifier, keychainAccessGroup, xcentFile)
-		entitlementsFile.deleteOnExit()
+		File extractedEntitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
+		reader.extractEntitlements(extractedEntitlementsFile, bundleIdentifier, keychainAccessGroup, xcentFile)
+		extractedEntitlementsFile.deleteOnExit()
 
-		logger.info("Using entitlementsFile {}", entitlementsFile)
+		logger.info("Using entitlementsFile {}", extractedEntitlementsFile)
 
-		return entitlementsFile
+		return extractedEntitlementsFile
 	}
 
 	File getXcentFile(File bundle) {
 		def fileList = bundle.list(
 						[accept: { d, f -> f ==~ /.*xcent/ }] as FilenameFilter
-		).toList()
-		if (fileList.isEmpty()) {
+		)
+		if (fileList == null || fileList.toList().isEmpty()) {
 			return null
 		}
-		return new File(bundle, fileList.get(0))
+		return new File(bundle, fileList.toList().get(0))
 	}
 
 

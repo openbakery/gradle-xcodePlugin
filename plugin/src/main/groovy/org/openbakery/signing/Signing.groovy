@@ -122,6 +122,10 @@ class Signing {
 		return null
 	}
 
+	boolean hasEntitlementsFile() {
+		return entitlementsFile != null && entitlementsFile.exists()
+	}
+
 	void setEntitlementsFile(Object entitlementsFile) {
 		this.entitlementsFile = entitlementsFile
 	}
