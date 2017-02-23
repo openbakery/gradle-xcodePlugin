@@ -387,5 +387,16 @@ class OCLintTaskTest {
 	}
 
 
+	@Test
+	void oclint_bin_directory() {
+		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.11/bin")))
+	}
+
+
+	@Test
+	void oclint_bin_directory_sierra() {
+		System.setProperty("os.version", "10.12.0")
+		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.11.1/bin")))
+	}
 
 }

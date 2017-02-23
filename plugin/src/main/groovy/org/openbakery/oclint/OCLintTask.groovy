@@ -14,8 +14,6 @@ class OCLintTask extends AbstractXcodeTask {
 	String oclintDirectoryName = "oclint-0.11"
 
 
-	File oclintBinDirectory
-
 	OCLintTask() {
 		super()
 		this.description = "Create a OCLint report for the given project"
@@ -23,12 +21,9 @@ class OCLintTask extends AbstractXcodeTask {
 
 
 	def download() {
-		File tmpDirectory = getTemporaryDirectory("oclint")
-		if (!tmpDirectory.exists()) {
-			tmpDirectory.mkdirs()
-		}
+		File tmpDirectory = getTemporaryDirectory()
 
-		String downloadURL = downloadURL()
+		String downloadURL = getDownloadURL()
 		ant.get(src: downloadURL, dest: tmpDirectory, verbose:true)
 		String archiveName = FilenameUtils.getName(downloadURL)
 
@@ -41,16 +36,36 @@ class OCLintTask extends AbstractXcodeTask {
 						tmpDirectory.absolutePath
 		]
 		commandRunner.run(command)
-
-		return tmpDirectory
 	}
 
 
-	def downloadURL() {
+	def getDownloadURL() {
 		if (getOSVersion().minor >= 12) {
 			return "https://github.com/oclint/oclint/releases/download/v0.11.1/oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"
 		}
 		return "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
+	}
+
+	File getTemporaryDirectory() {
+		File tmpDirectory = getTemporaryDirectory("oclint")
+		if (!tmpDirectory.exists()) {
+			tmpDirectory.mkdirs()
+		}
+		return tmpDirectory
+	}
+
+	String getFilename() {
+		return FilenameUtils.getName(new URL(getDownloadURL()).getPath())
+	}
+
+	File oclintBinDirectory() {
+		String filename = getFilename()
+	  int endIndex = filename.indexOf("-x86_64")
+		String directoryName = "oclint-0.11"
+		if (endIndex > 0) {
+			directoryName = filename.substring(0, endIndex)
+		}
+		return new File(getTemporaryDirectory(), directoryName + "/bin")
 	}
 
 	@TaskAction
@@ -59,9 +74,9 @@ class OCLintTask extends AbstractXcodeTask {
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
-		def tmpDirectory = download()
+		download()
 
-		oclintBinDirectory = new File(tmpDirectory, oclintDirectoryName + "/bin")
+		File oclintBinDirectory = oclintBinDirectory()
 		def oclintXcodebuild = new File(oclintBinDirectory, 'oclint-xcodebuild').absolutePath
 
 		commandRunner.run([oclintXcodebuild, 'build/xcodebuild-output.txt'])
