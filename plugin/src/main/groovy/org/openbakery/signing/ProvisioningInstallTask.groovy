@@ -79,9 +79,9 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)
 			downloadedFile.renameTo(renamedProvisionFile)
 
-			project.xcodebuild.signing.mobileProvisionFile = renamedProvisionFile;
+			project.xcodebuild.signing.addMobileProvisionFile(renamedProvisionFile)
 
-			linkToLibraray(renamedProvisionFile	)
+			linkToLibraray(renamedProvisionFile)
 		}
 
 	}

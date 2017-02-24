@@ -9,6 +9,7 @@ import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
+import org.openbakery.codesign.CodesignParameters
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
@@ -27,6 +28,9 @@ class PackageTask extends AbstractDistributeTask {
 
 	String applicationBundleName
 	StyledTextOutput output
+
+
+	CodesignParameters codesignParameters = new CodesignParameters()
 
 	PackageTask() {
 		super();
@@ -51,8 +55,7 @@ class PackageTask extends AbstractDistributeTask {
 		}
 		outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
 
-
-		File applicationFolder = createApplicationFolder();
+		File applicationFolder = createApplicationFolder()
 
 		def applicationName = getApplicationNameFromArchive()
 		copy(getApplicationBundleDirectory(), applicationFolder)
@@ -84,7 +87,7 @@ class PackageTask extends AbstractDistributeTask {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
 
-		def signSettingsAvailable = true;
+		def signSettingsAvailable = true
 		if (project.xcodebuild.signing.mobileProvisionFile == null) {
 			logger.warn('No mobile provision file provided.')
 			signSettingsAvailable = false;
@@ -93,7 +96,9 @@ class PackageTask extends AbstractDistributeTask {
 			signSettingsAvailable = false;
 		}
 
-		Codesign codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+		codesignParameters.mergeMissing(project.xcodebuild.signing.codesignParameters)
+		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
+		Codesign codesign = new Codesign(xcode, codesignParameters, project.xcodebuild.type,  commandRunner, plistHelper)
 		if (project.xcodebuild.signing.hasEntitlementsFile()) {
 			codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
 		}
@@ -126,6 +131,9 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 	}
+
+
+
 
 	boolean isAdHoc(File appBundle) {
 		File provisionFile = getProvisionFileForBundle(appBundle)
@@ -304,5 +312,14 @@ class PackageTask extends AbstractDistributeTask {
 		} else {
 			return getApplicationNameFromArchive()
 		}
+	}
+
+
+	String getSigningIdentity() {
+		return codesignParameters.signingIdentity
+	}
+
+	void setSigningIdentity(String identity) {
+		codesignParameters.signingIdentity = identity
 	}
 }

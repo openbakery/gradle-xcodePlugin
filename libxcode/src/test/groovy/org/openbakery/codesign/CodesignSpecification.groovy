@@ -37,11 +37,14 @@ class CodesignSpecification extends  Specification {
 		plistHelper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.test.Example")
 		plistHelper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.test.Example", "AAAAAAAAAA.org.openbakery.test.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
 
+		CodesignParameters parameters = new CodesignParameters()
+		parameters.signingIdentity = ""
+		parameters.keychain = keychainPath
+		parameters.mobileProvisionFiles = applicationDummy.mobileProvisionFile
+
 		codesign = new Codesign(
 						new XcodeFake(),
-						"",
-						keychainPath,
-						applicationDummy.mobileProvisionFile,
+						parameters,
 						Type.iOS,
 						commandRunner,
 						plistHelper)

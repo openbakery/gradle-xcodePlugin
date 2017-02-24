@@ -106,9 +106,9 @@ class PackageTask_WatchKitSpecification extends Specification {
 		project.xcodebuild.outputPath.mkdirs()
 
 
-		project.xcodebuild.signing.mobileProvisionFile = new File("../libtest/src/main/Resource/test.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/exampleWatchkit.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/exampleWatchkitExtension.mobileprovision")
+		project.xcodebuild.signing.addMobileProvisionFile(new File("../libtest/src/main/Resource/test.mobileprovision"))
+		project.xcodebuild.signing.addMobileProvisionFile(new File("src/test/Resource/exampleWatchkit.mobileprovision"))
+		project.xcodebuild.signing.addMobileProvisionFile(new File("src/test/Resource/exampleWatchkitExtension.mobileprovision"))
 
 
 

@@ -335,7 +335,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		def bundleDirectory = createTestBundleForDeviceBuild()
 		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		mockEntitlementsFromPlist(mobileprovision)
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
 
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.destination {
@@ -363,7 +363,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		def bundleDirectory = createTestBundleForDeviceBuild()
 		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		mockEntitlementsFromPlist(mobileprovision)
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.destination {
 			platform = "iOS"

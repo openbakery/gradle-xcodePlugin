@@ -157,12 +157,12 @@ class PackageTaskSpecification extends Specification {
 		} else {
 			mobileprovision = new File("../libtest/src/main/Resource/Appstore.mobileprovision")
 		}
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
 		mockEntitlementsFromPlist(mobileprovision)
 
 		if (withPlugin) {
 			File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-			project.xcodebuild.signing.mobileProvisionFile = widgetMobileprovision
+			project.xcodebuild.signing.addMobileProvisionFile(widgetMobileprovision)
 			mockEntitlementsFromPlist(widgetMobileprovision)
 		}
 
@@ -354,7 +354,7 @@ class PackageTaskSpecification extends Specification {
 		mockExampleApp(false, false)
 
 		File mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile( mobileprovision)
 
 		when:
 		packageTask.packageApplication()
@@ -373,8 +373,8 @@ class PackageTaskSpecification extends Specification {
 
 		File firstMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionFile = firstMobileprovision
-		project.xcodebuild.signing.mobileProvisionFile = secondMobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(firstMobileprovision)
+		project.xcodebuild.signing.addMobileProvisionFile(secondMobileprovision)
 
 		when:
 		packageTask.packageApplication()
@@ -566,4 +566,15 @@ class PackageTaskSpecification extends Specification {
 		entries.contains("Payload/Example.app/OnDemandResources.plist")
 		entries.contains("Payload/Example.app/OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack/Info.plist")
 	}
+
+
+
+	def "set identity"() {
+		when:
+		packageTask.signingIdentity = "Me"
+
+		then:
+		packageTask.codesignParameters.signingIdentity == "Me"
+	}
+
 }

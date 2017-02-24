@@ -151,7 +151,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 
 		File mobileprovision = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
 
 		String basename = FilenameUtils.getBaseName(mobileprovision.path)
 		File plist = new File(System.getProperty("java.io.tmpdir") + "/provision_" + basename + ".plist")
@@ -206,7 +206,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		mockExampleApp()
 
 		when:
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 		packageTask.packageApplication()
 
 		then:
@@ -228,7 +228,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		given:
 
 		mockExampleApp("Contents/Frameworks/Sparkle.framework")
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
 		packageTask.packageApplication()
@@ -251,7 +251,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		given:
 		mockExampleApp("Contents/Resources/Autoupdate.app/Contents/Resources/AnotherApp.app")
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
 		packageTask.packageApplication()
@@ -284,7 +284,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		c.run("ln", "-s", sourceFile.absolutePath, symLinkTo.absolutePath)
 
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
 		packageTask.packageApplication()
@@ -308,7 +308,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		given:
 		mockExampleApp()
 
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
 		packageTask.packageApplication()
@@ -324,7 +324,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		given:
 		mockExampleApp("Contents/Frameworks/Sparkle.framework")
 
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
 		packageTask.packageApplication()
@@ -353,7 +353,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		given:
 		mockExampleApp("Contents/Frameworks/Sparkle.framework")
-		project.xcodebuild.signing.mobileProvisionFile = provisionProfile
+		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
 		packageTask.packageApplication()

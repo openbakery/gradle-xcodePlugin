@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 public class Codesign {
 	private static Logger logger = LoggerFactory.getLogger(Codesign.class)
 
-	String identity
+	CodesignParameters codesignParameters
 	Type type
 	/*
 	 	user this entitlements file for codesigning, nothing is extracted from the mobile provisioning profile
@@ -26,19 +26,15 @@ public class Codesign {
 	File entitlementsFile
 	private CommandRunner commandRunner
 	PlistHelper plistHelper
-	List<File> mobileProvisionFiles
-	File keychainPath
 	Xcode xcode
 
 
-	public Codesign(Xcode xcode, String identity, File keychainPath, List<File> mobileProvisionFiles, Type type, CommandRunner commandRunner, PlistHelper plistHelper) {
+	public Codesign(Xcode xcode, CodesignParameters codesignParameters, Type type, CommandRunner commandRunner, PlistHelper plistHelper) {
 		this.xcode = xcode
-		this.identity = identity
-		this.keychainPath = keychainPath
 		this.type = type
 		this.commandRunner = commandRunner
-		this.mobileProvisionFiles = mobileProvisionFiles
 		this.plistHelper = plistHelper
+		this.codesignParameters = codesignParameters
 	}
 
 	void useEntitlements(File entitlementsFile) {
@@ -50,7 +46,7 @@ public class Codesign {
 
 
 	void sign(File bundle) {
-		logger.debug("Codesign with Identity: {}", identity)
+		logger.debug("Codesign with Identity: {}", codesignParameters.signingIdentity)
 
 		codeSignFrameworks(bundle)
 
@@ -114,11 +110,11 @@ public class Codesign {
 			}
 
 			codesignCommand << "--sign"
-			codesignCommand << this.identity
+			codesignCommand << codesignParameters.signingIdentity
 			codesignCommand << "--verbose"
 			codesignCommand << bundle.absolutePath
 			codesignCommand << "--keychain"
-			codesignCommand << keychainPath.absolutePath
+			codesignCommand << codesignParameters.keychain.absolutePath
 
 			def environment = ["DEVELOPER_DIR":xcode.getPath() + "/Contents/Developer/"]
 			commandRunner.run(codesignCommand, environment)
@@ -154,7 +150,7 @@ public class Codesign {
 
 		logger.debug("createEntitlementsFile for identifier {}", bundleIdentifier)
 
-		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, this.mobileProvisionFiles, this.commandRunner, this.plistHelper)
+		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		if (provisionFile == null) {
 			if (this.type == Type.iOS) {
 				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)

@@ -8,6 +8,7 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.codesign.Codesign
+import org.openbakery.codesign.CodesignParameters
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
@@ -148,7 +149,11 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	Codesign getCodesign() {
 		if (runOnDevice()) {
 			if (codesign == null) {
-				codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+				CodesignParameters parameters = new CodesignParameters()
+				parameters.signingIdentity = getSigningIdentity()
+				parameters.keychain = project.xcodebuild.signing.keychainPathInternal
+				parameters.mobileProvisionFiles = project.xcodebuild.signing.mobileProvisionFile
+				codesign = new Codesign(xcode, parameters, project.xcodebuild.type,  commandRunner, plistHelper)
 				if (project.xcodebuild.signing.hasEntitlementsFile()) {
 					codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
 				}

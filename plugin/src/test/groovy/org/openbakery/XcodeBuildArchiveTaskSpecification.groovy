@@ -495,7 +495,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy entitlements if present"() {
 		given:
-		project.xcodebuild.signing.mobileProvisionFile = new File("src/test/Resource/openbakery.mobileprovision")
+		project.xcodebuild.signing.addMobileProvisionFile( new File("src/test/Resource/openbakery.mobileprovision") )
 		setupProject()
 
 		when:

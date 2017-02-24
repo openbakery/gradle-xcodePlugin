@@ -2,6 +2,7 @@ package org.openbakery.signing
 
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
+import org.openbakery.codesign.CodesignParameters
 
 /**
  *
@@ -99,20 +100,12 @@ class Signing {
 		}
 	}
 
-	void setMobileProvisionFile(Object mobileProvision) {
 
-		File fileToAdd = null
-
-		if (mobileProvision instanceof File) {
-			fileToAdd = mobileProvision
-		} else {
-			fileToAdd = new File(mobileProvision.toString());
+	void addMobileProvisionFile(File mobileProvision) {
+		if (!mobileProvision.exists()) {
+			throw new IllegalArgumentException("given mobile provision file does not exist: " + mobileProvision.absolutePath)
 		}
-
-		if (!fileToAdd.exists()) {
-			throw new IllegalArgumentException("given mobile provision file does not exist: " +	fileToAdd.absolutePath)
-		}
-		mobileProvisionFile.add(fileToAdd)
+		mobileProvisionFile.add(mobileProvision)
 	}
 
 
@@ -157,6 +150,14 @@ class Signing {
 						", certificatePassword='" + certificatePassword + '\'' +
 						", mobileProvisionURI='" + mobileProvisionURI + '\'' +
 						'}';
+	}
+
+	CodesignParameters getCodesignParameters() {
+		CodesignParameters result = new CodesignParameters()
+		result.signingIdentity = getIdentity()
+		result.mobileProvisionFiles = getMobileProvisionFile().clone()
+		result.keychain = getKeychain()
+		return result
 	}
 
 

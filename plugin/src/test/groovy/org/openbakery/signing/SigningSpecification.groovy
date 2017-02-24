@@ -1,7 +1,9 @@
 package org.openbakery.signing
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.codesign.CodesignParameters
 import org.openbakery.configuration.ConfigurationFromMap
 import spock.lang.Specification
 
@@ -24,6 +26,10 @@ class SigningSpecification extends Specification {
 		signing = new Signing(project)
 	}
 
+
+	def cleanup() {
+		projectDir.delete()
+	}
 
 	def "has identity"() {
 		when:
@@ -66,4 +72,43 @@ class SigningSpecification extends Specification {
 		configuration.getStringArray("com.apple.security.application-groups") == ['group.com.example.App']
 
 	}
+
+	def "codesignParameters is not null"() {
+		when:
+		signing.identity = "Me"
+
+		then:
+		signing.codesignParameters instanceof CodesignParameters
+	}
+
+	def "codesignParameters has identity"() {
+		when:
+		signing.identity = "Me"
+		then:
+		signing.codesignParameters.signingIdentity == "Me"
+	}
+
+	def "codesignParameters has mobileProvisionFiles"() {
+		when:
+
+		File first = new File(projectDir, "first")
+		FileUtils.write(first, "first")
+		File second = new File(projectDir, "second")
+		FileUtils.write(second, "second")
+
+		signing.addMobileProvisionFile(first)
+		signing.addMobileProvisionFile(second)
+
+		then:
+		signing.codesignParameters.mobileProvisionFiles instanceof List<File>
+		signing.codesignParameters.mobileProvisionFiles == [ first , second ]
+	}
+
+	def "codesignParameters has keychain"() {
+		when:
+		signing.keychain = new File("my.keychain").absoluteFile
+		then:
+		signing.codesignParameters.keychain == new File("my.keychain").absoluteFile
+	}
+
 }
