@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.packaging.PackageTask
@@ -510,7 +511,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
 		File xcent = new File("src/test/Resource/archived-expanded-entitlements.xcent")
-		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, xcent)
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, new ConfigurationFromPlist(xcent))
 
 		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
 

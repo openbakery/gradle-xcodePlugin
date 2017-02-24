@@ -21,6 +21,8 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
+import org.openbakery.configuration.Configuration
+import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.util.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -198,7 +200,7 @@ class ProvisioningProfileReader {
 	}
 
 	/* xcent is the archive entitlements */
-	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups, File xcent) {
+	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups, Configuration configuration) {
 		File plistFromProvisioningProfile = getPlistFromProvisioningProfile()
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
@@ -269,32 +271,30 @@ class ProvisioningProfileReader {
 
 
 		// copy the missing values that are in the xcent to the entitlements for signing
-		List<String>keys = getMissingKeys(entitlementFile, xcent)
+		List<String>keys = getMissingKeys(entitlementFile, configuration)
 
 		if (keys.size() > 0) {
 			logger.info("Found some entitlements settings in the archived entitlements that are missing in the provisioning profile so this values will be added")
 		}
 		for (String key in keys) {
 			logger.info("add to entitlement: {}", key)
-			Object value = plistHelper.getValueFromPlist(xcent, key)
+			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)
 			plistHelper.addValueForPlist(entitlementFile, key, value)
 		}
 
 	}
 
 
-	List<String> getMissingKeys(File entitlementFile, File xcentFile) {
-		if (xcentFile == null) {
+	List<String> getMissingKeys(File entitlementFile, Configuration configuration) {
+		if (configuration == null) {
 			return []
 		}
-
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementFile)
-		XMLPropertyListConfiguration xcent = new XMLPropertyListConfiguration(xcentFile)
+		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
 
 		def result = new ArrayList<String>()
-		for (String key in xcent.getKeys()) {
+		for (String key in configuration.getKeys()) {
 			if (!entitlements.containsKey(key)) {
-				result << key.replace("..", ".") // the . in the key from the common configuration is escaped with a . so replace .. with .
+				result << key
 			}
 		}
 

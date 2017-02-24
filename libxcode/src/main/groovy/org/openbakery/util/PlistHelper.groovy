@@ -54,7 +54,7 @@ class PlistHelper {
 				}
 				return resultArray
 			}
-			return result;
+			return result
 		} catch (IllegalStateException ex) {
 			return null
 		} catch (CommandRunnerException ex) {
@@ -76,6 +76,22 @@ class PlistHelper {
 
 	void addValueForPlist(File plist, String key, String value) {
 		commandForPlist(plist, "Add :" + key + " string " + value)
+	}
+
+	void addValueForPlist(File plist, String key, Number value) {
+		if (value instanceof Float || value instanceof Double || value instanceof BigDecimal) {
+			commandForPlist(plist, "Add :" + key + " real " + value)
+		} else {
+			commandForPlist(plist, "Add :" + key + " integer " + value.intValue())
+		}
+	}
+
+	void addValueForPlist(File plist, String key, Boolean value) {
+		if (value) {
+			commandForPlist(plist, "Add :" + key + " bool true")
+		} else {
+			commandForPlist(plist, "Add :" + key + " bool false")
+		}
 	}
 
 

@@ -4,6 +4,9 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
+import org.openbakery.configuration.Configuration
+import org.openbakery.configuration.ConfigurationFromMap
+import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.util.PlistHelper
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Type
@@ -68,7 +71,7 @@ class CodesignSpecification extends  Specification {
 
 		when:
 		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
-		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(xcentFile)
+		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromPlist(xcentFile))
 
 		then:
 		keychainAccessGroup.size() == 3
@@ -87,7 +90,7 @@ class CodesignSpecification extends  Specification {
 
 		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", xcentFile)
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
 
 		then:
 		entitlementsFile.exists()
@@ -106,7 +109,7 @@ class CodesignSpecification extends  Specification {
 		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
 
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", xcentFile)
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
 		then:
 		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
 		cleanup:
@@ -133,13 +136,34 @@ class CodesignSpecification extends  Specification {
 
 		when:
 
-		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", xcent)
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcent))
 		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
 
 		then:
 		entitlementsFile.exists()
 		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
 
+	}
+
+	def "create entitlements and merge with settings from signing"() {
+		given:
+		applicationDummy.create()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+
+		def map = [
+						"com.apple.developer.associated-domains"     : ["webcredentials:example.com"],
+						"com.apple.developer.default-data-protection": "NSFileProtectionComplete",
+						"com.apple.security.application-groups"      : [],
+						"com.apple.developer.siri"                   : true
+		]
+
+		when:
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromMap(map))
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
 	}
 
 

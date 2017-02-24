@@ -23,6 +23,7 @@ class Signing {
 	String plugin
 	Object entitlementsFile
 
+	Map<String, Object> entitlements
 
 	/**
 	 * internal parameters
@@ -136,6 +137,11 @@ class Signing {
 
 
 
+	public void entitlements(Map<String, Object> entitlements) {
+		this.entitlements = entitlements
+
+	}
+
 	@Override
 	public String toString() {
 		if (this.keychain != null) {
@@ -152,4 +158,6 @@ class Signing {
 						", mobileProvisionURI='" + mobileProvisionURI + '\'' +
 						'}';
 	}
+
+
 }

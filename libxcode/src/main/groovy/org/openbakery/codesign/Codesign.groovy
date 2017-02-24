@@ -3,6 +3,9 @@ package org.openbakery.codesign
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
+import org.openbakery.configuration.Configuration
+import org.openbakery.configuration.ConfigurationFromMap
+import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
@@ -57,9 +60,15 @@ public class Codesign {
 
 		if (entitlements == null) {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
+			Configuration configuration
 			File xcentFile = getXcentFile(bundle)
+			if (xcentFile != null) {
+				configuration = new ConfigurationFromPlist(xcentFile)
+			} else {
+				configuration = new ConfigurationFromMap([:])
+			}
 			String bundleIdentifier = getIdentifierForBundle(bundle)
-			entitlements = createEntitlementsFile(bundleIdentifier, xcentFile)
+			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
 		}
 
 
@@ -131,7 +140,7 @@ public class Codesign {
 	}
 
 
-	File createEntitlementsFile(String bundleIdentifier, File xcentFile) {
+	File createEntitlementsFile(String bundleIdentifier, Configuration configuration) {
 		// the settings from the xcent file are merge with the settings from entitlements from the provisioning profile
 		if (bundleIdentifier == null) {
 			logger.debug("not bundleIdentifier specified")
@@ -156,13 +165,13 @@ public class Codesign {
 
 		// set keychain access group
 
-		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(xcentFile)
+		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration)
 
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
 		File extractedEntitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
-		reader.extractEntitlements(extractedEntitlementsFile, bundleIdentifier, keychainAccessGroup, xcentFile)
+		reader.extractEntitlements(extractedEntitlementsFile, bundleIdentifier, keychainAccessGroup, configuration)
 		extractedEntitlementsFile.deleteOnExit()
 
 		logger.info("Using entitlementsFile {}", extractedEntitlementsFile)
@@ -177,22 +186,22 @@ public class Codesign {
 		if (fileList == null || fileList.toList().isEmpty()) {
 			return null
 		}
-		return new File(bundle, fileList.toList().get(0))
+		File result = new File(bundle, fileList.toList().get(0))
+		if (result.exists()) {
+			return result
+		}
+		return null
 	}
 
 
-	List<String> getKeychainAccessGroupFromEntitlements(File entitlementsFile) {
-
+	List<String> getKeychainAccessGroupFromEntitlements(Configuration configuration) {
 		List<String> result = []
-		if (entitlementsFile == null || !entitlementsFile.exists()) {
-			return result
-		}
 
-		String applicationIdentifier = plistHelper.getValueFromPlist(entitlementsFile, "application-identifier")
+		String applicationIdentifier = configuration.getString("application-identifier")
 		if (StringUtils.isNotEmpty(applicationIdentifier)) {
 			applicationIdentifier = applicationIdentifier.split("\\.")[0] + "."
 		}
-		List<String> keychainAccessGroups = plistHelper.getValueFromPlist(entitlementsFile, "keychain-access-groups")
+		List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
 
 		keychainAccessGroups.each { item ->
 			if (item.startsWith(applicationIdentifier)) {
