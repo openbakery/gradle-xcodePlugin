@@ -229,7 +229,7 @@ class XcodebuildSpecification extends Specification {
 
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.type = Type.OSX
+		xcodebuild.parameters.type = Type.macOS
 
 		when:
 		xcodebuild.execute(outputAppender, null)
@@ -591,7 +591,7 @@ class XcodebuildSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		xcodebuild.parameters.type = 'OSX'
+		xcodebuild.parameters.type = 'macOS'
 		xcodebuild.parameters.target = 'Test';
 
 		when:

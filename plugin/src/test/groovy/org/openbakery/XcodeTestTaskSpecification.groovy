@@ -4,11 +4,9 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.test.TestClass
 import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.xcode.Destination
-import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import spock.lang.Specification
@@ -190,7 +188,7 @@ class XcodeTestTaskSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		project.xcodebuild.type = 'OSX'
+		project.xcodebuild.type = 'macOS'
 		project.xcodebuild.target = 'Test'
 		mockXcodeVersion()
 
@@ -293,7 +291,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 
 	def setupOSXBuild(String... commands) {
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.target = 'Test';
 
 		project.xcodebuild.scheme = 'myscheme'

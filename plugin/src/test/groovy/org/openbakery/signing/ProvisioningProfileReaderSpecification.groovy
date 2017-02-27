@@ -41,7 +41,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)

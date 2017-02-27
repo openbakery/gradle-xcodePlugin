@@ -32,7 +32,7 @@ class DestinationResolverSpecification extends Specification {
 	def "available destinations for OS X"() {
 
 		when:
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 
 		then:
 		destinationResolver.getDestinations(extension.getXcodebuildParameters()).size() == 1

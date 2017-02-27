@@ -380,7 +380,7 @@ class XcodeBuildPluginExtension {
 		if (buildConfiguration != null) {
 			BuildConfiguration buildSettings = buildConfiguration.buildSettings[configuration];
 			logger.debug("buildSettings: {}", buildSettings)
-			if (type == Type.OSX) {
+			if (type == Type.macOS) {
 				return new File(getOutputPath(), buildSettings.productName + ".app/Contents/MacOS/" + buildSettings.productName)
 			}
 			return new File(getOutputPath(), buildSettings.productName + ".app/" + buildSettings.productName)
@@ -423,7 +423,7 @@ class XcodeBuildPluginExtension {
 
 
 	void setType(String type) {
-		this.type = Type.typeFromString(type);
+		this.type = Type.typeFromString(type)
 	}
 
 
@@ -433,7 +433,7 @@ class XcodeBuildPluginExtension {
 
 
 	boolean getSimulator() {
-		if (type == Type.OSX) {
+		if (type == Type.macOS) {
 			return false
 		}
 		return this.simulator

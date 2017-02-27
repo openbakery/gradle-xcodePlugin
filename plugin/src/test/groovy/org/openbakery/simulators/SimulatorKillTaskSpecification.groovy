@@ -54,7 +54,7 @@ class SimulatorKillTaskSpecification extends Specification {
 
 	def "not enabled on OS X"() {
 		when:
-		project.xcodebuild.type = 'OSX'
+		project.xcodebuild.type = 'macOS'
 
 		task.execute()
 

@@ -1,6 +1,7 @@
 package org.openbakery.codesign
 
 import org.openbakery.CommandRunner
+import org.openbakery.xcode.Type
 
 /**
  * Created by rene on 24.02.17.
@@ -12,6 +13,9 @@ class CodesignParameters {
 	File keychain
 
 	Security security
+	Type type
+	File entitlementsFile
+	Map<String, Object> entitlements
 
 	CodesignParameters() {
 		security = new Security(new CommandRunner())
@@ -39,6 +43,19 @@ class CodesignParameters {
 		if ((mobileProvisionFiles == null || mobileProvisionFiles.isEmpty()) &&  parameters.mobileProvisionFiles != null) {
 			mobileProvisionFiles = parameters.mobileProvisionFiles.clone()
 		}
+
+		if (type == null) {
+			type = parameters.type
+		}
+
+		if (entitlementsFile == null) {
+			entitlementsFile = parameters.entitlementsFile
+		}
+
+		if (entitlements == null) {
+			entitlements = parameters.entitlements
+		}
+
 	}
 
 }

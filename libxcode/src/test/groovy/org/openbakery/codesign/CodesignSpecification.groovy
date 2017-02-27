@@ -45,7 +45,6 @@ class CodesignSpecification extends  Specification {
 		codesign = new Codesign(
 						new XcodeFake(),
 						parameters,
-						Type.iOS,
 						commandRunner,
 						plistHelper)
 

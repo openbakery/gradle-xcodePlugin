@@ -33,7 +33,7 @@ public class ApplicationBundle {
 		File plugins
 		if (isDeviceBuildOf(Type.iOS)) {
 			plugins = new File(appBundle, "PlugIns")
-		}	else if (this.type == Type.OSX) {
+		}	else if (this.type == Type.macOS) {
 			plugins = new File(appBundle, "Contents/PlugIns")
 		} else {
 			return

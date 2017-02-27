@@ -139,7 +139,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	}
 
 	boolean runOnDevice() {
-		if (parameters.type != Type.OSX) {
+		if (parameters.type != Type.macOS) {
 			// os x does not have a simulator
 			return !parameters.simulator
 		}
@@ -153,7 +153,8 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 				parameters.signingIdentity = getSigningIdentity()
 				parameters.keychain = project.xcodebuild.signing.keychainPathInternal
 				parameters.mobileProvisionFiles = project.xcodebuild.signing.mobileProvisionFile
-				codesign = new Codesign(xcode, parameters, project.xcodebuild.type,  commandRunner, plistHelper)
+				parameters.type = project.xcodebuild.type
+				codesign = new Codesign(xcode, parameters, commandRunner, plistHelper)
 				if (project.xcodebuild.signing.hasEntitlementsFile()) {
 					codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
 				}

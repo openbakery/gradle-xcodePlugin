@@ -85,7 +85,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	def getValueFromBundleInfoPlist(File bundle, String key) {
 		File appInfoPlist
-		if (project.xcodebuild.type == Type.OSX) {
+		if (project.xcodebuild.type == Type.macOS) {
 			appInfoPlist = new File(bundle, "Contents/Info.plist")
 		} else {
 			appInfoPlist = new File(bundle, "Info.plist")

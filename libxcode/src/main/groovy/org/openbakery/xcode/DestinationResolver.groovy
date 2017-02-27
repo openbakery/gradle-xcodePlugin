@@ -28,7 +28,7 @@ class DestinationResolver {
 
 		logger.debug("getAvailableDestinations")
 		def availableDestinations = []
-		if (parameters.type == Type.OSX) {
+		if (parameters.type == Type.macOS) {
 			availableDestinations << new Destination("OS X", "OS X", "10.x")
 			return availableDestinations
 		}

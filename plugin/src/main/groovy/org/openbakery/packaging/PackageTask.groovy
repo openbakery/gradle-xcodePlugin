@@ -97,11 +97,14 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		codesignParameters.mergeMissing(project.xcodebuild.signing.codesignParameters)
+		codesignParameters.type = project.xcodebuild.type
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
-		Codesign codesign = new Codesign(xcode, codesignParameters, project.xcodebuild.type,  commandRunner, plistHelper)
+		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
+		/*
 		if (project.xcodebuild.signing.hasEntitlementsFile()) {
 			codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
 		}
+		*/
 
 
 		for (File bundle : appBundles) {

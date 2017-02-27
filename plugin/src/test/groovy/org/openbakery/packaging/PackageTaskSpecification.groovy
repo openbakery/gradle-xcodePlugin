@@ -577,4 +577,18 @@ class PackageTaskSpecification extends Specification {
 		packageTask.codesignParameters.signingIdentity == "Me"
 	}
 
+	def "set type is passed to codesignParameters"() {
+		given:
+		mockExampleApp(false, false)
+		when:
+
+		project.xcodebuild.type = Type.macOS
+
+		packageTask.packageApplication()
+
+		then:
+		packageTask.codesignParameters.type == Type.macOS
+
+	}
+
 }

@@ -1,3 +1,9 @@
+# 0.14.6 (TBA)
+
+Changes
+* renamed Type.OSX to Type.macOS, you can use both 'OSX' and 'macOS' for the xcodebuild.type parameter
+* Introduced an entitlements parameter for signing that can contain a map with the entitlments settings that should be added
+
 # 0.14.5 (January 26, 2017)
 
 Changes

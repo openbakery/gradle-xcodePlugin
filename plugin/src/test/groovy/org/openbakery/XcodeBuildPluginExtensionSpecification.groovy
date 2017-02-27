@@ -275,7 +275,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	def "os x has no simulator"() {
 
 		when:
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 		then:
 		extension.simulator == false
 
@@ -420,7 +420,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension = new XcodeBuildPluginExtension(project)
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleOSX.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 		extension.simulator = false
 		extension.target = "ExampleOSX"
 		extension.productType = "app"
@@ -455,10 +455,10 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "XcodebuildParameters are created with proper values"() {
 		when:
-		File projectDir =  new File("../example/OSX/ExampleOSX")
+		File projectDir =  new File("../example/macOS/ExampleOSX")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 		extension.simulator = false
 		extension.target = "ExampleOSX"
 		extension.scheme = "ExampleScheme"
@@ -478,7 +478,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		def parameters = extension.getXcodebuildParameters()
 
 		then:
-		parameters.type == Type.OSX
+		parameters.type == Type.macOS
 		parameters.simulator == false
 		parameters.target == "ExampleOSX"
 		parameters.scheme == "ExampleScheme"

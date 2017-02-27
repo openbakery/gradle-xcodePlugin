@@ -48,7 +48,7 @@ class SimulatorsRunAppTaskSpecification extends Specification {
 	def "no simulator SDK"() {
 		given:
 		project.xcodebuild.infoPlist =  "Info.plist"
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		when:
 		task.run()
 

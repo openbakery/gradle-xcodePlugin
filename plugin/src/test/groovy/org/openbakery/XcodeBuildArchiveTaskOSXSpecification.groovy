@@ -6,7 +6,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Type
-import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
 /**
@@ -32,13 +31,13 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 		project.xcodebuild.signing.identity = "my identity"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 		xcodeBuildArchiveTask.commandRunner = commandRunner
-		xcodeBuildArchiveTask.parameters.type = Type.OSX
+		xcodeBuildArchiveTask.parameters.type = Type.macOS
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration)
 		buildOutputDirectory.mkdirs()

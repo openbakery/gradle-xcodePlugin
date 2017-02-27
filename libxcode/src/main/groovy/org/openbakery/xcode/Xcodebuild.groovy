@@ -138,7 +138,7 @@ class Xcodebuild {
 			commandList.add("-configuration")
 			commandList.add(parameters.configuration)
 
-			if (parameters.type == Type.OSX) {
+			if (parameters.type == Type.macOS) {
 				commandList.add("-sdk")
 				commandList.add("macosx")
 			}
@@ -201,7 +201,7 @@ class Xcodebuild {
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
 		}
-		if (parameters.type == Type.OSX) {
+		if (parameters.type == Type.macOS) {
 			commandList.add("-destination")
 			commandList.add("platform=OS X,arch=x86_64")
 		}
@@ -217,7 +217,7 @@ class Xcodebuild {
 				}
 				break;
 
-			case Type.OSX:
+			case Type.macOS:
 				commandList.add("-destination")
 				commandList.add("platform=OS X,arch=x86_64")
 				break;
@@ -242,7 +242,7 @@ class Xcodebuild {
 		if (parameters.type != expectedType) {
 			return false
 		}
-		if (parameters.type != Type.OSX) {
+		if (parameters.type != Type.macOS) {
 			// os x does not have a simulator
 			return parameters.simulator
 		}

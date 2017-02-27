@@ -1,8 +1,5 @@
 package org.openbakery.xcode
 
-import org.openbakery.xcode.Devices
-import org.openbakery.xcode.Type
-import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
 /**
@@ -15,7 +12,7 @@ class XcodebuildParametersSpecification extends Specification {
 	XcodebuildParameters second = new XcodebuildParameters()
 
 	def setup() {
-		first.type = Type.OSX
+		first.type = Type.macOS
 		first.simulator = false
 		first.target = "ExampleOSX"
 		first.scheme = "ExampleScheme"

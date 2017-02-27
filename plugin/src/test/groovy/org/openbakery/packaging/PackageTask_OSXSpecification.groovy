@@ -52,7 +52,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		project.apply plugin: org.openbakery.XcodePlugin
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 
 		keychain = new File(projectDir, "gradle.keychain")
 		FileUtils.writeStringToFile(keychain, "dummy");

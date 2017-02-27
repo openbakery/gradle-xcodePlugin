@@ -19,7 +19,6 @@ public class Codesign {
 	private static Logger logger = LoggerFactory.getLogger(Codesign.class)
 
 	CodesignParameters codesignParameters
-	Type type
 	/*
 	 	user this entitlements file for codesigning, nothing is extracted from the mobile provisioning profile
 	 */
@@ -29,9 +28,8 @@ public class Codesign {
 	Xcode xcode
 
 
-	public Codesign(Xcode xcode, CodesignParameters codesignParameters, Type type, CommandRunner commandRunner, PlistHelper plistHelper) {
+	public Codesign(Xcode xcode, CodesignParameters codesignParameters, CommandRunner commandRunner, PlistHelper plistHelper) {
 		this.xcode = xcode
-		this.type = type
 		this.commandRunner = commandRunner
 		this.plistHelper = plistHelper
 		this.codesignParameters = codesignParameters
@@ -75,7 +73,7 @@ public class Codesign {
 	private void codeSignFrameworks(File bundle) {
 
 			File frameworksDirectory
-			if (this.type == Type.iOS) {
+			if (codesignParameters.type == Type.iOS) {
 				frameworksDirectory = new File(bundle, "Frameworks")
 			} else {
 				frameworksDirectory = new File(bundle, "Contents/Frameworks")
@@ -125,7 +123,7 @@ public class Codesign {
 	private String getIdentifierForBundle(File bundle) {
 		File infoPlist
 
-		if (this.type == Type.iOS) {
+		if (codesignParameters.type == Type.iOS) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -152,7 +150,7 @@ public class Codesign {
 
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		if (provisionFile == null) {
-			if (this.type == Type.iOS) {
+			if (codesignParameters.type == Type.iOS) {
 				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
 			}
 			// on OS X this is valid

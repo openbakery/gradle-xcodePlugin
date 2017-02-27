@@ -239,7 +239,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		project.xcodebuild.scheme = 'myscheme'
 		project.xcodebuild.workspace = 'myworkspace'
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 
 		when:
 		xcodeBuildTask.build()
