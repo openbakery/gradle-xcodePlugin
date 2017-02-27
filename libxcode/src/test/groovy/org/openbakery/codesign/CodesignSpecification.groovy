@@ -24,6 +24,7 @@ class CodesignSpecification extends  Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 	PlistHelper plistHelper
 	File keychainPath
+	CodesignParameters parameters
 
 	void setup() {
 		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
@@ -37,7 +38,7 @@ class CodesignSpecification extends  Specification {
 		plistHelper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.test.Example")
 		plistHelper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.test.Example", "AAAAAAAAAA.org.openbakery.test.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
 
-		CodesignParameters parameters = new CodesignParameters()
+		parameters = new CodesignParameters()
 		parameters.signingIdentity = ""
 		parameters.keychain = keychainPath
 		parameters.mobileProvisionFiles = applicationDummy.mobileProvisionFile
@@ -102,18 +103,22 @@ class CodesignSpecification extends  Specification {
 
 
 	def "use entitlements file"() {
+		def commandList
 		given:
 		applicationDummy.create()
 		File useEntitlementsFile = new File(tmpDirectory, "MyCustomEntitlements.plist")
 		FileUtils.writeStringToFile(useEntitlementsFile, "foobar")
-		codesign.useEntitlements(useEntitlementsFile)
-
-		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
+		parameters.entitlementsFile = useEntitlementsFile
 
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
+		codesign.sign(new File("dummy")) // .createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
 		then:
-		entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
+
+		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
+		commandList.contains("/usr/bin/codesign")
+		commandList.contains(useEntitlementsFile.absolutePath)
+
+		//entitlementsFile.path.endsWith("MyCustomEntitlements.plist")
 		cleanup:
 		useEntitlementsFile.delete()
 	}
@@ -122,7 +127,8 @@ class CodesignSpecification extends  Specification {
 		given:
 		applicationDummy.create()
 		when:
-		codesign.useEntitlements(new File(tmpDirectory, "MyCustomEntitlements.plist"))
+		parameters.entitlementsFile = new File(tmpDirectory, "MyCustomEntitlements.plist")
+		codesign.sign(new File("dummy"))
 		then:
 		thrown(IllegalArgumentException)
 	}

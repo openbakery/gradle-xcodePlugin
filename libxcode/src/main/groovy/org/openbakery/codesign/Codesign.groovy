@@ -15,31 +15,20 @@ import org.slf4j.LoggerFactory
 /**
  * Created by rene on 28.10.16.
  */
-public class Codesign {
+class Codesign {
 	private static Logger logger = LoggerFactory.getLogger(Codesign.class)
 
 	CodesignParameters codesignParameters
-	/*
-	 	user this entitlements file for codesigning, nothing is extracted from the mobile provisioning profile
-	 */
-	File entitlementsFile
 	private CommandRunner commandRunner
 	PlistHelper plistHelper
 	Xcode xcode
 
 
-	public Codesign(Xcode xcode, CodesignParameters codesignParameters, CommandRunner commandRunner, PlistHelper plistHelper) {
+	Codesign(Xcode xcode, CodesignParameters codesignParameters, CommandRunner commandRunner, PlistHelper plistHelper) {
 		this.xcode = xcode
 		this.commandRunner = commandRunner
 		this.plistHelper = plistHelper
 		this.codesignParameters = codesignParameters
-	}
-
-	void useEntitlements(File entitlementsFile) {
-		if (entitlementsFile == null || !entitlementsFile.exists()) {
-			throw new IllegalArgumentException("given entitlements file does not exist: " + entitlementsFile)
-		}
-		this.entitlementsFile = entitlementsFile
 	}
 
 
@@ -50,9 +39,13 @@ public class Codesign {
 
 		logger.debug("Codesign {}", bundle)
 
-		File entitlements = this.entitlementsFile
+		File entitlements = codesignParameters.entitlementsFile
 
-		if (entitlements == null) {
+		if (entitlements != null) {
+			if (!entitlements.exists()) {
+				throw new IllegalArgumentException("given entitlements file does not exist: " + entitlements)
+			}
+		} else  {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
 			Configuration configuration
 			File xcentFile = getXcentFile(bundle)
@@ -65,59 +58,57 @@ public class Codesign {
 			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
 		}
 
-
 		performCodesign(bundle, entitlements)
-
 	}
 
 	private void codeSignFrameworks(File bundle) {
 
-			File frameworksDirectory
-			if (codesignParameters.type == Type.iOS) {
-				frameworksDirectory = new File(bundle, "Frameworks")
-			} else {
-				frameworksDirectory = new File(bundle, "Contents/Frameworks")
-			}
+		File frameworksDirectory
+		if (codesignParameters.type == Type.iOS) {
+			frameworksDirectory = new File(bundle, "Frameworks")
+		} else {
+			frameworksDirectory = new File(bundle, "Contents/Frameworks")
+		}
 
-			if (frameworksDirectory.exists()) {
+		if (frameworksDirectory.exists()) {
 
-				FilenameFilter filter = new FilenameFilter() {
-					public boolean accept(File dir, String name) {
-						return name.toLowerCase().endsWith(".dylib") || name.toLowerCase().endsWith(".framework")
-					}
-				};
-
-				for (File file in frameworksDirectory.listFiles(filter)) {
-
-					performCodesign(file, null)
-
+			FilenameFilter filter = new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.toLowerCase().endsWith(".dylib") || name.toLowerCase().endsWith(".framework")
 				}
+			};
+
+			for (File file in frameworksDirectory.listFiles(filter)) {
+
+				performCodesign(file, null)
+
 			}
 		}
+	}
 
-		private void performCodesign(File bundle, File entitlements) {
-			logger.info("performCodesign {}", bundle)
+	private void performCodesign(File bundle, File entitlements) {
+		logger.info("performCodesign {}", bundle)
 
-			def codesignCommand = []
-			codesignCommand << "/usr/bin/codesign"
-			codesignCommand << "--force"
+		def codesignCommand = []
+		codesignCommand << "/usr/bin/codesign"
+		codesignCommand << "--force"
 
-			if (entitlements != null) {
-				codesignCommand << "--entitlements"
-				codesignCommand << entitlements.absolutePath
-			}
-
-			codesignCommand << "--sign"
-			codesignCommand << codesignParameters.signingIdentity
-			codesignCommand << "--verbose"
-			codesignCommand << bundle.absolutePath
-			codesignCommand << "--keychain"
-			codesignCommand << codesignParameters.keychain.absolutePath
-
-			def environment = ["DEVELOPER_DIR":xcode.getPath() + "/Contents/Developer/"]
-			commandRunner.run(codesignCommand, environment)
-
+		if (entitlements != null) {
+			codesignCommand << "--entitlements"
+			codesignCommand << entitlements.absolutePath
 		}
+
+		codesignCommand << "--sign"
+		codesignCommand << codesignParameters.signingIdentity
+		codesignCommand << "--verbose"
+		codesignCommand << bundle.absolutePath
+		codesignCommand << "--keychain"
+		codesignCommand << codesignParameters.keychain.absolutePath
+
+		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
+		commandRunner.run(codesignCommand, environment)
+
+	}
 
 
 	private String getIdentifierForBundle(File bundle) {
@@ -139,11 +130,6 @@ public class Codesign {
 		if (bundleIdentifier == null) {
 			logger.debug("not bundleIdentifier specified")
 			return null
-		}
-
-		if (entitlementsFile != null) {
-			logger.debug("createEntitlementsFile no entitlementsFile specified")
-			return entitlementsFile
 		}
 
 		logger.debug("createEntitlementsFile for identifier {}", bundleIdentifier)

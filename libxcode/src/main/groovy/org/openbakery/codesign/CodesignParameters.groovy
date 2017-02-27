@@ -11,9 +11,11 @@ class CodesignParameters {
 	String signingIdentity
 	List<File> mobileProvisionFiles
 	File keychain
-
 	Security security
 	Type type
+	/*
+	 	user this entitlements file for codesigning, nothing is extracted from the mobile provisioning profile
+	 */
 	File entitlementsFile
 	Map<String, Object> entitlements
 
