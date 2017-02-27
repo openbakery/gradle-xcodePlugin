@@ -193,7 +193,7 @@ class Codesign {
 		List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
 
 		keychainAccessGroups.each { item ->
-			if (item.startsWith(applicationIdentifier)) {
+			if (StringUtils.isNotEmpty(applicationIdentifier) && item.startsWith(applicationIdentifier)) {
 				result << item.replace(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
 			} else {
 				result << item

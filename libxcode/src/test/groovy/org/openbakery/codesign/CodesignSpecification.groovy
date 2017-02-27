@@ -84,6 +84,25 @@ class CodesignSpecification extends  Specification {
 		keychainAccessGroup[2] == "BBBBBBBBBB.org.openbakery.Foobar"
 	}
 
+	def "create keychain access groups, has not application identifiert"() {
+		given:
+		applicationDummy.create()
+		def entitlements = [
+						'com.apple.security.application-groups': ['group.com.example.MyApp'],
+						'keychain-access-groups'               : [
+										'$(AppIdentifierPrefix)com.example.MyApp'
+						]
+
+		]
+
+		when:
+		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromMap(entitlements))
+
+		then:
+		keychainAccessGroup.size() == 1
+		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)com.example.MyApp"
+	}
+
 
 	def "create entitlements with keychain access groups"() {
 		given:
