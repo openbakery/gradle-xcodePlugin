@@ -111,4 +111,18 @@ class SigningSpecification extends Specification {
 		signing.codesignParameters.keychain == new File("my.keychain").absoluteFile
 	}
 
+
+	def "codesignParameters has entitlements"() {
+		when:
+		signing.entitlements = ['key': 'value']
+		then:
+		signing.codesignParameters.entitlements == ['key' : 'value']
+	}
+
+	def "codesignParameters has entitlementsFile"() {
+		when:
+		signing.entitlementsFile = new File("entitlements") 
+		then:
+		signing.codesignParameters.entitlementsFile == new File("entitlements")
+	}
 }

@@ -157,6 +157,10 @@ class Signing {
 		result.signingIdentity = getIdentity()
 		result.mobileProvisionFiles = getMobileProvisionFile().clone()
 		result.keychain = getKeychain()
+		if (entitlements != null) {
+			result.entitlements = entitlements.clone()
+		}
+		result.entitlementsFile = entitlementsFile
 		return result
 	}
 
