@@ -42,6 +42,7 @@ class CodesignSpecification extends  Specification {
 		parameters.signingIdentity = ""
 		parameters.keychain = keychainPath
 		parameters.mobileProvisionFiles = applicationDummy.mobileProvisionFile
+		parameters.type = Type.iOS
 
 		codesign = new Codesign(
 						new XcodeFake(),
@@ -68,7 +69,7 @@ class CodesignSpecification extends  Specification {
 
 
 
-	def "getKeychainAccessGroupFromEntitlements"() {
+	def "create keychain access groupds from xcent file"() {
 		given:
 		applicationDummy.create()
 
@@ -154,11 +155,15 @@ class CodesignSpecification extends  Specification {
 	}
 
 	def "create entitlements and merge with settings from signing"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
 		given:
-		applicationDummy.create()
+		File bundle = applicationDummy.create()
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
-		def map = [
+		parameters.entitlements = [
 						"com.apple.developer.associated-domains"     : ["webcredentials:example.com"],
 						"com.apple.developer.default-data-protection": "NSFileProtectionComplete",
 						"com.apple.security.application-groups"      : [],
@@ -166,13 +171,25 @@ class CodesignSpecification extends  Specification {
 		]
 
 		when:
-		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromMap(map))
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		codesign.sign(bundle)
 
 		then:
+
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+				if (commandList.size() > 3) {
+					entitlementsFile = new File(commandList[3])
+					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+				}
+		}
+		commandList.contains("/usr/bin/codesign")
+		commandList[2] == "--entitlements"
 		entitlementsFile.exists()
 		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
+		entitlements.getBoolean("com..apple..developer..siri") == true
 	}
+
 
 
 }

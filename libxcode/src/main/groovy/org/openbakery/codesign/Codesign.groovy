@@ -45,17 +45,28 @@ class Codesign {
 			if (!entitlements.exists()) {
 				throw new IllegalArgumentException("given entitlements file does not exist: " + entitlements)
 			}
+			logger.info("Using given entitlements {}", entitlements)
 		} else  {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
 			Configuration configuration
-			File xcentFile = getXcentFile(bundle)
-			if (xcentFile != null) {
-				configuration = new ConfigurationFromPlist(xcentFile)
+
+			if (codesignParameters.entitlements != null) {
+				logger.info("Merging entitlements from the codesign parameters")
+				configuration = new ConfigurationFromMap(codesignParameters.entitlements)
 			} else {
+				File xcentFile = getXcentFile(bundle)
+				if (xcentFile != null) {
+					logger.debug("Merging entitlements from the xcent file found in the archive")
+					configuration = new ConfigurationFromPlist(xcentFile)
+				}
+			}
+			if (configuration == null) {
+				logger.debug("No entitlements configuration found for mergeing, so use only the plain entitlements extracted from the provisioning profile")
 				configuration = new ConfigurationFromMap([:])
 			}
 			String bundleIdentifier = getIdentifierForBundle(bundle)
 			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
+			logger.info("Using entitlements extracted from the provisioning profile")
 		}
 
 		performCodesign(bundle, entitlements)
@@ -153,9 +164,6 @@ class Codesign {
 		File extractedEntitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
 		reader.extractEntitlements(extractedEntitlementsFile, bundleIdentifier, keychainAccessGroup, configuration)
 		extractedEntitlementsFile.deleteOnExit()
-
-		logger.info("Using entitlementsFile {}", extractedEntitlementsFile)
-
 		return extractedEntitlementsFile
 	}
 
@@ -168,6 +176,7 @@ class Codesign {
 		}
 		File result = new File(bundle, fileList.toList().get(0))
 		if (result.exists()) {
+			logger.debug("Found xcent file in the archive: {}", result)
 			return result
 		}
 		return null

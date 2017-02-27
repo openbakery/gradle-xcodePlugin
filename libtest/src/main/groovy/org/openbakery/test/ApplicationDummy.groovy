@@ -32,7 +32,7 @@ class ApplicationDummy {
 	}
 
 
-	void create(boolean adHoc = true) {
+	File create(boolean adHoc = true) {
 		// create dummy app
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
@@ -58,6 +58,7 @@ class ApplicationDummy {
 		} else {
 			mobileProvisionFile.add(new File("../libtest/src/main/Resource/Appstore.mobileprovision"))
 		}
+		return appDirectory
 	}
 
 
