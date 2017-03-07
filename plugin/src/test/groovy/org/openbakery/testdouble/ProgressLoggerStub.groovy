@@ -3,9 +3,6 @@ package org.openbakery.testdouble
 import org.gradle.internal.logging.progress.ProgressLogger
 
 
-/**
- * Created by rene on 30.06.15.
- */
 class ProgressLoggerStub implements ProgressLogger {
 
 	def progress = []

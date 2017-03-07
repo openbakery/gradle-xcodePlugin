@@ -8,9 +8,6 @@ import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
-/**
- * Created by Stefan Gugarel on 04/02/15.
- */
 class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	Project project

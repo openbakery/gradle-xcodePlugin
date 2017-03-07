@@ -2,9 +2,6 @@ package org.openbakery.configuration
 
 import spock.lang.Specification
 
-/**
- * Created by rene on 24.02.17.
- */
 class ConfigurationFromMapSpecification extends Specification {
 
 

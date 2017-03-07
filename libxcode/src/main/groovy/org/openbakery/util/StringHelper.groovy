@@ -1,8 +1,5 @@
 package org.openbakery.util
 
-/**
- * Created by rene on 14.09.16.
- */
 class StringHelper {
 
 	static String removeBrackets(String text) {

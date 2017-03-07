@@ -3,9 +3,6 @@ package org.openbakery.xcode
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
 
-/**
- * Created by rene on 27.06.16.
- */
 class Xcodebuild {
 
 	CommandRunner commandRunner

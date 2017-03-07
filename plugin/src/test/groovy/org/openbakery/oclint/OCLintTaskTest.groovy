@@ -15,9 +15,6 @@ import org.junit.Test
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*
 
-/**
- * Created by rene on 22.07.15.
- */
 class OCLintTaskTest {
 
 

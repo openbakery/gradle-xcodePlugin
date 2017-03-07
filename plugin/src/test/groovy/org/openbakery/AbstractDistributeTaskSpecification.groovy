@@ -5,9 +5,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-/**
- * Created by rene on 09.10.15.
- */
 class AbstractDistributeTaskSpecification extends Specification {
 
 	Project project

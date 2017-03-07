@@ -2,9 +2,6 @@ package org.openbakery.configuration
 
 import spock.lang.Specification
 
-/**
- * Created by rene on 23.02.17.
- */
 class ConfigurationFromPlistSpecification extends Specification {
 
 

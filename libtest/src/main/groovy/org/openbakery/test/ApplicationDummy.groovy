@@ -1,14 +1,10 @@
 package org.openbakery.test
 
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.util.PlistHelper
 
-/**
- * Created by rene on 08.11.16.
- */
 class ApplicationDummy {
 
 

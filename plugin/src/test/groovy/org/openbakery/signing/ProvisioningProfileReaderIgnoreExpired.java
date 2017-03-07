@@ -6,9 +6,6 @@ import org.openbakery.util.PlistHelper;
 
 import java.io.File;
 
-/**
- * Created by rene on 04.02.16.
- */
 public class ProvisioningProfileReaderIgnoreExpired extends ProvisioningProfileReader {
 
 	public ProvisioningProfileReaderIgnoreExpired(File provisioningProfile, CommandRunner commandRunner, PlistHelper plistHelper) {

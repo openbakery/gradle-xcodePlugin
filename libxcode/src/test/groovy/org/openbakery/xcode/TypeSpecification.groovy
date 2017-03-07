@@ -2,9 +2,6 @@ package org.openbakery.xcode
 
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.02.17.
- */
 class TypeSpecification extends Specification {
 
 

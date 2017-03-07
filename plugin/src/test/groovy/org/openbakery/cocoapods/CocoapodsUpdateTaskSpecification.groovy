@@ -8,9 +8,6 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
-/**
- * Created by rene on 04.02.16.
- */
 class CocoapodsUpdateTaskSpecification extends Specification {
 
 	Project project
