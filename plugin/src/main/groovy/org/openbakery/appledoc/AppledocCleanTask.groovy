@@ -3,9 +3,6 @@ package org.openbakery.appledoc
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created by rene on 21.07.14.
- */
 class AppledocCleanTask extends DefaultTask {
 
 	AppledocCleanTask() {

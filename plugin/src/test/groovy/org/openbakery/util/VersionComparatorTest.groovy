@@ -2,9 +2,6 @@ package org.openbakery.util
 
 import spock.lang.Specification
 
-/**
- * Created by rene on 29.10.15.
- */
 class VersionComparatorTest extends Specification {
 
 

@@ -1,16 +1,10 @@
 package org.openbakery.signing
 
-import groovy.mock.interceptor.MockFor
-import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.CommandRunner
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Created by rene on 17.04.15.
- */
 class SigningTest {
 
 	Signing signing

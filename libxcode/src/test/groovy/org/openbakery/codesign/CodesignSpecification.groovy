@@ -8,9 +8,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodeFake
 import spock.lang.Specification
 
-/**
- * Created by rene on 08.11.16.
- */
 class CodesignSpecification extends  Specification {
 
 	Codesign codesign

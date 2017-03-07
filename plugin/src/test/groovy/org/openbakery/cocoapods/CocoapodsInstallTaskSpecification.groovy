@@ -9,9 +9,6 @@ import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
 
-/**
- * Created by rene on 11.11.14.
- */
 class CocoapodsInstallTaskSpecification extends Specification {
 
 

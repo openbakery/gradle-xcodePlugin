@@ -1,6 +1,5 @@
 package org.openbakery.carthage
 
-import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
@@ -8,9 +7,6 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.output.ConsoleOutputAppender
 import spock.lang.Specification
 
-/**
- * Created by rene on 18.08.16.
- */
 class CarthageUpdateTaskSpecification extends Specification {
 
 

@@ -1,8 +1,5 @@
 package org.openbakery.cocoapods
 
-/**
- * Created by rene on 27.09.16.
- */
 class CocoapodsBootstrapTask extends AbstractCocoapodsTask{
 
 	public CocoapodsBootstrapTask() {

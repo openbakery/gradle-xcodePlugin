@@ -1,8 +1,5 @@
 package org.openbakery.test
 
-/**
- * Created by rene on 27.10.16.
- */
 class TestClass {
 	String name
 	List results = []

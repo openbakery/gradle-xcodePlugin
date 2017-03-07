@@ -9,9 +9,6 @@ import org.openbakery.xcode.Destination;
 import org.openbakery.xcode.Type;
 import org.openbakery.XcodePlugin;
 
-/**
- * Created by rene on 13.08.14.
- */
 public class SimulatorsListTask extends AbstractSimulatorTask {
 
 	int compareTo(String first, String second) {

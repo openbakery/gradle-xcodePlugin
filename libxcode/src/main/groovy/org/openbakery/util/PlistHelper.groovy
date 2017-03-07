@@ -6,9 +6,6 @@ import org.openbakery.CommandRunnerException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by Stefan Gugarel on 02/03/15.
- */
 class PlistHelper {
 
 	private static Logger logger = LoggerFactory.getLogger(PlistHelper.class)

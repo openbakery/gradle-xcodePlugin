@@ -3,9 +3,7 @@ package org.openbakery.xcode
 import org.openbakery.simulators.SimulatorControl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-/**
- * Created by rene on 10.08.16.
- */
+
 class DestinationResolver {
 
 	private static Logger logger = LoggerFactory.getLogger(DestinationResolver.class)

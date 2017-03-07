@@ -8,9 +8,6 @@ import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
-/**
- * Created by rene on 07.09.15.
- */
 class SimulatorControlSpecification extends Specification {
 
 	File projectDir

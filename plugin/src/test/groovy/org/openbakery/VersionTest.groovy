@@ -3,9 +3,6 @@ package org.openbakery
 import org.openbakery.xcode.Version
 import spock.lang.Specification
 
-/**
- * Created by rene on 29.10.15.
- */
 class VersionTest extends Specification {
 
 

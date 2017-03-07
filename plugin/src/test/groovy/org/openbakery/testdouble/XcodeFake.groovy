@@ -1,13 +1,8 @@
 package org.openbakery.testdouble
 
-import org.apache.commons.io.FileUtils
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
-import org.openbakery.xcode.XcodebuildParameters
 
-/**
- * Created by rene on 27.06.16.
- */
 class XcodeFake extends Xcode {
 
 	private String path = "/Applications/Xcode.app"

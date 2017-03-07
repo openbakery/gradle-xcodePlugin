@@ -8,9 +8,6 @@ import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.XcodeBuildArchiveTask
 import spock.lang.Specification
 
-/**
- * Created by rene on 12.11.14.
- */
 class HockeyKitManifestTaskSpecification extends Specification {
 
 

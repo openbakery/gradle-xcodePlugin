@@ -7,9 +7,6 @@ import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.PlistHelperStub
 import spock.lang.Specification
 
-/**
- * Created by rene on 01.09.15.
- */
 class SimulatorsRunAppTaskSpecification extends Specification {
 
 	SimulatorRunAppTask task

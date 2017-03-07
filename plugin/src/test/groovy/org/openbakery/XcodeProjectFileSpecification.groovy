@@ -9,9 +9,6 @@ import org.junit.Before
 import org.junit.Test
 import spock.lang.Specification
 
-/**
- * Created by rene on 17.02.15.
- */
 class XcodeProjectFileSpecification extends Specification {
 
 

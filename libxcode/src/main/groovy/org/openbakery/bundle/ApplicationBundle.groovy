@@ -2,9 +2,6 @@ package org.openbakery.bundle
 
 import org.openbakery.xcode.Type
 
-/**
- * Created by rene on 28.10.16.
- */
 public class ApplicationBundle {
 
 	File applicationPath

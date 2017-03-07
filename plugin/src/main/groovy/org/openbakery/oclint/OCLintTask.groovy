@@ -4,9 +4,6 @@ import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 
-/**
- * Created by rene on 22.07.15.
- */
 class OCLintTask extends AbstractXcodeTask {
 
 	File outputDirectory

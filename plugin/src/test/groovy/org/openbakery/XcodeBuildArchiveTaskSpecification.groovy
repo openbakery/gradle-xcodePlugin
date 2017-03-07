@@ -19,9 +19,6 @@ import spock.lang.Specification
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-/**
- * Created by rene on 01.12.14.
- */
 class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Project project
@@ -371,7 +368,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		given:
 		XcodeFake xcode = createXcode("7")
 		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift.xctoolchain\n"
-		Xcodebuild xcodebuild =  new Xcodebuild(new File("."),, commandRunner, xcode, new XcodebuildParameters(), [])
+		Xcodebuild xcodebuild =  new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 		mockSwiftLibs(xcodebuild)
 

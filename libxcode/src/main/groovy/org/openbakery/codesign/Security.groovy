@@ -5,9 +5,6 @@ import org.openbakery.CommandRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 21.12.16.
- */
 class Security {
 	private static Logger logger = LoggerFactory.getLogger(Security.class)
 
