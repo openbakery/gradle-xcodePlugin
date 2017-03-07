@@ -6,9 +6,6 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
 
-/**
- * Created by rene on 21.07.14.
- */
 class AppledocTask extends AbstractXcodeTask {
 
 	AppledocTask() {

@@ -8,9 +8,6 @@ import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 30.04.15.
- */
 class SimulatorControl {
 
 

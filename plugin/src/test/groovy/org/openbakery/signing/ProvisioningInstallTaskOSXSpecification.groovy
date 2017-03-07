@@ -9,9 +9,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
-/**
- * Created by Stefan Gugarel on 26/02/15.
- */
 class ProvisioningInstallTaskOSXSpecification extends Specification {
 
 	Project project

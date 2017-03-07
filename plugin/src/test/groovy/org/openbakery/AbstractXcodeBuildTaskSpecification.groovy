@@ -6,9 +6,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.codesign.Security
 import spock.lang.Specification
 
-/**
- * Created by rene on 21.12.16.
- */
 class AbstractXcodeBuildTaskSpecification extends Specification {
 
 

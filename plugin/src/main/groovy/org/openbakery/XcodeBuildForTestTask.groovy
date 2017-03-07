@@ -4,9 +4,6 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Xcodebuild
 
-/**
- * Created by rene on 25.10.16.
- */
 class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 
 	File outputDirectory

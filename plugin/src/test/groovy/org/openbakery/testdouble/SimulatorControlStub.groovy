@@ -3,9 +3,6 @@ package org.openbakery.testdouble
 import org.apache.commons.io.FileUtils
 import org.openbakery.simulators.SimulatorControl
 
-/**
- * Created by rene on 05.11.15.
- */
 class SimulatorControlStub extends SimulatorControl {
 
 	File simctlListOutput

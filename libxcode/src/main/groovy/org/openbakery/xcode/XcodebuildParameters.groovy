@@ -3,9 +3,6 @@ package org.openbakery.xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 04.08.16.
- */
 class XcodebuildParameters {
 
 	private static Logger logger = LoggerFactory.getLogger(XcodebuildParameters.class)

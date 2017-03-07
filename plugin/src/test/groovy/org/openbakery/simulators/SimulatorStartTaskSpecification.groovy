@@ -9,9 +9,6 @@ import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.xcode.DestinationResolver
 import spock.lang.Specification
 
-/**
- * Created by rene on 29.10.15.
- */
 class SimulatorStartTaskSpecification extends Specification {
 
 	Project project

@@ -6,9 +6,6 @@ import org.openbakery.xcode.Destination
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 27.10.16.
- */
 public class TestResultParser {
 
 	private static Logger logger = LoggerFactory.getLogger(TestResultParser.class)

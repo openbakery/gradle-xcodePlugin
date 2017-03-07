@@ -9,9 +9,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
-/**
- * Created by Stefan Gugarel on 04/02/15.
- */
 class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	Project project

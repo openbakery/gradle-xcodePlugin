@@ -16,9 +16,6 @@ import static org.hamcrest.Matchers.equalTo
 import static org.hamcrest.Matchers.is
 
 
-/**
- * Created by Stefan Gugarel on 05/02/15.
- */
 class ProvisioningProfileReaderSpecification extends Specification {
 
 	Project project

@@ -3,9 +3,6 @@ package org.openbakery
 import org.apache.commons.collections.buffer.CircularFifoBuffer
 import spock.lang.Specification
 
-/**
- * Created by rene on 24.07.14.
- */
 class CommandRunnerSpecification extends Specification {
 
 	CommandRunner commandRunner;

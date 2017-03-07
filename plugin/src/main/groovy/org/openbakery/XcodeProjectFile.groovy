@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory
  * This class parses the xcodeproject file and sets the proper values to project.xcodebuild
  *
  * Note: I have created this class to do a more complete parsing in the future
- *
- * Created by rene on 16.02.15.
  */
 class XcodeProjectFile {
 

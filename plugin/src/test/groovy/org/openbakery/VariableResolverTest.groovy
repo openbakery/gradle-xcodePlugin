@@ -6,9 +6,6 @@ import org.junit.Before
 import org.junit.Test
 import org.openbakery.util.VariableResolver
 
-/**
- * Created by rene on 16.02.15.
- */
 class VariableResolverTest {
 
 	VariableResolver resolver;

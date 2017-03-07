@@ -6,9 +6,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
-/**
- * Created by rene on 10.03.15.
- */
+
 class XcodeConfigTaskOSXSpecification extends Specification {
 
 	XcodeConfigTask xcodeConfigTask

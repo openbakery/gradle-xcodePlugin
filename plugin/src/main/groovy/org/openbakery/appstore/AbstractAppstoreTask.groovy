@@ -5,11 +5,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.output.ConsoleOutputAppender
 
-/**
- * Created by rene on 08.01.15.
- */
 class AbstractAppstoreTask extends AbstractDistributeTask {
-
 
 	public AbstractDistributeTask() {
 	}

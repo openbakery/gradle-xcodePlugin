@@ -8,9 +8,6 @@ import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 
-/**
- * Created by rene on 08.01.15.
- */
 class AppstoreUploadTaskSpecification extends Specification {
 
 	Project project
