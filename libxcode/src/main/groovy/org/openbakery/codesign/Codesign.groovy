@@ -12,9 +12,6 @@ import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 28.10.16.
- */
 class Codesign {
 	private static Logger logger = LoggerFactory.getLogger(Codesign.class)
 

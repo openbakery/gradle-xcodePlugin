@@ -3,9 +3,6 @@ package org.openbakery.codesign
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Type
 
-/**
- * Created by rene on 24.02.17.
- */
 class CodesignParameters {
 
 	String signingIdentity

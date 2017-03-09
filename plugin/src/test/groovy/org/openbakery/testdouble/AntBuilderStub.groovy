@@ -4,9 +4,6 @@ import org.gradle.api.AntBuilder
 import org.gradle.api.AntBuilder.AntMessagePriority
 import org.gradle.api.Transformer
 
-/**
- * Created by rene on 22.07.15.
- */
 class AntBuilderStub extends AntBuilder {
 
 	def get = []

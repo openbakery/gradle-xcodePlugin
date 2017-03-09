@@ -4,9 +4,6 @@ import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import spock.lang.Specification
 
-/**
- * Created by rene on 21.12.16.
- */
 class SecuritySpecification extends Specification {
 
 

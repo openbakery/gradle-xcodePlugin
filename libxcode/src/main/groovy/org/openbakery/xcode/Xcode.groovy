@@ -4,9 +4,6 @@ import org.openbakery.CommandRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 27.06.16.
- */
 class Xcode {
 	private static Logger logger = LoggerFactory.getLogger(Xcode.class)
 

@@ -11,9 +11,6 @@ import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
-/**
- * Created by rene on 09.10.15.
- */
 class PackageTask_WatchAppSpecification extends Specification {
 
 

@@ -2,9 +2,6 @@ package org.openbakery.util
 
 import org.openbakery.xcode.Version
 
-/**
- * Created by rene on 29.10.15.
- */
 class VersionComparator implements Comparator<String>{
 
 

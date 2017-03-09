@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory
  * Note: I have created this class to do a more complete parsing in the future:
  * Additional Note: The BuildTargetConfiguration and BuildConfiguration classes are now here to have more infos from the project file
  *
- * This file should be move to the libxcode subproject, and the dependency to project.xcodebuild should be removed
- *
- * Created by rene on 16.02.15.
+ * This file should be moved to the libxcode subproject, and the dependency to project.xcodebuild should be removed
  */
 class XcodeProjectFile {
 

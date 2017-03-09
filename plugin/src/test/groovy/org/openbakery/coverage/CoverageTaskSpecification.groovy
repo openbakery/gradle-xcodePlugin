@@ -8,9 +8,6 @@ import org.openbakery.XcodeProjectFile
 import org.openbakery.testdouble.AntBuilderStub
 import spock.lang.Specification
 
-/**
- * Created by rene on 30.01.15.
- */
 class CoverageTaskSpecification extends Specification {
 
 

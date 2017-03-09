@@ -3,9 +3,6 @@ package org.openbakery.codesign
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
-/**
- * Created by rene on 24.02.17.
- */
 class CodesignParametersSpecification extends Specification {
 
 

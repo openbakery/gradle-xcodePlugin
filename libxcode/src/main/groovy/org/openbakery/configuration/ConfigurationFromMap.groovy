@@ -1,8 +1,5 @@
 package org.openbakery.configuration
 
-/**
- * Created by rene on 24.02.17.
- */
 class ConfigurationFromMap implements Configuration {
 
 	Map<String, Object> configurationMap = null

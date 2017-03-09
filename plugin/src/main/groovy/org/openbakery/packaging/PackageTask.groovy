@@ -14,11 +14,7 @@ import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 
-/**
- * Created by rene on 14.11.14.
- */
 class PackageTask extends AbstractDistributeTask {
-
 
 	public static final String PACKAGE_PATH = "package"
 	File outputPath

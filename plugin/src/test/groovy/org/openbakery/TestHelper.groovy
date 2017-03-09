@@ -3,9 +3,6 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.openbakery.util.PlistHelper
 
-/**
- * Created by rene on 25.10.16.
- */
 class TestHelper {
 
 

@@ -6,9 +6,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.09.16.
- */
 class CocoapodsBootstrapTaskSpecification extends Specification {
 
 

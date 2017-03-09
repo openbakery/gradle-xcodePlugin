@@ -2,9 +2,6 @@ package org.openbakery.testdouble
 
 import org.openbakery.util.PlistHelper
 
-/**
- * Created by rene on 01.09.15.
- */
 class PlistHelperStub extends PlistHelper {
 
 

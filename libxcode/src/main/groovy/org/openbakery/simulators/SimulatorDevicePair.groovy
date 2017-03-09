@@ -1,8 +1,5 @@
 package org.openbakery.simulators
 
-/**
- * Created by rene on 16.10.15.
- */
 class SimulatorDevicePair {
 
 	public String identifier

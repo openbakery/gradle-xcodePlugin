@@ -7,9 +7,6 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
-/**
- * Created by rene on 05.11.15.
- */
 class SimulatorKillTaskSpecification extends Specification {
 
 	SimulatorKillTask task

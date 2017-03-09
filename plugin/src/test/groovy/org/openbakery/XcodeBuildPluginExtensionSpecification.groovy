@@ -9,9 +9,6 @@ import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
-/**
- * Created by rene on 07.10.15.
- */
 class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	Project project

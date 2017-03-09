@@ -2,9 +2,6 @@ package org.openbakery.coverage
 
 import org.gradle.api.Project
 
-/**
- * Created by rene on 22.07.14.
- */
 class CoveragePluginExtension {
 
 	def Object outputDirectory

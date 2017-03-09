@@ -27,9 +27,6 @@ import spock.lang.Specification
 
 import static org.hamcrest.Matchers.hasItem
 
-/**
- * Created by rene on 19.02.16.
- */
 class XcodePluginSpecification extends Specification {
 
 	Project project

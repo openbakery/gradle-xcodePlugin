@@ -6,9 +6,6 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.output.OutputAppender
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.06.16.
- */
 class XcodebuildSpecification extends Specification {
 
 	//Project project

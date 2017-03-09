@@ -4,11 +4,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
-import org.openbakery.XcodePlugin
 
-/**
- * Created by rene on 22.07.14.
- */
 class CoverageTask extends AbstractXcodeTask {
 
 	Report report = new Report()
@@ -27,7 +23,6 @@ class CoverageTask extends AbstractXcodeTask {
 
 	@TaskAction
 	def coverage() {
-
 
 		if (!project.coverage.outputDirectory.exists()) {
 			project.coverage.outputDirectory.mkdirs();

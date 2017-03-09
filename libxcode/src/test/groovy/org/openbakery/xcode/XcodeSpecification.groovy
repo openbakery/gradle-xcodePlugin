@@ -6,9 +6,6 @@ import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.06.16.
- */
 class XcodeSpecification extends Specification {
 
 	Xcode xcode

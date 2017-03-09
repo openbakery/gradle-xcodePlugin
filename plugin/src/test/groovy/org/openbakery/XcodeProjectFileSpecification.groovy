@@ -10,9 +10,6 @@ import org.junit.Test
 import org.openbakery.xcode.Devices
 import spock.lang.Specification
 
-/**
- * Created by rene on 17.02.15.
- */
 class XcodeProjectFileSpecification extends Specification {
 
 

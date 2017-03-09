@@ -2,9 +2,6 @@ package org.openbakery.xcode
 
 import spock.lang.Specification
 
-/**
- * Created by rene on 09.08.16.
- */
 class XcodebuildParametersSpecification extends Specification {
 
 

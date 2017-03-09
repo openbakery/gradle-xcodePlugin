@@ -15,9 +15,6 @@ import spock.lang.Specification
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-/**
- * Created by rene on 23.10.15.
- */
 class PackageTask_OSXSpecification  extends Specification {
 
 	Project project

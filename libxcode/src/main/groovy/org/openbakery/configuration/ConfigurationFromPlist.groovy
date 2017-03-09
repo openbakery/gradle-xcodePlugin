@@ -2,9 +2,6 @@ package org.openbakery.configuration
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 
-/**
- * Created by rene on 23.02.17.
- */
 class ConfigurationFromPlist implements Configuration {
 
 	XMLPropertyListConfiguration configuration

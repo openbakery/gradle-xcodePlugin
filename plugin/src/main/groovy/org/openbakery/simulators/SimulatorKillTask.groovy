@@ -4,9 +4,6 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 
-/**
- * Created by rene on 05.11.15.
- */
 class SimulatorKillTask extends AbstractSimulatorTask {
 
 	public SimulatorKillTask() {

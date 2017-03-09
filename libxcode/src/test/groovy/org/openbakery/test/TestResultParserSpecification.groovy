@@ -8,9 +8,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.10.16.
- */
 class TestResultParserSpecification extends Specification {
 
 	TestResultParser testResultParser;
