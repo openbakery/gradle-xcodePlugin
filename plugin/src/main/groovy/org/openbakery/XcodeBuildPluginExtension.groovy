@@ -451,7 +451,7 @@ class XcodeBuildPluginExtension {
 		if (projectFile instanceof File) {
 			this.projectFile = projectFile
 		}
-		this.projectFile = new File(projectFile)
+		this.projectFile = new File(project.projectDir.absolutePath, projectFile)
 	}
 
 	File getProjectFile() {
