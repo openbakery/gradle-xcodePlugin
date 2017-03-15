@@ -443,7 +443,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		File projectDir =  new File("../example/iOS")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.projectFile = "../example/iOS/Example/Example.xcodeproj"
+		extension.projectFile = "Example/Example.xcodeproj"
 
 		then:
 		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
