@@ -3,6 +3,7 @@
 
 ## Gradle
 .gradle
+userHome
 
 ## Build generated
 build/
