@@ -50,7 +50,7 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 		ArrayList<String> commandList = []
 		commandList.add podCommand
 		commandList.add parameter
-		commandRunner.run commandList, new ConsoleOutputAppender(output)
+		commandRunner.run project.projectDir.absolutePath, commandList, new ConsoleOutputAppender(output)
 	}
 
 
