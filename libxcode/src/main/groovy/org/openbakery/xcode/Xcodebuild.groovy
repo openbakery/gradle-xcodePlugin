@@ -120,6 +120,11 @@ class Xcodebuild {
 			commandList.add("-scheme");
 			commandList.add(parameters.scheme);
 
+			if (parameters.project != null) {
+				commandList.add("-project")
+				commandList.add(parameters.project)
+			}
+
 			if (parameters.workspace != null) {
 				commandList.add("-workspace")
 				commandList.add(parameters.workspace)
@@ -288,6 +293,9 @@ class Xcodebuild {
 				commandList.add(parameters.scheme)
 				commandList.add("-workspace")
 				commandList.add(parameters.workspace)
+			} else if (parameters.project != null) {
+				commandList.add("-project")
+				commandList.add(parameters.project)
 			}
 
 			return commandRunner.runWithResult(this.projectDirectory.absolutePath, commandList)
