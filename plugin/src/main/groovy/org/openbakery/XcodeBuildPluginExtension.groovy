@@ -458,14 +458,7 @@ class XcodeBuildPluginExtension {
 		if (this.projectFile != null) {
 			return this.projectFile
 		}
-
-		// Look for project files in the projectDir
-		String[] projectFiles = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))
-		if (projectFiles?.length > 0 ) {
-			return new File(project.projectDir, projectFiles.first())
-		}
-
-		return null
+		return new File(project.projectDir, project.projectDir.list(new SuffixFileFilter(".xcodeproj"))[0])
 	}
 
 	// should be remove in the future, so that every task has its own xcode object
@@ -485,7 +478,6 @@ class XcodeBuildPluginExtension {
 		result.target = this.target
 		result.simulator = this.simulator
 		result.type = this.type
-		result.project = getProjectFile()?.absolutePath
 		result.workspace = getWorkspace()
 		result.configuration = this.configuration
 		result.dstRoot = this.getDstRoot()
