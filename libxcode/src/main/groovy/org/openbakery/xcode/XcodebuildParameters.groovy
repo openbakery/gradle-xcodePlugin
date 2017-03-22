@@ -12,6 +12,7 @@ class XcodebuildParameters {
 	String target
 	Boolean simulator
 	Type type
+	String project
 	String workspace
 	String configuration
 	File dstRoot
@@ -36,6 +37,7 @@ class XcodebuildParameters {
 						", target='" + target + '\'' +
 						", simulator=" + simulator +
 						", type=" + type +
+						", project='" + project + '\'' +
 						", workspace='" + workspace + '\'' +
 						", configuration='" + configuration + '\'' +
 						", dstRoot=" + dstRoot +
