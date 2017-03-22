@@ -461,7 +461,7 @@ class XcodeBuildPluginExtension {
 
 		// Look for project files in the projectDir
 		String[] projectFiles = project.projectDir.list(new SuffixFileFilter(".xcodeproj"))
-		if (projectFiles.length > 0 ) {
+		if (projectFiles?.length > 0 ) {
 			return new File(project.projectDir, projectFiles.first())
 		}
 
