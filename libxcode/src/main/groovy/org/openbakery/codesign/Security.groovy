@@ -2,8 +2,12 @@ package org.openbakery.codesign
 
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
+import org.openbakery.util.DateHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.security.cert.CertificateException
+import java.text.ParseException
 
 class Security {
 	private static Logger logger = LoggerFactory.getLogger(Security.class)
@@ -94,12 +98,44 @@ class Security {
 			logger.debug("cannot import certificate because certificate does no exist: {}", certificate.absolutePath)
 			throw new IllegalArgumentException("Given certificate does not exist")
 		}
+
+		checkIfCertificateIsValid(certificate, certificatePassword)
+
 		if (!keychain.exists()) {
 			logger.debug("cannot import certificate because keychain does no exist: {}", keychain.absolutePath)
 			throw new IllegalArgumentException("Given keychain does not exist")
 		}
 		logger.debug("importCertificate")
 		commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", certificatePassword, "-T", "/usr/bin/codesign"])
+	}
+
+	void checkIfCertificateIsValid(File certificate, String certificatePassword) {
+		def result = commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "|", "openssl",  "x509",  "-noout",  "-enddate"])
+
+		if (result == null) {
+			throw new  CertificateException("openssl command returned no result.")
+		}
+
+		if (result.startsWith("Mac verify error: invalid password?")) {
+
+			throw new  CertificateException("Wrong password to open certificate.")
+		}
+
+		String[] parts = result.split("notAfter=")
+
+		if (parts.length > 1) {
+
+			def dateHelper = new DateHelper()
+			def certificateExpiration = dateHelper.parseOpenSSLDate(parts[1])
+
+			if (certificateExpiration.after(new Date())) {
+				return
+			}
+
+			throw new CertificateException("Given certificate has expired on: " + certificateExpiration.toString())
+		}
+
+		throw new CertificateException("Output from openssl command could not be parsed.")
 	}
 
 	String getIdentity(File keychain) {
