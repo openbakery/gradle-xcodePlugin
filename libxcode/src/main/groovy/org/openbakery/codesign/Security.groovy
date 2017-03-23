@@ -110,7 +110,12 @@ class Security {
 	}
 
 	void checkIfCertificateIsValid(File certificate, String certificatePassword) {
+
+		logger.debug("checkIfCertificateIsValid {}", certificate)
+
 		def result = commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "|", "openssl",  "x509",  "-noout",  "-enddate"])
+
+		logger.debug("checkIfCertificateIsValid enddate: {}", result)
 
 		if (result == null) {
 			throw new  CertificateException("openssl command returned no result.")
@@ -129,6 +134,9 @@ class Security {
 			def certificateExpiration = dateHelper.parseOpenSSLDate(parts[1])
 
 			if (certificateExpiration.after(new Date())) {
+
+				logger.debug("checkIfCertificateIsValid certificate is valid")
+
 				return
 			}
 
