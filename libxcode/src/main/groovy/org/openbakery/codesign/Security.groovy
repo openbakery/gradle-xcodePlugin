@@ -1,5 +1,7 @@
 package org.openbakery.codesign
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.util.DateHelper
@@ -113,7 +115,13 @@ class Security {
 
 		logger.debug("checkIfCertificateIsValid {}", certificate)
 
-		def result = commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "|", "openssl",  "x509",  "-noout",  "-enddate"])
+
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
+		def pkcs12File = new File(tmpDir, "pkcs12File_" + FilenameUtils.getBaseName(certificate.path) + ".pfx")
+		pkcs12File.deleteOnExit()
+
+		commandRunner.run(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
+		def result = commandRunner.runWithResult(["openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
 
 		logger.debug("checkIfCertificateIsValid enddate: {}", result)
 

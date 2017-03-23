@@ -1,6 +1,7 @@
 package org.openbakery.codesign
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import spock.lang.Specification
 
@@ -15,6 +16,7 @@ class SecuritySpecification extends Specification {
 	File tmpDirectory
 	File loginKeychain
 	File certificateFile
+	File pkcs12File
 
 	def setup() {
 		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild')
@@ -25,6 +27,9 @@ class SecuritySpecification extends Specification {
 		FileUtils.writeStringToFile(loginKeychain, "dummy")
 		certificateFile = new File(tmpDirectory, "my.certificate")
 		FileUtils.writeStringToFile(certificateFile, "dummy")
+
+		pkcs12File = new File(System.getProperty("java.io.tmpdir"), "pkcs12File_" + FilenameUtils.getBaseName(certificateFile.path) + ".pfx")
+
 
 	}
 
@@ -49,7 +54,8 @@ class SecuritySpecification extends Specification {
 
 
 	def mockOpensslCertificate(String result = DEFAULT_OPENSSL_OUTPUT, String password = "certificatePassword") {
-		commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "|", "openssl",  "x509",  "-noout",  "-enddate"]) >> result
+		commandRunner.run(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath])
+		commandRunner.runWithResult(["openssl",  "x509", "-in", pkcs12File.absolutePath, "-noout",  "-enddate"]) >> result
 	}
 
 	def "get keychain list"() {
@@ -390,8 +396,14 @@ class SecuritySpecification extends Specification {
 		when:
 		security.checkIfCertificateIsValid(certificateFile, "mypassword")
 
+
 		then:
-		1 * commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:mypassword", "|", "openssl",  "x509",  "-noout",  "-enddate"])
+		interaction {
+			1 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+			1 * commandRunner.runWithResult(["openssl", "x509", "-in", pkcs12File.absolutePath, "-noout", "-enddate"])
+		}
+
+
 		def exception = thrown(CertificateException)
 		exception.message == "openssl command returned no result."
 	}
@@ -448,4 +460,16 @@ class SecuritySpecification extends Specification {
 		def exception = thrown(CertificateException)
 		exception.message == "Wrong password to open certificate."
 	}
+/*
+	def "test" () {
+		given:
+		String opensslOutput = "Mac verify error: invalid password?"
+		security.commandRunner = new CommandRunner()
+
+		certificateFile = new File("/Users/stefangugarel/Projekte/ICS/Proofics/Proofmaker/build/codesign/Application_Drobnik_KG.p12")
+		expect:
+		security.checkIfCertificateIsValid(certificateFile, "magic123")
+
+	}
+	*/
 }
