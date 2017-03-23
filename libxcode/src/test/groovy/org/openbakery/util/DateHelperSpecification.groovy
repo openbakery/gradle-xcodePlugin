@@ -2,6 +2,8 @@ package org.openbakery.util
 
 import spock.lang.Specification
 
+import java.text.ParseException
+
 /**
  * Created by stefangugarel on 23/03/2017.
  */
@@ -14,16 +16,16 @@ class DateHelperSpecification extends Specification {
         dateHelper = new DateHelper()
     }
 
-    def "dateHelper parse valid date"() {
+    def "dateHelper parse invalid date"() {
         when:
-        def result = dateHelper.parseOpenSSLDate("invalid Date")
+        dateHelper.parseOpenSSLDate("invalid Date")
 
         then:
-        result == null
-
+        def exception = thrown(ParseException)
+        exception.message == "Unparseable date: \"invalid Date\""
     }
 
-    def "dateHelper parse invalid date"() {
+    def "dateHelper parse valid date"() {
         when:
         def result = dateHelper.parseOpenSSLDate("Mar 20 10:16:40 2016 GMT")
 
