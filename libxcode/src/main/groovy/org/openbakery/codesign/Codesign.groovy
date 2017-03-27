@@ -63,7 +63,9 @@ class Codesign {
 			}
 			String bundleIdentifier = getIdentifierForBundle(bundle)
 			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
-			logger.info("Using entitlements extracted from the provisioning profile")
+			if (entitlements != null) {
+				logger.info("Using entitlements extracted from the provisioning profile")
+			}
 		}
 
 		performCodesign(bundle, entitlements)
@@ -95,6 +97,14 @@ class Codesign {
 	}
 
 	private void performCodesign(File bundle, File entitlements) {
+		if (codesignParameters.signingIdentity == null) {
+			performCodesignWithoutIdentity(bundle)
+		} else {
+			performCodesignWithIdentity(bundle,entitlements)
+		}
+	}
+
+	private void performCodesignWithIdentity(File bundle, File entitlements) {
 		logger.info("performCodesign {}", bundle)
 
 		def codesignCommand = []
@@ -112,6 +122,22 @@ class Codesign {
 		codesignCommand << bundle.absolutePath
 		codesignCommand << "--keychain"
 		codesignCommand << codesignParameters.keychain.absolutePath
+
+		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
+		commandRunner.run(codesignCommand, environment)
+
+	}
+
+	private void performCodesignWithoutIdentity(File bundle) {
+		logger.info("performCodesign {}", bundle)
+
+		def codesignCommand = []
+		codesignCommand << "/usr/bin/codesign"
+		codesignCommand << "--force"
+		codesignCommand << "--sign"
+		codesignCommand << "-"
+		codesignCommand << "--verbose"
+		codesignCommand << bundle.absolutePath
 
 		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
 		commandRunner.run(codesignCommand, environment)

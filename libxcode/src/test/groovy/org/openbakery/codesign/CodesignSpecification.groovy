@@ -207,5 +207,25 @@ class CodesignSpecification extends  Specification {
 	}
 
 
+	def "codesign if identity is null"() {
+		def commandList
+		parameters = new CodesignParameters()
+		codesign.codesignParameters = parameters
+
+		given:
+		File bundle = applicationDummy.create()
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
+	}
+
+
 
 }

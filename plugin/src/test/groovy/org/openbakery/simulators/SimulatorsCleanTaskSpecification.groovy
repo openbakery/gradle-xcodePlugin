@@ -47,7 +47,5 @@ class SimulatorsCleanTaskSpecification extends Specification {
 
 		then:
 		1* simulatorControl.eraseAll()
-
-
 	}
 }
