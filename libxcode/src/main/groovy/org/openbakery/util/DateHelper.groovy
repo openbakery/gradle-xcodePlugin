@@ -7,13 +7,12 @@ import java.text.SimpleDateFormat
  */
 class DateHelper {
 
-    DateHelper() {
+	DateHelper() {
 
-    }
+	}
 
-    def parseOpenSSLDate(String date) {
-
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd HH:mm:ss yyyy z")
-        return dateFormatter.parse(date)
-    }
+	def parseOpenSSLDate(String date) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd HH:mm:ss yyyy z", Locale.ENGLISH)
+		return dateFormatter.parse(date)
+	}
 }

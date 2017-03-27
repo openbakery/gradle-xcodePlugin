@@ -4,7 +4,6 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
-import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.util.PlistHelper
@@ -226,6 +225,31 @@ class CodesignSpecification extends  Specification {
 		commandList == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
 	}
 
+
+	def "codesign if identity is null and bundle identifier is present"() {
+		def commandList
+
+		def plistHelper = Mock(PlistHelper)
+		plistHelper.getValueFromPlist(_, "CFBundleIdentifier") >> "com.example.Example"
+
+		parameters = new CodesignParameters()
+		parameters.type = Type.iOS
+
+		codesign.codesignParameters = parameters
+
+		given:
+		File bundle = applicationDummy.create()
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
+	}
 
 
 }

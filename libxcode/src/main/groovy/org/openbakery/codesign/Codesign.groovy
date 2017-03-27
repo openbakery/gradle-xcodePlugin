@@ -36,14 +36,23 @@ class Codesign {
 
 		logger.debug("Codesign {}", bundle)
 
-		File entitlements = codesignParameters.entitlementsFile
+		File entitlements = null
+		if (codesignParameters.signingIdentity != null) {
+			entitlements = prepareEntitlementsForSigning(bundle)
+		}
 
+		performCodesign(bundle, entitlements)
+	}
+
+	private File prepareEntitlementsForSigning(File bundle) {
+		File entitlements = codesignParameters.entitlementsFile
+		logger.debug("prepareEntitlementsForSigning")
 		if (entitlements != null) {
 			if (!entitlements.exists()) {
 				throw new IllegalArgumentException("given entitlements file does not exist: " + entitlements)
 			}
 			logger.info("Using given entitlements {}", entitlements)
-		} else  {
+		} else {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
 			Configuration configuration
 
@@ -67,8 +76,7 @@ class Codesign {
 				logger.info("Using entitlements extracted from the provisioning profile")
 			}
 		}
-
-		performCodesign(bundle, entitlements)
+		return entitlements
 	}
 
 	private void codeSignFrameworks(File bundle) {
