@@ -512,5 +512,32 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+	def "bitcode is default false"() {
+		expect:
+		extension.bitcode == false
+	}
+
+	def "xcodeparameter is created with simulator true value"() {
+		when:
+		File projectDir = new File("../example/macOS/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.simulator = true
+
+		then:
+		extension.getXcodebuildParameters().simulator == true
+	}
+
+	def "xcodeparameter is created with bitcode value"() {
+		when:
+		File projectDir = new File("../example/macOS/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.bitcode = true
+
+		then:
+		extension.getXcodebuildParameters().bitcode == true
+	}
+
 
 }

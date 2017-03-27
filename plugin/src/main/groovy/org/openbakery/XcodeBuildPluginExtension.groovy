@@ -95,6 +95,8 @@ class XcodeBuildPluginExtension {
 	String ipaFileName = null
 	File projectFile
 
+	Boolean bitcode = false
+
 	boolean useXcodebuildArchive = false
 
 
@@ -488,6 +490,7 @@ class XcodeBuildPluginExtension {
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
+		result.bitcode = this.bitcode
 
 		if (this.arch != null) {
 			result.arch = this.arch.clone()

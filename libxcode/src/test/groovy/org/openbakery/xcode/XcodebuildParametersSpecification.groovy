@@ -129,4 +129,14 @@ class XcodebuildParametersSpecification extends Specification {
 		first.devices == Devices.WATCH
 	}
 
+	def "bitcode is merged"() {
+		when:
+		second.bitcode = true
+		first.merge(second)
+
+		then:
+		first.bitcode == true
+
+	}
+
 }

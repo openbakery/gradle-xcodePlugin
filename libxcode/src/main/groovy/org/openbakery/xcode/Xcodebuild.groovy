@@ -143,6 +143,11 @@ class Xcodebuild {
 			commandList.add("-target")
 			commandList.add(parameters.target)
 		}
+
+		if (parameters.bitcode) {
+			commandList.add('OTHER_CFLAGS="-fembed-bitcode"')
+			commandList.add('BITCODE_GENERATION_MODE=bitcode')
+		}
 	}
 
 	def addDisableCodeSigning(ArrayList commandList) {
@@ -312,8 +317,8 @@ class Xcodebuild {
 	@Override
 	public String toString() {
 		return "Xcodebuild{" +
-				"xcodePath='" + xcodePath + '\'' +
-				parameters +
-				'}';
+						"xcodePath='" + xcodePath + '\'' +
+						parameters +
+						'}'
 	}
 }

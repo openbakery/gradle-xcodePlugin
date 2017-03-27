@@ -24,6 +24,7 @@ class XcodebuildParameters {
 	Set<Destination> configuredDestinations
 	Devices devices
 	List<File> xctestrun
+	Boolean bitcode
 
 
 	public XcodebuildParameters() {
@@ -38,6 +39,7 @@ class XcodebuildParameters {
 						", type=" + type +
 						", workspace='" + workspace + '\'' +
 						", configuration='" + configuration + '\'' +
+						", bitcode=" + bitcode +
 						", dstRoot=" + dstRoot +
 						", objRoot=" + objRoot +
 						", symRoot=" + symRoot +
@@ -47,7 +49,7 @@ class XcodebuildParameters {
 						", additionalParameters=" + additionalParameters +
 						", configuredDestinations=" + configuredDestinations +
 						", xctestrun=" + xctestrun +
-						'}';
+						'}'
 	}
 
 
@@ -81,6 +83,9 @@ class XcodebuildParameters {
 		}
 		if (other.devices != null) {
 			devices = other.devices
+		}
+		if (other.bitcode != null) {
+			bitcode = other.bitcode
 		}
 
 		return this

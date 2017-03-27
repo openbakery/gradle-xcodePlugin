@@ -1050,4 +1050,39 @@ class XcodebuildSpecification extends Specification {
 	}
 
 
+	def "run xcodebuild with bitcode enabled"() {
+		def commandList
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+
+		when:
+		xcodebuild.parameters.bitcode = true
+		xcodebuild.execute(outputAppender, null)
+
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains('OTHER_CFLAGS="-fembed-bitcode"')
+		commandList.contains('BITCODE_GENERATION_MODE=bitcode')
+	}
+
+
+	def "run xcodebuild with bitcode disabled"() {
+		def commandList
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+
+		when:
+		xcodebuild.parameters.bitcode = false
+		xcodebuild.execute(outputAppender, null)
+
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		!commandList.contains('OTHER_CFLAGS="-fembed-bitcode"')
+		!commandList.contains('BITCODE_GENERATION_MODE=bitcode')
+	}
+
 }
