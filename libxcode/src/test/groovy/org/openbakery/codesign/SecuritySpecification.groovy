@@ -432,7 +432,7 @@ class SecuritySpecification extends Specification {
 
 		then:
 		def exception = thrown(CertificateException)
-		exception.message == "Given certificate has expired on: Sun Mar 20 11:16:40 CET 2016"
+		exception.message.startsWith("Given certificate has expired on:")
 	}
 
 	def "when openssl gives wrong output then throw exception"() {
