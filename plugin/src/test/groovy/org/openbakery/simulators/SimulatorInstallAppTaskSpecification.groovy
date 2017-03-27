@@ -4,6 +4,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.Codesign
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 /**
@@ -60,6 +61,17 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		task.codesign instanceof Codesign
 	}
 
+	def "codesign parameters is iOS"() {
+		given:
+		project.xcodebuild.type = Type.iOS
+
+		when:
+		def codesign = task.getCodesign()
+
+		then:
+		codesign.codesignParameters.type == Type.iOS
+	}
+
 	def "sign before install"() {
 		given:
 		Codesign codesign = Mock(Codesign)
@@ -75,9 +87,8 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 
 		then:
 		1 * codesign.sign(project.xcodebuild.applicationBundle)
-
-
 	}
+
 
 
 }
