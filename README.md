@@ -43,7 +43,6 @@ Here a brief overview of the features:
 0.12.x supports Xcode 6.+ and Xcode 7.+
 
 
-
 ## Documentation
 
 * [Documentation](https://openbakery.org/gxp/)
@@ -90,7 +89,7 @@ apply plugin: "org.openbakery.xcode-plugin"
 
 When using the [openbakery.org](https://openbakery.org) repository you can also get the latest develop version by including `develop` into the version pattern. e.g.: 
 ```
-classpath "org.openbakery:xcode-plugin:0.14.5.develop.+"
+classpath "org.openbakery:xcode-plugin:0.15.0.develop.+"
 ```
 
 The develop version contains all the changes from the develop branch, where all the fixes and feature are implemented. The development version is deployed automatically when all the projects unit tests are  successful, and also the if the example projects build. 
@@ -117,17 +116,6 @@ I'm always happy to receive pull requests with new features and if you send a pu
 * For unit test please use the [spock framework](http://spockframework.org) for mocking. I want to remove the old gmock framework and port the old tests to use spock.
 * If a pull request does not contain any unit tests, I always think twice if I should merge it at all.
 
-# Migration Notes
-
-With version 0.12 the _sdk_ parameter was removed and was replaced by the new _type_ and _simulator_ parameter
-
-Here a table of the values for the migration to 0.12:
-
-| sdk (old)         | type (new)    | simulator (new)         |
-| ----------------- | ------------- | ------------------------|
-| iphonesimulator   | iOS           | true                    |
-| iphoneos          | iOS           | false                   |
-| macosx            | OSX           | (this value is ignored) |
 
 
 # License
