@@ -89,6 +89,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	def "get Icon Path OSX"() {
 		given:
+		xcodeBuildArchiveTask.parameters = project.xcodebuild.xcodebuildParameters
 		// Info.plist from Example.app
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 
@@ -105,6 +106,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	def "no Icon Mac OSX"() {
 		given:
+		xcodeBuildArchiveTask.parameters = project.xcodebuild.xcodebuildParameters
 		// Info.plist from Example.app
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 

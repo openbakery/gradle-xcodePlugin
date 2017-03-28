@@ -81,7 +81,6 @@ class XcodeBuildPluginExtension {
 	Object symRoot
 	Object sharedPrecompsDir
 	Object derivedDataPath
-	String sourceDirectory = '.'
 	Signing signing = null
 	def additionalParameters = null
 	String bundleNameSuffix = null
@@ -100,9 +99,7 @@ class XcodeBuildPluginExtension {
 	boolean useXcodebuildArchive = false
 
 
-	Devices devices = Devices.UNIVERSAL;
-
-	//Set<Destination> destinations = null
+	Devices devices = Devices.UNIVERSAL
 
 	CommandRunner commandRunner
 	VariableResolver variableResolver
@@ -330,6 +327,8 @@ class XcodeBuildPluginExtension {
 		return bundleName
 	}
 
+
+	// should be removed an replaced by the xcodebuildParameters.outputPath
 	File getOutputPath() {
 		String path = getConfiguration()
 		if (type == Type.iOS) {
@@ -429,11 +428,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	void setSdk(String sdk) {
-		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
-	}
-
-
 	boolean getSimulator() {
 		if (type == Type.macOS) {
 			return false
@@ -491,6 +485,7 @@ class XcodeBuildPluginExtension {
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
 		result.bitcode = this.bitcode
+		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {
 			result.arch = this.arch.clone()

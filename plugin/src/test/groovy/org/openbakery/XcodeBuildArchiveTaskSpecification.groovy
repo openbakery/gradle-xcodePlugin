@@ -23,7 +23,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Project project
 
-	XcodeBuildArchiveTask xcodeBuildArchiveTask;
+	XcodeBuildArchiveTask xcodeBuildArchiveTask
 
 	File projectDir
 	File buildOutputDirectory
@@ -38,7 +38,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
@@ -86,7 +86,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		]
 
 		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/iphoneos")
-		swiftLibsDirectory.mkdirs();
+		swiftLibsDirectory.mkdirs()
 
 		swiftLibs.each { item ->
 			File lib = new File(swiftLibsDirectory, item)
@@ -123,7 +123,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def setupProject() {
 		CommandRunner commandRunner = new CommandRunner()
 		commandRunner.defaultBaseDirectory = projectDir.absolutePath
-		xcodeBuildArchiveTask.plistHelper = new PlistHelper(commandRunner);
+		xcodeBuildArchiveTask.plistHelper = new PlistHelper(commandRunner)
 		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
 
 		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
@@ -277,7 +277,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		File infoPlist = new File(projectDir, "build/archive/Example.xcarchive/Info.plist")
 
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(infoPlist)
-		List icons = config.getList("ApplicationProperties.IconPaths");
+		List icons = config.getList("ApplicationProperties.IconPaths")
 
 		then:
 		infoPlist.exists()
@@ -309,8 +309,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		when:
 		xcodeBuildArchiveTask.archive()
 
-		File zipFile = new File(projectDir, "build/archive/Example.zip");
-		ZipFile zip = new ZipFile(zipFile);
+		File zipFile = new File(projectDir, "build/archive/Example.zip")
+		ZipFile zip = new ZipFile(zipFile)
 		List<String> entries = new ArrayList<String>()
 		for (ZipEntry entry : zip.entries()) {
 			entries.add(entry.getName())
@@ -412,9 +412,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		given:
 
 		File infoPlist = new File(appDirectory, "Info.plist")
-		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "");
-		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "");
-		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "")
 
 		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
 
@@ -432,9 +432,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 		File infoPlist = new File(appDirectory, "Info.plist")
 
-		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "");
-		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "");
-		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "");
+		plistHelper.setValueForPlist(infoPlist, "CFBundleIdentifier", "")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleShortVersionString", "")
+		plistHelper.setValueForPlist(infoPlist, "CFBundleVersion", "")
 
 		File infoPlistToConvert = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Info.plist")
 
@@ -463,7 +463,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "bundle destination directory"() {
 		given:
-		File bundle = new File(project.xcodebuild.outputPath, "ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
+		xcodeBuildArchiveTask.parameters = project.xcodebuild.xcodebuildParameters
+		File bundle = new File(xcodeBuildArchiveTask.parameters.outputPath, "ExampleWatchkit.app/Watch/ExampleWatchkit WatchKit App.app")
 
 		when:
 		File applicationDirectory = xcodeBuildArchiveTask.getDestinationDirectoryForBundle(bundle)
@@ -598,6 +599,35 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 			]
 		}
 		commandList == expectedCommandList
+
+	}
+
+
+	def "copy all bcsymbolmap to BCSymbolMaps directory"() {
+		given:
+		project.xcodebuild.bitcode = true
+		setupProject()
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps/14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps/2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps/23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap").exists()
+	}
+
+	def "do not copy bcsymbolmap if build is not bitcode build"() {
+		given:
+		setupProject()
+		project.xcodebuild.bitcode = false
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+		!new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps").exists()
 
 	}
 }

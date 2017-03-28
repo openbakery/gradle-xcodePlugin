@@ -539,5 +539,16 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.getXcodebuildParameters().bitcode == true
 	}
 
+	def "xcodebuildParameters is created with the applicationBundle"() {
+		when:
+		File projectDir = new File("../example/macOS/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.bundleName = "MyApp"
+
+		then:
+		extension.getXcodebuildParameters().applicationBundle == new File(extension.getOutputPath(), "MyApp.app")
+
+	}
 
 }

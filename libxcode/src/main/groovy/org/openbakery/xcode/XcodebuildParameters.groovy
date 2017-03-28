@@ -1,5 +1,6 @@
 package org.openbakery.xcode
 
+import org.apache.commons.io.FilenameUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -25,6 +26,7 @@ class XcodebuildParameters {
 	Devices devices
 	List<File> xctestrun
 	Boolean bitcode
+	File applicationBundle
 
 
 	public XcodebuildParameters() {
@@ -49,6 +51,7 @@ class XcodebuildParameters {
 						", additionalParameters=" + additionalParameters +
 						", configuredDestinations=" + configuredDestinations +
 						", xctestrun=" + xctestrun +
+						", applicationBundle=" + applicationBundle +
 						'}'
 	}
 
@@ -87,6 +90,9 @@ class XcodebuildParameters {
 		if (other.bitcode != null) {
 			bitcode = other.bitcode
 		}
+		if (other.applicationBundle != null) {
+			applicationBundle = other.applicationBundle
+		}
 
 		return this
 	}
@@ -124,5 +130,24 @@ class XcodebuildParameters {
 		}
 		logger.debug("is simulator build {}", this.simulator)
 		return this.simulator
+	}
+
+	String getApplicationBundleName() {
+		return applicationBundle.name
+	}
+
+	String getBundleName() {
+		return FilenameUtils.getBaseName(getApplicationBundleName())
+	}
+
+	File getOutputPath() {
+		if (type == Type.iOS) {
+			if (simulator) {
+				return new File(getSymRoot(), "${configuration}-iphonesimulator")
+			} else {
+				return new File(getSymRoot(), "${configuration}-iphoneos")
+			}
+		}
+		return new File(getSymRoot(), configuration)
 	}
 }

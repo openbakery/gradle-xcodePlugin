@@ -43,6 +43,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
+
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
@@ -64,6 +65,11 @@ class PackageTask extends AbstractDistributeTask {
 		File onDemandResources = new File(getProductsDirectory(), "OnDemandResources")
 		if (onDemandResources.exists()) {
 			copy(onDemandResources, applicationPath)
+		}
+
+		File bcSymbolsMaps = new File(getArchiveDirectory(), "BCSymbolMaps")
+		if (bcSymbolsMaps.exists()) {
+			copy(bcSymbolsMaps, applicationFolder.parentFile)
 		}
 
 		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator)
@@ -96,12 +102,6 @@ class PackageTask extends AbstractDistributeTask {
 		codesignParameters.type = project.xcodebuild.type
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
 		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
-		/*
-		if (project.xcodebuild.signing.hasEntitlementsFile()) {
-			codesign.useEntitlements(project.xcodebuild.signing.entitlementsFile)
-		}
-		*/
-
 
 		for (File bundle : appBundles) {
 
@@ -189,16 +189,22 @@ class PackageTask extends AbstractDistributeTask {
 			packageBundle.parentFile.mkdirs()
 		}
 
-		File swiftSupportPath = null;
+		List<File> filesToZip = []
+		filesToZip << packagePath
+
 		if (includeSwiftSupport) {
-			swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
+			File swiftSupportPath =  addSwiftSupport(packagePath, applicationBundleName)
+			if (swiftSupportPath != null) {
+				filesToZip << swiftSupportPath
+			}
 		}
 
-		if (swiftSupportPath != null) {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath)
-		} else {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath)
+		File bcSymbolMapsPath = new File(packagePath.getParentFile(), "BCSymbolMaps")
+		if (bcSymbolMapsPath.exists()) {
+			filesToZip << bcSymbolMapsPath
 		}
+
+		createZip(packageBundle, packagePath.getParentFile(), packagePath, *filesToZip)
 	}
 
 	private void createIpa(File payloadPath, boolean addSwiftSupport) {
@@ -210,33 +216,6 @@ class PackageTask extends AbstractDistributeTask {
 		createZipPackage(packagePath, "zip", false)
 	}
 
-
-/*
-	List<String> getKeychainAccessGroupFromEntitlements(File bundle) {
-
-		List<String> result = []
-		File entitlementsFile = new File(bundle, "archived-expanded-entitlements.xcent")
-		if (!entitlementsFile.exists()) {
-			return result
-		}
-
-		String applicationIdentifier = plistHelper.getValueFromPlist(entitlementsFile, "application-identifier")
-		if (StringUtils.isNotEmpty(applicationIdentifier)) {
-			applicationIdentifier = applicationIdentifier.split("\\.")[0] + "."
-		}
-		List<String> keychainAccessGroups = plistHelper.getValueFromPlist(entitlementsFile, "keychain-access-groups")
-
-		keychainAccessGroups.each { item ->
-			if (item.startsWith(applicationIdentifier)) {
-				result << item.replace(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
-			} else {
-				result << item
-			}
-		}
-
-		return result
-	}
-	*/
 
 
 	private String getIdentifierForBundle(File bundle) {

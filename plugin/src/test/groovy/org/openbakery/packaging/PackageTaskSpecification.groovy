@@ -81,13 +81,8 @@ class PackageTaskSpecification extends Specification {
 		keychain.delete()
 	}
 
-	void mockExampleApp(boolean withPlugin, boolean withSwift) {
-		mockExampleApp(withPlugin, withSwift, false, true)
-	}
-
-
  /* use ApplicationDummy from libtest */
-	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework, boolean adHoc) {
+	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework = false, boolean adHoc = true, boolean bitcode = false) {
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
@@ -169,6 +164,15 @@ class PackageTaskSpecification extends Specification {
 		File onDemandResources = new File(archiveDirectory, "Products/OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
 		onDemandResources.mkdirs()
 		FileUtils.writeStringToFile(new File(onDemandResources, "Info.plist"), "dummy")
+
+
+		if (bitcode) {
+			File bcsymbolmapsDirectory = new File(archiveDirectory, "BCSymbolMaps")
+			bcsymbolmapsDirectory.mkdirs()
+			FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap"), "dummy")
+			FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap"), "dummy")
+			FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap"), "dummy")
+		}
 	}
 
 	def mockXcodeVersion() {
@@ -235,6 +239,17 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
+	List<String> ipaEntries() {
+		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
+		assert ipaBundle.exists()
+
+		ZipFile zipFile = new ZipFile(ipaBundle)
+		List<String> entries = new ArrayList<String>()
+		for (ZipEntry entry : zipFile.entries()) {
+			entries.add(entry.getName())
+		}
+		return entries
+	}
 
 	def "swift Framework xcode 6"() {
 		given:
@@ -248,13 +263,7 @@ class PackageTaskSpecification extends Specification {
 		assert !ipaBundle.exists()
 		packageTask.packageApplication()
 
-		ZipFile zipFile = new ZipFile(ipaBundle);
-
-		List<String> entries = new ArrayList<String>()
-
-		for (ZipEntry entry : zipFile.entries()) {
-			entries.add(entry.getName())
-		}
+		List<String> entries = ipaEntries()
 
 		then:
 		entries.contains("SwiftSupport/libswiftCore.dylib")
@@ -272,13 +281,7 @@ class PackageTaskSpecification extends Specification {
 		assert !ipaBundle.exists()
 		packageTask.packageApplication()
 
-		ZipFile zipFile = new ZipFile(ipaBundle);
-
-		List<String> entries = new ArrayList<String>()
-
-		for (ZipEntry entry : zipFile.entries()) {
-			entries.add(entry.getName())
-		}
+		List<String> entries = ipaEntries()
 
 		then:
 		entries.contains("SwiftSupport/")
@@ -295,14 +298,7 @@ class PackageTaskSpecification extends Specification {
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
 		assert !ipaBundle.exists()
 		packageTask.packageApplication()
-
-		ZipFile zipFile = new ZipFile(ipaBundle);
-
-		List<String> entries = new ArrayList<String>()
-
-		for (ZipEntry entry : zipFile.entries()) {
-			entries.add(entry.getName())
-		}
+		List<String> entries = ipaEntries()
 
 		then:
 		!entries.contains("SwiftSupport/")
@@ -428,18 +424,7 @@ class PackageTaskSpecification extends Specification {
 		when:
 		packageTask.packageApplication()
 
-
-		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
-
-		assert ipaBundle.exists()
-
-		ZipFile zipFile = new ZipFile(ipaBundle);
-
-		List<String> entries = new ArrayList<String>()
-
-		for (ZipEntry entry : zipFile.entries()) {
-			entries.add(entry.getName())
-		}
+		List<String> entries = ipaEntries()
 
 		then:
 		entries.contains("Payload/Example.app/Example")
@@ -542,7 +527,6 @@ class PackageTaskSpecification extends Specification {
 	}
 
 
-
 	def "copy OnDemandResources"() {
 		given:
 		mockExampleApp(false, false)
@@ -550,14 +534,7 @@ class PackageTaskSpecification extends Specification {
 		when:
 		packageTask.packageApplication()
 
-		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
-		assert ipaBundle.exists()
-
-		ZipFile zipFile = new ZipFile(ipaBundle)
-		List<String> entries = new ArrayList<String>()
-		for (ZipEntry entry : zipFile.entries()) {
-			entries.add(entry.getName())
-		}
+		List<String> entries = ipaEntries()
 
 		then:
 		entries.contains("Payload/Example.app/OnDemandResources.plist")
@@ -586,6 +563,33 @@ class PackageTaskSpecification extends Specification {
 		then:
 		packageTask.codesignParameters.type == Type.macOS
 
+	}
+
+	def "copy bcsymbolsmaps"() {
+		given:
+		mockExampleApp(false, false, false, false, true)
+
+		when:
+		packageTask.packageApplication()
+		List<String> entries = ipaEntries()
+
+		then:
+		entries.contains("BCSymbolMaps/")
+		entries.contains("BCSymbolMaps/14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap")
+		entries.contains("BCSymbolMaps/2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap")
+		entries.contains("BCSymbolMaps/23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap")
+	}
+
+	def "bcsymbolsmaps does not exists, to BCSymbolMaps is not created"() {
+		given:
+		mockExampleApp(false, false, false, false, false)
+
+		when:
+		packageTask.packageApplication()
+		List<String> entries = ipaEntries()
+
+		then:
+		!entries.contains("BCSymbolMaps/")
 	}
 
 }
