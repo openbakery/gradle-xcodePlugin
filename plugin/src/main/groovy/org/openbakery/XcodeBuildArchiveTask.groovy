@@ -50,12 +50,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	def getiOSIcons() {
 		ArrayList<String> icons = new ArrayList<>();
 
-		File applicationBundle = project.xcodebuild.applicationBundle
+		File applicationBundle = parameters.applicationBundle
 		def fileList = applicationBundle.list(
 						[accept: { d, f -> f ==~ /Icon(-\d+)??\.png/ }] as FilenameFilter // matches Icon.png or Icon-72.png
 		).toList()
 
-		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
+		def applicationPath = "Applications/" + parameters.applicationBundleName
 
 		for (String item in fileList) {
 			icons.add(applicationPath + "/" + item)
@@ -66,7 +66,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 	def getMacOSXIcons() {
-		File appInfoPlist  = new File(project.xcodebuild.applicationBundle, "Contents/Info.plist")
+		File appInfoPlist  = new File(parameters.applicationBundle, "Contents/Info.plist")
 		ArrayList<String> icons = new ArrayList<>();
 
 		def icnsFileName = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIconFile")
@@ -75,7 +75,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			return icons
 		}
 
-		def iconPath = "Applications/" + project.xcodebuild.applicationBundle.name + "/Contents/Resources/" + icnsFileName + ".icns"
+		def iconPath = "Applications/" + parameters.applicationBundleName + "/Contents/Resources/" + icnsFileName + ".icns"
 		icons.add(iconPath)
 
 		return icons
@@ -85,7 +85,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	def getValueFromBundleInfoPlist(File bundle, String key) {
 		File appInfoPlist
-		if (project.xcodebuild.type == Type.OSX) {
+		if (parameters.type == Type.macOS) {
 			appInfoPlist = new File(bundle, "Contents/Info.plist")
 		} else {
 			appInfoPlist = new File(bundle, "Info.plist")
@@ -99,20 +99,19 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		StringBuilder content = new StringBuilder();
 
 
-		def name = project.xcodebuild.bundleName
+		def name = parameters.bundleName
 		def schemeName = name
-		def applicationPath = "Applications/" + project.xcodebuild.applicationBundle.name
-		def bundleIdentifier = getValueFromBundleInfoPlist(project.xcodebuild.applicationBundle, "CFBundleIdentifier")
+		def applicationPath = "Applications/" + parameters.applicationBundleName
+		def bundleIdentifier = getValueFromBundleInfoPlist(parameters.applicationBundle, "CFBundleIdentifier")
 		int time = System.currentTimeMillis() / 1000;
 
 		def creationDate = formatDate(new Date());
 
-		def shortBundleVersion = getValueFromBundleInfoPlist(project.xcodebuild.applicationBundle, "CFBundleShortVersionString")
-		def bundleVersion = getValueFromBundleInfoPlist(project.xcodebuild.applicationBundle, "CFBundleVersion")
+		def shortBundleVersion = getValueFromBundleInfoPlist(parameters.applicationBundle, "CFBundleShortVersionString")
+		def bundleVersion = getValueFromBundleInfoPlist(parameters.applicationBundle, "CFBundleVersion")
 
-		List icons = new ArrayList<String>()
-
-		if (project.xcodebuild.type == Type.iOS) {
+		List<String> icons
+		if (parameters.type == Type.iOS) {
 			icons = getiOSIcons()
 		} else {
 			icons = getMacOSXIcons()
@@ -171,10 +170,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 
+	def createFrameworks(def archiveDirectory, Xcodebuild 	xcodebuild) {
 
-	def createFrameworks(def applicationsDirectory, Xcodebuild 	xcodebuild) {
-
-		File frameworksPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name + "/Frameworks")
+		File frameworksPath = new File(archiveDirectory, "Products/Applications/" + parameters.applicationBundleName + "/Frameworks")
 		if (frameworksPath.exists()) {
 
 
@@ -220,7 +218,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	def deleteEmptyFrameworks(File applicationsDirectory) {
 		// if frameworks directory is emtpy
-		File appPath = new File(applicationsDirectory, "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+		File appPath = new File(applicationsDirectory, "Products/Applications/" + parameters.applicationBundleName)
 		deleteDirectoryIfEmpty(appPath, "Frameworks")
 
 
@@ -230,7 +228,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	def deleteFrameworksInExtension(File applicationsDirectory) {
 
 
-		File plugins = new File(applicationsDirectory, project.xcodebuild.applicationBundle.name + "/Plugins")
+		File plugins = new File(applicationsDirectory, parameters.applicationBundleName + "/Plugins")
 		if (!plugins.exists()) {
 			return
 		}
@@ -259,7 +257,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	def createEntitlements(File bundle) {
 
-		if (project.xcodebuild.type != Type.iOS) {
+		if (parameters.type != Type.iOS) {
 			logger.warn("Entitlements handling is only implemented for iOS!")
 			return
 		}
@@ -312,27 +310,25 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def archive() {
-
-		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
+		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
+		if (parameters.isSimulatorBuildOf(Type.iOS)) {
 			logger.debug("Create zip archive")
 
 			// create zip archive
-			String zipFileName = project.xcodebuild.bundleName
+			String zipFileName = parameters.bundleName
 			if (project.xcodebuild.bundleNameSuffix != null) {
 				zipFileName += project.xcodebuild.bundleNameSuffix
 			}
 			zipFileName += ".zip"
 
 			def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
-			def baseDirectory = project.xcodebuild.applicationBundle.parentFile
+			def baseDirectory = parameters.applicationBundle.parentFile
 
-			createZip(zipFile, baseDirectory, project.xcodebuild.applicationBundle)
+			createZip(zipFile, baseDirectory, parameters.applicationBundle)
 			return
 		}
 
 		logger.debug("Create xcarchive")
-
-		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 		Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, getDestinations())
 
 		if (project.xcodebuild.useXcodebuildArchive) {
@@ -348,9 +344,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		// create xcarchive
 		// copy application bundle
-		copy(project.xcodebuild.applicationBundle, getApplicationsDirectory())
+		copy(parameters.applicationBundle, getApplicationsDirectory())
 
-		File onDemandResources = new File(project.xcodebuild.outputPath, "OnDemandResources")
+		File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
 		if (onDemandResources.exists()) {
 			copy(onDemandResources, getProductsDirectory())
 		}
@@ -359,31 +355,44 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
 		dSymDirectory.mkdirs()
-		copyDsyms(project.xcodebuild.outputPath, dSymDirectory)
+		copyDsyms(parameters.outputPath, dSymDirectory)
 
-		List<File> appBundles = getAppBundles(project.xcodebuild.outputPath)
+		List<File> appBundles = getAppBundles(parameters.outputPath)
 		for (File bundle : appBundles) {
-			/*
-			File dsymPath = new File(project.xcodebuild.outputPath, bundle.getName() + ".dSYM");
-			if (dsymPath.exists()) {
-				copy(dsymPath, dSymDirectory)
-			}
-			*/
 			createEntitlements(bundle)
 		}
 
-		createInfoPlist(getArchiveDirectory())
-		createFrameworks(getArchiveDirectory(), xcodebuild)
-		deleteEmptyFrameworks(getArchiveDirectory())
-		deleteXCTestIfExists(getApplicationsDirectory())
-		deleteFrameworksInExtension(getApplicationsDirectory())
+		File applicationsDirectory = getApplicationsDirectory()
+		File archiveDirectory = getArchiveDirectory()
+		createInfoPlist(archiveDirectory)
+		createFrameworks(archiveDirectory, xcodebuild)
+		deleteEmptyFrameworks(archiveDirectory)
+		deleteXCTestIfExists(applicationsDirectory)
+		deleteFrameworksInExtension(applicationsDirectory)
+		copyBCSymbolMaps(archiveDirectory, applicationsDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
-			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + project.xcodebuild.applicationBundle.name)
+			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
 			convertInfoPlistToBinary(applicationFolder)
 		}
 
 		logger.debug("create archive done")
+	}
+
+	def copyBCSymbolMaps(File archiveDirectory, File applicationsDirectory) {
+		if (!parameters.bitcode) {
+			logger.debug("bitcode is not activated, so to not create BCSymbolMaps")
+			return
+		}
+		File bcSymbolMapsDirectory = new File(applicationsDirectory, parameters.applicationBundleName + "/BCSymbolMaps")
+		bcSymbolMapsDirectory.mkdirs()
+
+		parameters.outputPath.eachFileRecurse { file ->
+			if (file.toString().endsWith(".bcsymbolmap")) {
+				FileUtils.copyFileToDirectory(file, bcSymbolMapsDirectory)
+			}
+		}
+
 	}
 
 	def deleteXCTestIfExists(File applicationsDirectory) {
@@ -412,7 +421,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 	File getDestinationDirectoryForBundle(File bundle) {
-		String relative = project.xcodebuild.outputPath.toURI().relativize(bundle.toURI()).getPath();
+		String relative = parameters.outputPath.toURI().relativize(bundle.toURI()).getPath();
 		return new File(getApplicationsDirectory(), relative)
 	}
 

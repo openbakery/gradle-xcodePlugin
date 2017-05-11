@@ -1,12 +1,13 @@
 package org.openbakery.codesign
 
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import spock.lang.Specification
 
-/**
- * Created by rene on 21.12.16.
- */
+import java.security.cert.CertificateException
+import java.text.ParseException
+
 class SecuritySpecification extends Specification {
 
 
@@ -14,6 +15,8 @@ class SecuritySpecification extends Specification {
 	Security security
 	File tmpDirectory
 	File loginKeychain
+	File certificateFile
+	File pkcs12File
 
 	def setup() {
 		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild')
@@ -22,6 +25,11 @@ class SecuritySpecification extends Specification {
 		security = new Security(commandRunner)
 		loginKeychain = new File(tmpDirectory, "login.keychain")
 		FileUtils.writeStringToFile(loginKeychain, "dummy")
+		certificateFile = new File(tmpDirectory, "my.certificate")
+		FileUtils.writeStringToFile(certificateFile, "dummy")
+
+		pkcs12File = new File(System.getProperty("java.io.tmpdir"), "pkcs12File_" + FilenameUtils.getBaseName(certificateFile.path) + ".pfx")
+
 
 	}
 
@@ -38,6 +46,16 @@ class SecuritySpecification extends Specification {
 						"    \"/Users/me/Go/pipelines/Build-Continuous/build/codesign/gradle-1431419900260.keychain\"\n" +
 						"    \"/Library/Keychains/System.keychain\""
 
+	}
+
+
+	static String DEFAULT_OPENSSL_OUTPUT = "MAC verified OK\n" +
+			"notAfter=Mar 20 10:16:40 2118 GMT"
+
+
+	def mockOpensslCertificate(String result = DEFAULT_OPENSSL_OUTPUT, String password = "certificatePassword") {
+		commandRunner.run(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath])
+		commandRunner.runWithResult(["openssl",  "x509", "-in", pkcs12File.absolutePath, "-noout",  "-enddate"]) >> result
 	}
 
 	def "get keychain list"() {
@@ -145,20 +163,18 @@ class SecuritySpecification extends Specification {
 
 	def "import certificate into keychain"() {
 		given:
+		mockOpensslCertificate()
 		File keychain = new File(tmpDirectory, "test.keychain")
 		FileUtils.writeStringToFile(keychain, "keychain")
-		File certificate = new File(tmpDirectory, "certificate.p12")
-		FileUtils.writeStringToFile(certificate, "foobar")
 
 		when:
-		security.importCertificate(certificate, "certificatePassword", keychain)
+		security.importCertificate(certificateFile, "certificatePassword", keychain)
 
 		then:
-		1 * commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
+		1 * commandRunner.run(["security", "-v", "import", certificateFile.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
 
 		cleanup:
 		keychain.delete()
-		certificate.delete()
 
 	}
 
@@ -166,19 +182,15 @@ class SecuritySpecification extends Specification {
 	def "do not import certificate into keychain if keychain does not exists will throw exception"() {
 		given:
 		File keychain = new File(tmpDirectory, "test.keychain")
-		File certificate = new File(tmpDirectory, "certificate.p12")
-		FileUtils.writeStringToFile(certificate, "foobar")
+		mockOpensslCertificate()
 
 		when:
-		security.importCertificate(certificate, "certificatePassword", keychain)
+		security.importCertificate(certificateFile, "certificatePassword", keychain)
 
 		then:
 		def exception = thrown(IllegalArgumentException)
 		exception.message == "Given keychain does not exist"
-		0 * commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
-
-		cleanup:
-		certificate.delete()
+		0 * commandRunner.run(["security", "-v", "import", certificateFile.absolutePath, "-k", keychain.absolutePath, "-P", "certificatePassword", "-T", "/usr/bin/codesign"])
 	}
 
 	def "do not import certificate into keychain if certificate does not exists will throw exception"() {
@@ -367,4 +379,97 @@ class SecuritySpecification extends Specification {
 		then:
 		1 * commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", "keychain password", "-D", "1111222233334444555566667777888899990000", "-t", "private", keychain.absolutePath])
 	}
+
+	def "certificate does not exist throws exception"() {
+		given:
+		File keychain = new File(tmpDirectory, "test.keychain")
+
+		when:
+		security.importCertificate(new File("this file does not exist"), "", keychain)
+
+		then:
+		def exception = thrown(IllegalArgumentException)
+		exception.message == "Given certificate does not exist"
+	}
+
+	def "run openssl command to get expired date"() {
+		when:
+		security.checkIfCertificateIsValid(certificateFile, "mypassword")
+
+
+		then:
+		interaction {
+			1 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+			1 * commandRunner.runWithResult(["openssl", "x509", "-in", pkcs12File.absolutePath, "-noout", "-enddate"])
+		}
+
+
+		def exception = thrown(CertificateException)
+		exception.message == "openssl command returned no result."
+	}
+
+
+
+	def "check if certificate is valid returns valid"() {
+		given:
+		String opensslOutput = "MAC verified OK\n" +
+				"notAfter=Mar 20 10:16:40 2118 GMT"
+		mockOpensslCertificate(opensslOutput)
+
+		expect:
+		security.checkIfCertificateIsValid(certificateFile, "certificatePassword")
+	}
+
+	def "certificate is expired then throws exception"() {
+		given:
+		String opensslOutput = "MAC verified OK\n" +
+				"notAfter=Mar 20 10:16:40 2016 GMT"
+
+		mockOpensslCertificate(opensslOutput)
+
+		when:
+		security.checkIfCertificateIsValid(certificateFile, "certificatePassword")
+
+		then:
+		def exception = thrown(CertificateException)
+		exception.message.startsWith("Given certificate has expired on:")
+	}
+
+	def "when openssl gives wrong output then throw exception"() {
+		given:
+		String opensslOutput = "openssl Wrong Output"
+		mockOpensslCertificate(opensslOutput)
+
+		when:
+		security.checkIfCertificateIsValid(certificateFile, "certificatePassword")
+
+		then:
+		def exception = thrown(CertificateException)
+		exception.message == "Output from openssl command could not be parsed."
+	}
+
+	def "using wrong password to open certificate throw exception" () {
+		given:
+		String opensslOutput = "Mac verify error: invalid password?"
+		mockOpensslCertificate(opensslOutput, "wrongpassword")
+
+		when:
+		security.checkIfCertificateIsValid(certificateFile, "wrongpassword")
+
+		then:
+		def exception = thrown(CertificateException)
+		exception.message == "Wrong password to open certificate."
+	}
+/*
+	def "test" () {
+		given:
+		String opensslOutput = "Mac verify error: invalid password?"
+		security.commandRunner = new CommandRunner()
+
+		certificateFile = new File("/Users/stefangugarel/Projekte/ICS/Proofics/Proofmaker/build/codesign/Application_Drobnik_KG.p12")
+		expect:
+		security.checkIfCertificateIsValid(certificateFile, "magic123")
+
+	}
+	*/
 }

@@ -9,9 +9,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
-/**
- * Created by Stefan Gugarel on 26/02/15.
- */
 class ProvisioningInstallTaskOSXSpecification extends Specification {
 
 	Project project
@@ -31,7 +28,7 @@ class ProvisioningInstallTaskOSXSpecification extends Specification {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 
 		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 

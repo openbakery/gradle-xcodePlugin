@@ -12,9 +12,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 
-/**
- * Created by rene on 01.12.14.
- */
 class AbstractXcodeTaskSpecification extends Specification {
 
 	Project project

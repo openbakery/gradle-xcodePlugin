@@ -7,9 +7,6 @@ import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.PlistHelperStub
 import spock.lang.Specification
 
-/**
- * Created by rene on 01.09.15.
- */
 class SimulatorsRunAppTaskSpecification extends Specification {
 
 	SimulatorRunAppTask task
@@ -48,7 +45,7 @@ class SimulatorsRunAppTaskSpecification extends Specification {
 	def "no simulator SDK"() {
 		given:
 		project.xcodebuild.infoPlist =  "Info.plist"
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		when:
 		task.run()
 

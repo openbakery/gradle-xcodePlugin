@@ -9,15 +9,12 @@ import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
+import org.openbakery.codesign.CodesignParameters
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 
-/**
- * Created by rene on 14.11.14.
- */
 class PackageTask extends AbstractDistributeTask {
-
 
 	public static final String PACKAGE_PATH = "package"
 	File outputPath
@@ -27,6 +24,9 @@ class PackageTask extends AbstractDistributeTask {
 
 	String applicationBundleName
 	StyledTextOutput output
+
+
+	CodesignParameters codesignParameters = new CodesignParameters()
 
 	PackageTask() {
 		super();
@@ -43,6 +43,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
+
 	@TaskAction
 	void packageApplication() throws IOException {
 		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
@@ -51,8 +52,7 @@ class PackageTask extends AbstractDistributeTask {
 		}
 		outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
 
-
-		File applicationFolder = createApplicationFolder();
+		File applicationFolder = createApplicationFolder()
 
 		def applicationName = getApplicationNameFromArchive()
 		copy(getApplicationBundleDirectory(), applicationFolder)
@@ -65,6 +65,11 @@ class PackageTask extends AbstractDistributeTask {
 		File onDemandResources = new File(getProductsDirectory(), "OnDemandResources")
 		if (onDemandResources.exists()) {
 			copy(onDemandResources, applicationPath)
+		}
+
+		File bcSymbolsMaps = new File(getArchiveDirectory(), "BCSymbolMaps")
+		if (bcSymbolsMaps.exists()) {
+			copy(bcSymbolsMaps, applicationFolder.parentFile)
 		}
 
 		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator)
@@ -84,7 +89,7 @@ class PackageTask extends AbstractDistributeTask {
 			// ignore, this means that the CFBundleResourceSpecification was not in the infoPlist
 		}
 
-		def signSettingsAvailable = true;
+		def signSettingsAvailable = true
 		if (project.xcodebuild.signing.mobileProvisionFile == null) {
 			logger.warn('No mobile provision file provided.')
 			signSettingsAvailable = false;
@@ -93,7 +98,11 @@ class PackageTask extends AbstractDistributeTask {
 			signSettingsAvailable = false;
 		}
 
-		Codesign codesign = new Codesign(xcode, getSigningIdentity(), project.xcodebuild.signing.keychainPathInternal, project.xcodebuild.signing.entitlementsFile, project.xcodebuild.signing.mobileProvisionFile, project.xcodebuild.type,  commandRunner, plistHelper)
+		codesignParameters.mergeMissing(project.xcodebuild.signing.codesignParameters)
+		codesignParameters.type = project.xcodebuild.type
+		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
+		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
+
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -103,7 +112,7 @@ class PackageTask extends AbstractDistributeTask {
 			}
 
 			if (signSettingsAvailable) {
-				logger.info("Codesign app: {}", bundle);
+				logger.info("Codesign app: {}", bundle)
 				codesign.sign(bundle)
 			} else {
 				String message = "Bundle not signed: " + bundle
@@ -121,6 +130,9 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 	}
+
+
+
 
 	boolean isAdHoc(File appBundle) {
 		File provisionFile = getProvisionFileForBundle(appBundle)
@@ -177,16 +189,22 @@ class PackageTask extends AbstractDistributeTask {
 			packageBundle.parentFile.mkdirs()
 		}
 
-		File swiftSupportPath = null;
+		List<File> filesToZip = []
+		filesToZip << packagePath
+
 		if (includeSwiftSupport) {
-			swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
+			File swiftSupportPath =  addSwiftSupport(packagePath, applicationBundleName)
+			if (swiftSupportPath != null) {
+				filesToZip << swiftSupportPath
+			}
 		}
 
-		if (swiftSupportPath != null) {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath, swiftSupportPath)
-		} else {
-			createZip(packageBundle, packagePath.getParentFile(), packagePath)
+		File bcSymbolMapsPath = new File(packagePath.getParentFile(), "BCSymbolMaps")
+		if (bcSymbolMapsPath.exists()) {
+			filesToZip << bcSymbolMapsPath
 		}
+
+		createZip(packageBundle, packagePath.getParentFile(), packagePath, *filesToZip)
 	}
 
 	private void createIpa(File payloadPath, boolean addSwiftSupport) {
@@ -198,33 +216,6 @@ class PackageTask extends AbstractDistributeTask {
 		createZipPackage(packagePath, "zip", false)
 	}
 
-
-/*
-	List<String> getKeychainAccessGroupFromEntitlements(File bundle) {
-
-		List<String> result = []
-		File entitlementsFile = new File(bundle, "archived-expanded-entitlements.xcent")
-		if (!entitlementsFile.exists()) {
-			return result
-		}
-
-		String applicationIdentifier = plistHelper.getValueFromPlist(entitlementsFile, "application-identifier")
-		if (StringUtils.isNotEmpty(applicationIdentifier)) {
-			applicationIdentifier = applicationIdentifier.split("\\.")[0] + "."
-		}
-		List<String> keychainAccessGroups = plistHelper.getValueFromPlist(entitlementsFile, "keychain-access-groups")
-
-		keychainAccessGroups.each { item ->
-			if (item.startsWith(applicationIdentifier)) {
-				result << item.replace(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
-			} else {
-				result << item
-			}
-		}
-
-		return result
-	}
-	*/
 
 
 	private String getIdentifierForBundle(File bundle) {
@@ -299,5 +290,14 @@ class PackageTask extends AbstractDistributeTask {
 		} else {
 			return getApplicationNameFromArchive()
 		}
+	}
+
+
+	String getSigningIdentity() {
+		return codesignParameters.signingIdentity
+	}
+
+	void setSigningIdentity(String identity) {
+		codesignParameters.signingIdentity = identity
 	}
 }

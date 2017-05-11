@@ -40,7 +40,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		loginKeychain = new File(tmpDirectory, "login.keychain")
 		FileUtils.writeStringToFile(loginKeychain, "dummy")
 
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
 		project.xcodebuild.signing.certificatePassword = "password"
 		project.xcodebuild.signing.timeout = null

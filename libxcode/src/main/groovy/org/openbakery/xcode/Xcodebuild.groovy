@@ -3,9 +3,6 @@ package org.openbakery.xcode
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
 
-/**
- * Created by rene on 27.06.16.
- */
 class Xcodebuild {
 
 	CommandRunner commandRunner
@@ -138,7 +135,7 @@ class Xcodebuild {
 			commandList.add("-configuration")
 			commandList.add(parameters.configuration)
 
-			if (parameters.type == Type.OSX) {
+			if (parameters.type == Type.macOS) {
 				commandList.add("-sdk")
 				commandList.add("macosx")
 			}
@@ -146,11 +143,18 @@ class Xcodebuild {
 			commandList.add("-target")
 			commandList.add(parameters.target)
 		}
+
+		if (parameters.bitcode) {
+			commandList.add('OTHER_CFLAGS="-fembed-bitcode"')
+			commandList.add('BITCODE_GENERATION_MODE=bitcode')
+		}
 	}
 
 	def addDisableCodeSigning(ArrayList commandList) {
 		commandList.add("CODE_SIGN_IDENTITY=")
 		commandList.add("CODE_SIGNING_REQUIRED=NO")
+		//commandList.add("CODE_SIGN_ENTITLEMENTS=")
+		//commandList.add("CODE_SIGNING_ALLOWED=NO")
 	}
 
 	private boolean isSimulator() {
@@ -199,7 +203,7 @@ class Xcodebuild {
 			commandList.add("-destination")
 			commandList.add(getDestinationCommandParameter(destination))
 		}
-		if (parameters.type == Type.OSX) {
+		if (parameters.type == Type.macOS) {
 			commandList.add("-destination")
 			commandList.add("platform=OS X,arch=x86_64")
 		}
@@ -215,7 +219,7 @@ class Xcodebuild {
 				}
 				break;
 
-			case Type.OSX:
+			case Type.macOS:
 				commandList.add("-destination")
 				commandList.add("platform=OS X,arch=x86_64")
 				break;
@@ -240,7 +244,7 @@ class Xcodebuild {
 		if (parameters.type != expectedType) {
 			return false
 		}
-		if (parameters.type != Type.OSX) {
+		if (parameters.type != Type.macOS) {
 			// os x does not have a simulator
 			return parameters.simulator
 		}
@@ -313,8 +317,8 @@ class Xcodebuild {
 	@Override
 	public String toString() {
 		return "Xcodebuild{" +
-				"xcodePath='" + xcodePath + '\'' +
-				parameters +
-				'}';
+						"xcodePath='" + xcodePath + '\'' +
+						parameters +
+						'}'
 	}
 }

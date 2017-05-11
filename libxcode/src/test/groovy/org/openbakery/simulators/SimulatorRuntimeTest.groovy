@@ -4,9 +4,6 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 import spock.lang.Specification
 
-/**
- * Created by rene on 29.10.15.
- */
 class SimulatorRuntimeTest extends Specification {
 
 

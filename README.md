@@ -46,7 +46,7 @@ Here a brief overview of the features:
 
 ## Documentation
 
-* [Documentation](Documentation/)
+* [Documentation](https://openbakery.org/gxp/)
 
 
 ## Usage

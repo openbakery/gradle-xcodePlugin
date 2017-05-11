@@ -3,11 +3,7 @@ package org.openbakery.output;
 
 import org.gradle.internal.logging.text.StyledTextOutput;
 
-/**
- * Created by rene on 06.08.14.
- */
 public class ConsoleOutputAppender implements OutputAppender {
-
 
 	private StyledTextOutput output;
 

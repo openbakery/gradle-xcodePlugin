@@ -3,9 +3,7 @@ package org.openbakery.xcode
 import org.openbakery.simulators.SimulatorControl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-/**
- * Created by rene on 10.08.16.
- */
+
 class DestinationResolver {
 
 	private static Logger logger = LoggerFactory.getLogger(DestinationResolver.class)
@@ -28,7 +26,7 @@ class DestinationResolver {
 
 		logger.debug("getAvailableDestinations")
 		def availableDestinations = []
-		if (parameters.type == Type.OSX) {
+		if (parameters.type == Type.macOS) {
 			availableDestinations << new Destination("OS X", "OS X", "10.x")
 			return availableDestinations
 		}

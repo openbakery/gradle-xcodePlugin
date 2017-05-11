@@ -7,9 +7,6 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
-/**
- * Created by rene on 05.11.15.
- */
 class SimulatorKillTaskSpecification extends Specification {
 
 	SimulatorKillTask task
@@ -54,7 +51,7 @@ class SimulatorKillTaskSpecification extends Specification {
 
 	def "not enabled on OS X"() {
 		when:
-		project.xcodebuild.type = 'OSX'
+		project.xcodebuild.type = 'macOS'
 
 		task.execute()
 

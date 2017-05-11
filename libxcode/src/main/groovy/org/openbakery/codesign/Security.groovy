@@ -1,13 +1,16 @@
 package org.openbakery.codesign
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
+import org.openbakery.util.DateHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 21.12.16.
- */
+import java.security.cert.CertificateException
+import java.text.ParseException
+
 class Security {
 	private static Logger logger = LoggerFactory.getLogger(Security.class)
 
@@ -97,12 +100,58 @@ class Security {
 			logger.debug("cannot import certificate because certificate does no exist: {}", certificate.absolutePath)
 			throw new IllegalArgumentException("Given certificate does not exist")
 		}
+
+		checkIfCertificateIsValid(certificate, certificatePassword)
+
 		if (!keychain.exists()) {
 			logger.debug("cannot import certificate because keychain does no exist: {}", keychain.absolutePath)
 			throw new IllegalArgumentException("Given keychain does not exist")
 		}
 		logger.debug("importCertificate")
 		commandRunner.run(["security", "-v", "import", certificate.absolutePath, "-k", keychain.absolutePath, "-P", certificatePassword, "-T", "/usr/bin/codesign"])
+	}
+
+	void checkIfCertificateIsValid(File certificate, String certificatePassword) {
+
+		logger.debug("checkIfCertificateIsValid {}", certificate)
+
+
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
+		def pkcs12File = new File(tmpDir, "pkcs12File_" + FilenameUtils.getBaseName(certificate.path) + ".pfx")
+		pkcs12File.deleteOnExit()
+
+		commandRunner.run(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
+		def result = commandRunner.runWithResult(["openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
+
+		logger.debug("checkIfCertificateIsValid enddate: {}", result)
+
+		if (result == null) {
+			throw new  CertificateException("openssl command returned no result.")
+		}
+
+		if (result.startsWith("Mac verify error: invalid password?")) {
+
+			throw new  CertificateException("Wrong password to open certificate.")
+		}
+
+		String[] parts = result.split("notAfter=")
+
+		if (parts.length > 1) {
+
+			def dateHelper = new DateHelper()
+			def certificateExpiration = dateHelper.parseOpenSSLDate(parts[1])
+
+			if (certificateExpiration.after(new Date())) {
+
+				logger.debug("checkIfCertificateIsValid certificate is valid")
+
+				return
+			}
+
+			throw new CertificateException("Given certificate has expired on: " + certificateExpiration.toString())
+		}
+
+		throw new CertificateException("Output from openssl command could not be parsed.")
 	}
 
 	String getIdentity(File keychain) {

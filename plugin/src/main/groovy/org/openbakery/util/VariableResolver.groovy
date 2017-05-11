@@ -4,9 +4,6 @@ import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 16.02.15.
- */
 class VariableResolver {
 	private static Logger logger = LoggerFactory.getLogger(VariableResolver.class)
 

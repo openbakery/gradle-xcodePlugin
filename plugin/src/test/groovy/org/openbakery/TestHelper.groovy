@@ -3,9 +3,6 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.openbakery.util.PlistHelper
 
-/**
- * Created by rene on 25.10.16.
- */
 class TestHelper {
 
 
@@ -31,6 +28,12 @@ class TestHelper {
 
 		FileUtils.writeStringToFile(new File(destinationDirectory, "${name}.app/Icon.png"), "dummy")
 		FileUtils.writeStringToFile(new File(destinationDirectory, "${name}.app/Icon-72.png"), "dummy")
+
+		// create bitcode symbol map files
+		FileUtils.writeStringToFile(new File(destinationDirectory, "14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap"), "dummy")
+		FileUtils.writeStringToFile(new File(destinationDirectory, "2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap"), "dummy")
+		new File(destinationDirectory, "MyFramework").mkdirs()
+		FileUtils.writeStringToFile(new File(destinationDirectory, "MyFramework/23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap"), "dummy")
 
 		return appDirectory
 	}

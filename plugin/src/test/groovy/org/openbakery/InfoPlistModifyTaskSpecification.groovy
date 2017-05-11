@@ -6,9 +6,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
 import spock.lang.Specification
 
-/**
- * Created by rene on 25.07.14.
- */
 class InfoPlistModifyTaskSpecification extends Specification{
 
 
