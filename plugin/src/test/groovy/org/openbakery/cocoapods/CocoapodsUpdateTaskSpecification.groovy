@@ -45,7 +45,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask.update()
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/pod", "setup"], _)
+		1 * commandRunner.run(project.projectDir.absolutePath, ["/usr/local/bin/pod", "setup"], _)
 	}
 
 	def "update pods"() {
@@ -56,7 +56,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask.update()
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/pod", "update"], _)
+		1 * commandRunner.run(project.projectDir.absolutePath, ["/usr/local/bin/pod", "update"], _)
 	}
 
 	def "update pods with user cocoapods"() {
@@ -68,7 +68,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask.update()
 
 		then:
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "update"], _)
+		1 * commandRunner.run(project.projectDir.absolutePath, ["/tmp/gems/bin/pod", "update"], _)
 	}
 
 	def "depends on"() {
@@ -114,7 +114,7 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask.runPod("setup")
 
 		then:
-		1 * commandRunner.run(["/Users/build/.rvm/gems/ruby-2.3.0/bin/pod", "setup"], _)
+		1 * commandRunner.run(project.projectDir.absolutePath, ["/Users/build/.rvm/gems/ruby-2.3.0/bin/pod", "setup"], _)
 
 	}
 
