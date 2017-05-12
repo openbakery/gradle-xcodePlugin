@@ -166,7 +166,8 @@ class CodesignSpecification extends  Specification {
 		then:
 		entitlementsFile.exists()
 		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
-
+        entitlements.getStringArray("com..apple..developer..associated-domains").length == 1
+		entitlements.getStringArray("com..apple..developer..associated-domains").contains('webcredentials:example.com') == true
 	}
 
 	def "create entitlements and merge with settings from signing"() {
