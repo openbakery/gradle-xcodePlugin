@@ -1,4 +1,4 @@
-# 0.15.0 (TBA)
+# 0.15.0 (June 2, 2017)
 
 Changes
 * renamed Type.OSX to Type.macOS, you can use both 'OSX' and 'macOS' for the xcodebuild.type parameter
