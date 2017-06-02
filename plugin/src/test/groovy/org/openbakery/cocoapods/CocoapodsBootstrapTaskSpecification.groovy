@@ -51,7 +51,7 @@ class CocoapodsBootstrapTaskSpecification extends Specification {
 		cocoapodsBootstrapTask.bootstrap()
 
 		then:
-		1 * commandRunner.run(_, ["/usr/local/bin/pod", "setup"], _)
+		1 * commandRunner.run(project.projectDir.absolutePath, ["/usr/local/bin/pod", "setup"], _)
 
 	}
 
