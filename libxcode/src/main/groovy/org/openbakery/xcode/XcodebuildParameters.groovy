@@ -1,11 +1,9 @@
 package org.openbakery.xcode
 
+import org.apache.commons.io.FilenameUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 04.08.16.
- */
 class XcodebuildParameters {
 
 	private static Logger logger = LoggerFactory.getLogger(XcodebuildParameters.class)
@@ -27,6 +25,8 @@ class XcodebuildParameters {
 	Set<Destination> configuredDestinations
 	Devices devices
 	List<File> xctestrun
+	Boolean bitcode
+	File applicationBundle
 
 
 	public XcodebuildParameters() {
@@ -41,6 +41,7 @@ class XcodebuildParameters {
 						", type=" + type +
 						", workspace='" + workspace + '\'' +
 						", configuration='" + configuration + '\'' +
+						", bitcode=" + bitcode +
 						", dstRoot=" + dstRoot +
 						", objRoot=" + objRoot +
 						", symRoot=" + symRoot +
@@ -50,7 +51,8 @@ class XcodebuildParameters {
 						", additionalParameters=" + additionalParameters +
 						", configuredDestinations=" + configuredDestinations +
 						", xctestrun=" + xctestrun +
-						'}';
+						", applicationBundle=" + applicationBundle +
+						'}'
 	}
 
 
@@ -84,6 +86,12 @@ class XcodebuildParameters {
 		}
 		if (other.devices != null) {
 			devices = other.devices
+		}
+		if (other.bitcode != null) {
+			bitcode = other.bitcode
+		}
+		if (other.applicationBundle != null) {
+			applicationBundle = other.applicationBundle
 		}
 
 		return this
@@ -122,5 +130,24 @@ class XcodebuildParameters {
 		}
 		logger.debug("is simulator build {}", this.simulator)
 		return this.simulator
+	}
+
+	String getApplicationBundleName() {
+		return applicationBundle.name
+	}
+
+	String getBundleName() {
+		return FilenameUtils.getBaseName(getApplicationBundleName())
+	}
+
+	File getOutputPath() {
+		if (type == Type.iOS) {
+			if (simulator) {
+				return new File(getSymRoot(), "${configuration}-iphonesimulator")
+			} else {
+				return new File(getSymRoot(), "${configuration}-iphoneos")
+			}
+		}
+		return new File(getSymRoot(), configuration)
 	}
 }

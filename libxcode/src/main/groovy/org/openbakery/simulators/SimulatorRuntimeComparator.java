@@ -2,9 +2,6 @@ package org.openbakery.simulators;
 
 import java.util.Comparator;
 
-/**
- * Created by rene on 09.12.15.
- */
 public class SimulatorRuntimeComparator implements Comparator<SimulatorRuntime> {
 	@Override
 	public int compare(SimulatorRuntime first, SimulatorRuntime second) {

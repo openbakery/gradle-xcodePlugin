@@ -1,13 +1,7 @@
 package org.openbakery.xcode
 
-import org.openbakery.xcode.Devices
-import org.openbakery.xcode.Type
-import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
-/**
- * Created by rene on 09.08.16.
- */
 class XcodebuildParametersSpecification extends Specification {
 
 
@@ -15,7 +9,7 @@ class XcodebuildParametersSpecification extends Specification {
 	XcodebuildParameters second = new XcodebuildParameters()
 
 	def setup() {
-		first.type = Type.OSX
+		first.type = Type.macOS
 		first.simulator = false
 		first.target = "ExampleOSX"
 		first.scheme = "ExampleScheme"
@@ -133,6 +127,70 @@ class XcodebuildParametersSpecification extends Specification {
 
 		then:
 		first.devices == Devices.WATCH
+	}
+
+	def "bitcode is merged"() {
+		when:
+		second.bitcode = true
+		first.merge(second)
+
+		then:
+		first.bitcode == true
+	}
+
+	def "applicationBundle is merged"() {
+		when:
+		second.applicationBundle = new File("MyApp.app")
+		first.merge(second)
+
+		then:
+		first.applicationBundle == new File("MyApp.app")
+	}
+
+	def "applicationBundleName is from applicationBundle"() {
+		when:
+		first.applicationBundle = new File("/tmp/MyApp.app")
+
+		then:
+		first.applicationBundleName == "MyApp.app"
+	}
+
+	def "bundleName is from applicationBundle"() {
+		when:
+		first.applicationBundle = new File("/tmp/MyApp.app")
+
+		then:
+		first.bundleName == "MyApp"
+	}
+
+	def "outputPath for debug iOS simulator build"() {
+		when:
+		first.configuration = "debug"
+		first.type = Type.iOS
+		first.symRoot = new File("sym")
+		first.simulator = true
+
+		then:
+		first.outputPath == new File("sym/debug-iphonesimulator")
+	}
+
+	def "outputPath with different configurations"(simulator, configuration, type, outputPath) {
+		when:
+		first.configuration = configuration
+		first.type = type
+		first.simulator = simulator
+		first.symRoot = new File("sym")
+
+		then:
+		first.outputPath == new File(outputPath)
+
+		where:
+		simulator | configuration | type       | outputPath
+		false     | "debug"       | Type.iOS   | "sym/debug-iphoneos"
+		false     | "release"     | Type.iOS   | "sym/release-iphoneos"
+		true      | "debug"       | Type.iOS   | "sym/debug-iphonesimulator"
+		true      | "release"     | Type.iOS   | "sym/release-iphonesimulator"
+		false     | "release"     | Type.macOS | "sym/release"
 	}
 
 }

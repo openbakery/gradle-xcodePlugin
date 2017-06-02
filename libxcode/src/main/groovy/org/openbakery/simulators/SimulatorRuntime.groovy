@@ -3,9 +3,6 @@ package org.openbakery.simulators
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 
-/**
- * Created by rene on 30.04.15.
- */
 class SimulatorRuntime {
 	String name
 	Version version

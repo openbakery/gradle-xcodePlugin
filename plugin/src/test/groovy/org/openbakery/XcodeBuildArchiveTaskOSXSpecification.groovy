@@ -6,12 +6,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Type
-import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
-/**
- * Created by Stefan Gugarel on 04/02/15.
- */
 class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	Project project
@@ -32,13 +28,13 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		project.xcodebuild.infoPlist = 'Info.plist'
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 		project.xcodebuild.signing.identity = "my identity"
 
 		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
 		xcodeBuildArchiveTask.commandRunner = commandRunner
-		xcodeBuildArchiveTask.parameters.type = Type.OSX
+		xcodeBuildArchiveTask.parameters.type = Type.macOS
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration)
 		buildOutputDirectory.mkdirs()
@@ -93,6 +89,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	def "get Icon Path OSX"() {
 		given:
+		xcodeBuildArchiveTask.parameters = project.xcodebuild.xcodebuildParameters
 		// Info.plist from Example.app
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 
@@ -109,6 +106,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	def "no Icon Mac OSX"() {
 		given:
+		xcodeBuildArchiveTask.parameters = project.xcodebuild.xcodebuildParameters
 		// Info.plist from Example.app
 		File infoPlistInAppFile = new File(projectDir, "/build/sym/Debug/Example.app/Contents/Info.plist")
 

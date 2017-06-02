@@ -2,6 +2,7 @@ package org.openbakery.signing
 
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
+import org.openbakery.codesign.CodesignParameters
 
 /**
  *
@@ -23,6 +24,7 @@ class Signing {
 	String plugin
 	Object entitlementsFile
 
+	Map<String, Object> entitlements
 
 	/**
 	 * internal parameters
@@ -98,20 +100,12 @@ class Signing {
 		}
 	}
 
-	void setMobileProvisionFile(Object mobileProvision) {
 
-		File fileToAdd = null
-
-		if (mobileProvision instanceof File) {
-			fileToAdd = mobileProvision
-		} else {
-			fileToAdd = new File(mobileProvision.toString());
+	void addMobileProvisionFile(File mobileProvision) {
+		if (!mobileProvision.exists()) {
+			throw new IllegalArgumentException("given mobile provision file does not exist: " + mobileProvision.absolutePath)
 		}
-
-		if (!fileToAdd.exists()) {
-			throw new IllegalArgumentException("given mobile provision file does not exist: " +	fileToAdd.absolutePath)
-		}
-		mobileProvisionFile.add(fileToAdd)
+		mobileProvisionFile.add(mobileProvision)
 	}
 
 
@@ -120,6 +114,10 @@ class Signing {
 			return project.file(entitlementsFile)
 		}
 		return null
+	}
+
+	boolean hasEntitlementsFile() {
+		return entitlementsFile != null && entitlementsFile.exists()
 	}
 
 	void setEntitlementsFile(Object entitlementsFile) {
@@ -131,6 +129,11 @@ class Signing {
 	}
 
 
+
+	public void entitlements(Map<String, Object> entitlements) {
+		this.entitlements = entitlements
+
+	}
 
 	@Override
 	public String toString() {
@@ -148,4 +151,18 @@ class Signing {
 						", mobileProvisionURI='" + mobileProvisionURI + '\'' +
 						'}';
 	}
+
+	CodesignParameters getCodesignParameters() {
+		CodesignParameters result = new CodesignParameters()
+		result.signingIdentity = getIdentity()
+		result.mobileProvisionFiles = getMobileProvisionFile().clone()
+		result.keychain = getKeychain()
+		if (entitlements != null) {
+			result.entitlements = entitlements.clone()
+		}
+		result.entitlementsFile = entitlementsFile
+		return result
+	}
+
+
 }

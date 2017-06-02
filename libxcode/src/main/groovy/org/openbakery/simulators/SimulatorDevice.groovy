@@ -2,9 +2,6 @@ package org.openbakery.simulators
 
 import org.openbakery.util.StringHelper
 
-/**
- * Created by rene on 30.04.15.
- */
 class SimulatorDevice {
 
 	public String name

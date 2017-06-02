@@ -81,7 +81,6 @@ class XcodeBuildPluginExtension {
 	Object symRoot
 	Object sharedPrecompsDir
 	Object derivedDataPath
-	String sourceDirectory = '.'
 	Signing signing = null
 	def additionalParameters = null
 	String bundleNameSuffix = null
@@ -95,12 +94,12 @@ class XcodeBuildPluginExtension {
 	String ipaFileName = null
 	File projectFile
 
+	Boolean bitcode = false
+
 	boolean useXcodebuildArchive = false
 
 
-	Devices devices = Devices.UNIVERSAL;
-
-	//Set<Destination> destinations = null
+	Devices devices = Devices.UNIVERSAL
 
 	CommandRunner commandRunner
 	VariableResolver variableResolver
@@ -152,7 +151,7 @@ class XcodeBuildPluginExtension {
 			return workspace
 		}
 		String[] fileList = project.projectDir.list(new SuffixFileFilter(".xcworkspace"))
-		if (fileList.length) {
+		if (fileList != null && fileList.length) {
 			return fileList[0]
 		}
 		return null
@@ -328,6 +327,8 @@ class XcodeBuildPluginExtension {
 		return bundleName
 	}
 
+
+	// should be removed an replaced by the xcodebuildParameters.outputPath
 	File getOutputPath() {
 		String path = getConfiguration()
 		if (type == Type.iOS) {
@@ -380,7 +381,7 @@ class XcodeBuildPluginExtension {
 		if (buildConfiguration != null) {
 			BuildConfiguration buildSettings = buildConfiguration.buildSettings[configuration];
 			logger.debug("buildSettings: {}", buildSettings)
-			if (type == Type.OSX) {
+			if (type == Type.macOS) {
 				return new File(getOutputPath(), buildSettings.productName + ".app/Contents/MacOS/" + buildSettings.productName)
 			}
 			return new File(getOutputPath(), buildSettings.productName + ".app/" + buildSettings.productName)
@@ -423,17 +424,12 @@ class XcodeBuildPluginExtension {
 
 
 	void setType(String type) {
-		this.type = Type.typeFromString(type);
-	}
-
-
-	void setSdk(String sdk) {
-		throw new IllegalArgumentException("Settings the 'sdk' is not supported anymore. Use the 'type' parameter instead")
+		this.type = Type.typeFromString(type)
 	}
 
 
 	boolean getSimulator() {
-		if (type == Type.OSX) {
+		if (type == Type.macOS) {
 			return false
 		}
 		return this.simulator
@@ -451,7 +447,7 @@ class XcodeBuildPluginExtension {
 		if (projectFile instanceof File) {
 			this.projectFile = projectFile
 		}
-		this.projectFile = new File(projectFile)
+		this.projectFile = new File(project.projectDir.absolutePath, projectFile)
 	}
 
 	File getProjectFile() {
@@ -488,6 +484,8 @@ class XcodeBuildPluginExtension {
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
+		result.bitcode = this.bitcode
+		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {
 			result.arch = this.arch.clone()

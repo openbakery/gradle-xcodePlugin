@@ -7,9 +7,6 @@ import org.openbakery.simulators.SimulatorControl
 import org.openbakery.testdouble.SimulatorControlStub
 import spock.lang.Specification
 
-/**
- * Created by rene on 10.08.16.
- */
 class DestinationResolverSpecification extends Specification {
 
 	Project project
@@ -32,7 +29,7 @@ class DestinationResolverSpecification extends Specification {
 	def "available destinations for OS X"() {
 
 		when:
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 
 		then:
 		destinationResolver.getDestinations(extension.getXcodebuildParameters()).size() == 1

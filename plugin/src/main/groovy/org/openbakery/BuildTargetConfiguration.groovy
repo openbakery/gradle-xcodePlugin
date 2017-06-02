@@ -2,26 +2,26 @@ package org.openbakery
 
 import org.openbakery.xcode.Devices
 
-/**
- * Created by rene on 08.10.15.
- */
-
-
 class BuildConfiguration {
+	String target
+	String targetIdentifier
 	String infoplist
 	String bundleIdentifier
 	String productName
 	String sdkRoot
 	Devices devices
 	String entitlements
+	String productType
 
 	BuildConfiguration parent;
 
-	public BuildConfiguration() {
+	public BuildConfiguration(String target) {
+		this.target = target
 	}
 
-	public BuildConfiguration(BuildConfiguration parent) {
-		this.parent = parent;
+	public BuildConfiguration(String target, BuildConfiguration parent) {
+		this(target)
+		this.parent = parent
 	}
 
 	String getInfoplist() {
@@ -72,6 +72,25 @@ class BuildConfiguration {
 			return parent.entitlements
 		}
 		return null
+	}
+
+	void setProductName(String productName) {
+		this.productName = resolveVariable(productName)
+	}
+
+	String resolveVariable(String variable) {
+		String result = resolve(variable, "TARGET_NAME", target)
+		return result
+	}
+
+	String resolve(String variable, String key, String value) {
+		if (variable == '${' + key + '}') {
+			return value
+		}
+		if (variable == '$(' + key + ')') {
+			return value
+		}
+		return variable
 	}
 
 	@Override

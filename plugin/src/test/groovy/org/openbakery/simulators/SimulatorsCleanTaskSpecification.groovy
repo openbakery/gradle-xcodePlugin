@@ -1,16 +1,10 @@
 package org.openbakery.simulators
 
-import groovy.mock.interceptor.MockFor
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
-import org.junit.Before
-import org.junit.Test
 import spock.lang.Specification
 
-/**
- * Created by rene on 30.04.15.
- */
 class SimulatorsCleanTaskSpecification extends Specification {
 
 
@@ -53,7 +47,5 @@ class SimulatorsCleanTaskSpecification extends Specification {
 
 		then:
 		1* simulatorControl.eraseAll()
-
-
 	}
 }

@@ -11,6 +11,7 @@ import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.DestinationResolver
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 /**
@@ -280,6 +281,19 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.getCodesign() != null
 	}
 
+	def "codesign type was set"() {
+		when:
+
+		project.xcodebuild.type = Type.macOS
+		def bundleDirectory = createTestBundleForDeviceBuild()
+		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
+		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory)
+		project.evaluate()
+
+		then:
+		xcodeTestRunTestTask.getCodesign().codesignParameters.type == Type.macOS
+	}
+
 	def "simulator has no codesign"() {
 		when:
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
@@ -335,7 +349,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		def bundleDirectory = createTestBundleForDeviceBuild()
 		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		mockEntitlementsFromPlist(mobileprovision)
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
 
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.destination {
@@ -363,7 +377,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		def bundleDirectory = createTestBundleForDeviceBuild()
 		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		mockEntitlementsFromPlist(mobileprovision)
-		project.xcodebuild.signing.mobileProvisionFile = mobileprovision
+		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.destination {
 			platform = "iOS"

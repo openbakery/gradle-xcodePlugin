@@ -1,16 +1,11 @@
 package org.openbakery.cocoapods
 
-import org.codehaus.groovy.tools.shell.Command
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
-import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import org.openbakery.output.ConsoleOutputAppender
 
-/**
- * Created by rene on 04.02.16.
- */
 class AbstractCocoapodsTask extends AbstractXcodeTask {
 
 	String podCommand = null
@@ -23,8 +18,6 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 			// pod does not exist so add the dependency
 			dependsOn(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 		}
-
-
 
 	}
 
@@ -57,7 +50,7 @@ class AbstractCocoapodsTask extends AbstractXcodeTask {
 		ArrayList<String> commandList = []
 		commandList.add podCommand
 		commandList.add parameter
-		commandRunner.run commandList, new ConsoleOutputAppender(output)
+		commandRunner.run project.projectDir.absolutePath, commandList, new ConsoleOutputAppender(output)
 	}
 
 

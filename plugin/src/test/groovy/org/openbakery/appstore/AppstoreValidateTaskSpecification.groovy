@@ -9,9 +9,6 @@ import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 
-/**
- * Created by rene on 08.01.15.
- */
 class AppstoreValidateTaskSpecification extends Specification {
 
 	Project project

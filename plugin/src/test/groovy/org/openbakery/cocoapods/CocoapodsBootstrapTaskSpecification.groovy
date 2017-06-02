@@ -6,9 +6,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.09.16.
- */
 class CocoapodsBootstrapTaskSpecification extends Specification {
 
 
@@ -54,7 +51,7 @@ class CocoapodsBootstrapTaskSpecification extends Specification {
 		cocoapodsBootstrapTask.bootstrap()
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/pod", "setup"], _)
+		1 * commandRunner.run(_, ["/usr/local/bin/pod", "setup"], _)
 
 	}
 

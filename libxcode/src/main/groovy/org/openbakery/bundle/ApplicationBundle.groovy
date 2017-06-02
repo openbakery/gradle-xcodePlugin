@@ -2,9 +2,6 @@ package org.openbakery.bundle
 
 import org.openbakery.xcode.Type
 
-/**
- * Created by rene on 28.10.16.
- */
 public class ApplicationBundle {
 
 	File applicationPath
@@ -33,7 +30,7 @@ public class ApplicationBundle {
 		File plugins
 		if (isDeviceBuildOf(Type.iOS)) {
 			plugins = new File(appBundle, "PlugIns")
-		}	else if (this.type == Type.OSX) {
+		}	else if (this.type == Type.macOS) {
 			plugins = new File(appBundle, "Contents/PlugIns")
 		} else {
 			return

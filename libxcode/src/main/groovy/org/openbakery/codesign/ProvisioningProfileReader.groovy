@@ -21,6 +21,8 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
+import org.openbakery.configuration.Configuration
+import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.util.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -50,7 +52,9 @@ class ProvisioningProfileReader {
 	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner, PlistHelper plistHelper) {
 		super()
 
+		logger.debug("load provisioningProfile: {}", provisioningProfile)
 		String text = load(provisioningProfile)
+		logger.debug("provisioningProfile content:\n{}\n--- END ---", text)
 		config = new XMLPropertyListConfiguration()
 		config.load(new StringReader(text))
 
@@ -195,7 +199,8 @@ class ProvisioningProfileReader {
 		return value
 	}
 
-	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups) {
+	/* xcent is the archive entitlements */
+	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups, Configuration configuration) {
 		File plistFromProvisioningProfile = getPlistFromProvisioningProfile()
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
@@ -258,7 +263,44 @@ class ProvisioningProfileReader {
 			plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 		}
 
+
+		if (logger.isDebugEnabled()) {
+			String entitlementsContent = FileUtils.readLines(entitlementFile)
+			logger.debug("entitlements content\n{}", entitlementsContent)
+		}
+
+
+		// copy the missing values that are in the xcent to the entitlements for signing
+		List<String>keys = getMissingKeys(entitlementFile, configuration)
+
+		if (keys.size() > 0) {
+			logger.info("Found some entitlements settings in the archived entitlements that are missing in the provisioning profile so this values will be added")
+		}
+		for (String key in keys) {
+			logger.info("add to entitlement: {}", key)
+			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)
+			plistHelper.addValueForPlist(entitlementFile, key, value)
+		}
+
 	}
+
+
+	List<String> getMissingKeys(File entitlementFile, Configuration configuration) {
+		if (configuration == null) {
+			return []
+		}
+		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
+
+		def result = new ArrayList<String>()
+		for (String key in configuration.getKeys()) {
+			if (!entitlements.containsKey(key)) {
+				result << key
+			}
+		}
+
+		return result
+	}
+
 
 	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)

@@ -4,18 +4,13 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.test.TestClass
 import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.xcode.Destination
-import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
-/**
- * Created by rene on 07.10.15.
- */
 class XcodeTestTaskSpecification extends Specification {
 
 	Project project
@@ -84,6 +79,16 @@ class XcodeTestTaskSpecification extends Specification {
 						"OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
 						"SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
 						"SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath
+		]
+	}
+
+
+	def expectedCodesignSettings() {
+		return [
+						"CODE_SIGN_IDENTITY=",
+						"CODE_SIGNING_REQUIRED=NO",
+//					 "CODE_SIGN_ENTITLEMENTS=",
+//					 "CODE_SIGNING_ALLOWED=NO",
 		]
 	}
 
@@ -180,7 +185,7 @@ class XcodeTestTaskSpecification extends Specification {
 		def commandList
 		def expectedCommandList
 
-		project.xcodebuild.type = 'OSX'
+		project.xcodebuild.type = 'macOS'
 		project.xcodebuild.target = 'Test'
 		mockXcodeVersion()
 
@@ -198,15 +203,16 @@ class XcodeTestTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 														 "-sdk", "macosx",
 														 "-target", 'Test',
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
+														 ]
+			expectedCommandList.addAll(expectedCodesignSettings())
+			expectedCommandList.addAll([
 														 "-destination",
 														 "platform=OS X,arch=x86_64",
 														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
 														 "OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
 														 "SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
 														 "SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath
-			]
+			])
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "test"
 		}
@@ -225,9 +231,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO"
 		]
+		expectedCommandList.addAll(expectedCodesignSettings())
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
@@ -283,7 +288,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 
 	def setupOSXBuild(String... commands) {
-		project.xcodebuild.type = Type.OSX
+		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.target = 'Test';
 
 		project.xcodebuild.scheme = 'myscheme'
@@ -294,9 +299,8 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", 'myscheme',
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO"
 		]
+		expectedCommandList.addAll(expectedCodesignSettings())
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
@@ -486,10 +490,9 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-scheme", "Foobar",
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO",
-															 "-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"
 		]
+		expectedCommandList.addAll(expectedCodesignSettings())
+		expectedCommandList.addAll(["-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"])
 		expectedCommandList.addAll(expectedDefaultDirectories())
 
 		mockXcodeVersion()

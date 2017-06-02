@@ -7,7 +7,6 @@ import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.methods.HttpRequestBase
-import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.StringBody
@@ -17,9 +16,6 @@ import org.apache.http.util.EntityUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by rene on 17.02.15.
- */
 class HttpUpload {
 
 	private static Logger logger = LoggerFactory.getLogger(HttpUpload.class)

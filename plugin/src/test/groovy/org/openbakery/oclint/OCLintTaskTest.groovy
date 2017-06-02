@@ -2,6 +2,7 @@ package org.openbakery.oclint
 
 import groovy.mock.interceptor.MockFor
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
@@ -14,9 +15,6 @@ import org.junit.Test
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*
 
-/**
- * Created by rene on 22.07.15.
- */
 class OCLintTaskTest {
 
 
@@ -27,8 +25,7 @@ class OCLintTaskTest {
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
 	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
-	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-16.0.0.tar.gz"
-	String filename = "oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
+	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.11.1/oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"
 	String oclintPath = 'oclint-0.11'
 
 	File tmpDirectory
@@ -40,6 +37,9 @@ class OCLintTaskTest {
 	@Before
 	void setUp() {
 		savedOSVersion = System.getProperty("os.version")
+
+		System.setProperty("os.version", "10.11.0")
+
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir.mkdirs()
@@ -60,6 +60,20 @@ class OCLintTaskTest {
 	void cleanup() {
 		System.setProperty("os.version", savedOSVersion)
 		FileUtils.deleteDirectory(projectDir)
+	}
+
+	String filename(String URLString) {
+		return FilenameUtils.getName(new URL(URLString).getPath())
+	}
+
+	String destinationPath(String URLString) {
+		new File(tmpDirectory, filename(URLString)).absolutePath
+	}
+
+	@Test
+	void filenameFromURL() {
+		// just make sure that the filename function does the right thing ;-)
+		assertThat(filename(downloadURLForSierra), equalTo("oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"))
 	}
 
 	@Test
@@ -111,7 +125,7 @@ class OCLintTaskTest {
 					def expectedParameters = [
 									'tar',
 									'xzf',
-									new File(tmpDirectory, filename).absolutePath,
+									destinationPath(downloadURL),
 									'-C',
 									tmpDirectory.absolutePath
 					]
@@ -370,5 +384,16 @@ class OCLintTaskTest {
 	}
 
 
+	@Test
+	void oclint_bin_directory() {
+		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.11/bin")))
+	}
+
+
+	@Test
+	void oclint_bin_directory_sierra() {
+		System.setProperty("os.version", "10.12.0")
+		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.11.1/bin")))
+	}
 
 }

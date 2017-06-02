@@ -4,9 +4,6 @@ import org.gradle.api.logging.LogLevel
 import org.gradle.api.logging.Logger
 import org.slf4j.Marker
 
-/**
- * Created by rene on 30.06.15.
- */
 class LoggerStub implements Logger {
 
 	def logEntries = [:]

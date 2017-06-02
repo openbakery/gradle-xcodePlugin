@@ -9,9 +9,6 @@ import spock.lang.Specification
 import static org.hamcrest.Matchers.*
 import static spock.util.matcher.HamcrestSupport.*
 
-/**
- * Created by rene on 08.10.15.
- */
 class XcodeProjectFile_WatchSpecification extends Specification {
 
 

@@ -9,9 +9,6 @@ import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
-/**
- * Created by rene on 07.10.15.
- */
 class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	Project project
@@ -67,9 +64,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	HashMap<String, BuildTargetConfiguration> createProjectSettings() {
 		HashMap<String, BuildTargetConfiguration> result = new HashMap<>()
 
-		BuildTargetConfiguration appConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration release = new BuildConfiguration();
-		BuildConfiguration debug = new BuildConfiguration();
+		BuildTargetConfiguration appConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration release = new BuildConfiguration("Example")
+		BuildConfiguration debug = new BuildConfiguration("Example")
 		appConfiguration.buildSettings["Release"] = release
 		appConfiguration.buildSettings["Debug"] = debug
 
@@ -84,9 +81,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		release.devices = Devices.UNIVERSAL
 
 
-		BuildTargetConfiguration watchAppConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration watchAppConfigurationRelease = new BuildConfiguration();
-		BuildConfiguration watchAppConfigurationDebug = new BuildConfiguration();
+		BuildTargetConfiguration watchAppConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration watchAppConfigurationRelease = new BuildConfiguration("ExampleWatchkit WatchKit App")
+		BuildConfiguration watchAppConfigurationDebug = new BuildConfiguration("ExampleWatchkit WatchKit App")
 		watchAppConfiguration.buildSettings["Release"] = watchAppConfigurationRelease
 		watchAppConfiguration.buildSettings["Debug"] = watchAppConfigurationDebug
 
@@ -100,9 +97,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		watchAppConfigurationRelease.sdkRoot = "watchos"
 		watchAppConfigurationRelease.devices = Devices.WATCH
 
-		BuildTargetConfiguration extensionConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration extenstionConfigurationRelease = new BuildConfiguration();
-		BuildConfiguration extenstionConfigurationDebug = new BuildConfiguration();
+		BuildTargetConfiguration extensionConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration extenstionConfigurationRelease = new BuildConfiguration("ExampleWatchkit WatchKit Extension")
+		BuildConfiguration extenstionConfigurationDebug = new BuildConfiguration("ExampleWatchkit WatchKit Extension")
 		extensionConfiguration.buildSettings["Release"] = extenstionConfigurationRelease
 		extensionConfiguration.buildSettings["Debug"] = extenstionConfigurationDebug
 
@@ -117,9 +114,9 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extenstionConfigurationRelease.devices = Devices.WATCH
 
 
-		result.put("ExampleWatchkit", appConfiguration);
-		result.put("ExampleWatchkit WatchKit App", watchAppConfiguration);
-		result.put("ExampleWatchkit WatchKit Extension", extensionConfiguration);
+		result.put("ExampleWatchkit", appConfiguration)
+		result.put("ExampleWatchkit WatchKit App", watchAppConfiguration)
+		result.put("ExampleWatchkit WatchKit Extension", extensionConfiguration)
 
 		return result
 	}
@@ -275,7 +272,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	def "os x has no simulator"() {
 
 		when:
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 		then:
 		extension.simulator == false
 
@@ -313,10 +310,10 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 	def "get build configuration for bundle identifier with missing info plist"() {
 		given:
 		HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
-		BuildTargetConfiguration buildTargetConfiguration = new BuildTargetConfiguration();
-		BuildConfiguration release = new BuildConfiguration();
+		BuildTargetConfiguration buildTargetConfiguration = new BuildTargetConfiguration()
+		BuildConfiguration release = new BuildConfiguration("ExampleWatchkit")
 		buildTargetConfiguration.buildSettings["Debug"] = release
-		projectSettings.put("ExampleWatchkit", buildTargetConfiguration);
+		projectSettings.put("ExampleWatchkit", buildTargetConfiguration)
 
 
 		extension.projectSettings = projectSettings
@@ -420,7 +417,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension = new XcodeBuildPluginExtension(project)
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleOSX.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 		extension.simulator = false
 		extension.target = "ExampleOSX"
 		extension.productType = "app"
@@ -446,7 +443,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		File projectDir =  new File("../example/iOS")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.projectFile = "../example/iOS/Example/Example.xcodeproj"
+		extension.projectFile = "Example/Example.xcodeproj"
 
 		then:
 		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
@@ -455,10 +452,10 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "XcodebuildParameters are created with proper values"() {
 		when:
-		File projectDir =  new File("../example/OSX/ExampleOSX")
+		File projectDir =  new File("../example/macOS/ExampleOSX")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		extension = new XcodeBuildPluginExtension(project)
-		extension.type = Type.OSX
+		extension.type = Type.macOS
 		extension.simulator = false
 		extension.target = "ExampleOSX"
 		extension.scheme = "ExampleScheme"
@@ -478,7 +475,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		def parameters = extension.getXcodebuildParameters()
 
 		then:
-		parameters.type == Type.OSX
+		parameters.type == Type.macOS
 		parameters.simulator == false
 		parameters.target == "ExampleOSX"
 		parameters.scheme == "ExampleScheme"
@@ -515,5 +512,43 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+	def "bitcode is default false"() {
+		expect:
+		extension.bitcode == false
+	}
+
+	def "xcodeparameter is created with simulator true value"() {
+		when:
+		File projectDir = new File("../example/macOS/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.simulator = true
+
+		then:
+		extension.getXcodebuildParameters().simulator == true
+	}
+
+	def "xcodeparameter is created with bitcode value"() {
+		when:
+		File projectDir = new File("../example/macOS/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.bitcode = true
+
+		then:
+		extension.getXcodebuildParameters().bitcode == true
+	}
+
+	def "xcodebuildParameters is created with the applicationBundle"() {
+		when:
+		File projectDir = new File("../example/macOS/ExampleOSX")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.bundleName = "MyApp"
+
+		then:
+		extension.getXcodebuildParameters().applicationBundle == new File(extension.getOutputPath(), "MyApp.app")
+
+	}
 
 }

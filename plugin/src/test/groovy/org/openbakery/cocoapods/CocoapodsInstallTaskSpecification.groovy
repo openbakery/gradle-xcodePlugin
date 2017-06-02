@@ -9,9 +9,6 @@ import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
 
-/**
- * Created by rene on 11.11.14.
- */
 class CocoapodsInstallTaskSpecification extends Specification {
 
 
@@ -48,7 +45,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/pod", "setup"], _)
+		1 * commandRunner.run(_, ["/usr/local/bin/pod", "setup"], _)
 	}
 
 	def "install pods"() {
@@ -60,7 +57,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
+		1 * commandRunner.run(_, ["/tmp/gems/bin/pod", "install"], _)
 
 	}
 
@@ -73,7 +70,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/pod", "install"], _)
+		1 * commandRunner.run(_, ["/usr/local/bin/pod", "install"], _)
 
 	}
 
@@ -89,7 +86,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		0 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
+		0 * commandRunner.run(_, ["/tmp/gems/bin/pod", "install"], _)
 	}
 
 
@@ -109,7 +106,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
+		1 * commandRunner.run(_, ["/tmp/gems/bin/pod", "install"], _)
 
 	}
 
@@ -131,7 +128,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["/tmp/gems/bin/pod", "install"], _)
+		1 * commandRunner.run(_, ["/tmp/gems/bin/pod", "install"], _)
 	}
 
 
@@ -143,7 +140,7 @@ class CocoapodsInstallTaskSpecification extends Specification {
 		cocoapodsTask.install()
 
 		then:
-		1 * commandRunner.run(["/usr/local/bin/pod", "install"], _)
+		1 * commandRunner.run(_, ["/usr/local/bin/pod", "install"], _)
 
 	}
 }

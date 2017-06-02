@@ -5,9 +5,6 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 
-/**
- * Created by rene on 17.08.16.
- */
 class CarthageUpdateTask extends AbstractXcodeTask {
 
 

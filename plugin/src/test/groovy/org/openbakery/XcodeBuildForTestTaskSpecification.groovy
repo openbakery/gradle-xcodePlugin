@@ -14,9 +14,6 @@ import org.openbakery.xcode.Xcodebuild
 import spock.lang.Specification
 
 
-/**
- * Created by rene on 25.10.16.
- */
 class XcodeBuildForTestTaskSpecification extends Specification {
 
 	Project project
