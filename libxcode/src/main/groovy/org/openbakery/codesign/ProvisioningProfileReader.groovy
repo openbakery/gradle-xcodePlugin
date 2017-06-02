@@ -269,38 +269,36 @@ class ProvisioningProfileReader {
 			logger.debug("entitlements content\n{}", entitlementsContent)
 		}
 
-
 		// copy the missing values that are in the xcent to the entitlements for signing
-		List<String>keys = getMissingKeys(entitlementFile, configuration)
-
-		if (keys.size() > 0) {
-			logger.info("Found some entitlements settings in the archived entitlements that are missing in the provisioning profile so this values will be added")
-		}
-		for (String key in keys) {
-			logger.info("add to entitlement: {}", key)
-			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)
-			plistHelper.addValueForPlist(entitlementFile, key, value)
-		}
-
-	}
-
-
-	List<String> getMissingKeys(File entitlementFile, Configuration configuration) {
-		if (configuration == null) {
-			return []
-		}
-		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
-
-		def result = new ArrayList<String>()
-		for (String key in configuration.getKeys()) {
-			if (!entitlements.containsKey(key)) {
-				result << key
+		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, replace ->
+            if (replace) {
+				logger.info("replace in entitlement: {}", key)
+				plistHelper.setValueForPlist(entitlementFile, key, value)
+			} else {
+				logger.info("add to entitlement: {}", key)
+				plistHelper.addValueForPlist(entitlementFile, key, value)
 			}
 		}
-
-		return result
 	}
 
+	private void enumerateMissingEntitlements(File entitlementFile, Configuration configuration, Closure closure) {
+		if (configuration == null) {
+			return
+		}
+
+		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
+		List<String>replaceKeys = ["com.apple.developer.associated-domains"]
+
+		for (String key in configuration.getKeys()) {
+			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)
+
+			if (!entitlements.containsKey(key)) {
+				closure(key, value, false)
+			} else if (replaceKeys.contains(key)) {
+				closure(key, value, true)
+			}
+		}
+	}
 
 	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
