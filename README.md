@@ -33,11 +33,9 @@ Here a brief overview of the features:
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
 
-
 ## Documentation
 
 * [Documentation](https://openbakery.org/gxp/)
-
 
 ## Usage
 
