@@ -23,14 +23,11 @@ Here a brief overview of the features:
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint
 
-
-
 ## Requirements
 
 * Xcode 6 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
-
 
 ### Current stable version is 0.15.0
 
