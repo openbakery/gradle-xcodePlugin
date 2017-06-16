@@ -24,12 +24,6 @@ Here a brief overview of the features:
 * OCLint
 
 
-## Note
-
-**Version 0.14+ of the plugin needs at least gradle version 2.14**
-
-**Version 0.13+ will not work with gradle version 2.14**
-
 
 ## Requirements
 
