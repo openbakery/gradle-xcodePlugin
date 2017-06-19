@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5AC571EC1EF82F35002ED5E8 /* Stickers.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AC571EB1EF82F35002ED5E8 /* Stickers.xcassets */; };
+		5AC571F01EF82F35002ED5E8 /* ExampleWatchKit Sticker Pack.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5AC571E91EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A70B87631BBD18920023C19B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A70B87621BBD18920023C19B /* main.m */; };
 		A70B87661BBD18920023C19B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A70B87651BBD18920023C19B /* AppDelegate.m */; };
 		A70B876C1BBD18920023C19B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A70B876A1BBD18920023C19B /* Main.storyboard */; };
@@ -29,6 +31,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5AC571EE1EF82F35002ED5E8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A70B87561BBD18920023C19B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5AC571E81EF82F34002ED5E8;
+			remoteInfo = "ExampleWatchKit Sticker Pack";
+		};
 		A70B87781BBD18920023C19B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A70B87561BBD18920023C19B /* Project object */;
@@ -89,6 +98,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				A7CA61EE1D42210B0007BFF9 /* ExampleWatchKit Today Extension.appex in Embed App Extensions */,
+				5AC571F01EF82F35002ED5E8 /* ExampleWatchKit Sticker Pack.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,6 +106,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5AC571E91EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "ExampleWatchKit Sticker Pack.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AC571EB1EF82F35002ED5E8 /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
+		5AC571ED1EF82F35002ED5E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A70B875E1BBD18920023C19B /* ExampleWatchkit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExampleWatchkit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A70B87621BBD18920023C19B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A70B87641BBD18920023C19B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -165,6 +178,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5AC571EA1EF82F35002ED5E8 /* ExampleWatchKit Sticker Pack */ = {
+			isa = PBXGroup;
+			children = (
+				5AC571EB1EF82F35002ED5E8 /* Stickers.xcassets */,
+				5AC571ED1EF82F35002ED5E8 /* Info.plist */,
+			);
+			path = "ExampleWatchKit Sticker Pack";
+			sourceTree = "<group>";
+		};
 		A70B87551BBD18920023C19B = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +195,7 @@
 				A70B87841BBD18920023C19B /* ExampleWatchkit WatchKit App */,
 				A70B87931BBD18920023C19B /* ExampleWatchkit WatchKit Extension */,
 				A7CA61E51D42210B0007BFF9 /* ExampleWatchKit Today Extension */,
+				5AC571EA1EF82F35002ED5E8 /* ExampleWatchKit Sticker Pack */,
 				A7CA61E21D42210B0007BFF9 /* Frameworks */,
 				A70B875F1BBD18920023C19B /* Products */,
 			);
@@ -186,6 +209,7 @@
 				A70B87801BBD18920023C19B /* ExampleWatchkit WatchKit App.app */,
 				A70B878F1BBD18920023C19B /* ExampleWatchkit WatchKit Extension.appex */,
 				A7CA61E11D42210B0007BFF9 /* ExampleWatchKit Today Extension.appex */,
+				5AC571E91EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -280,6 +304,21 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5AC571E81EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AC571F31EF82F35002ED5E8 /* Build configuration list for PBXNativeTarget "ExampleWatchKit Sticker Pack" */;
+			buildPhases = (
+				5AC571E71EF82F34002ED5E8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ExampleWatchKit Sticker Pack";
+			productName = "ExampleWatchKit Sticker Pack";
+			productReference = 5AC571E91EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack.appex */;
+			productType = "com.apple.product-type.app-extension.messages-sticker-pack";
+		};
 		A70B875D1BBD18920023C19B /* ExampleWatchkit */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A70B87AC1BBD18920023C19B /* Build configuration list for PBXNativeTarget "ExampleWatchkit" */;
@@ -295,6 +334,7 @@
 			dependencies = (
 				A70B87831BBD18920023C19B /* PBXTargetDependency */,
 				A7CA61ED1D42210B0007BFF9 /* PBXTargetDependency */,
+				5AC571EF1EF82F35002ED5E8 /* PBXTargetDependency */,
 			);
 			name = ExampleWatchkit;
 			productName = ExampleWatchkit;
@@ -380,10 +420,14 @@
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Rene Pirringer";
 				TargetAttributes = {
+					5AC571E81EF82F34002ED5E8 = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+					};
 					A70B875D1BBD18920023C19B = {
 						CreatedOnToolsVersion = 7.0.1;
 						DevelopmentTeam = ED5DV56QPQ;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 1;
@@ -413,7 +457,7 @@
 					A7CA61E01D42210B0007BFF9 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = ED5DV56QPQ;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
 					};
 				};
 			};
@@ -435,11 +479,20 @@
 				A70B877F1BBD18920023C19B /* ExampleWatchkit WatchKit App */,
 				A70B878E1BBD18920023C19B /* ExampleWatchkit WatchKit Extension */,
 				A7CA61E01D42210B0007BFF9 /* ExampleWatchKit Today Extension */,
+				5AC571E81EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5AC571E71EF82F34002ED5E8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AC571EC1EF82F35002ED5E8 /* Stickers.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A70B875C1BBD18920023C19B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -524,6 +577,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5AC571EF1EF82F35002ED5E8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5AC571E81EF82F34002ED5E8 /* ExampleWatchKit Sticker Pack */;
+			targetProxy = 5AC571EE1EF82F35002ED5E8 /* PBXContainerItemProxy */;
+		};
 		A70B87791BBD18920023C19B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A70B875D1BBD18920023C19B /* ExampleWatchkit */;
@@ -582,6 +640,44 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		5AC571F11EF82F35002ED5E8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = "ExampleWatchKit Sticker Pack/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.openbakery.test.Example.ExampleWatchKit-Sticker-Pack";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		5AC571F21EF82F35002ED5E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = "ExampleWatchKit Sticker Pack/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.openbakery.test.Example.ExampleWatchKit-Sticker-Pack";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		A70B87A21BBD18920023C19B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -752,7 +848,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ExampleWatchkit/ExampleWatchkit-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -771,7 +867,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ExampleWatchkit/ExampleWatchkit-Bridging-Header.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -815,7 +911,7 @@
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -832,13 +928,22 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5AC571F31EF82F35002ED5E8 /* Build configuration list for PBXNativeTarget "ExampleWatchKit Sticker Pack" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AC571F11EF82F35002ED5E8 /* Debug */,
+				5AC571F21EF82F35002ED5E8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A70B87591BBD18920023C19B /* Build configuration list for PBXProject "ExampleWatchkit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

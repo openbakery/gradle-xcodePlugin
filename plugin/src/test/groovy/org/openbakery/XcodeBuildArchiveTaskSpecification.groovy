@@ -630,4 +630,26 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		!new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps").exists()
 
 	}
+
+	def "copy message extension support folder"() {
+		given:
+		setupProject()
+
+		File extensionDirectory = new File(buildOutputDirectory, "Example.app/PlugIns/ExampleWatchKit Sticker Pack.appex")
+		extensionDirectory.mkdirs()
+		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchKit Sticker Pack/Info.plist")
+		File destinationInfoPlist = new File(extensionDirectory, "Info.plist")
+		FileUtils.copyFile(infoPlist, destinationInfoPlist)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File supportMessagesDirectory = new File(projectDir, "build/archive/Example.xcarchive/MessagesApplicationExtensionSupport")
+        File supportMessagesStub = new File(supportMessagesDirectory, 'MessagesApplicationExtensionStub')
+
+		then:
+		supportMessagesDirectory.exists()
+		supportMessagesDirectory.list().length == 1
+		supportMessagesStub.exists()
+	}
 }
