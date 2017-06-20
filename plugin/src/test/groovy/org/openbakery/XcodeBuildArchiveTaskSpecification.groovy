@@ -633,6 +633,16 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy message extension support folder"() {
 		given:
+		XcodeFake xcode = createXcode("8")
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "Contents/Developer/Platforms/iPhoneOS.platform\n"
+		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+
+		File stubDirectory = new File(xcodebuild.platformDirectory, "Library/Application Support/MessagesApplicationExtensionStub")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "MessagesApplicationExtensionStub")
+		FileUtils.writeStringToFile(stub, "fixture")
+
 		setupProject()
 
 		File extensionDirectory = new File(buildOutputDirectory, "Example.app/PlugIns/ExampleWatchKit Sticker Pack.appex")
