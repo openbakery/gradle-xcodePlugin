@@ -592,4 +592,16 @@ class PackageTaskSpecification extends Specification {
 		!entries.contains("BCSymbolMaps/")
 	}
 
+	def "copy extension support directories"() {
+		given:
+		mockExampleApp(true, true)
+
+        when:
+		packageTask.packageApplication()
+		List<String> entries = ipaEntries()
+
+		then:
+		entries.contains("MessagesApplicationExtensionSupport/MessagesApplicationExtensionStub")
+	}
+
 }
