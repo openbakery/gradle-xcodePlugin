@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.Extension
 
 class ApplicationDummy {
 
@@ -27,7 +28,6 @@ class ApplicationDummy {
 		FileUtils.deleteDirectory(directory)
 	}
 
-
 	File create(boolean adHoc = true) {
 		// create dummy app
 		File appDirectory = applicationBundle
@@ -48,7 +48,6 @@ class ApplicationDummy {
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
-		File mobileprovision = null
 		if (adHoc) {
 			mobileProvisionFile.add(new File("../libtest/src/main/Resource/test.mobileprovision"))
 		} else {
@@ -57,18 +56,22 @@ class ApplicationDummy {
 		return appDirectory
 	}
 
+	void createPlugin(Extension extension = Extension.today) {
+		switch (extension) {
+			case Extension.today:
+				File mobileProvision = new File("src/test/Resource/test1.mobileprovision")
+				createExtension("ExampleTodayWidget", "org.openbakery.test.ExampleWidget", mobileProvision)
+                break
+			case Extension.sticker:
+				File mobileProvision = new File("src/test/Resource/test2.mobileprovision")
+				createExtension("ExampleStickerPack", "org.openbakery.test.ExampleSticker", mobileProvision)
+				File messageExtensionSupportDirectory = new File(directory, "MessagesApplicationExtensionSupport")
+				messageExtensionSupportDirectory.mkdirs()
+				File messageExtensionSupportStub = new File(messageExtensionSupportDirectory, "MessagesApplicationExtensionStub")
+				FileUtils.writeStringToFile(messageExtensionSupportStub, "fixture")
+				break
+		}
 
-	void createPlugin() {
-		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
-		File widgetsDirectory = new File(directory, widgetPath)
-		FileUtils.writeStringToFile(new File(widgetsDirectory, "ExampleTodayWidget"), "dummy");
-
-		File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
-		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.test.ExampleWidget")
-
-
-		File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-		mobileProvisionFile.add(widgetMobileprovision)
 	}
 
 	void createSwiftLibs() {
@@ -76,7 +79,6 @@ class ApplicationDummy {
 		FileUtils.writeStringToFile(libSwiftCore, "dummy")
 		File libSwiftCoreArchive = new File(directory, "SwiftSupport/libswiftCore.dylib")
 		FileUtils.writeStringToFile(libSwiftCoreArchive, "dummy")
-
 		File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
 		FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
 	}
@@ -88,5 +90,22 @@ class ApplicationDummy {
 		FileUtils.writeStringToFile(frameworkFile, "dummy")
 	}
 
+	void createBCSymbolMaps() {
+		File bcsymbolmapsDirectory = new File(directory, "BCSymbolMaps")
+		bcsymbolmapsDirectory.mkdirs()
+		FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap"), "dummy")
+		FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap"), "dummy")
+		FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap"), "dummy")
+	}
 
+	private void createExtension(String name, String bundleIdentifier, File mobileProvision) {
+		String widgetPath = "PlugIns/${name}.appex"
+		File widgetsDirectory = new File(applicationBundle, widgetPath)
+		FileUtils.writeStringToFile(new File(widgetsDirectory, name), "dummy");
+
+		File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
+		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", bundleIdentifier)
+
+		mobileProvisionFile.add(mobileProvision)
+	}
 }

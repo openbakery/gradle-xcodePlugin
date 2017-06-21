@@ -6,6 +6,9 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.appledoc.AppledocCleanTask
+import org.openbakery.test.ApplicationDummy
+import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
@@ -23,6 +26,7 @@ class PackageTaskSpecification extends Specification {
 	Project project
 	PackageTask packageTask;
 
+	ApplicationDummy applicationDummy
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	PlistHelperStub plistHelperStub = new PlistHelperStub()
@@ -73,15 +77,14 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	def cleanup() {
-		if (archiveDirectory != null) {
-			FileUtils.deleteDirectory(archiveDirectory)
+		if (applicationDummy != null) {
+			applicationDummy.cleanup()
 		}
 		FileUtils.deleteDirectory(project.buildDir)
 		FileUtils.deleteDirectory(projectDir)
 		keychain.delete()
 	}
 
- /* use ApplicationDummy from libtest */
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework = false, boolean adHoc = true, boolean bitcode = false) {
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 
@@ -90,88 +93,42 @@ class PackageTaskSpecification extends Specification {
 		File payloadDirectory = new File(outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
+		applicationDummy = new ApplicationDummy(archiveDirectory)
+        applicationDummy.plistHelperStub = plistHelperStub
+        applicationDummy.payloadAppDirectory = payloadAppDirectory
 
-		String widgetPath = "PlugIns/ExampleTodayWidget.appex"
-		// create dummy app
-
-
-		def applicationBundle = new File(archiveDirectory, "Products/Applications/Example.app")
-
-		File appDirectory = applicationBundle
-		if (!appDirectory.exists()) {
-			appDirectory.mkdirs();
-		}
-
-		FileUtils.writeStringToFile(new File(appDirectory, "Example"), "dummy")
-		FileUtils.writeStringToFile(new File(appDirectory, "ResourceRules.plist"), "dummy")
-		FileUtils.writeStringToFile(new File(appDirectory, "Info.plist"), "dummy")
+		def appDirectory = applicationDummy.create(adHoc)
 
 		if (withPlugin) {
-			File widgetsDirectory = new File(applicationBundle, widgetPath)
-			FileUtils.writeStringToFile(new File(widgetsDirectory, "ExampleTodayWidget"), "dummy");
+			applicationDummy.createPlugin()
 		}
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
 
-		if (withPlugin) {
-			File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
-			plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", "org.openbakery.test.ExampleWidget")
-		}
-
-
 		project.xcodebuild.outputPath.mkdirs()
 
 		if (withSwift) {
-
-
-			File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib")
-			FileUtils.writeStringToFile(libSwiftCore, "dummy")
-			File libSwiftCoreArchive = new File(archiveDirectory, "SwiftSupport/libswiftCore.dylib")
-			FileUtils.writeStringToFile(libSwiftCoreArchive, "dummy")
-
-			File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
-			FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
-
-
+            applicationDummy.createSwiftLibs()
 		}
 
 		if (withFramework) {
-			File framework = new File(applicationBundle, "Frameworks/My.framework")
-			framework.mkdirs()
-			File frameworkFile = new File(applicationBundle, "Frameworks/My.framework/My")
-			FileUtils.writeStringToFile(frameworkFile, "dummy")
+            applicationDummy.createFramework()
 		}
 
-		File mobileprovision = null
-		if (adHoc) {
-			mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		} else {
-			mobileprovision = new File("../libtest/src/main/Resource/Appstore.mobileprovision")
-		}
-		project.xcodebuild.signing.addMobileProvisionFile(mobileprovision)
-		mockEntitlementsFromPlist(mobileprovision)
-
-		if (withPlugin) {
-			File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-			project.xcodebuild.signing.addMobileProvisionFile(widgetMobileprovision)
-			mockEntitlementsFromPlist(widgetMobileprovision)
+		for (File mobileProvision in applicationDummy.mobileProvisionFile) {
+			project.xcodebuild.signing.addMobileProvisionFile(mobileProvision)
+			mockEntitlementsFromPlist(mobileProvision)
 		}
 
 		// onDemandResources
-
 		FileUtils.writeStringToFile(new File(appDirectory, "OnDemandResources.plist"), "dummy")
 		File onDemandResources = new File(archiveDirectory, "Products/OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
 		onDemandResources.mkdirs()
 		FileUtils.writeStringToFile(new File(onDemandResources, "Info.plist"), "dummy")
 
-
 		if (bitcode) {
-			File bcsymbolmapsDirectory = new File(archiveDirectory, "BCSymbolMaps")
-			bcsymbolmapsDirectory.mkdirs()
-			FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap"), "dummy")
-			FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap"), "dummy")
-			FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap"), "dummy")
+            applicationDummy.createBCSymbolMaps()
 		}
 	}
 
@@ -346,8 +303,7 @@ class PackageTaskSpecification extends Specification {
 		given:
 		mockExampleApp(false, false)
 
-		File mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		project.xcodebuild.signing.addMobileProvisionFile( mobileprovision)
+		File mobileprovision = applicationDummy.mobileProvisionFile.first()
 
 		when:
 		packageTask.packageApplication()
@@ -364,10 +320,8 @@ class PackageTaskSpecification extends Specification {
 		given:
 		mockExampleApp(true, false)
 
-		File firstMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-		project.xcodebuild.signing.addMobileProvisionFile(firstMobileprovision)
-		project.xcodebuild.signing.addMobileProvisionFile(secondMobileprovision)
+		File firstMobileprovision = applicationDummy.mobileProvisionFile[0]
+		File secondMobileprovision = applicationDummy.mobileProvisionFile[1]
 
 		when:
 		packageTask.packageApplication()
@@ -592,14 +546,11 @@ class PackageTaskSpecification extends Specification {
 		!entries.contains("BCSymbolMaps/")
 	}
 
-	def "copy extension support directories"() {
-	def "copy extension support directory"() {
+	def "copy sticker extension support directory"() {
 		given:
-		mockExampleApp(true, true)
-        File messageExtensionSupportDirectory = new File(archiveDirectory, "MessagesApplicationExtensionSupport")
-		messageExtensionSupportDirectory.mkdirs()
-		File messageExtensionSupportStub = new File(messageExtensionSupportDirectory, "MessagesApplicationExtensionStub")
-		FileUtils.writeStringToFile(messageExtensionSupportStub, "fixture")
+		mockExampleApp(false, false)
+		applicationDummy.createPlugin(Extension.sticker)
+		project.xcodebuild.signing.addMobileProvisionFile(applicationDummy.mobileProvisionFile.last())
 
         when:
 		packageTask.packageApplication()
@@ -608,5 +559,4 @@ class PackageTaskSpecification extends Specification {
 		then:
 		entries.contains("MessagesApplicationExtensionSupport/MessagesApplicationExtensionStub")
 	}
-
 }
