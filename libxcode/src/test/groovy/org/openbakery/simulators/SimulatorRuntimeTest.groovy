@@ -17,6 +17,7 @@ class SimulatorRuntimeTest extends Specification {
 		runtime.version == new Version("8.4")
 		runtime.version.toString() == "8.4"
 		runtime.type == Type.iOS
+		runtime.identifier == "com.apple.CoreSimulator.SimRuntime.iOS-8-4"
 	}
 
 	def "parse tvOS"() {
@@ -27,6 +28,7 @@ class SimulatorRuntimeTest extends Specification {
 		then:
 		runtime.version == new Version("9.0")
 		runtime.type == Type.tvOS
+		runtime.identifier == "com.apple.CoreSimulator.SimRuntime.tvOS-9-0"
 	}
 
 	def "parse watchOS"() {
@@ -37,5 +39,16 @@ class SimulatorRuntimeTest extends Specification {
 		then:
 		runtime.version == new Version("2.0")
 		runtime.type == Type.watchOS
+		runtime.identifier == "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"
+	}
+
+	def "parse iOS 11"() {
+		when:
+		SimulatorRuntime runtime = new SimulatorRuntime("iOS 11.0 (11.0 - 15A5278f) - com.apple.CoreSimulator.SimRuntime.iOS-11-0")
+
+		then:
+		runtime.version == new Version("11.0")
+		runtime.type == Type.iOS
+		runtime.identifier == "com.apple.CoreSimulator.SimRuntime.iOS-11-0"
 	}
 }

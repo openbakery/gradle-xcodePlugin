@@ -39,6 +39,10 @@ class SimulatorControlSpecification extends Specification {
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode8.txt"))
 	}
 
+	void mockXcode9() {
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9.txt"))
+	}
+
 	def "get runtimes"() {
 		given:
 		mockXcode6()
@@ -617,6 +621,19 @@ class SimulatorControlSpecification extends Specification {
 		deviceTypes.size() == 21
 		deviceTypes.get(14).name.equals("iPad Pro (9.7-inch)")
 		deviceTypes.get(14).identifier.equals("com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-")
+	}
+
+	def "devices iOS11"() {
+		given:
+		mockXcode9()
+
+		when:
+		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
+
+		then:
+		devices != null
+		devices.size() == 15
 	}
 
 }

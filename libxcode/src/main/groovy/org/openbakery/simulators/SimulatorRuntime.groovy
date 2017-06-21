@@ -14,7 +14,7 @@ class SimulatorRuntime {
 
 	public SimulatorRuntime(String line) {
 
-		def tokenizer = new StringTokenizer(line, "()");
+		def tokenizer = new StringTokenizer(line, "()")
 		if (tokenizer.hasMoreTokens()) {
 			name = tokenizer.nextToken().trim();
 			type = Type.typeFromString(name)
@@ -31,25 +31,31 @@ class SimulatorRuntime {
 		}
 
 		if (tokenizer.hasMoreTokens()) {
-			tokenizer.nextToken(); // is space
-		}
+			String token = tokenizer.nextToken().trim()
+			if (token.length() == 0) {
+				// is space, so skip
+				if (tokenizer.hasMoreTokens()) {
+					token = tokenizer.nextToken()
+				}
+			}
 
-		if (tokenizer.hasMoreTokens()) {
-			identifier = tokenizer.nextToken().trim();
+			if (token.startsWith("-")) {
+				token = (token - "-").trim()
+			}
+
+			identifier = token.trim()
 			shortIdentifier = identifier - "com.apple.CoreSimulator.SimRuntime."
 		}
 
 		if (tokenizer.hasMoreTokens()) {
-			tokenizer.nextToken(); // is space
+			tokenizer.nextToken() // is space
 		}
 
 		if (tokenizer.hasMoreTokens()) {
 			available = !tokenizer.nextToken().startsWith("unavailable")
 		}
 
-
 	}
-
 
 	@Override
 	public String toString() {

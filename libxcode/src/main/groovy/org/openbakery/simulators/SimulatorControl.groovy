@@ -170,7 +170,7 @@ class SimulatorControl {
 		if (runtimes == null) {
 			parse()
 		}
-		return runtimes;
+		return runtimes
 	}
 
 
