@@ -593,8 +593,13 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	def "copy extension support directories"() {
+	def "copy extension support directory"() {
 		given:
 		mockExampleApp(true, true)
+        File messageExtensionSupportDirectory = new File(archiveDirectory, "MessagesApplicationExtensionSupport")
+		messageExtensionSupportDirectory.mkdirs()
+		File messageExtensionSupportStub = new File(messageExtensionSupportDirectory, "MessagesApplicationExtensionStub")
+		FileUtils.writeStringToFile(messageExtensionSupportStub, "fixture")
 
         when:
 		packageTask.packageApplication()
