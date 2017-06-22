@@ -72,6 +72,10 @@ class PackageTask extends AbstractDistributeTask {
 			copy(bcSymbolsMaps, applicationFolder.parentFile)
 		}
 
+		enumerateExtensionSupportDirectories(getArchiveDirectory()) { File supportDirectory ->
+			copy(supportDirectory, applicationFolder.parentFile)
+		}
+
 		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator)
 		appBundles = applicationBundle.getBundles()
 
@@ -204,7 +208,22 @@ class PackageTask extends AbstractDistributeTask {
 			filesToZip << bcSymbolMapsPath
 		}
 
+		enumerateExtensionSupportDirectories(packagePath.getParentFile()) { File supportDirectory ->
+			filesToZip << supportDirectory
+		}
+
 		createZip(packageBundle, packagePath.getParentFile(), packagePath, *filesToZip)
+	}
+
+	private void enumerateExtensionSupportDirectories(File parentDirectory, Closure closure) {
+		def directoryNames = ["MessagesApplicationExtensionSupport"]
+
+		for (String name in directoryNames) {
+			File supportDirectory = new File(parentDirectory, name)
+			if (supportDirectory.exists()) {
+				closure(supportDirectory)
+			}
+		}
 	}
 
 	private void createIpa(File payloadPath, boolean addSwiftSupport) {

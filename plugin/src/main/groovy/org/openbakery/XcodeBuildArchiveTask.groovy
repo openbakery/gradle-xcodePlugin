@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.xcode.Type
+import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Xcodebuild
 
 import static groovy.io.FileType.FILES
@@ -307,6 +308,31 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 	}
 
+	def createExtensionSupportDirectory(File bundle, Xcodebuild xcodebuild) {
+		String extensionIdentifier = getValueFromBundleInfoPlist(bundle, "NSExtension:NSExtensionPointIdentifier")
+		if (extensionIdentifier == null) {
+			logger.debug("No support directory created, because no extension identifier found in bundle {}", bundle)
+			return
+		}
+
+		Extension extension = Extension.extensionFromIdentifier(extensionIdentifier)
+		if (extension == null) {
+			logger.warn("Extension type not supported", extensionIdentifier)
+			return
+		}
+
+		switch (extension) {
+			case Extension.sticker:
+				File supportDirectory = new File(getArchiveDirectory(), "MessagesApplicationExtensionSupport")
+				if (supportDirectory.mkdirs()) {
+					File stub = new File(xcodebuild.getPlatformDirectory(), "/Library/Application Support/MessagesApplicationExtensionStub/MessagesApplicationExtensionStub")
+					copy(stub, supportDirectory)
+				}
+				break
+			default:
+				break
+		}
+	}
 
 	@TaskAction
 	def archive() {
@@ -360,6 +386,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		List<File> appBundles = getAppBundles(parameters.outputPath)
 		for (File bundle : appBundles) {
 			createEntitlements(bundle)
+			createExtensionSupportDirectory(bundle, xcodebuild)
 		}
 
 		File applicationsDirectory = getApplicationsDirectory()

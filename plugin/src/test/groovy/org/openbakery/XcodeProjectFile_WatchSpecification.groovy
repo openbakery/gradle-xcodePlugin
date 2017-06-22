@@ -97,7 +97,7 @@ class XcodeProjectFile_WatchSpecification extends Specification {
 		def projectSettings = xcodeProjectFile.getProjectSettings()
 
 		then:
-		projectSettings.size() == 5
+		projectSettings.size() == 6
 	}
 
 	def "target names"() {

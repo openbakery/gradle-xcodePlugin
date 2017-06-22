@@ -285,6 +285,10 @@ class Xcodebuild {
 			return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
 		}
 
+	String getPlatformDirectory() {
+		return getBuildSetting("PLATFORM_DIR")
+	}
+
 		String loadBuildSettings() {
 			def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
 

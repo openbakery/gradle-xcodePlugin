@@ -630,4 +630,36 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		!new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps").exists()
 
 	}
+
+	def "copy message extension support folder"() {
+		given:
+		XcodeFake xcode = createXcode("8")
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "Contents/Developer/Platforms/iPhoneOS.platform\n"
+		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+
+		File stubDirectory = new File(xcodebuild.platformDirectory, "Library/Application Support/MessagesApplicationExtensionStub")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "MessagesApplicationExtensionStub")
+		FileUtils.writeStringToFile(stub, "fixture")
+
+		setupProject()
+
+		File extensionDirectory = new File(buildOutputDirectory, "Example.app/PlugIns/ExampleWatchKit Sticker Pack.appex")
+		extensionDirectory.mkdirs()
+		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchKit Sticker Pack/Info.plist")
+		File destinationInfoPlist = new File(extensionDirectory, "Info.plist")
+		FileUtils.copyFile(infoPlist, destinationInfoPlist)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File supportMessagesDirectory = new File(projectDir, "build/archive/Example.xcarchive/MessagesApplicationExtensionSupport")
+        File supportMessagesStub = new File(supportMessagesDirectory, 'MessagesApplicationExtensionStub')
+
+		then:
+		supportMessagesDirectory.exists()
+		supportMessagesDirectory.list().length == 1
+		supportMessagesStub.exists()
+	}
 }
