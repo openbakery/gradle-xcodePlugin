@@ -152,7 +152,7 @@ class XcodeProjectFileSpecification extends Specification {
 		def projectSettings = xcodeProjectFile.getProjectSettings()
 
 		then:
-		projectSettings.size() == 5
+		projectSettings.size() == 6
 	}
 
 	def "parse entitlements file name"() {
