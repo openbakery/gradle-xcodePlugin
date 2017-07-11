@@ -634,7 +634,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "copy message extension support folder"() {
 		given:
 		XcodeFake xcode = createXcode("8")
-		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "Contents/Developer/Platforms/iPhoneOS.platform\n"
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
 		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 
@@ -661,5 +661,37 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		supportMessagesDirectory.exists()
 		supportMessagesDirectory.list().length == 1
 		supportMessagesStub.exists()
+	}
+
+	def "copy watchkit support folder"() {
+        given:
+		XcodeFake xcode = createXcode("8")
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
+		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+
+		File stubDirectory = new File(xcodebuild.platformDirectory, "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "WK")
+		FileUtils.writeStringToFile(stub, "fixture")
+
+		setupProject()
+
+		File watchAppDirectory = new File(buildOutputDirectory, "Example.app/Watch/Example.app")
+		watchAppDirectory.mkdirs()
+		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File destinationInfoPlist = new File(watchAppDirectory, "Info.plist")
+        FileUtils.copyFile(infoPlist, destinationInfoPlist)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File supportDirectory = new File(projectDir, "build/archive/Example.xcarchive/WatchKitSupport2")
+		File supportStub = new File(supportDirectory, 'WK')
+
+		then:
+		supportDirectory.exists()
+		supportDirectory.list().length == 1
+		supportStub.exists()
 	}
 }

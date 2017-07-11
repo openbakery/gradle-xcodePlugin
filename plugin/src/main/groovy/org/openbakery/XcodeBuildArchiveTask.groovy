@@ -329,6 +329,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 					copy(stub, supportDirectory)
 				}
 				break
+			case Extension.watch:
+				File supportDirectory = new File(getArchiveDirectory(), "WatchKitSupport2")
+                if (supportDirectory.mkdirs()) {
+					File stub = new File(xcodebuild.getPlatformDirectory(), "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit/WK")
+					copy(stub, supportDirectory)
+				}
 			default:
 				break
 		}
