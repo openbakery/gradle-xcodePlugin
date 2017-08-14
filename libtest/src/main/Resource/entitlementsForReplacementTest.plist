@@ -14,5 +14,15 @@
 		</array>
 		<key>com.apple.developer.associated-domains</key>
         <string>*</string>
+        <key>com.apple.developer.icloud-container-identifiers</key>
+        <array>
+        	<string>iCloud.*</string>
+        </array>
+        <key>com.apple.developer.ubiquity-container-identifier</key>
+        <array/>
+        <key>com.apple.developer.default-data-protection</key>
+        <string>NSFileProtectionNone</string>
+        <key>com.apple.developer.icloud-services</key>
+        <string>*</string>
 	</dict>
 </plist>

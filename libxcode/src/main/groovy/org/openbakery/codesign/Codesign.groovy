@@ -58,6 +58,7 @@ class Codesign {
 
 			if (codesignParameters.entitlements != null) {
 				logger.info("Merging entitlements from the codesign parameters")
+				logger.debug("entitlements to merge: " + codesignParameters.entitlements)
 				configuration = new ConfigurationFromMap(codesignParameters.entitlements)
 			} else {
 				File xcentFile = getXcentFile(bundle)

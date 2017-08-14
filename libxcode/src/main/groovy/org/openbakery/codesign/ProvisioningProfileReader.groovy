@@ -269,7 +269,7 @@ class ProvisioningProfileReader {
 			logger.debug("entitlements content\n{}", entitlementsContent)
 		}
 
-		// copy the missing values that are in the xcent to the entitlements for signing
+		// copy the missing values that are in configuration (xcent or signing.entitlments) to the entitlements for signing
 		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, replace ->
             if (replace) {
 				logger.info("replace in entitlement: {}", key)
@@ -287,7 +287,16 @@ class ProvisioningProfileReader {
 		}
 
 		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
-		List<String>replaceKeys = ["com.apple.developer.associated-domains"]
+		// Suggestion: Maybe it is better that the replaceKeys are get from the configuration, so when the value comes
+		// from the build.gradle file via signing.entitlemens all values shoudl be override.
+		// When using a xcend only the "com.apple.developer.associated-domains" should be override
+		List<String>replaceKeys = [
+				"com.apple.developer.associated-domains",
+				"com.apple.developer.icloud-container-identifiers",
+				"com.apple.developer.ubiquity-container-identifiers",
+				"com.apple.developer.default-data-protection",
+				"com.apple.developer.icloud-services"
+		]
 
 		for (String key in configuration.getKeys()) {
 			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)

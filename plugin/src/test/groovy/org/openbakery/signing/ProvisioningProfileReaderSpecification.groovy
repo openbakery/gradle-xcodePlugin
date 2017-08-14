@@ -1,11 +1,14 @@
 package org.openbakery.signing
 
+import ch.qos.logback.core.util.FileUtil
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.configuration.Configuration
+import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
@@ -521,5 +524,74 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	}
 
 
+	def setupForEntitlementTest(Map<String, Object> data) {
+		File mobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
+
+		File sourceFile = new File("../libtest/src/main/Resource/entitlementsForReplacementTest.plist")
+		File destinationFile = new File(projectDir, "testEntitlements.plist")
+		FileUtils.copyFile(sourceFile, destinationFile)
+
+		commandRunner.runWithResult(_) >> FileUtils.readFileToString(new File("../libtest/src/main/Resource/entitlementsForReplacementTest.plist"))
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
+		//File entitlementsFile = new File(projectDir, "entitlements.plist")
+
+		reader.extractEntitlements(destinationFile, "org.openbakery.test.Example", null, new ConfigurationFromMap(data))
+		return destinationFile
+	}
+
+
+	def "extract Entitlements and replace com.apple.developer.icloud-container-identifiers"() {
+		given:
+		Map<String, Object> data = ["com.apple.developer.icloud-container-identifiers": ["iCloud.com.example.Test"]]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getList("com..apple..developer..icloud-container-identifiers").contains("iCloud.com.example.Test")
+	}
+
+
+	def "extract Entitlements and replace ubiquity-container-identifiers"() {
+		given:
+		Map<String, Object> data = ["com.apple.developer.ubiquity-container-identifiers": ["com.example.Test"]]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getList("com..apple..developer..ubiquity-container-identifiers").contains("com.example.Test")
+	}
+
+	def "extract Entitlements and replace default-data-protection"() {
+		given:
+		Map<String, Object> data = ["com.apple.developer.default-data-protection": "NSFileProtectionComplete"]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getString("com..apple..developer..default-data-protection") == "NSFileProtectionComplete"
+	}
+
+
+	def "extract Entitlements and replace icloud-services"() {
+		given:
+		Map<String, Object> data = ["com.apple.developer.icloud-services": "com.example.test"]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.getString("com..apple..developer..icloud-services") == "com.example.test"
+	}
 }
 
