@@ -4,22 +4,43 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
+import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.util.PlistHelper
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
 import org.openbakery.xcode.XcodeFake
 import spock.lang.Specification
 
+class CodesignThatStoresTheConfiguration extends Codesign {
+
+	Configuration configuration
+
+	def CodesignThatStoresTheConfiguration(Xcode xcode, CodesignParameters codesignParameters, CommandRunner commandRunner, PlistHelper plistHelper) {
+		super(xcode, codesignParameters, commandRunner, plistHelper)
+	}
+
+
+	@Override
+	File createEntitlementsFile(String bundleIdentifier, Configuration configuration) {
+		this.configuration = configuration
+		return super.createEntitlementsFile(bundleIdentifier, configuration)
+	}
+
+
+}
+
 class CodesignSpecification extends  Specification {
 
-	Codesign codesign
+	CodesignThatStoresTheConfiguration codesign
 	ApplicationDummy applicationDummy
 	File tmpDirectory
 	CommandRunner commandRunner = Mock(CommandRunner)
 	PlistHelper plistHelper
 	File keychainPath
+	File xcentFile
 	CodesignParameters parameters
 
 	void setup() {
@@ -29,10 +50,10 @@ class CodesignSpecification extends  Specification {
 		keychainPath = new File(tmpDirectory, "gradle-test.keychain")
 		plistHelper = new PlistHelper(new CommandRunner())
 
-		File entitlementsFile = new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
-		plistHelper.create(entitlementsFile)
-		plistHelper.addValueForPlist(entitlementsFile, "application-identifier", "AAAAAAAAAA.org.openbakery.test.Example")
-		plistHelper.addValueForPlist(entitlementsFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.test.Example", "AAAAAAAAAA.org.openbakery.test.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
+		xcentFile = new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
+		plistHelper.create(xcentFile)
+		plistHelper.addValueForPlist(xcentFile, "application-identifier", "AAAAAAAAAA.org.openbakery.test.Example")
+		plistHelper.addValueForPlist(xcentFile, "keychain-access-groups", ["AAAAAAAAAA.org.openbakery.test.Example", "AAAAAAAAAA.org.openbakery.test.ExampleWidget", "BBBBBBBBBB.org.openbakery.Foobar"])
 
 		parameters = new CodesignParameters()
 		parameters.signingIdentity = ""
@@ -40,7 +61,7 @@ class CodesignSpecification extends  Specification {
 		parameters.mobileProvisionFiles = applicationDummy.mobileProvisionFile
 		parameters.type = Type.iOS
 
-		codesign = new Codesign(
+		codesign = new CodesignThatStoresTheConfiguration(
 						new XcodeFake(),
 						parameters,
 						commandRunner,
@@ -252,5 +273,51 @@ class CodesignSpecification extends  Specification {
 		commandList == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
 	}
 
+
+
+	def "entitlements from build file, are always added for replacement"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		File bundle = applicationDummy.create()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+
+		parameters.entitlements = [
+				"com.apple.developer.associated-domains"     : ["webcredentials:example.com"],
+				"com.apple.developer.default-data-protection": "NSFileProtectionComplete",
+				"com.apple.security.application-groups"      : [],
+				"com.apple.developer.siri"                   : true,
+				"com.apple.developer.icloud-container-environment" : null
+		]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		codesign.configuration.getReplaceEntitlementsKeys().size() == 5
+		codesign.configuration.getReplaceEntitlementsKeys().contains("com.apple.developer.icloud-container-environment")
+	}
+
+	def "entitlements only from provisioning profile and xcent has one replacement"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		FileUtils.copyFileToDirectory(xcentFile, applicationDummy.applicationBundle)
+
+		given:
+		File bundle = applicationDummy.create()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		codesign.configuration instanceof ConfigurationFromPlist
+		codesign.configuration.getReplaceEntitlementsKeys().size() == 1
+		codesign.configuration.getReplaceEntitlementsKeys().contains("com.apple.developer.associated-domains")
+	}
 
 }

@@ -167,6 +167,17 @@ class Codesign {
 		return bundleIdentifier
 	}
 
+	ProvisioningProfileReader createProvisioningProfileReader(String bundleIdentifier, File provisionFile) {
+		if (provisionFile == null) {
+			if (codesignParameters.type == Type.iOS) {
+				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
+			}
+			// on OS X this is valid
+			return null
+		}
+
+		return new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
+	}
 
 	File createEntitlementsFile(String bundleIdentifier, Configuration configuration) {
 		// the settings from the xcent file are merge with the settings from entitlements from the provisioning profile
@@ -177,20 +188,11 @@ class Codesign {
 
 		logger.debug("createEntitlementsFile for identifier {}", bundleIdentifier)
 
-		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
-		if (provisionFile == null) {
-			if (codesignParameters.type == Type.iOS) {
-				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
-			}
-			// on OS X this is valid
-			return null
-		}
-
 		// set keychain access group
-
 		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration)
 
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
+		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
+		ProvisioningProfileReader reader = createProvisioningProfileReader(bundleIdentifier, provisionFile)
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
 		File extractedEntitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")

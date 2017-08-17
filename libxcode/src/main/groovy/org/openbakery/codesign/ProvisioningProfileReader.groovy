@@ -31,6 +31,10 @@ import java.text.DateFormat
 
 class ProvisioningProfileReader {
 
+	enum EntitlementAction {
+		ADD, REPLACE, DELETE
+	}
+
 	public static final String APPLICATION_IDENTIFIER_PREFIX = '$(AppIdentifierPrefix)'
 	protected CommandRunner commandRunner
 	private PlistHelper plistHelper
@@ -270,13 +274,20 @@ class ProvisioningProfileReader {
 		}
 
 		// copy the missing values that are in configuration (xcent or signing.entitlments) to the entitlements for signing
-		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, replace ->
-            if (replace) {
-				logger.info("replace in entitlement: {}", key)
-				plistHelper.setValueForPlist(entitlementFile, key, value)
-			} else {
-				logger.info("add to entitlement: {}", key)
-				plistHelper.addValueForPlist(entitlementFile, key, value)
+		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, action ->
+			switch (action) {
+				case EntitlementAction.REPLACE:
+					logger.info("replace in entitlement: {}", key)
+					plistHelper.setValueForPlist(entitlementFile, key, value)
+					break
+				case EntitlementAction.ADD:
+					logger.info("add to entitlement: {}", key)
+					plistHelper.addValueForPlist(entitlementFile, key, value)
+					break
+				case EntitlementAction.DELETE:
+					logger.info("delete to entitlement: {}", key)
+					plistHelper.deleteValueFromPlist(entitlementFile, key)
+					break
 			}
 		}
 	}
@@ -287,26 +298,22 @@ class ProvisioningProfileReader {
 		}
 
 		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
-		// Suggestion: Maybe it is better that the replaceKeys are get from the configuration, so when the value comes
-		// from the build.gradle file via signing.entitlemens all values shoudl be override.
-		// When using a xcend only the "com.apple.developer.associated-domains" should be override
-		List<String>replaceKeys = [
-				"com.apple.developer.associated-domains",
-				"com.apple.developer.icloud-container-identifiers",
-				"com.apple.developer.ubiquity-container-identifiers",
-				"com.apple.developer.default-data-protection",
-				"com.apple.developer.icloud-services"
-		]
+		Set<String>replaceKeys = configuration.getReplaceEntitlementsKeys()
 
 		for (String key in configuration.getKeys()) {
 			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)
 
 			if (!entitlements.containsKey(key)) {
-				closure(key, value, false)
+				closure(key, value, EntitlementAction.ADD)
 			} else if (replaceKeys.contains(key)) {
-				closure(key, value, true)
+				closure(key, value, EntitlementAction.REPLACE)
 			}
 		}
+
+		for (String key in configuration.getDeleteEntitlementsKeys()) {
+			closure(key, null, EntitlementAction.DELETE)
+		}
+
 	}
 
 	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {

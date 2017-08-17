@@ -11,6 +11,7 @@ class ConfigurationFromMap implements Configuration {
 		this.configurationMap = configurationMap
 	}
 
+
 	@Override
 	Object get(String key) {
 		return configurationMap[key]
@@ -50,5 +51,16 @@ class ConfigurationFromMap implements Configuration {
 	@Override
 	boolean containsKey(String key) {
 		return configurationMap.containsKey(key)
+	}
+
+	@Override
+	Set<String> getReplaceEntitlementsKeys() {
+		// for now all keys are marked for replacement, because the configuration is now used for the entitlements
+		// only.
+		return configurationMap.keySet()
+	}
+
+	Set<String> getDeleteEntitlementsKeys() {
+		return configurationMap.findAll{ it.value == null }.keySet()
 	}
 }

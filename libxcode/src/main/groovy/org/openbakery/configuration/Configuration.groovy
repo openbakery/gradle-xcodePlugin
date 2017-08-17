@@ -10,4 +10,7 @@ interface Configuration {
 
 	boolean containsKey(String key)
 
+	Set<String> getReplaceEntitlementsKeys()
+	Set<String> getDeleteEntitlementsKeys()
+
 }

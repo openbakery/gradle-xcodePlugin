@@ -56,7 +56,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.15.0"
+  id "org.openbakery.xcode-plugin" version "0.15.1"
 }
 
 xcodebuild {
@@ -89,7 +89,7 @@ apply plugin: "org.openbakery.xcode-plugin"
 
 When using the [openbakery.org](https://openbakery.org) repository you can also get the latest develop version by including `develop` into the version pattern. e.g.: 
 ```
-classpath "org.openbakery:xcode-plugin:0.15.0.develop.+"
+classpath "org.openbakery:xcode-plugin:0.15.1.develop.+"
 ```
 
 The develop version contains all the changes from the develop branch, where all the fixes and feature are implemented. The development version is deployed automatically when all the projects unit tests are  successful, and also the if the example projects build. 

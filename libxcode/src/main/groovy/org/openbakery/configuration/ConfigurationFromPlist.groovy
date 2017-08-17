@@ -70,4 +70,13 @@ class ConfigurationFromPlist implements Configuration {
 	boolean containsKey(String key) {
 		return configuration.containsKey(escapeKey(key))
 	}
+
+	@Override
+	Set<String> getReplaceEntitlementsKeys() {
+		return ["com.apple.developer.associated-domains"]
+	}
+
+	Set<String> getDeleteEntitlementsKeys() {
+		return []
+	}
 }

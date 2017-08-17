@@ -593,5 +593,18 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		entitlementsFile.exists()
 		entitlements.getString("com..apple..developer..icloud-services") == "com.example.test"
 	}
+
+	def "extract Entitlements and delete key when signing.entitlements contains null value"() {
+		given:
+		Map<String, Object> data = ["com.apple.developer.icloud-services": null]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		!entitlements.containsKey("com..apple..developer..icloud-services")
+	}
 }
 
