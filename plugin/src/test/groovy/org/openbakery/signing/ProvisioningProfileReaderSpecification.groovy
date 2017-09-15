@@ -606,5 +606,21 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		entitlementsFile.exists()
 		!entitlements.containsKey("com..apple..developer..icloud-services")
 	}
+
+	def "extract Entitlements key os only added once replace icloud-services"() {
+		given:
+		Map<String, Object> data = [
+				"com.apple.developer.icloud-services": "com.example.test"
+		]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		!entitlements.containsKey("com..apple..developer..icloud-services ")
+		entitlements.getString("com..apple..developer..icloud-services") == "com.example.test"
+	}
 }
 
