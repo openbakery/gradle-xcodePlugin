@@ -277,11 +277,11 @@ class ProvisioningProfileReader {
 		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, action ->
 			switch (action) {
 				case EntitlementAction.REPLACE:
-					logger.info("replace in entitlement: {}", key)
+					logger.info("replace in entitlement: {} with {}", key, value)
 					plistHelper.setValueForPlist(entitlementFile, key, value)
 					break
 				case EntitlementAction.ADD:
-					logger.info("add to entitlement: {}", key)
+					logger.info("add to entitlement: {} with {}", key, value)
 					plistHelper.addValueForPlist(entitlementFile, key, value)
 					break
 				case EntitlementAction.DELETE:
