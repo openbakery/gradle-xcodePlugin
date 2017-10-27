@@ -205,6 +205,7 @@ class ProvisioningProfileReader {
 
 	/* xcent is the archive entitlements */
 	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups, Configuration configuration) {
+		logger.info("extractEntitlements for " + bundleIdentifier)
 		File plistFromProvisioningProfile = getPlistFromProvisioningProfile()
 		String entitlements = commandRunner.runWithResult([
 						"/usr/libexec/PlistBuddy",
@@ -268,13 +269,17 @@ class ProvisioningProfileReader {
 		}
 
 
-		if (logger.isDebugEnabled()) {
-			String entitlementsContent = FileUtils.readLines(entitlementFile)
-			logger.debug("entitlements content\n{}", entitlementsContent)
-		}
-
 		// copy the missing values that are in configuration (xcent or signing.entitlments) to the entitlements for signing
 		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, action ->
+
+			if (value instanceof String) {
+				value = this.replaceVariables(value)
+			} else if (value instanceof List) {
+				value = this.replaceValuesInList((List)value)
+			}
+
+
+
 			switch (action) {
 				case EntitlementAction.REPLACE:
 					logger.info("replace in entitlement: {} with {}", key, value)
@@ -290,6 +295,32 @@ class ProvisioningProfileReader {
 					break
 			}
 		}
+
+
+		if (logger.isDebugEnabled()) {
+			String entitlementsContent = FileUtils.readFileToString(entitlementFile)
+			logger.debug("entitlements content\n{}", entitlementsContent)
+		}
+	}
+
+	private List replaceValuesInList(List list) {
+		def result = []
+		for (Object item : list) {
+			if (item instanceof String) {
+				result << replaceVariables((String)item)
+			} else {
+				result << item
+			}
+		}
+		return result
+	}
+
+	private String replaceVariables(String value) {
+
+		if (value.startsWith(APPLICATION_IDENTIFIER_PREFIX)) {
+			return value.replace(APPLICATION_IDENTIFIER_PREFIX, applicationIdentifierPrefix + ".")
+		}
+		return value
 	}
 
 	private void enumerateMissingEntitlements(File entitlementFile, Configuration configuration, Closure closure) {

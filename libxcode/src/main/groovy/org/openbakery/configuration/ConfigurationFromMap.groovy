@@ -63,4 +63,12 @@ class ConfigurationFromMap implements Configuration {
 	Set<String> getDeleteEntitlementsKeys() {
 		return configurationMap.findAll{ it.value == null }.keySet()
 	}
+
+
+	@Override
+	public String toString() {
+		return "ConfigurationFromMap{" +
+				"configurationMap=" + configurationMap +
+				'}';
+	}
 }

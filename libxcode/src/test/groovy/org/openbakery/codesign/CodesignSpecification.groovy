@@ -320,4 +320,39 @@ class CodesignSpecification extends  Specification {
 		codesign.configuration.getReplaceEntitlementsKeys().contains("com.apple.developer.associated-domains")
 	}
 
+
+	def "entitlements is not used when signing extension"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		applicationDummy.create()
+		File bundle = applicationDummy.createPlugin()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+
+		parameters.entitlements = [
+				"com.apple.developer.default-data-protection": "NSFileProtectionComplete",
+				"com.apple.developer.siri"                   : true
+		]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+				if (commandList.size() > 3) {
+					entitlementsFile = new File(commandList[3])
+					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+				}
+		}
+		commandList.contains("/usr/bin/codesign")
+		commandList[2] != "--entitlements"
+		!entitlementsFile.exists()
+	}
+
+
 }

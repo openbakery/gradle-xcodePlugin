@@ -619,8 +619,28 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		then:
 		entitlementsFile.exists()
-		!entitlements.containsKey("com..apple..developer..icloud-services ")
+		entitlements.containsKey("com..apple..developer..icloud-services")
 		entitlements.getString("com..apple..developer..icloud-services") == "com.example.test"
 	}
+
+
+	def "extract Entitlements set keychain access group with configuration key and replace AppIdentiferPrefix variable"() {
+		given:
+		Map<String, Object> data = [
+				"keychain-access-groups": [ "\$(AppIdentifierPrefix)com.example.Test" ]
+		]
+		File entitlementsFile = setupForEntitlementTest(data)
+
+		when:
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlements.containsKey("keychain-access-groups")
+		entitlements.getList("keychain-access-groups").contains("AAAAAAAAAAA.com.example.Test")
+
+	}
+
+
 }
 

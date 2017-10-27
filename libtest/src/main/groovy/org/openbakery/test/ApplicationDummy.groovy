@@ -56,7 +56,7 @@ class ApplicationDummy {
 		return appDirectory
 	}
 
-	void createPlugin(Extension extension = Extension.today) {
+	File createPlugin(Extension extension = Extension.today) {
 		switch (extension) {
 			case Extension.today:
 				File mobileProvision = new File("src/test/Resource/test1.mobileprovision")
@@ -98,7 +98,7 @@ class ApplicationDummy {
 		FileUtils.writeStringToFile(new File(bcsymbolmapsDirectory, "23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap"), "dummy")
 	}
 
-	private void createExtension(String name, String bundleIdentifier, File mobileProvision) {
+	private File createExtension(String name, String bundleIdentifier, File mobileProvision) {
 		String widgetPath = "PlugIns/${name}.appex"
 		File widgetsDirectory = new File(applicationBundle, widgetPath)
 		FileUtils.writeStringToFile(new File(widgetsDirectory, name), "dummy");
@@ -107,5 +107,6 @@ class ApplicationDummy {
 		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", bundleIdentifier)
 
 		mobileProvisionFile.add(mobileProvision)
+		return widgetsDirectory
 	}
 }

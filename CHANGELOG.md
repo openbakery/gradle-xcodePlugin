@@ -1,3 +1,10 @@
+# 0.15.1 (TBA)
+
+Changes
+* Some updates to support Xcode 9: Issue #369
+* The entitlments for extensions are not modified using the values from the `entitlements` parameters
+
+
 # 0.15.0 (June 2, 2017)
 
 Changes
@@ -6,6 +13,7 @@ Changes
 * Added validation of signing certificate (if it is valid and has not expired): Issue #348
 * When installing an App to the iOS simulator, the App gets codesigned first: Issue #346
 * Added Bitcode support. This can be enabled using the new `bitcode` flag. e.g. `xcodebuild { bitcode = true }`: Issue #233
+
 
 # 0.14.5 (January 26, 2017)
 

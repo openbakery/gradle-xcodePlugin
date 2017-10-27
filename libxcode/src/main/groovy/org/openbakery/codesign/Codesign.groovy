@@ -54,23 +54,10 @@ class Codesign {
 			logger.info("Using given entitlements {}", entitlements)
 		} else {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
-			Configuration configuration
+			Configuration configuration = createConfiguration(bundle)
 
-			if (codesignParameters.entitlements != null) {
-				logger.info("Merging entitlements from the codesign parameters")
-				logger.debug("entitlements to merge: " + codesignParameters.entitlements)
-				configuration = new ConfigurationFromMap(codesignParameters.entitlements)
-			} else {
-				File xcentFile = getXcentFile(bundle)
-				if (xcentFile != null) {
-					logger.debug("Merging entitlements from the xcent file found in the archive")
-					configuration = new ConfigurationFromPlist(xcentFile)
-				}
-			}
-			if (configuration == null) {
-				logger.debug("No entitlements configuration found for mergeing, so use only the plain entitlements extracted from the provisioning profile")
-				configuration = new ConfigurationFromMap([:])
-			}
+			logger.info("entitlements configuration for {}: {}", bundle, configuration)
+
 			String bundleIdentifier = getIdentifierForBundle(bundle)
 			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
 			if (entitlements != null) {
@@ -78,6 +65,37 @@ class Codesign {
 			}
 		}
 		return entitlements
+	}
+
+	/**
+	 * creates the configuration for signing.
+	 * Either it is using the parameters specified in the build.gradle using the `entitlement` parameter, or if not
+	 * specified it uses the *.xcent file if it is present.
+	 * @param bundle
+	 * @return
+	 */
+	private Configuration createConfiguration(File bundle) {
+		// for now we disable the merging for extension, I don't know if merging is needed. If so the configuration her
+		// must be new, so that the entitlements can be configured per bundle
+		logger.info("createConfiguration for {}", bundle)
+		if (bundle.absolutePath.endsWith("appex")) {
+			return new ConfigurationFromMap([:])
+		}
+
+
+		if (codesignParameters.entitlements != null) {
+			logger.info("Merging entitlements from the codesign parameters")
+			logger.debug("entitlements to merge: " + codesignParameters.entitlements)
+			return new ConfigurationFromMap(codesignParameters.entitlements)
+		} else {
+			File xcentFile = getXcentFile(bundle)
+			if (xcentFile != null) {
+				logger.debug("Merging entitlements from the xcent file found in the archive")
+				return new ConfigurationFromPlist(xcentFile)
+			}
+		}
+		logger.debug("No entitlements configuration found for mergeing, so use only the plain entitlements extracted from the provisioning profile")
+		return new ConfigurationFromMap([:])
 	}
 
 	private void codeSignFrameworks(File bundle) {
