@@ -612,10 +612,10 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.archive()
 
 		then:
-		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps").exists()
-		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps/14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap").exists()
-		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps/2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap").exists()
-		new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps/23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/BCSymbolMaps").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/BCSymbolMaps/14C60358-AC0B-35CF-A079-042050D404EE.bcsymbolmap").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/BCSymbolMaps/2154C009-2AC2-3241-9E2E-D8B8046B03C8.bcsymbolmap").exists()
+		new File(projectDir, "build/archive/Example.xcarchive/BCSymbolMaps/23CFBC47-4B7D-391C-AB95-48408893A14A.bcsymbolmap").exists()
 	}
 
 	def "do not copy bcsymbolmap if build is not bitcode build"() {
@@ -627,7 +627,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.archive()
 
 		then:
-		!new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/BCSymbolMaps").exists()
+		!new File(projectDir, "build/archive/Example.xcarchive/BCSymbolMaps").exists()
 
 	}
 

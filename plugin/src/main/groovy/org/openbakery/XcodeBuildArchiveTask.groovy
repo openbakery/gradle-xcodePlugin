@@ -396,7 +396,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
 		deleteFrameworksInExtension(applicationsDirectory)
-		copyBCSymbolMaps(archiveDirectory, applicationsDirectory)
+		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
@@ -406,12 +406,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		logger.debug("create archive done")
 	}
 
-	def copyBCSymbolMaps(File archiveDirectory, File applicationsDirectory) {
+	def copyBCSymbolMaps(File archiveDirectory) {
 		if (!parameters.bitcode) {
 			logger.debug("bitcode is not activated, so to not create BCSymbolMaps")
 			return
 		}
-		File bcSymbolMapsDirectory = new File(applicationsDirectory, parameters.applicationBundleName + "/BCSymbolMaps")
+		File bcSymbolMapsDirectory = new File(archiveDirectory, "BCSymbolMaps")
 		bcSymbolMapsDirectory.mkdirs()
 
 		parameters.outputPath.eachFileRecurse { file ->

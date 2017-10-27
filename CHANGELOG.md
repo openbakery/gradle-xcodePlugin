@@ -4,6 +4,9 @@ Changes
 * Some updates to support Xcode 9: Issue #369
 * The entitlments for extensions are not modified using the values from the `entitlements` parameters
 
+Bugfixes
+* the BCSymbolMaps should be in the xcarchive root directory
+
 
 # 0.15.0 (June 2, 2017)
 
