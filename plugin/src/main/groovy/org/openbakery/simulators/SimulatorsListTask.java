@@ -4,12 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.TaskAction;
 import org.openbakery.xcode.Destination;
 import org.openbakery.xcode.Type;
 import org.openbakery.XcodePlugin;
 
 public class SimulatorsListTask extends AbstractSimulatorTask {
+
+	protected Logger log = this.getLogger();
 
 	int compareTo(String first, String second) {
 		if (first == null && second == null) {
@@ -33,10 +36,13 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 
 	@TaskAction
 	void list() {
+		listAllOfType(Type.tvOS);
+		listAllOfType(Type.iOS);
+	}
 
-		List<Destination> availableSimulators = getSimulatorControl().getAllDestinations(Type.iOS);
-		List<Destination> tvOsSimulators = getSimulatorControl().getAllDestinations(Type.tvOS);
-        availableSimulators.addAll(tvOsSimulators);
+    void listAllOfType(Type type) {
+
+		List<Destination> availableSimulators = getSimulatorControl().getAllDestinations(type);
 
 		Collections.sort(availableSimulators, new Comparator<Destination>() {
 			@Override
@@ -54,7 +60,7 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 		for (Destination destination : availableSimulators) {
 
 			if (!currentOS.equals(destination.getOs())) {
-				getLogger().lifecycle("-- " + destination.getPlatform()+" {} -- ", destination.getOs());
+				log.lifecycle("-- " + destination.getPlatform() + " " + destination.getOs() + " --");
 				currentOS = destination.getOs();
 			}
 
@@ -63,9 +69,10 @@ public class SimulatorsListTask extends AbstractSimulatorTask {
 				id = "(" + destination.getId() + ")";
 			}
 
-			getLogger().lifecycle("\t {} {}", destination.getName(), id);
+			log.lifecycle("\t" + destination.getName() + " " + id);
 		}
 
 
 	}
+
 }

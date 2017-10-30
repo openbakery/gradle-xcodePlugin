@@ -43,6 +43,11 @@ class SimulatorControlSpecification extends Specification {
 		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9.txt"))
 	}
 
+	void mockXcode9_1() {
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9_1.txt"))
+	}
+
+
 	def "get runtimes"() {
 		given:
 		mockXcode6()
@@ -629,11 +634,40 @@ class SimulatorControlSpecification extends Specification {
 
 		when:
 		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0));
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0))
 
 		then:
 		devices != null
 		devices.size() == 15
+	}
+
+
+	def "devices iOS11.1 runtimes" () {
+		given:
+		mockXcode9_1()
+
+		when:
+		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
+
+		then:
+		runtimes != null
+		runtimes.size() == 3
+		runtimes.get(0).name == "iOS 11.1"
+	}
+
+	def "devices iOS11.1"() {
+		given:
+		mockXcode9_1()
+
+		when:
+		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
+		SimulatorRuntime runtime = runtimes.get(0)
+		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0))
+
+		then:
+		devices != null
+		devices.size() == 18
+		runtime.name == "iOS 11.1"
 	}
 
 }
