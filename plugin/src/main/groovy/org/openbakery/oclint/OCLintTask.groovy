@@ -8,7 +8,7 @@ class OCLintTask extends AbstractXcodeTask {
 
 	File outputDirectory
 
-	String oclintDirectoryName = "oclint-0.11"
+	String oclintDirectoryName = "oclint-0.13"
 
 
 	OCLintTask() {
@@ -38,9 +38,9 @@ class OCLintTask extends AbstractXcodeTask {
 
 	def getDownloadURL() {
 		if (getOSVersion().minor >= 12) {
-			return "https://github.com/oclint/oclint/releases/download/v0.11.1/oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"
+			return "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-17.0.0.tar.gz"
 		}
-		return "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
+		return "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-16.7.0.tar.gz"
 	}
 
 	File getTemporaryDirectory() {
@@ -58,7 +58,7 @@ class OCLintTask extends AbstractXcodeTask {
 	File oclintBinDirectory() {
 		String filename = getFilename()
 	  int endIndex = filename.indexOf("-x86_64")
-		String directoryName = "oclint-0.11"
+		String directoryName = "oclint-0.13"
 		if (endIndex > 0) {
 			directoryName = filename.substring(0, endIndex)
 		}

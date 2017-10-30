@@ -24,9 +24,9 @@ class OCLintTaskTest {
 	OCLintTask ocLintTask
 	AntBuilderStub antBuilderStub = new AntBuilderStub()
 
-	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.11/oclint-0.11-x86_64-darwin-15.6.0.tar.gz"
-	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.11.1/oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"
-	String oclintPath = 'oclint-0.11'
+	String downloadURL = "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-16.7.0.tar.gz"
+	String downloadURLForSierra = "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-17.0.0.tar.gz"
+	String oclintPath = 'oclint-0.13'
 
 	File tmpDirectory
 	File outputDirectory
@@ -73,7 +73,7 @@ class OCLintTaskTest {
 	@Test
 	void filenameFromURL() {
 		// just make sure that the filename function does the right thing ;-)
-		assertThat(filename(downloadURLForSierra), equalTo("oclint-0.11.1-x86_64-darwin-16.3.0.tar.gz"))
+		assertThat(filename(downloadURLForSierra), equalTo("oclint-0.13-x86_64-darwin-17.0.0.tar.gz"))
 	}
 
 	@Test
@@ -386,14 +386,14 @@ class OCLintTaskTest {
 
 	@Test
 	void oclint_bin_directory() {
-		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.11/bin")))
+		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.13/bin")))
 	}
 
 
 	@Test
 	void oclint_bin_directory_sierra() {
 		System.setProperty("os.version", "10.12.0")
-		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.11.1/bin")))
+		assertThat(ocLintTask.oclintBinDirectory(), equalTo(new File(ocLintTask.getTemporaryDirectory("oclint"), "oclint-0.13/bin")))
 	}
 
 }
