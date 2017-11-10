@@ -360,8 +360,9 @@ class PackageTaskSpecification extends Specification {
 		given:
 		mockExampleApp(true, false)
 		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
-		def codesignWidgetCommand = codesignCommand("Payload/Example.app/PlugIns/ExampleTodayWidget.appex", "entitlements_test1.plist")
+		def codesignWidgetCommand = codesignCommand("Payload/Example.app/PlugIns/ExampleTodayWidget.appex", "entitlements_extension.plist")
 
+		println(codesignWidgetCommand)
 		when:
 		packageTask.packageApplication()
 
