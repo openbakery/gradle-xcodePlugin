@@ -340,7 +340,6 @@ class CodesignSpecification extends  Specification {
 		codesign.sign(bundle)
 
 		then:
-
 		1 * commandRunner.run(_, _) >> {
 			arguments ->
 				commandList = arguments[0]
@@ -349,9 +348,9 @@ class CodesignSpecification extends  Specification {
 					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
 				}
 		}
-		commandList.contains("/usr/bin/codesign")
-		commandList[2] != "--entitlements"
-		!entitlementsFile.exists()
+		!entitlements.containsKey("com..apple..developer..siri")
+		!entitlements.containsKey("com..apple..developer..default-data-protection")
+
 	}
 
 
@@ -387,6 +386,8 @@ class CodesignSpecification extends  Specification {
 		commandList.contains("/usr/bin/codesign")
 		commandList[2] == "--entitlements"
 		entitlementsFile.exists()
+		entitlements.containsKey("keychain-access-groups")
+
 	}
 
 
