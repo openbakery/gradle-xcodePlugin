@@ -321,7 +321,7 @@ class CodesignSpecification extends  Specification {
 	}
 
 
-	def "entitlements is not used when signing extension"() {
+	def "entitlements parameters are not used when signing extension"() {
 		def commandList
 		File entitlementsFile
 		XMLPropertyListConfiguration entitlements
@@ -356,6 +356,41 @@ class CodesignSpecification extends  Specification {
 
 
 
+	def "entitlements keychain-access-group is used for extension"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		applicationDummy.create()
+		File bundle = applicationDummy.createPlugin()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.last())
+
+		parameters.entitlements = [
+				"keychain-access-groups"  : ["\$(AppIdentifierPrefix)org.openbakery.test.Example",
+											 "\$(AppIdentifierPrefix)org.openbakery.test.ExampleWidget"]
+		]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+				if (commandList.size() > 3) {
+					entitlementsFile = new File(commandList[3])
+					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+				}
+		}
+		commandList.contains("/usr/bin/codesign")
+		commandList[2] == "--entitlements"
+		entitlementsFile.exists()
+	}
+
+
+
 	def "create entitlements without xcent adds proper keychain access group"() {
 		given:
 		applicationDummy.create()
@@ -381,4 +416,14 @@ class CodesignSpecification extends  Specification {
 	}
 
 
+	def "create configuration for entitlemement using specific bundle identifier"() {
+		parameters.entitlements = [
+				"com.apple.developer.siri": true,
+				"keychain-access-groups"  : ["\$(AppIdentifierPrefix)org.openbakery.test.Example",
+											 "\$(AppIdentifierPrefix)org.openbakery.test.ExampleWidget"]
+		]
+
+
+
+	}
 }

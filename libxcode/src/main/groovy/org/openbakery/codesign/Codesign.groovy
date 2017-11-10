@@ -75,10 +75,13 @@ class Codesign {
 	 * @return
 	 */
 	private Configuration createConfiguration(File bundle) {
-		// for now we disable the merging for extension, I don't know if merging is needed. If so the configuration her
-		// must be new, so that the entitlements can be configured per bundle
+		// for now we disable the merging for extension, except for the keychain-access-groups parameter
 		logger.info("createConfiguration for {}", bundle)
 		if (bundle.absolutePath.endsWith("appex")) {
+			if (codesignParameters.entitlements != null) {
+				def subMap = codesignParameters.entitlements.subMap(["keychain-access-groups"])
+				return new ConfigurationFromMap(subMap)
+			}
 			return new ConfigurationFromMap([:])
 		}
 

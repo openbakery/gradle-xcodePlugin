@@ -59,7 +59,7 @@ class ApplicationDummy {
 	File createPlugin(Extension extension = Extension.today) {
 		switch (extension) {
 			case Extension.today:
-				File mobileProvision = new File("src/test/Resource/test1.mobileprovision")
+				File mobileProvision = new File("../libtest/src/main/Resource/extension.mobileprovision")
 				createExtension("ExampleTodayWidget", "org.openbakery.test.ExampleWidget", mobileProvision)
                 break
 			case Extension.sticker:
@@ -105,6 +105,15 @@ class ApplicationDummy {
 
 		File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
 		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", bundleIdentifier)
+
+
+
+
+		File applicationBundleWidgetInfoPlist = new File(applicationBundle, widgetPath + "/Info.plist");
+
+		PlistHelper helper = new PlistHelper(new CommandRunner())
+		helper.create(applicationBundleWidgetInfoPlist)
+		helper.addValueForPlist(applicationBundleWidgetInfoPlist, "CFBundleIdentifier", bundleIdentifier)
 
 		mobileProvisionFile.add(mobileProvision)
 		return widgetsDirectory
