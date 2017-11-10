@@ -92,7 +92,7 @@ class CodesignSpecification extends  Specification {
 
 		when:
 		File xcentFile = codesign.getXcentFile(applicationDummy.payloadAppDirectory)
-		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromPlist(xcentFile))
+		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromPlist(xcentFile), "AAAAAAAAAA")
 
 		then:
 		keychainAccessGroup.size() == 3
@@ -113,7 +113,7 @@ class CodesignSpecification extends  Specification {
 		]
 
 		when:
-		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromMap(entitlements))
+		List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromMap(entitlements), "AAA")
 
 		then:
 		keychainAccessGroup.size() == 1
@@ -352,6 +352,32 @@ class CodesignSpecification extends  Specification {
 		commandList.contains("/usr/bin/codesign")
 		commandList[2] != "--entitlements"
 		!entitlementsFile.exists()
+	}
+
+
+
+	def "create entitlements without xcent adds proper keychain access group"() {
+		given:
+		applicationDummy.create()
+
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+
+		parameters.entitlements = [
+				"com.apple.developer.siri": true,
+				"keychain-access-groups"  : ["\$(AppIdentifierPrefix)org.openbakery.test.Example",
+											 "\$(AppIdentifierPrefix)org.openbakery.test.ExampleWidget"]
+		]
+
+
+		when:
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromMap(parameters.entitlements))
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+
+		then:
+		entitlementsFile.exists()
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.test.Example")
+		entitlementsFile.text.contains("AAAAAAAAAA.org.openbakery.test.ExampleWidget")
+		entitlements.getStringArray("keychain-access-groups").contains('AAAAAAAAAAA.org.openbakery.test.Example') == true
 	}
 
 

@@ -204,13 +204,17 @@ class Codesign {
 			return null
 		}
 
-		logger.debug("createEntitlementsFile for identifier {}", bundleIdentifier)
+		logger.info("createEntitlementsFile for bundleIdentifier {}", bundleIdentifier)
 
-		// set keychain access group
-		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration)
+
 
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		ProvisioningProfileReader reader = createProvisioningProfileReader(bundleIdentifier, provisionFile)
+
+		String applicationPrefix = reader.getApplicationIdentifierPrefix()
+		// set keychain access group
+		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration, applicationPrefix)
+
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
 		File extractedEntitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
@@ -235,23 +239,22 @@ class Codesign {
 	}
 
 
-	List<String> getKeychainAccessGroupFromEntitlements(Configuration configuration) {
+	List<String> getKeychainAccessGroupFromEntitlements(Configuration configuration, String applicationPrefix) {
 		List<String> result = []
+		applicationPrefix = applicationPrefix + "."
 
-		String applicationIdentifier = configuration.getString("application-identifier")
-		if (StringUtils.isNotEmpty(applicationIdentifier)) {
-			applicationIdentifier = applicationIdentifier.split("\\.")[0] + "."
-		}
-		List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
+		logger.info("using application prefix: {}", applicationPrefix)
+			List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
+		logger.info("keychain-access-group from configuration: {}", result)
 
 		keychainAccessGroups.each { item ->
-			if (StringUtils.isNotEmpty(applicationIdentifier) && item.startsWith(applicationIdentifier)) {
-				result << item.replace(applicationIdentifier, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
+			if (StringUtils.isNotEmpty(applicationPrefix) && item.startsWith(applicationPrefix)) {
+				result << item.replace(applicationPrefix, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
 			} else {
 				result << item
 			}
 		}
-
+		logger.info("modified keychain-access-group: {}", result)
 		return result
 	}
 

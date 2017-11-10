@@ -224,6 +224,7 @@ class ProvisioningProfileReader {
 
 
 		def applicationIdentifier = plistHelper.getValueFromPlist(entitlementFile, "application-identifier")
+		logger.info("applicationIdentifier from entitlements: {}", applicationIdentifier)
 		String bundleIdentifierPrefix = ""
 		if (applicationIdentifier != null) {
 			String[] tokens = applicationIdentifier.split("\\.")
