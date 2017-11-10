@@ -214,9 +214,13 @@ class Codesign {
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
 		ProvisioningProfileReader reader = createProvisioningProfileReader(bundleIdentifier, provisionFile)
 
-		String applicationPrefix = reader.getApplicationIdentifierPrefix()
 		// set keychain access group
-		List<String> keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration, applicationPrefix)
+		List<String> keychainAccessGroup = []
+
+		if (reader != null) {
+			String applicationPrefix = reader.getApplicationIdentifierPrefix()
+			keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration, applicationPrefix)
+		}
 
 		String basename = FilenameUtils.getBaseName(provisionFile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
