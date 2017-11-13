@@ -28,7 +28,7 @@ class ApplicationDummy {
 		FileUtils.deleteDirectory(directory)
 	}
 
-	File create(boolean adHoc = true) {
+	File create(boolean adHoc = true, boolean includeProvisioning = true) {
 		// create dummy app
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
@@ -48,10 +48,12 @@ class ApplicationDummy {
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
-		if (adHoc) {
-			mobileProvisionFile.add(new File("../libtest/src/main/Resource/test.mobileprovision"))
-		} else {
-			mobileProvisionFile.add(new File("../libtest/src/main/Resource/Appstore.mobileprovision"))
+		if (includeProvisioning) {
+			if (adHoc) {
+				mobileProvisionFile.add(new File("../libtest/src/main/Resource/test.mobileprovision"))
+			} else {
+				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Appstore.mobileprovision"))
+			}
 		}
 		return appDirectory
 	}

@@ -427,4 +427,16 @@ class CodesignSpecification extends  Specification {
 
 
 	}
+
+
+	def "extract entitlments should not crash if provisioning profile does not exist"() {
+		given:
+		applicationDummy.create(false, false)
+
+		when:
+		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", null)
+
+		then:
+		entitlementsFile == null
+	}
 }

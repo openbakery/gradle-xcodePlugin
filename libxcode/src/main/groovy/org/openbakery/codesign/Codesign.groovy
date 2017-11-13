@@ -212,6 +212,9 @@ class Codesign {
 
 
 		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
+		if (provisionFile == null) {
+			return null
+		}
 		ProvisioningProfileReader reader = createProvisioningProfileReader(bundleIdentifier, provisionFile)
 
 		// set keychain access group
