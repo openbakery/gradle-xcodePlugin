@@ -160,7 +160,7 @@ class Signing {
 		if (entitlements != null) {
 			result.entitlements = entitlements.clone()
 		}
-		result.entitlementsFile = entitlementsFile
+		result.entitlementsFile = getEntitlementsFile()
 		return result
 	}
 

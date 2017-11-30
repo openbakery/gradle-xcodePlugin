@@ -122,4 +122,21 @@ class SigningSpecification extends Specification {
         then:
         signing.codesignParameters.entitlementsFile == new File("entitlements")
     }
+
+
+    def "codesignParameter entitlementsFile as String"() {
+        when:
+        signing.entitlementsFile = "entitlements"
+        then:
+        signing.codesignParameters.entitlementsFile instanceof File
+        signing.codesignParameters.entitlementsFile.path.endsWith("entitlements")
+    }
+
+    def "codesignParameter entitlementsFile as String full path"() {
+        when:
+        signing.entitlementsFile = "file:///entitlements"
+        then:
+        signing.codesignParameters.entitlementsFile instanceof File
+        signing.codesignParameters.entitlementsFile.path.endsWith("entitlements")
+    }
 }
