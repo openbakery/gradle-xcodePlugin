@@ -109,12 +109,16 @@ class Signing {
 	}
 
 
-	File getEntitlementsFile() {
-		if (entitlementsFile != null) {
-			return project.file(entitlementsFile)
-		}
-		return null
-	}
+    File getEntitlementsFile() {
+        if (entitlementsFile != null) {
+            if (entitlementsFile instanceof File) {
+                return entitlementsFile
+            }
+            return project.file(entitlementsFile)
+
+        }
+        return null
+    }
 
 	boolean hasEntitlementsFile() {
 		return entitlementsFile != null && entitlementsFile.exists()
