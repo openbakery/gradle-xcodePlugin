@@ -23,30 +23,19 @@ Here a brief overview of the features:
 * [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint
 
-
-## Note
-
-**Version 0.14+ of the plugin needs at least gradle version 2.14**
-
-**Version 0.13+ will not work with gradle version 2.14**
-
-
 ## Requirements
 
 * Xcode 6 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
 
-
 ### Current stable version is 0.15.0
 
 0.12.x supports Xcode 6.+ and Xcode 7.+
 
-
 ## Documentation
 
 * [Documentation](https://openbakery.org/gxp/)
-
 
 ## Usage
 
