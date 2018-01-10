@@ -1,4 +1,4 @@
-# 0.15.1 (TBA)
+# 0.15.1 (January 8, 2018)
 
 Changes
 * Some updates to support Xcode 9: Issue #369

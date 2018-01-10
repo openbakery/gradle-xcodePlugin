@@ -28,8 +28,6 @@ Here a brief overview of the features:
 
 **Version 0.14+ of the plugin needs at least gradle version 2.14**
 
-**Version 0.13+ will not work with gradle version 2.14**
-
 
 ## Requirements
 
@@ -38,9 +36,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.15.0
-
-0.12.x supports Xcode 6.+ and Xcode 7.+
+### Current stable version is 0.15.1
 
 
 ## Documentation
