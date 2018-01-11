@@ -377,7 +377,7 @@ class SecuritySpecification extends Specification {
 		security.setPartitionList(keychain, "keychain password")
 
 		then:
-		1 * commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", "keychain password", "-D", "1111222233334444555566667777888899990000", "-t", "private", keychain.absolutePath])
+		1 * commandRunner.run(["security", "set-key-partition-list", "-S", "apple:,apple-tool:,codesign:", "-k", "keychain password", "-D", "1111222233334444555566667777888899990000", "-t", "private", keychain.absolutePath])
 	}
 
 	def "certificate does not exist throws exception"() {

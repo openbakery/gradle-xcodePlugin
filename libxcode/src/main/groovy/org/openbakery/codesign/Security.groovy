@@ -209,6 +209,6 @@ class Security {
 			throw new IllegalArgumentException("Given keychain does not exist")
 		}
 		String identity = getIdentity(keychainFile)
-		commandRunner.run(["security", "set-key-partition-list", "-S", "apple:", "-k", keychainPassword, "-D", identity, "-t", "private", keychainFile.absolutePath])
+		commandRunner.run(["security", "set-key-partition-list", "-S", "apple:,apple-tool:,codesign:", "-k", keychainPassword, "-D", identity, "-t", "private", keychainFile.absolutePath])
 	}
 }
