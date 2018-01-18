@@ -84,6 +84,7 @@ public class ApplicationBundle {
 
 	File getFrameworksPath() {
 		switch (type) {
+			case Type.macOS:
 			case Type.iOS:
 			case Type.watchOS:
 				return new File(applicationPath, "Frameworks")
