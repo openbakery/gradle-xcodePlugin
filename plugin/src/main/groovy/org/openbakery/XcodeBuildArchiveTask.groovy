@@ -18,6 +18,7 @@ package org.openbakery
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
@@ -170,40 +171,40 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		FileUtils.writeStringToFile(infoPlist, content.toString())
 	}
 
-
-	def createFrameworks(def archiveDirectory, Xcodebuild 	xcodebuild) {
-
-		File frameworksPath = new File(archiveDirectory, "Products/Applications/" + parameters.applicationBundleName + "/Frameworks")
+	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle) {
+        File frameworksPath = appBundle.frameworksPath
 		if (frameworksPath.exists()) {
-
-
 			def libNames = []
 			frameworksPath.eachFile() {
 				libNames.add(it.getName())
 			}
 
-			logger.debug("swiftlibs to add: {}", libNames);
+			logger.debug("swiftlibs to add: {}", libNames)
 
-			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/iphoneos")
+			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
 
 			swiftLibs.eachFile() {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
 				if (libNames.contains(it.name)) {
-					copy(it, getSwiftSupportDirectory())
+					copy(it, getSwiftSupportDirectory(appBundle.platformName))
 				}
 			}
 		}
 
+		ApplicationBundle watchAppBundle = appBundle.watchAppBundle
+		if (watchAppBundle != null) {
+			createFrameworks(xcodebuild, watchAppBundle)
+		}
 	}
 
-	def getSwiftSupportDirectory() {
+	def getSwiftSupportDirectory(String platformName) {
 		def swiftSupportPath = "SwiftSupport"
 
 		if (xcode.version.major > 6) {
-			swiftSupportPath += "/iphoneos"
+			swiftSupportPath += "/$platformName"
 		}
 
-		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath);
+		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath)
 		if (!swiftSupportDirectory.exists()) {
 			swiftSupportDirectory.mkdirs()
 		}
@@ -308,7 +309,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 	}
 
-	def createExtensionSupportDirectory(File bundle, Xcodebuild xcodebuild) {
+	def createExtensionSupportDirectory(File bundle, Xcodebuild xcodebuild, File archiveDirectory) {
 		String extensionIdentifier = getValueFromBundleInfoPlist(bundle, "NSExtension:NSExtensionPointIdentifier")
 		if (extensionIdentifier == null) {
 			logger.debug("No support directory created, because no extension identifier found in bundle {}", bundle)
@@ -323,18 +324,19 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		switch (extension) {
 			case Extension.sticker:
-				File supportDirectory = new File(getArchiveDirectory(), "MessagesApplicationExtensionSupport")
+				File supportDirectory = new File(archiveDirectory, "MessagesApplicationExtensionSupport")
 				if (supportDirectory.mkdirs()) {
 					File stub = new File(xcodebuild.getPlatformDirectory(), "/Library/Application Support/MessagesApplicationExtensionStub/MessagesApplicationExtensionStub")
 					copy(stub, supportDirectory)
 				}
 				break
 			case Extension.watch:
-				File supportDirectory = new File(getArchiveDirectory(), "WatchKitSupport2")
+				File supportDirectory = new File(archiveDirectory, "WatchKitSupport2")
                 if (supportDirectory.mkdirs()) {
 					File stub = new File(xcodebuild.getPlatformDirectory(), "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit/WK")
 					copy(stub, supportDirectory)
 				}
+				break
 			default:
 				break
 		}
@@ -375,8 +377,11 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 		// create xcarchive
+		File archiveDirectory = getArchiveDirectory()
+		File applicationsDirectory = getApplicationsDirectory()
+
 		// copy application bundle
-		copy(parameters.applicationBundle, getApplicationsDirectory())
+		copy(parameters.applicationBundle, applicationsDirectory)
 
 		File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
 		if (onDemandResources.exists()) {
@@ -384,28 +389,28 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		// copy onDemandResources
-
-		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
+		def dSymDirectory = new File(archiveDirectory, "dSYMs")
 		dSymDirectory.mkdirs()
 		copyDsyms(parameters.outputPath, dSymDirectory)
+
+		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 
 		List<File> appBundles = getAppBundles(parameters.outputPath)
 		for (File bundle : appBundles) {
 			createEntitlements(bundle)
-			createExtensionSupportDirectory(bundle, xcodebuild)
+			createExtensionSupportDirectory(bundle, xcodebuild, archiveDirectory)
 		}
 
-		File applicationsDirectory = getApplicationsDirectory()
-		File archiveDirectory = getArchiveDirectory()
+		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)
+
 		createInfoPlist(archiveDirectory)
-		createFrameworks(archiveDirectory, xcodebuild)
+		createFrameworks(xcodebuild, archiveAppBundle)
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
 		deleteFrameworksInExtension(applicationsDirectory)
 		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
-			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
 			convertInfoPlistToBinary(applicationFolder)
 		}
 

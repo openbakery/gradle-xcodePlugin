@@ -73,34 +73,52 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(lib, "foo")
 	}
 
-	def createSwiftLibs(Xcodebuild xcodebuild) {
+	def createSwiftLibs(Xcodebuild xcodebuild, boolean includeWatchLib = false, String platform = "iphoneos") {
 		def swiftLibs = [
-						"libswiftCore.dylib",
-						"libswiftCoreGraphics.dylib",
-						"libswiftDarwin.dylib",
-						"libswiftDispatch.dylib",
-						"libswiftFoundation.dylib",
-						"libswiftObjectiveC.dylib",
-						"libswiftSecurity.dylib",
-						"libswiftUIKit.dylib"
+				"libswiftCore.dylib",
+				"libswiftCoreGraphics.dylib",
+				"libswiftDarwin.dylib",
+				"libswiftDispatch.dylib",
+				"libswiftFoundation.dylib",
+				"libswiftObjectiveC.dylib",
+				"libswiftSecurity.dylib",
+				"libswiftUIKit.dylib"
 		]
 
-		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/iphoneos")
+		if (includeWatchLib) {
+			swiftLibs.add(0, "libswiftWatchKit.dylib")
+		}
+
+		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/$platform")
 		swiftLibsDirectory.mkdirs()
 
 		swiftLibs.each { item ->
 			File lib = new File(swiftLibsDirectory, item)
 			FileUtils.writeStringToFile(lib, "bar")
 		}
+
 		return swiftLibs
 	}
 
-	void mockSwiftLibs(Xcodebuild xcodebuild) {
-		def swiftLibs = createSwiftLibs(xcodebuild)
-		swiftLibs[0..4].each { item ->
-			File lib = new File(appDirectory, "Frameworks/" + item)
-			FileUtils.writeStringToFile(lib, "foo")
+	void mockSwiftLibs(Xcodebuild xcodebuild, File watchAppDirectory = null) {
+		def includeWatchLibs = watchAppDirectory != null
+
+		def swiftLibs = createSwiftLibs(xcodebuild, includeWatchLibs)
+		def libFiles = swiftLibs[0..4].collect { new File(appDirectory, "Frameworks/" + it) }
+
+		if (includeWatchLibs) {
+			def watchSwiftLibs = createSwiftLibs(xcodebuild, true, "watchos")
+            libFiles += watchSwiftLibs[0..4].collect { new File(watchAppDirectory, "Frameworks/" + it) }
 		}
+
+		libFiles.forEach { FileUtils.writeStringToFile(it, "foo") }
+	}
+
+	void createWatchKitStub(String platformDirectory) {
+		File stubDirectory = new File(platformDirectory, "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "WK")
+		FileUtils.writeStringToFile(stub, "fixture")
 	}
 
 	Xcodebuild createXcodeBuild(String version) {
@@ -137,9 +155,25 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
-
 	}
 
+	def setupProjectWithWatchApp(String name, String platformDirectory) {
+		File stubDirectory = new File(platformDirectory, "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "WK")
+		FileUtils.writeStringToFile(stub, "fixture")
+
+		setupProject()
+
+		File appDirectory = new File(appDirectory, "Watch/${name}.app")
+		appDirectory.mkdirs()
+
+		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
+		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
+
+		return appDirectory
+	}
 
 	def "archiveDirectory"() {
 		when:
@@ -670,18 +704,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 
-		File stubDirectory = new File(xcodebuild.platformDirectory, "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit")
-		stubDirectory.mkdirs()
-		File stub = new File(stubDirectory, "WK")
-		FileUtils.writeStringToFile(stub, "fixture")
-
-		setupProject()
-
-		File watchAppDirectory = new File(buildOutputDirectory, "Example.app/Watch/Example.app")
-		watchAppDirectory.mkdirs()
-		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
-		File destinationInfoPlist = new File(watchAppDirectory, "Info.plist")
-        FileUtils.copyFile(infoPlist, destinationInfoPlist)
+		setupProjectWithWatchApp("Example", xcodebuild.platformDirectory)
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -693,5 +716,38 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		supportDirectory.exists()
 		supportDirectory.list().length == 1
 		supportStub.exists()
+	}
+
+	def "copy watchkit swift framework"() {
+		given:
+		XcodeFake xcode = createXcode("8")
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
+		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+
+		def watchAppDirectory = setupProjectWithWatchApp("Example", xcodebuild.platformDirectory)
+		mockSwiftLibs(xcodebuild, watchAppDirectory)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File watchosLibswiftWatchKit = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Watch/Example.app/Frameworks/libswiftWatchKit.dylib")
+		File watchosSupportLibswiftWatchKitDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/watchos")
+		File watchosSupportLibswiftWatchKit = new File(watchosSupportLibswiftWatchKitDirectory, "libswiftWatchKit.dylib")
+
+		File iphoneosLibswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftWatchKit.dylib")
+		File iphoneosSupportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
+		File iphoneosSupportLibswiftCore = new File(iphoneosSupportLibswiftDirectory, "libswiftWatchKit.dylib")
+
+		then:
+		watchosLibswiftWatchKit.exists()
+		watchosSupportLibswiftWatchKitDirectory.list().length == 5
+		watchosSupportLibswiftWatchKit.exists()
+		FileUtils.readFileToString(watchosSupportLibswiftWatchKit).equals("bar")
+
+		iphoneosLibswiftCore.exists()
+		iphoneosSupportLibswiftDirectory.list().length == 5
+		iphoneosSupportLibswiftCore.exists()
+		FileUtils.readFileToString(iphoneosSupportLibswiftCore).equals("bar")
 	}
 }
