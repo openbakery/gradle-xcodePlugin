@@ -123,7 +123,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Xcodebuild createXcodeBuild(String version) {
 		XcodeFake xcode = createXcode(version)
-		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\n"
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\nPLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
 		return new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 	}
 
@@ -699,9 +699,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy watchkit support folder"() {
         given:
-		XcodeFake xcode = createXcode("8")
-		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
-		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
+		Xcodebuild xcodebuild = createXcodeBuild("9")
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 
 		setupProjectWithWatchApp("Example", xcodebuild.platformDirectory)
@@ -720,9 +718,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	def "copy watchkit swift framework"() {
 		given:
-		XcodeFake xcode = createXcode("8")
-		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
-		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
+		Xcodebuild xcodebuild = createXcodeBuild("9")
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 
 		def watchAppDirectory = setupProjectWithWatchApp("Example", xcodebuild.platformDirectory)
