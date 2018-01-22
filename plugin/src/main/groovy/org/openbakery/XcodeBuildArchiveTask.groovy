@@ -171,7 +171,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		FileUtils.writeStringToFile(infoPlist, content.toString())
 	}
 
-	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle) {
+	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle, boolean bitcode) {
         File frameworksPath = appBundle.frameworksPath
 		if (frameworksPath.exists()) {
 			def libNames = []
@@ -187,13 +187,18 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
 				if (libNames.contains(it.name)) {
 					copy(it, getSwiftSupportDirectory(appBundle.platformName))
+
+					if (!bitcode) {
+						File destination = new File(frameworksPath, it.getName())
+						commandRunner.run(["/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath])
+					}
 				}
 			}
 		}
 
 		ApplicationBundle watchAppBundle = appBundle.watchAppBundle
 		if (watchAppBundle != null) {
-			createFrameworks(xcodebuild, watchAppBundle)
+			createFrameworks(xcodebuild, watchAppBundle, true)
 		}
 	}
 
@@ -404,7 +409,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)
 
 		createInfoPlist(archiveDirectory)
-		createFrameworks(xcodebuild, archiveAppBundle)
+		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
 		deleteFrameworksInExtension(applicationsDirectory)
