@@ -73,6 +73,10 @@ class PackageTask_WatchAppSpecification extends Specification {
 		watchkitExtensionPath = "Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex"
 		watchkitExtensionBundle = new File(applicationBundle, watchkitExtensionPath)
 
+		File watchkitSupportDirectory = new File(archiveDirectory, "WatchKitSupport2")
+		watchkitSupportDirectory.mkdirs()
+		File watchkitSupportStub = new File(watchkitSupportDirectory, "WK")
+		FileUtils.writeStringToFile(watchkitSupportStub, "fixture")
 	}
 
 	def cleanup() {
@@ -244,6 +248,18 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 		then:
 		!(new File(outputPath, "Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex/libswiftRemoteMirror.dylib").exists())
+
+	}
+
+	def "copy watch extension support directory"() {
+		given:
+		createExampleApp()
+
+		when:
+        packageTask.packageApplication()
+
+		then:
+		new File(outputPath, "WatchKitSupport2/WK").exists()
 
 	}
 }

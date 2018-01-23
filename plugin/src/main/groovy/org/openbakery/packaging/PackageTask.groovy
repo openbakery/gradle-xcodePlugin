@@ -216,7 +216,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private void enumerateExtensionSupportDirectories(File parentDirectory, Closure closure) {
-		def directoryNames = ["MessagesApplicationExtensionSupport"]
+		def directoryNames = ["MessagesApplicationExtensionSupport", "WatchKitSupport2"]
 
 		for (String name in directoryNames) {
 			File supportDirectory = new File(parentDirectory, name)
