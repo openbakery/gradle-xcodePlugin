@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
@@ -396,6 +397,37 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		reader.isAdHoc() == false
 	}
 
+	def "is AppStore profile type"() {
+        when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/Appstore.mobileprovision"), new CommandRunner())
+
+		then:
+		reader.profileType == ProvisioningProfileType.AppStore
+	}
+
+	def "is enterprise profile type"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/Enterprise.mobileprovision"), new CommandRunner())
+
+		then:
+		reader.profileType == ProvisioningProfileType.Enterprise
+	}
+
+	def "is ad-hoc profile type"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
+
+		then:
+		reader.profileType == ProvisioningProfileType.AdHoc
+	}
+
+	def "is development profile type"() {
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/Development.mobileprovision"), new CommandRunner())
+
+		then:
+		reader.profileType == ProvisioningProfileType.Development
+	}
 
 	def "extract Entitlements with wildcard and kvstore should start with team id"() {
 		given:
