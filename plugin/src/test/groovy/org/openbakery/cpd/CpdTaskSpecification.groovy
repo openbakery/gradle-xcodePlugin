@@ -93,10 +93,8 @@ class CpdTaskSpecification extends Specification {
 		new File("${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar").text = ""
 		new File("${destDir}/xcode/pmd-4.2.5/lib").mkdirs()
 		new File("${destDir}/xcode/pmd-4.2.5/lib/a.jar").text = ""
-		new File("${destDir}/xcode/pmd-4.2.5/lib/b.jar").text = ""
-		new File("${destDir}/xcode/pmd-4.2.5/lib/c.jar").text = ""
 
-		def expectedCp = "\"${destDir}/xcode/pmd-4.2.5/lib/b.jar:${destDir}/xcode/pmd-4.2.5/lib/c.jar:${destDir}/xcode/pmd-4.2.5/lib/a.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\""
+		def expectedCp = "\"${destDir}/xcode/pmd-4.2.5/lib/a.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\""
 		def expectedFiles1 = "${project.projectDir}/null"
 		def expectedFiles2 = "${project.projectDir}/nullTests"
 
@@ -116,6 +114,8 @@ class CpdTaskSpecification extends Specification {
 			'--encoding', 'UTF-8',
 			'--format', 'net.sourceforge.pmd.cpd.XMLRenderer']
 		}
+
+
 		commandList == expectedCommandList
 	}
 
