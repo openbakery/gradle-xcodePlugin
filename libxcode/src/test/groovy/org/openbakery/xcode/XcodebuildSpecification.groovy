@@ -70,6 +70,14 @@ class XcodebuildSpecification extends Specification {
 		return command
 	}
 
+	def createCommandWithDerivedDataPath_DefaultDirectories_forSimulator(String... commands) {
+		def command = []
+		command.addAll(commands)
+		addDerivedDataPathParameters(command)
+		addDefaultDirectoriesParameters(command)
+		return command
+	}
+
 	def createCommandWithDerivedDataPath_And_DefaultDirectories(String... commands) {
 		def command = []
 		command.addAll(commands)
@@ -82,7 +90,7 @@ class XcodebuildSpecification extends Specification {
 	def createCommandWithDefaultDirectories(String... commands) {
 		def command = []
 		command.addAll(commands)
-		addDisabledCodesigningParameters(command)
+		//addDisabledCodesigningParameters(command)
 		addDefaultDirectoriesParameters(command)
 		return command
 	}
@@ -158,8 +166,6 @@ class XcodebuildSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
 														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
 														 "DSTROOT=" + new File("build/myDst").absolutePath,
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
@@ -260,7 +266,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_DefaultDirectories_forSimulator('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", "Debug"
@@ -291,7 +297,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList <<"-scheme" << 'myscheme'
 			expectedCommandList <<"-workspace"<< 'myworkspace'
 			expectedCommandList <<"-configuration" << "Debug"
-			addDisabledCodesigningParameters(expectedCommandList)
+			//addDisabledCodesigningParameters(expectedCommandList)
 			expectedCommandList <<"ARCHS=myarch"
 			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
 			addDefaultDirectoriesParameters(expectedCommandList)
@@ -342,7 +348,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_DefaultDirectories_forSimulator('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", "Debug"
@@ -394,7 +400,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
+			expectedCommandList = createCommandWithDerivedDataPath_DefaultDirectories_forSimulator('xcodebuild',
 							"-scheme", 'myscheme',
 							"-workspace", 'myworkspace',
 							"-configuration", 'Debug'
@@ -425,7 +431,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList <<"-scheme" << 'myscheme'
 			expectedCommandList <<"-workspace"<< 'myworkspace'
 			expectedCommandList <<"-configuration" << "Debug"
-			addDisabledCodesigningParameters(expectedCommandList)
+			//addDisabledCodesigningParameters(expectedCommandList)
 			expectedCommandList << "ARCHS=i386"
 			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
 			addDefaultDirectoriesParameters(expectedCommandList)
@@ -494,10 +500,8 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDisabledCodesign('xcodebuild',
-							"-scheme", 'myscheme',
-							"-workspace", 'myworkspace',
-							"-configuration", 'Debug')
+			expectedCommandList = []
+			expectedCommandList << 'xcodebuild' << "-scheme" << 'myscheme' << "-workspace" << 'myworkspace' << "-configuration" << "Debug"
 			expectedCommandList << "foobar"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
@@ -521,10 +525,8 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDisabledCodesign('xcodebuild',
-							"-scheme", 'myscheme',
-							"-workspace", 'myworkspace',
-							"-configuration", 'Debug')
+			expectedCommandList = []
+			expectedCommandList << 'xcodebuild' << "-scheme" << 'myscheme' << "-workspace" << 'myworkspace' << "-configuration" << "Debug"
 			expectedCommandList << "foo" << "bar"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
@@ -638,11 +640,8 @@ class XcodebuildSpecification extends Specification {
 
 
 		interaction {
-			expectedCommandList = createCommandWithDisabledCodesign('script', '-q', '/dev/null',
-							"xcodebuild",
-							"-scheme", 'myscheme',
-							"-workspace", "myworkspace",
-							"-configuration", 'Debug')
+			expectedCommandList = []
+			expectedCommandList << 'script' << '-q' << '/dev/null' << 'xcodebuild' << "-scheme" << 'myscheme' << "-workspace" << 'myworkspace' << "-configuration" << "Debug"
 			expectedCommandList <<"-destination" << "platform=iOS Simulator,id=D72F7CC6-8426-4E0A-A234-34747B1F30DD"
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 			addDerivedDataPathParameters(expectedCommandList)
@@ -675,11 +674,8 @@ class XcodebuildSpecification extends Specification {
 
 
 		interaction {
-			expectedCommandList = createCommandWithDisabledCodesign('script', '-q', '/dev/null',
-							"xcodebuild",
-							"-scheme", 'myscheme',
-							"-workspace", "myworkspace",
-							"-configuration", 'Debug')
+			expectedCommandList = []
+			expectedCommandList << 'script' << '-q' << '/dev/null' << 'xcodebuild' << "-scheme" << 'myscheme' << "-workspace" << 'myworkspace' << "-configuration" << "Debug"
 			expectedCommandList << "-destination" << "platform=tvOS Simulator,id=4395107C-169C-43D7-A403-C9030B6A205D"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
@@ -711,7 +707,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		interaction {
-			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories(
+			expectedCommandList = createCommandWithDerivedDataPath_DefaultDirectories_forSimulator(
 							"xcodebuild",
 							"-scheme", 'myscheme',
 							"-workspace", "myworkspace",
@@ -814,11 +810,8 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDisabledCodesign('xcodebuild',
-							"-scheme", 'myscheme',
-							"-workspace", 'myworkspace',
-							"-configuration", "Debug"
-			)
+			expectedCommandList = []
+			expectedCommandList << 'xcodebuild' << "-scheme" << 'myscheme' << "-workspace" << 'myworkspace' << "-configuration" << "Debug"
 			expectedCommandList << "-derivedDataPath" << new File("build/myDerivedData").absolutePath
 			expectedCommandList << "DSTROOT=" + new File("build/myDst").absolutePath
 			expectedCommandList << "OBJROOT=" + new File("build/myObj").absolutePath

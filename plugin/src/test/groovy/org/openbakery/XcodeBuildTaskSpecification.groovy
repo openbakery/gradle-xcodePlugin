@@ -71,8 +71,6 @@ class XcodeBuildTaskSpecification extends Specification {
 		return [
 						"CODE_SIGN_IDENTITY=",
 						"CODE_SIGNING_REQUIRED=NO",
-//					 "CODE_SIGN_ENTITLEMENTS=",
-//					 "CODE_SIGNING_ALLOWED=NO",
 		]
 	}
 
@@ -160,8 +158,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-scheme", 'myscheme',
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-															"CODE_SIGNING_REQUIRED=NO",
 														 "-derivedDataPath", new File("build/myDerivedData").absolutePath,
 														 "DSTROOT=" + new File("build/myDst").absolutePath,
 														 "OBJROOT=" + new File("build/myObj").absolutePath,
@@ -192,7 +188,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
@@ -279,7 +274,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.add("ARCHS=myarch")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
@@ -341,7 +335,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-workspace", 'myworkspace',
 														 "-configuration", "Debug",
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
@@ -370,7 +363,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
@@ -398,7 +390,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-workspace", 'myworkspace',
 														 "-configuration", 'Debug',
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
@@ -428,7 +419,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-workspace", 'myworkspace',
 														 "-configuration", 'Debug',
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.add("ARCHS=i386")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
@@ -460,7 +450,6 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-configuration", 'Debug',
 														 "-target", 'mytarget',
 			]
-			expectedCommandList.addAll(expectedCodesignSettings())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}

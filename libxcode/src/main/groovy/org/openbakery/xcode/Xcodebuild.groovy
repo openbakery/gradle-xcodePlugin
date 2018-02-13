@@ -151,6 +151,11 @@ class Xcodebuild {
 	}
 
 	def addDisableCodeSigning(ArrayList commandList) {
+		if (parameters.type != Type.macOS && parameters.simulator) {
+			// if it is a simulator build then do not add the parameters below
+			return
+		}
+
 		commandList.add("CODE_SIGN_IDENTITY=")
 		commandList.add("CODE_SIGNING_REQUIRED=NO")
 		//commandList.add("CODE_SIGN_ENTITLEMENTS=")
