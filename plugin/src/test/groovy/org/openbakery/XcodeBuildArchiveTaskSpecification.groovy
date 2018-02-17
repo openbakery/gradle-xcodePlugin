@@ -333,8 +333,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		config.getString("ApplicationProperties.SigningIdentity") == "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
 
 		icons.size() == 2
-		icons.get(0).equals("Applications/Example.app/Icon-72.png")
-		icons.get(1).equals("Applications/Example.app/Icon.png")
+		icons.contains("Applications/Example.app/Icon-72.png")
+		icons.contains("Applications/Example.app/Icon.png")
 		config.getString("Name").equals("Example")
 		config.getString("SchemeName").equals("Example")
 

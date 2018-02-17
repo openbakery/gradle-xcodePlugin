@@ -1,3 +1,13 @@
+# 0.15.3 (TBA)
+
+Bugfixes
+* Enabled codesigning for iOS Simuator builds, otherwise unit tests with binary frameworks does not workspace. Issue #378
+
+# 0.15.2 (January 24, 2018)
+
+Changes
+* Increased version number, because it looks like that on plugins.gradle.org the version 0.15.1 does not work.
+
 # 0.15.1 (January 8, 2018)
 
 Changes

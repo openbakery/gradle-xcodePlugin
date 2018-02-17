@@ -87,8 +87,6 @@ class XcodeTestTaskSpecification extends Specification {
 		return [
 						"CODE_SIGN_IDENTITY=",
 						"CODE_SIGNING_REQUIRED=NO",
-//					 "CODE_SIGN_ENTITLEMENTS=",
-//					 "CODE_SIGNING_ALLOWED=NO",
 		]
 	}
 
@@ -220,7 +218,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	}
 
-	def setup_iOS_SimualtorBuild(String... commands) {
+	def setup_iOS_SimulatorBuild(String... commands) {
 		project.xcodebuild.type = Type.iOS
 
 		project.xcodebuild.scheme = 'myscheme'
@@ -232,7 +230,7 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
 		]
-		expectedCommandList.addAll(expectedCodesignSettings())
+		//expectedCommandList.addAll(expectedCodesignSettings())
 		expectedCommandList.addAll(commands)
 		expectedCommandList.addAll(expectedDefaultDirectories())
 		return expectedCommandList
@@ -241,7 +239,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "test command for iOS simulator"() {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
-		def expectedCommandList = setup_iOS_SimualtorBuild(
+		def expectedCommandList = setup_iOS_SimulatorBuild(
 						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
 						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 		)
@@ -264,7 +262,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "test command with coverage settings Xcode 6"() {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
-		def expectedCommandList = setup_iOS_SimualtorBuild(
+		def expectedCommandList = setup_iOS_SimulatorBuild(
 						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
 						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 		)
@@ -491,7 +489,6 @@ class XcodeTestTaskSpecification extends Specification {
 															 "-workspace", "myworkspace",
 															 "-configuration", 'Debug',
 		]
-		expectedCommandList.addAll(expectedCodesignSettings())
 		expectedCommandList.addAll(["-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"])
 		expectedCommandList.addAll(expectedDefaultDirectories())
 

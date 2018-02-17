@@ -82,6 +82,9 @@ class CpdTaskSpecification extends Specification {
 
 
 	def "run without download"() {
+		def commandList
+		def expectedCommandList
+
 		given:
 
 		def destDir = project.gradle.gradleUserHomeDir.absolutePath + "/caches/gxp"
@@ -90,26 +93,30 @@ class CpdTaskSpecification extends Specification {
 		new File("${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar").text = ""
 		new File("${destDir}/xcode/pmd-4.2.5/lib").mkdirs()
 		new File("${destDir}/xcode/pmd-4.2.5/lib/a.jar").text = ""
-		new File("${destDir}/xcode/pmd-4.2.5/lib/b.jar").text = ""
-		new File("${destDir}/xcode/pmd-4.2.5/lib/c.jar").text = ""
 
+		def expectedCp = "\"${destDir}/xcode/pmd-4.2.5/lib/a.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\""
+		def expectedFiles1 = "${project.projectDir}/null"
+		def expectedFiles2 = "${project.projectDir}/nullTests"
 
 		when:
 		cpdTask.cpd()
 
 		then:
 		1 * commandRunner.setOutputFile(new File("${project.buildDir}/report/cpd/cpd.xml"))
-		1 * commandRunner.run([
-						'java', '-Xmx512m',
-						'-cp', "\"${destDir}/xcode/pmd-4.2.5/lib/a.jar:${destDir}/xcode/pmd-4.2.5/lib/b.jar:${destDir}/xcode/pmd-4.2.5/lib/c.jar:${destDir}/ObjCLanguage-0.0.7-SNAPSHOT.jar\"",
-						'net.sourceforge.pmd.cpd.CPD',
-						'--minimum-tokens', '10',
-						'--files', "${project.projectDir}/null", "${project.projectDir}/nullTests",
-						'--language', 'ObjectiveC',
-						'--encoding', 'UTF-8',
-						'--format', 'net.sourceforge.pmd.cpd.XMLRenderer'
-		])
+		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
+		interaction {
+			expectedCommandList = ['java', '-Xmx512m',
+			'-cp', expectedCp,
+			'net.sourceforge.pmd.cpd.CPD',
+			'--minimum-tokens', '10',
+			'--files', expectedFiles1, expectedFiles2,
+			'--language', 'ObjectiveC',
+			'--encoding', 'UTF-8',
+			'--format', 'net.sourceforge.pmd.cpd.XMLRenderer']
+		}
 
+
+		commandList == expectedCommandList
 	}
 
 }
