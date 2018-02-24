@@ -438,6 +438,21 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
 	}
 
+
+	def "get missing project file"() {
+		setup:
+		File projectDir =  new File(".")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+
+		when:
+		File missingFile = extension.projectFile
+
+		then:
+		thrown(FileNotFoundException)
+	}
+
+
 	def "set project file"() {
 		when:
 		File projectDir =  new File("../example/iOS")
