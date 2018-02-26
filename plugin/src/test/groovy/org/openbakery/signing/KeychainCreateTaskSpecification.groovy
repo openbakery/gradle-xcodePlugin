@@ -133,9 +133,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		when:
 		def dependsOn = keychainCreateTask.getDependsOn()
 		then:
-		dependsOn.size() == 1
 		!dependsOn.contains(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
-
 	}
 
 

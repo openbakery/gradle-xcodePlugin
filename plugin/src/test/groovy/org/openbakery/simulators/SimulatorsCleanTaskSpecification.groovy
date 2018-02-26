@@ -30,11 +30,11 @@ class SimulatorsCleanTaskSpecification extends Specification {
 
 
 
-	def "depends on"() {
+	def "depends on noting"() {
 		when:
 		def dependsOn  = task.getDependsOn()
 		then:
-		dependsOn.size() == 1
+		dependsOn.size() == 0
 	}
 
 	def "run"() {

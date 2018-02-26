@@ -36,7 +36,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		when:
 		def dependsOn  = task.getDependsOn()
 		then:
-		dependsOn.size() == 3
+		dependsOn.size() == 2
 		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		dependsOn.contains(XcodePlugin.SIMULATORS_START_TASK_NAME)
 	}

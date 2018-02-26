@@ -65,7 +65,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		when:
 		def dependsOn = xcodeTestRunTestTask.getDependsOn()
 		then:
-		dependsOn.size() == 2
+		dependsOn.size() == 1
 		dependsOn.contains(XcodePlugin.SIMULATORS_KILL_TASK_NAME)
 	}
 
@@ -252,8 +252,10 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory)
 		project.evaluate()
 
+		def finalized = xcodeTestRunTestTask.finalizedBy.getDependencies()
+		def keychainRemoveTask = project.getTasks().getByPath(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 		then:
-		xcodeTestRunTestTask.finalizedBy.values.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+		finalized.contains(keychainRemoveTask)
 	}
 
 

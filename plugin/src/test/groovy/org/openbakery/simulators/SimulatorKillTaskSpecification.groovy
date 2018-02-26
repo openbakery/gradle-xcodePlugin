@@ -30,11 +30,11 @@ class SimulatorKillTaskSpecification extends Specification {
 		task.simulatorControl instanceof SimulatorControl
 	}
 
-	def "depends on"() {
+	def "depends on nothing"() {
 		when:
 		def dependsOn = task.getDependsOn()
 		then:
-		dependsOn.size() == 1
+		dependsOn.size() == 0
 	}
 
 	def "run"() {

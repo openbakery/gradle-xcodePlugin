@@ -156,7 +156,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		when:
 		def dependsOn = xcodeBuildArchiveTask.getDependsOn()
 		then:
-		dependsOn.size() == 3
+		dependsOn.size() == 2
 
 		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
