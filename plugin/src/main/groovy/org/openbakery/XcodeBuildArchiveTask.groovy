@@ -412,7 +412,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
-		deleteFrameworksInExtension(applicationsDirectory)
+		// deleteFrameworksInExtension(applicationsDirectory)
 		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
