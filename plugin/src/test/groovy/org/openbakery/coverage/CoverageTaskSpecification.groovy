@@ -6,6 +6,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeProjectFile
 import org.openbakery.testdouble.AntBuilderStub
+import org.openbakery.xcode.Destination
 import spock.lang.Specification
 
 class CoverageTaskSpecification extends Specification {
@@ -116,6 +117,25 @@ class CoverageTaskSpecification extends Specification {
 		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
 
 		File profData = new File(project.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/MyApp/Coverage.profdata")
+		FileUtils.writeStringToFile(profData, "Dummy")
+
+		when:
+		coverageTask.coverage()
+
+		then:
+		coverageTask.report.profileData != null
+	}
+
+	def "profile data coverage with identifier"() {
+		given:
+		project.xcodebuild.xcodebuildParameters.type = "iOS"
+		coverageTask.binary = createFile("MyApp")
+		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
+		Destination destination = new Destination("MyApp")
+		destination.setId("MyAppID")
+		project.coverage.setTestResultDestinations([destination])
+
+		File profData = new File(project.xcodebuild.derivedDataPath, "Build/ProfileData/MyAppID/Coverage.profdata")
 		FileUtils.writeStringToFile(profData, "Dummy")
 
 		when:
