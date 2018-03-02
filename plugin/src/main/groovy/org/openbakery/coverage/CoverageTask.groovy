@@ -98,12 +98,9 @@ class CoverageTask extends AbstractXcodeTask {
 		]
 
 		for (Destination destination : project.coverage.testResultDestinations) {
-			project.logger.info(destination.toString())
 			possibleDirectories.add("Build/ProfileData/" + destination.id + "/Coverage.profdata")
 		}
-
-		project.logger.info(possibleDirectories.toString())
-
+        
 		for (String directory : possibleDirectories) {
 			this.profileData = new File(project.xcodebuild.derivedDataPath, directory)
 			if (this.profileData.exists()) {
