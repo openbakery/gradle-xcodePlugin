@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.xcode.Destination
 
 class CoverageTask extends AbstractXcodeTask {
 
@@ -90,11 +91,16 @@ class CoverageTask extends AbstractXcodeTask {
 		if (this.profileData != null) {
 			return this.profileData
 		}
+
 		def possibleDirectories = [
-						"Build/Intermediates/CodeCoverage/" + project.xcodebuild.target + "/Coverage.profdata",
-						"Build/Intermediates/CodeCoverage/Coverage.profdata"
+				"Build/Intermediates/CodeCoverage/" + project.xcodebuild.target + "/Coverage.profdata",
+				"Build/Intermediates/CodeCoverage/Coverage.profdata"
 		]
 
+		for (Destination destination : project.coverage.testResultDestinations) {
+			possibleDirectories.add("Build/ProfileData/" + destination.id + "/Coverage.profdata")
+		}
+        
 		for (String directory : possibleDirectories) {
 			this.profileData = new File(project.xcodebuild.derivedDataPath, directory)
 			if (this.profileData.exists()) {
