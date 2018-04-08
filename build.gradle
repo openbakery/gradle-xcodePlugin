@@ -42,7 +42,18 @@ allprojects {
 		testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
 			exclude module: 'groovy-all'
 		}
+	}
 
+	// Fix warnings when running tests in IDEA. Example:
+	// SLF4J: Class path contains multiple SLF4J bindings.
+	//    SLF4J: Found binding in [jar:file:/Users/ben/.gradle/caches/4.6/generated-gradle-jars/gradle-api-4.6.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+	// SLF4J: Found binding in [jar:file:/Users/ben/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-classic/1.1.5/92353eb144695bba80b31f7bec4f36d871f230ac/logback-classic-1.1.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+	// SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+	// SLF4J: Actual binding is of type [org.gradle.internal.logging.slf4j.OutputEventListenerBackedLoggerContext]
+	configurations.all {
+		resolutionStrategy.dependencySubstitution {
+			substitute module('ch.qos.logback:logback-classic') with module('org.slf4j:slf4j-api:1.7.+')
+		}
 	}
 }
 
