@@ -39,6 +39,10 @@ class VariableResolver {
 		if (text == null) {
 			return null
 		}
+		if (!text.contains("\$")) {
+			// Skip resolution if the text doesn't contain any variables.
+			return text
+		}
 		String result = text
 		binding().each() { key, value ->
 			if (value != null) {
@@ -54,6 +58,6 @@ class VariableResolver {
 						"PRODUCT_NAME": project.xcodebuild.productName,
 						"SRC_ROOT"    : project.projectDir.absolutePath,
 						"TARGET_NAME" : project.xcodebuild.target
-		];
+		]
 	}
 }
