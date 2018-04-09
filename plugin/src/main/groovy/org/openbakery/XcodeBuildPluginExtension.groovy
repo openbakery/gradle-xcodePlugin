@@ -319,7 +319,7 @@ class XcodeBuildPluginExtension {
 		}
 		bundleName = getValueFromInfoPlist("CFBundleName")
 
-		bundleName = variableResolver.resolve(bundleName);
+		bundleName = variableResolver.resolve(bundleName)
 
 		if (StringUtils.isEmpty(bundleName)) {
 			bundleName = this.productName
