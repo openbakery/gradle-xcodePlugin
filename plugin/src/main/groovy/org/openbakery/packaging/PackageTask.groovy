@@ -46,7 +46,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	@TaskAction
 	void packageApplication() throws IOException {
-		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
+		if (project.xcodebuild.isSimulatorBuildOf(Type.iOS) || project.xcodebuild.isSimulatorBuildOf(Type.tvOS)) {
 			logger.lifecycle("not a device build, so no codesign and packaging needed")
 			return
 		}
@@ -107,9 +107,11 @@ class PackageTask extends AbstractDistributeTask {
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
 		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
 
+		def isDeviceBuild = project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)
+
 		for (File bundle : appBundles) {
 
-			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+			if (isDeviceBuild) {
 				removeFrameworkFromExtensions(bundle)
 				removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
@@ -125,7 +127,7 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		File appBundle = appBundles.last()
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+		if (isDeviceBuild) {
 
 			boolean isAdHoc = isAdHoc(appBundle)
 			createIpa(applicationFolder, !isAdHoc)
@@ -240,7 +242,7 @@ class PackageTask extends AbstractDistributeTask {
 	private String getIdentifierForBundle(File bundle) {
 		File infoPlist
 
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -276,7 +278,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createApplicationFolder() throws IOException {
 
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)) {
 			return createSigningDestination("Payload")
 		} else {
 			// same folder as signing
@@ -297,7 +299,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private String getAppContentPath(File bundle) {
-		if (project.xcodebuild.type == Type.iOS) {
+		if (project.xcodebuild.type == Type.iOS || project.xcodebuild.type == Type.tvOS) {
 			return bundle.absolutePath + "/"
 		}
 		return bundle.absolutePath + "/Contents/"
