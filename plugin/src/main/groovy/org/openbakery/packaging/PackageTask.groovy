@@ -29,8 +29,8 @@ class PackageTask extends AbstractDistributeTask {
 	CodesignParameters codesignParameters = new CodesignParameters()
 
 	PackageTask() {
-		super();
-		setDescription("Signs the app bundle that was created by the build and creates the ipa");
+		super()
+		setDescription("Signs the app bundle that was created by the build and creates the ipa")
 		dependsOn(
 						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
 						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
@@ -107,11 +107,9 @@ class PackageTask extends AbstractDistributeTask {
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
 		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
 
-		def isDeviceBuild = project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)
-
 		for (File bundle : appBundles) {
 
-			if (isDeviceBuild) {
+			if (isDeviceBuildiOStvOS()) {
 				removeFrameworkFromExtensions(bundle)
 				removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
@@ -127,7 +125,7 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		File appBundle = appBundles.last()
-		if (isDeviceBuild) {
+		if (isDeviceBuildiOStvOS()) {
 
 			boolean isAdHoc = isAdHoc(appBundle)
 			createIpa(applicationFolder, !isAdHoc)
@@ -137,8 +135,9 @@ class PackageTask extends AbstractDistributeTask {
 
 	}
 
-
-
+	boolean isDeviceBuildiOStvOS() {
+		return project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)
+	}
 
 	boolean isAdHoc(File appBundle) {
 		File provisionFile = getProvisionFileForBundle(appBundle)
@@ -238,11 +237,10 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 
-
 	private String getIdentifierForBundle(File bundle) {
 		File infoPlist
 
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)) {
+		if (isDeviceBuildiOStvOS()) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -268,9 +266,9 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 	private File createSigningDestination(String name) throws IOException {
-		File destination = new File(outputPath, name);
+		File destination = new File(outputPath, name)
 		if (destination.exists()) {
-			FileUtils.deleteDirectory(destination);
+			FileUtils.deleteDirectory(destination)
 		}
 		destination.mkdirs();
 		return destination;
@@ -278,7 +276,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	private File createApplicationFolder() throws IOException {
 
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS) || project.xcodebuild.isDeviceBuildOf(Type.tvOS)) {
+		if (isDeviceBuildiOStvOS()) {
 			return createSigningDestination("Payload")
 		} else {
 			// same folder as signing
