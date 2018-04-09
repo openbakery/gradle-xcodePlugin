@@ -219,16 +219,17 @@ class SimulatorControl {
 
 
 	SimulatorRuntime getRuntime(Destination destination) {
+		def targetType = destination.platform == 'tvOS Simulator' ? Type.tvOS : Type.iOS
 		for (SimulatorRuntime runtime in getRuntimes()) {
-			if (runtime.type == Type.iOS && runtime.version.equals(new Version(destination.os))) {
-				return runtime;
+			if (runtime.type == targetType && runtime.version.equals(new Version(destination.os))) {
+				return runtime
 			}
 		}
-		return null;
+		return null
 	}
 
 	SimulatorDevice getDevice(Destination destination) {
-		SimulatorRuntime runtime = getRuntime(destination);
+		SimulatorRuntime runtime = getRuntime(destination)
 		if (runtime != null) {
 
 			for (SimulatorDevice device in getDevices(runtime)) {

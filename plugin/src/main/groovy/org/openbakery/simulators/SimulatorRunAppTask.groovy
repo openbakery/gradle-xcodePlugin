@@ -22,7 +22,7 @@ class SimulatorRunAppTask extends AbstractSimulatorTask {
 
   @TaskAction
   void run() {
-    if (!project.xcodebuild.isSimulatorBuildOf(Type.iOS)) {
+    if (!project.xcodebuild.isSimulatorBuildOf(Type.iOS) && !project.xcodebuild.isSimulatorBuildOf(Type.tvOS)) {
       throw new IllegalArgumentException("Build is not a simulator build for iOS: Is " + project.xcodebuild.type + " and simulator flag is " + project.xcodebuild.simulator )
     }
 

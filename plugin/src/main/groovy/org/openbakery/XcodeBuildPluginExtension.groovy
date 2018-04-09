@@ -337,6 +337,12 @@ class XcodeBuildPluginExtension {
 			} else {
 				path += "-iphoneos"
 			}
+		} else if (type == Type.tvOS) {
+			if (simulator) {
+				path += "-appletvsimulator"
+			} else {
+				path += "-appletv"
+			}
 		}
 		return new File(getSymRoot(), path)
 	}
