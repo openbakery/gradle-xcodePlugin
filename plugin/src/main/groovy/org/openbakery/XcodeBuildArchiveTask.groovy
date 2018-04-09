@@ -112,7 +112,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		def bundleVersion = getValueFromBundleInfoPlist(parameters.applicationBundle, "CFBundleVersion")
 
 		List<String> icons
-		if (parameters.type == Type.iOS) {
+		if (parameters.type == Type.iOS || parameters.type == Type.tvOS) {
 			icons = getiOSIcons()
 		} else {
 			icons = getMacOSXIcons()
@@ -258,8 +258,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	def createEntitlements(File bundle) {
 
-		if (parameters.type != Type.iOS) {
-			logger.warn("Entitlements handling is only implemented for iOS!")
+		if (parameters.type != Type.iOS && parameters.type != Type.tvOS) {
+			logger.warn("Entitlements handling is only implemented for iOS and tvOS!")
 			return
 		}
 
@@ -337,7 +337,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	@TaskAction
 	def archive() {
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
-		if (parameters.isSimulatorBuildOf(Type.iOS)) {
+		if (parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)) {
 			logger.debug("Create zip archive")
 
 			// create zip archive
@@ -398,7 +398,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		deleteFrameworksInExtension(applicationsDirectory)
 		copyBCSymbolMaps(archiveDirectory)
 
-		if (project.xcodebuild.type == Type.iOS) {
+		if (project.xcodebuild.type == Type.iOS || project.xcodebuild.type == Type.tvOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
 			convertInfoPlistToBinary(applicationFolder)
 		}
