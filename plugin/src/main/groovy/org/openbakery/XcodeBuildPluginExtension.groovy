@@ -341,7 +341,7 @@ class XcodeBuildPluginExtension {
 			if (simulator) {
 				path += "-appletvsimulator"
 			} else {
-				path += "-appletv"
+				path += "-appletvos"
 			}
 		}
 		return new File(getSymRoot(), path)
