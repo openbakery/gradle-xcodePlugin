@@ -147,6 +147,12 @@ class XcodebuildParameters {
 			} else {
 				return new File(getSymRoot(), "${configuration}-iphoneos")
 			}
+		} else if (type == Type.tvOS) {
+			if (simulator) {
+				return new File(getSymRoot(), "${configuration}-appletvsimulator")
+			} else {
+				return new File(getSymRoot(), "${configuration}-appletvos")
+			}
 		}
 		return new File(getSymRoot(), configuration)
 	}
