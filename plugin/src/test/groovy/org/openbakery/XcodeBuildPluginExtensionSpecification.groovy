@@ -194,6 +194,28 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
+	def "application bundle for tvOS"() {
+		when:
+		File projectDir =  new File("../example/tvOS/Example_tvOS_Swift")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		extension.commandRunner = new CommandRunner()
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example_tvOS_Swift.xcodeproj/project.pbxproj"))
+		extension.projectSettings = xcodeProjectFile.getProjectSettings()
+
+		extension.type = Type.tvOS
+		extension.simulator = false
+		extension.target = "Example_tvOS_Swift"
+		extension.productName = "Example_tvOS_Swift"
+		extension.infoPlist = "../../example/tvOS/Example_tvOS_Swift/Example_tvOS_Swift/Info.plist"
+
+		String applicationBundle = extension.getApplicationBundle().absolutePath;
+
+		then:
+		applicationBundle.endsWith("build/sym/Debug-appletvos/Example_tvOS_Swift.app")
+
+	}
+
 	def "application bundle for watchos"() {
 		when:
 
@@ -407,6 +429,24 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 		then:
 		extension.getBinary().toString().endsWith("Debug-iphoneos/ExampleTodayWidget.app/ExampleTodayWidget")
+	}
+
+
+	def "get binary tvOS"() {
+		when:
+		File projectDir =  new File("../example/tvOS/Example_tvOS_Swift")
+		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
+		extension = new XcodeBuildPluginExtension(project)
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example_tvOS_Swift.xcodeproj/project.pbxproj"))
+		extension.projectSettings = xcodeProjectFile.getProjectSettings()
+		extension.type = Type.tvOS
+		extension.simulator = false
+		extension.target = "Example_tvOS_Swift"
+		extension.productType = "appex"
+		extension.infoPlist = "../../example/tvOS/Example_tvOS_Swift/Example_tvOS_Swift/Info.plist"
+
+		then:
+		extension.getBinary().toString().endsWith("Debug-appletvos/Example_tvOS_Swift.app/Example_tvOS_Swift")
 	}
 
 
