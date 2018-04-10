@@ -82,16 +82,36 @@ class CarthageUpdateTaskSpecification extends Specification {
 
 
 		then:
-		1 * commandRunner.run(_, ["/usr/local/bin/carthage", "update"], _ ) >> {
+		1 * commandRunner.run(_, ["/usr/local/bin/carthage", "update", "--platform", "iOS"], _ ) >> {
 			args -> args[2] instanceof ConsoleOutputAppender
 		}
 
 	}
 
+	def "run update if Charthage exists for another platfrom"() {
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		File carthageDirectory = new File(projectDir, "Carthage")
+		File platformDirectory = new File(new File(carthageDirectory, "Build"), "tvOS")
+		carthageDirectory.mkdirs()
+		platformDirectory.mkdirs()
+
+		when:
+		carthageUpdateTask.update()
+
+		then:
+		1 * commandRunner.run(_, ["/usr/local/bin/carthage", "update", "--platform", "iOS"], _ ) >> {
+			args -> args[2] instanceof ConsoleOutputAppender
+		}
+	}
+
 	def "skip update if Charthage exists"() {
 		given:
-		File cartageDirectory = new File(projectDir, "Carthage")
-		cartageDirectory.mkdirs()
+		File carthageDirectory = new File(projectDir, "Carthage")
+		File platformDirectory = new File(new File(carthageDirectory, "Build"), "iOS")
+		carthageDirectory.mkdirs()
+		platformDirectory.mkdirs()
 
 		when:
 		carthageUpdateTask.update()
