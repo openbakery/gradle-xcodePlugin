@@ -7,6 +7,7 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class SimulatorControlSpecification extends Specification {
 
@@ -646,27 +647,14 @@ class SimulatorControlSpecification extends Specification {
 		devices.size() == 15
 	}
 
-
-	def "devices iOS11.1 runtimes"() {
-		given:
-		mockXcode9_1()
-
-		when:
-		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-
-		then:
-		runtimes != null
-		runtimes.size() == 3
-		runtimes.get(0).name == "iOS 11.1"
-	}
-
-	def "test the different runtime and device of XCode 9.1"() {
-		given:
-		mockXcode9_1()
-
+	@Unroll
+	def "test the runTime with value #runtimeType with name : #runtimeName and #deviceCount devices"() {
 		expect:
-		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-		SimulatorRuntime runtime = runtimes.find { it.type == runtimeType }
+		mockWithFile(ctlFile)
+
+		SimulatorRuntime runtime = simulatorControl
+				.getRuntimes()
+				.find { it.type == runtimeType }
 
 		runtime != null
 		runtime.name == runtimeName
@@ -676,10 +664,11 @@ class SimulatorControlSpecification extends Specification {
 				.size() == deviceCount
 
 		where:
-		runtimeType  | runtimeName   | deviceCount
-		Type.tvOS    | "tvOS 11.1"   | 3
-		Type.iOS     | "iOS 11.1"    | 18
-		Type.watchOS | "watchOS 4.1" | 6
+		ctlFile               | runtimeType  | runtimeName   | deviceCount
+		SIM_CTL_LIST_XCODE9_1 | Type.tvOS    | "tvOS 11.1"   | 3
+		SIM_CTL_LIST_XCODE9_1 | Type.iOS     | "iOS 11.1"    | 18
+		SIM_CTL_LIST_XCODE9_1 | Type.watchOS | "watchOS 4.1" | 6
+		SIM_CTL_LIST_XCODE9   | Type.iOS     | "iOS 11.0"    | 15
 	}
 
 }
