@@ -1,6 +1,7 @@
 package org.openbakery.simulators
 
-import org.openbakery.*
+import org.openbakery.CommandRunner
+import org.openbakery.CommandRunnerException
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory
 class SimulatorControl {
 
 
-
 	enum Section {
 		DEVICE_TYPE("== Device Types =="),
 		RUNTIMES("== Runtimes =="),
@@ -19,6 +19,7 @@ class SimulatorControl {
 		DEVICE_PAIRS("== Device Pairs ==")
 
 		private final String identifier
+
 		Section(String identifier) {
 			this.identifier = identifier
 		}
@@ -48,9 +49,6 @@ class SimulatorControl {
 	ArrayList<SimulatorDevicePair> devicePairs
 
 
-
-
-
 	public SimulatorControl(CommandRunner commandRunner, Xcode xcode) {
 		this.commandRunner = commandRunner
 		this.xcode = xcode
@@ -60,7 +58,7 @@ class SimulatorControl {
 		runtimes = new ArrayList<>()
 		devices = new HashMap<>()
 		deviceTypes = new ArrayList<>()
-    identifierToDevice = new HashMap<>()
+		identifierToDevice = new HashMap<>()
 		devicePairs = new ArrayList<>()
 
 
@@ -103,7 +101,7 @@ class SimulatorControl {
 					if (simulatorDevices != null) {
 						SimulatorDevice device = new SimulatorDevice(line)
 						simulatorDevices.add(device)
-            identifierToDevice[device.identifier]=device
+						identifierToDevice[device.identifier] = device
 					}
 
 					break
@@ -136,7 +134,7 @@ class SimulatorControl {
 			tokenizer.nextToken()
 		}
 		if (tokenizer.hasMoreTokens()) {
-			def identifier =  tokenizer.nextToken().trim()
+			def identifier = tokenizer.nextToken().trim()
 			return getDeviceWithIdentifier(identifier)
 		}
 		return null
@@ -207,7 +205,6 @@ class SimulatorControl {
 	}
 
 
-
 	SimulatorDevice getDevice(SimulatorRuntime simulatorRuntime, String name) {
 		for (SimulatorDevice device in getDevices(simulatorRuntime)) {
 			if (device.name.equalsIgnoreCase(name)) {
@@ -219,13 +216,10 @@ class SimulatorControl {
 
 
 	SimulatorRuntime getRuntime(Destination destination) {
-		def targetType = destination.platform == 'tvOS Simulator' ? Type.tvOS : Type.iOS
-		for (SimulatorRuntime runtime in getRuntimes()) {
-			if (runtime.type == targetType && runtime.version.equals(new Version(destination.os))) {
-				return runtime
-			}
-		}
-		return null
+		return getRuntimes()
+				.findAll { it.type == destination.targetType }
+				.findAll { it.version?.equals(new Version(destination.os)) }
+				.find()
 	}
 
 	SimulatorDevice getDevice(Destination destination) {
@@ -252,7 +246,7 @@ class SimulatorControl {
 		return null
 	}
 
-	List <SimulatorDevice> getDevices(SimulatorRuntime runtime) {
+	List<SimulatorDevice> getDevices(SimulatorRuntime runtime) {
 		return getDevices().get(runtime)
 	}
 
@@ -281,13 +275,11 @@ class SimulatorControl {
 
 
 	String simctl(String... commands) {
-		ArrayList<String>parameters = new ArrayList<>()
+		ArrayList<String> parameters = new ArrayList<>()
 		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
 		return commandRunner.runWithResult(parameters)
 	}
-
-
 
 
 	void deleteAll() {

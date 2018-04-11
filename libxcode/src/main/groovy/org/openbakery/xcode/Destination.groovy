@@ -26,6 +26,10 @@ class Destination {
 		this.os = os
 	}
 
+	public Type getTargetType() {
+	    return Type.typeFromString(platform)
+	}
+
 	@Override
 	public String toString() {
 		return "Destination{" +

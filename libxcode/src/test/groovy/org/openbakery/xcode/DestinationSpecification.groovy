@@ -6,7 +6,7 @@ class DestinationSpecification extends Specification {
 
     def "A destination target type should be resolved successfully from it's platform"() {
         expect:
-        Type.typeFromString(platform) == target
+        new Destination(platform, null, null).targetType == target
 
         where:
         platform            | target

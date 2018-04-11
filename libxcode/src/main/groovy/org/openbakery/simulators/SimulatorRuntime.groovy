@@ -57,7 +57,11 @@ class SimulatorRuntime {
 
 	}
 
-	@Override
+    Type getType() {
+        return type
+    }
+
+    @Override
 	public String toString() {
 		return "SimulatorRuntime{" +
 						"name='" + name + '\'' +
