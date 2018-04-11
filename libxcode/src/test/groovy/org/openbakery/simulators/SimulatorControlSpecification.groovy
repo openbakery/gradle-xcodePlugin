@@ -647,7 +647,7 @@ class SimulatorControlSpecification extends Specification {
 	}
 
 	@Unroll
-	def "Ensure than the compilation runtime: #runtimeType with name : #runtimeName and #deviceCount devices is properly defined"() {
+	def "Ensure that the compilation runtime: #runtimeType with name : #runtimeName and #deviceCount devices is properly defined"() {
 		expect:
 		mockWithFile(ctlFile)
 
