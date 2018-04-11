@@ -110,8 +110,6 @@ class XcodeBuildPluginExtension {
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
 
-
-
 	/**
 	 * internal parameters
 	 */
@@ -249,7 +247,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-
 	void setArch(Object arch) {
 		if (arch instanceof List) {
 			logger.debug("Arch is List: " + arch + " - " + arch.getClass().getName())
@@ -278,7 +275,7 @@ class XcodeBuildPluginExtension {
 			if (index == -1) {
 				this.environment.put(environmentString, null)
 			} else {
-				this.environment.put(environmentString.substring(0, index),environmentString.substring(index + 1))
+				this.environment.put(environmentString.substring(0, index), environmentString.substring(index + 1))
 			}
 		}
 	}
@@ -327,24 +324,23 @@ class XcodeBuildPluginExtension {
 		return bundleName
 	}
 
-
 	// should be removed an replaced by the xcodebuildParameters.outputPath
 	File getOutputPath() {
 		String path = getConfiguration()
 		if (type == Type.iOS) {
 			if (simulator) {
-				path += "-iphonesimulator"
+				path += Destination.IPHONE_SIMULATOR
 			} else {
-				path += "-iphoneos"
+				path += Destination.IPHONE_OS
 			}
 		} else if (type == Type.tvOS) {
 			if (simulator) {
-				path += "-appletvsimulator"
+				path += Destination.APPLE_TV_SIMULATOR
 			} else {
-				path += "-appletvos"
+				path += Destination.APPLE_TV_OS
 			}
 		}
-		return new File(getSymRoot(), path)
+		return new File(getSymRoot(), "-" + path)
 	}
 
 
@@ -427,8 +423,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-
-
 	void setType(String type) {
 		this.type = Type.typeFromString(type)
 	}
@@ -475,9 +469,8 @@ class XcodeBuildPluginExtension {
 			xcode = new Xcode(commandRunner, xcodeVersion)
 		}
 		logger.debug("using xcode {}", xcode)
- 		return xcode
+		return xcode
 	}
-
 
 
 	XcodebuildParameters getXcodebuildParameters() {

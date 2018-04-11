@@ -13,6 +13,11 @@ class Destination {
 	String id = null
 	String os = null
 
+	public static final String APPLE_TV_OS = "appletvos"
+    public static final String APPLE_TV_SIMULATOR = "appletvsimulator"
+    public static final String IPHONE_SIMULATOR = "iphonesimulator"
+    public static final String IPHONE_OS = "iphoneos"
+
 	Destination() {
 	}
 

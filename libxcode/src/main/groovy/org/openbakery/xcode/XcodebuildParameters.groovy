@@ -35,24 +35,24 @@ class XcodebuildParameters {
 	@Override
 	public String toString() {
 		return "XcodebuildParameters {" +
-						", scheme='" + scheme + '\'' +
-						", target='" + target + '\'' +
-						", simulator=" + simulator +
-						", type=" + type +
-						", workspace='" + workspace + '\'' +
-						", configuration='" + configuration + '\'' +
-						", bitcode=" + bitcode +
-						", dstRoot=" + dstRoot +
-						", objRoot=" + objRoot +
-						", symRoot=" + symRoot +
-						", sharedPrecompsDir=" + sharedPrecompsDir +
-						", derivedDataPath=" + derivedDataPath +
-						", arch=" + arch +
-						", additionalParameters=" + additionalParameters +
-						", configuredDestinations=" + configuredDestinations +
-						", xctestrun=" + xctestrun +
-						", applicationBundle=" + applicationBundle +
-						'}'
+				", scheme='" + scheme + '\'' +
+				", target='" + target + '\'' +
+				", simulator=" + simulator +
+				", type=" + type +
+				", workspace='" + workspace + '\'' +
+				", configuration='" + configuration + '\'' +
+				", bitcode=" + bitcode +
+				", dstRoot=" + dstRoot +
+				", objRoot=" + objRoot +
+				", symRoot=" + symRoot +
+				", sharedPrecompsDir=" + sharedPrecompsDir +
+				", derivedDataPath=" + derivedDataPath +
+				", arch=" + arch +
+				", additionalParameters=" + additionalParameters +
+				", configuredDestinations=" + configuredDestinations +
+				", xctestrun=" + xctestrun +
+				", applicationBundle=" + applicationBundle +
+				'}'
 	}
 
 
@@ -98,7 +98,6 @@ class XcodebuildParameters {
 	}
 
 
-
 	void setDestination(def destination) {
 
 		if (destination instanceof List) {
@@ -142,18 +141,18 @@ class XcodebuildParameters {
 
 	File getOutputPath() {
 		if (type == Type.iOS) {
-			if (simulator) {
-				return new File(getSymRoot(), "${configuration}-iphonesimulator")
-			} else {
-				return new File(getSymRoot(), "${configuration}-iphoneos")
-			}
+			return resolveSymRoot(simulator
+					? Destination.IPHONE_SIMULATOR
+					: Destination.IPHONE_OS)
 		} else if (type == Type.tvOS) {
-			if (simulator) {
-				return new File(getSymRoot(), "${configuration}-appletvsimulator")
-			} else {
-				return new File(getSymRoot(), "${configuration}-appletvos")
-			}
+			return resolveSymRoot(simulator
+					? Destination.APPLE_TV_SIMULATOR
+					: Destination.APPLE_TV_OS)
 		}
 		return new File(getSymRoot(), configuration)
+	}
+
+	private File resolveSymRoot(String destination) {
+		return new File(getSymRoot(), "${configuration}-" + destination)
 	}
 }
