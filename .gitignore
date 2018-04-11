@@ -38,3 +38,5 @@ xcuserdata
 .idea/
 *.iml
 local.properties
+
+out/

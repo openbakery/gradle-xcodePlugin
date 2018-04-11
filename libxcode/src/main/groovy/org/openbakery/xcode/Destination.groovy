@@ -27,7 +27,7 @@ class Destination {
 	}
 
 	@Override
-	public java.lang.String toString() {
+	public String toString() {
 		return "Destination{" +
 						"platform='" + platform + '\'' +
 						", name='" + name + '\'' +
@@ -67,7 +67,7 @@ class Destination {
 	}
 
 
-	public java.lang.String toPrettyString() {
+	public String toPrettyString() {
 		StringBuilder builder = new StringBuilder()
 		builder.append(name)
 		if (!StringUtils.isEmpty(platform)) {
