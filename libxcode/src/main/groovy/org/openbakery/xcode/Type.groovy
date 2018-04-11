@@ -8,6 +8,8 @@ enum Type {
 
     private final String value
 
+    private static final String BACKWARD_COMPATIBILITY_MAC_OS = "osx"
+
     Type(String value) {
         this.value = value
     }
@@ -17,13 +19,8 @@ enum Type {
     }
 
     static Type typeFromString(final String string) {
-        Type result = values()
+        return values()
                 .findAll { string?.toLowerCase()?.startsWith(it.value.toLowerCase()) }
-                .find()
-
-        result = result ?:
-                (string?.toLowerCase()?.startsWith("osx") ? macOS : null)
-
-        return result
+                .find() ?: (string?.toLowerCase()?.startsWith(BACKWARD_COMPATIBILITY_MAC_OS) ? macOS : null)
     }
 }
