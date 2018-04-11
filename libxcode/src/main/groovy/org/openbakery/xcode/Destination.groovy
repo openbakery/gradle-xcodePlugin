@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils
 /*
  * User: rene
  */
+
 class Destination {
 
 	String platform = null
@@ -12,11 +13,6 @@ class Destination {
 	String arch = null
 	String id = null
 	String os = null
-
-	public static final String APPLE_TV_OS = "appletvos"
-    public static final String APPLE_TV_SIMULATOR = "appletvsimulator"
-    public static final String IPHONE_SIMULATOR = "iphonesimulator"
-    public static final String IPHONE_OS = "iphoneos"
 
 	Destination() {
 	}
@@ -32,18 +28,18 @@ class Destination {
 	}
 
 	public Type getTargetType() {
-	    return Type.typeFromString(platform)
+		return Type.typeFromString(platform)
 	}
 
 	@Override
 	public String toString() {
 		return "Destination{" +
-						"platform='" + platform + '\'' +
-						", name='" + name + '\'' +
-						", arch='" + arch + '\'' +
-						", id='" + id + '\'' +
-						", os='" + os + '\'' +
-						'}';
+				"platform='" + platform + '\'' +
+				", name='" + name + '\'' +
+				", arch='" + arch + '\'' +
+				", id='" + id + '\'' +
+				", os='" + os + '\'' +
+				'}';
 	}
 
 	boolean equals(other) {
@@ -57,9 +53,9 @@ class Destination {
 		}
 
 		if (StringUtils.equalsIgnoreCase(arch, otherDestination.arch) &&
-						StringUtils.equalsIgnoreCase(name, otherDestination.name) &&
-						StringUtils.equalsIgnoreCase(os, otherDestination.os) &&
-						StringUtils.equalsIgnoreCase(platform, otherDestination.platform)) {
+				StringUtils.equalsIgnoreCase(name, otherDestination.name) &&
+				StringUtils.equalsIgnoreCase(os, otherDestination.os) &&
+				StringUtils.equalsIgnoreCase(platform, otherDestination.platform)) {
 			return true
 		}
 		return false

@@ -1,5 +1,6 @@
 package org.openbakery.xcode
 
+import org.openbakery.util.PathHelper
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -190,15 +191,15 @@ class XcodebuildParametersSpecification extends Specification {
 
 		where:
 		simulator | configuration | type       | outputPath
-		false     | "debug"       | Type.iOS   | Destination.IPHONE_OS
-		false     | "release"     | Type.iOS   | Destination.IPHONE_OS
-		true      | "debug"       | Type.iOS   | Destination.IPHONE_SIMULATOR
-		true      | "release"     | Type.iOS   | Destination.IPHONE_SIMULATOR
+		false     | "debug"       | Type.iOS   | PathHelper.IPHONE_OS
+		false     | "release"     | Type.iOS   | PathHelper.IPHONE_OS
+		true      | "debug"       | Type.iOS   | PathHelper.IPHONE_SIMULATOR
+		true      | "release"     | Type.iOS   | PathHelper.IPHONE_SIMULATOR
 		false     | "release"     | Type.macOS | "release"
-		false     | "debug"       | Type.tvOS  | Destination.APPLE_TV_OS
-		false     | "release"     | Type.tvOS  | Destination.APPLE_TV_OS
-		true      | "debug"       | Type.tvOS  | Destination.APPLE_TV_SIMULATOR
-		true      | "release"     | Type.tvOS  | Destination.APPLE_TV_SIMULATOR
+		false     | "debug"       | Type.tvOS  | PathHelper.APPLE_TV_OS
+		false     | "release"     | Type.tvOS  | PathHelper.APPLE_TV_OS
+		true      | "debug"       | Type.tvOS  | PathHelper.APPLE_TV_SIMULATOR
+		true      | "release"     | Type.tvOS  | PathHelper.APPLE_TV_SIMULATOR
 	}
 
 }

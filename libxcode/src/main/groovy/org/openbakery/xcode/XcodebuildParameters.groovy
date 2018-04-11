@@ -1,6 +1,7 @@
 package org.openbakery.xcode
 
 import org.apache.commons.io.FilenameUtils
+import org.openbakery.util.PathHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -141,18 +142,15 @@ class XcodebuildParameters {
 
 	File getOutputPath() {
 		if (type == Type.iOS) {
-			return resolveSymRoot(simulator
-					? Destination.IPHONE_SIMULATOR
-					: Destination.IPHONE_OS)
+			return PathHelper.resolveIosSymRoot(simulator,
+					symRoot,
+					configuration)
 		} else if (type == Type.tvOS) {
-			return resolveSymRoot(simulator
-					? Destination.APPLE_TV_SIMULATOR
-					: Destination.APPLE_TV_OS)
+			return PathHelper.resolveAppleTvSymRoot(simulator,
+					symRoot,
+					configuration)
 		}
-		return new File(getSymRoot(), configuration)
-	}
 
-	private File resolveSymRoot(String destination) {
-		return new File(getSymRoot(), "${configuration}-" + destination)
+		return PathHelper.resolveMacOsSymRoot(symRoot, configuration)
 	}
 }
