@@ -14,6 +14,8 @@ class PathHelperTest extends Specification {
 				tempSymRoot,
 				configuration)
 
+        println "${configuration}-${outputPath}"
+
 		file == new File(tempSymRoot, "${configuration}-${outputPath}")
 
 		where:

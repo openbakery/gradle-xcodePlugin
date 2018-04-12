@@ -1,7 +1,9 @@
 package org.openbakery.util
 
+import groovy.transform.CompileStatic
 import org.openbakery.xcode.Type
 
+@CompileStatic
 class PathHelper {
 	public static final String APPLE_TV_OS = "appletvos"
 	public static final String APPLE_TV_SIMULATOR = "appletvsimulator"

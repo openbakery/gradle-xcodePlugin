@@ -20,16 +20,12 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
-import org.openbakery.xcode.Destination
-import org.openbakery.xcode.Devices
-import org.openbakery.xcode.Type
-import org.openbakery.xcode.Xcode
-import org.openbakery.xcode.XcodebuildParameters
+import org.openbakery.util.PathHelper
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
+import org.openbakery.xcode.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
 
 /*
 
@@ -326,21 +322,21 @@ class XcodeBuildPluginExtension {
 
 	// should be removed an replaced by the xcodebuildParameters.outputPath
 	File getOutputPath() {
-		String path = getConfiguration()
+		String path = getConfiguration() + "-"
 		if (type == Type.iOS) {
 			if (simulator) {
-				path += Destination.IPHONE_SIMULATOR
+				path += PathHelper.IPHONE_SIMULATOR
 			} else {
-				path += Destination.IPHONE_OS
+				path += PathHelper.IPHONE_OS
 			}
 		} else if (type == Type.tvOS) {
 			if (simulator) {
-				path += Destination.APPLE_TV_SIMULATOR
+				path += PathHelper.APPLE_TV_SIMULATOR
 			} else {
-				path += Destination.APPLE_TV_OS
+				path += PathHelper.APPLE_TV_OS
 			}
 		}
-		return new File(getSymRoot(), "-" + path)
+		return new File(getSymRoot(), path)
 	}
 
 

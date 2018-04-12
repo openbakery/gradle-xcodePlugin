@@ -19,7 +19,7 @@ public class ApplicationBundle {
 
 		addPluginsToAppBundle(applicationPath, bundles)
 
-		if (isDeviceBuildOf(Type.iOS)) {
+		if (isDeviceBuildOf(Type.iOS) || isDeviceBuildOf(Type.tvOS)) {
 			addWatchToAppBundle(applicationPath, bundles)
 		}
 		bundles.add(applicationPath)
@@ -28,9 +28,9 @@ public class ApplicationBundle {
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
 		File plugins
-		if (isDeviceBuildOf(Type.iOS)) {
+		if (isDeviceBuildOf(Type.iOS) || isDeviceBuildOf(Type.tvOS)) {
 			plugins = new File(appBundle, "PlugIns")
-		}	else if (this.type == Type.macOS) {
+		} else if (this.type == Type.macOS) {
 			plugins = new File(appBundle, "Contents/PlugIns")
 		} else {
 			return
@@ -43,7 +43,7 @@ public class ApplicationBundle {
 					if (pluginBundle.name.endsWith(".framework")) {
 						// Frameworks have to be signed with this path
 						bundles.add(new File(pluginBundle, "/Versions/Current"))
-					}	else if (pluginBundle.name.endsWith(".appex")) {
+					} else if (pluginBundle.name.endsWith(".appex")) {
 
 						for (File appexBundle : pluginBundle.listFiles()) {
 							if (appexBundle.isDirectory() && appexBundle.name.endsWith(".app")) {

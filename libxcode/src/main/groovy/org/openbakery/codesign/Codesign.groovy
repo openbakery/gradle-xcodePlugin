@@ -104,7 +104,7 @@ class Codesign {
 	private void codeSignFrameworks(File bundle) {
 
 		File frameworksDirectory
-		if (codesignParameters.type == Type.iOS) {
+		if (codesignParameters.type == Type.iOS || codesignParameters.type == Type.tvOS) {
 			frameworksDirectory = new File(bundle, "Frameworks")
 		} else {
 			frameworksDirectory = new File(bundle, "Contents/Frameworks")
@@ -130,7 +130,7 @@ class Codesign {
 		if (codesignParameters.signingIdentity == null) {
 			performCodesignWithoutIdentity(bundle)
 		} else {
-			performCodesignWithIdentity(bundle,entitlements)
+			performCodesignWithIdentity(bundle, entitlements)
 		}
 	}
 
@@ -178,7 +178,7 @@ class Codesign {
 	private String getIdentifierForBundle(File bundle) {
 		File infoPlist
 
-		if (codesignParameters.type == Type.iOS) {
+		if (codesignParameters.type == Type.iOS || codesignParameters.type == Type.tvOS) {
 			infoPlist = new File(bundle, "Info.plist");
 		} else {
 			infoPlist = new File(bundle, "Contents/Info.plist")
@@ -190,7 +190,8 @@ class Codesign {
 
 	ProvisioningProfileReader createProvisioningProfileReader(String bundleIdentifier, File provisionFile) {
 		if (provisionFile == null) {
-			if (codesignParameters.type == Type.iOS) {
+			if (codesignParameters.type == Type.iOS
+					|| codesignParameters.type == Type.tvOS) {
 				throw new IllegalStateException("No provisioning profile found for bundle identifier: " + bundleIdentifier)
 			}
 			// on OS X this is valid
@@ -235,7 +236,7 @@ class Codesign {
 
 	File getXcentFile(File bundle) {
 		def fileList = bundle.list(
-						[accept: { d, f -> f ==~ /.*xcent/ }] as FilenameFilter
+				[accept: { d, f -> f ==~ /.*xcent/ }] as FilenameFilter
 		)
 		if (fileList == null || fileList.toList().isEmpty()) {
 			return null
@@ -254,7 +255,7 @@ class Codesign {
 		applicationPrefix = applicationPrefix + "."
 
 		logger.info("using application prefix: {}", applicationPrefix)
-			List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
+		List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
 		logger.info("keychain-access-group from configuration: {}", result)
 
 		keychainAccessGroups.each { item ->
