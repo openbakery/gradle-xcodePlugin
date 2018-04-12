@@ -20,8 +20,6 @@ if (project.hasProperty("publishPassword")) {
 	publishPassword = project.publishPassword
 }
 
-println "publishUser :" + publishUser
-
 cobertura.coverageFormats = ['html', 'xml']
 
 apply plugin: 'maven'
