@@ -65,13 +65,11 @@ uploadArchives {
 	repositories {
 		mavenDeployer {
 			configuration = configurations.deployerJars
-
+			
 			repository(url: publishURL) {
 				authentication(userName: publishUser, password: publishPassword)
 			}
-
-			mavenLocal()
-
+			
 			pom.project {
 				licenses {
 					license {
