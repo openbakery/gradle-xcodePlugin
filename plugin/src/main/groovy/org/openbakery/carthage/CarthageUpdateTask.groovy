@@ -1,71 +1,87 @@
 package org.openbakery.carthage
 
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.xcode.Type
 
+@CacheableTask
 class CarthageUpdateTask extends AbstractXcodeTask {
 
+    @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File cartFile = project.rootProject.file("Cartfile")
 
-	public CarthageUpdateTask() {
-		super()
-		setDescription "Installs the carthage dependencies for the given project"
-	}
+    @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File cartFileResolved = project.rootProject.file("Cartfile.resolved")
 
-	@TaskAction
-	void update() {
+    @OutputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File carthageDirectory = project.rootProject.file("Carthage")
 
-		def carthagePlatform = getCarthagePlatform()
-		logger.info('Update Carthage for platform ' + carthagePlatform)
+    static final String CARTHAGE_USR_BIN_PATH = "/usr/local/bin/carthage"
+    static final String ACTION_UPDATE = "update"
+    static final String ARG_PLATFORM = "--platform"
+    static final String ARG_CACHE_BUILDS = "--cache-builds"
+    static final String CARTHAGE_PLATFORM_IOS = "iOS"
+    static final String CARTHAGE_PLATFORM_TVOS = "tvOS"
+    static final String CARTHAGE_PLATFORM_MACOS = "Mac"
+    static final String CARTHAGE_PLATFORM_WATCHOS = "watchOS"
 
-		File carthageDirectory = new File(project.projectDir, "Carthage")
-		File platformDirectory = carthagePlatform != 'all' ? new File(new File(carthageDirectory, 'Build'), carthagePlatform) : null
-		if (carthageDirectory.exists() && (platformDirectory != null && platformDirectory.exists())) {
-			logger.info('Skip Carthage update')
-			return
-		}
+    CarthageUpdateTask() {
+        super()
+        setDescription "Installs the carthage dependencies for the given project"
+    }
 
-		def carthageCommand = getCarthageCommand()
+    @TaskAction
+    void update() {
+        def carthagePlatform = getCarthagePlatform()
+        logger.info('Update Carthage for platform ' + carthagePlatform)
 
-		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		commandRunner.run(
-				project.projectDir.absolutePath,
-				[carthageCommand, "update", "--platform", carthagePlatform],
-				new ConsoleOutputAppender(output))
-	}
+        File platformDirectory = carthagePlatform != 'all' ? new File(new File(carthageDirectory, 'Build'), carthagePlatform) : null
+        if (carthageDirectory.exists() && (platformDirectory != null && platformDirectory.exists())) {
+            logger.info('Skip Carthage update')
+            return
+        }
 
-	String getCarthagePlatform() {
-		switch (project.xcodebuild.type) {
-			case Type.iOS: return 'iOS'
-			case Type.tvOS: return 'tvOS'
-			case Type.macOS: return 'Mac'
-			case Type.watchOS: return 'watchOS'
-			default: return 'all'
-		}
-	}
+        def carthageCommand = getCarthageCommand()
 
-	String getCarthageCommand() {
-		try {
-			return commandRunner.runWithResult("which", "carthage")
-		} catch (CommandRunnerException) {
-			// ignore, because try again with full path below
+        def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
+        commandRunner.run(
+                project.projectDir.absolutePath,
+                [carthageCommand, ACTION_UPDATE, ARG_PLATFORM, carthagePlatform, ARG_CACHE_BUILDS],
+                new ConsoleOutputAppender(output))
+    }
 
-		}
+    String getCarthagePlatform() {
+        switch (project.xcodebuild.type) {
+            case Type.iOS: return CARTHAGE_PLATFORM_IOS
+            case Type.tvOS: return CARTHAGE_PLATFORM_TVOS
+            case Type.macOS: return CARTHAGE_PLATFORM_MACOS
+            case Type.watchOS: return CARTHAGE_PLATFORM_WATCHOS
+            default: return 'all'
+        }
+    }
 
-		try {
-			def fullPath = "/usr/local/bin/carthage"
-			commandRunner.runWithResult("ls", fullPath)
-			return fullPath
-		} catch (CommandRunnerException) {
-			// ignore, because blow an exception is thrown
-		}
-		throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
-	}
+    String getCarthageCommand() {
+        try {
+            return commandRunner.runWithResult("which", "carthage")
+        } catch (CommandRunnerException) {
+            // ignore, because try again with full path below
+        }
 
-	boolean hasCartfile() {
-		File cartfile = new File(project.projectDir, "Cartfile")
-		return cartfile.exists()
-	}
+        try {
+            commandRunner.runWithResult("ls", CARTHAGE_USR_BIN_PATH)
+            return CARTHAGE_USR_BIN_PATH
+        } catch (CommandRunnerException) {
+            // ignore, because blow an exception is thrown
+        }
+        throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
+    }
+
+    boolean hasCartFile() {
+        return cartFile.exists()
+    }
 }
