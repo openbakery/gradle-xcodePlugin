@@ -30,7 +30,7 @@ class CarthageUpdateTask extends AbstractXcodeTask {
     static final String CARTHAGE_PLATFORM_MACOS = "Mac"
     static final String CARTHAGE_PLATFORM_WATCHOS = "watchOS"
 
-    public CarthageUpdateTask() {
+    CarthageUpdateTask() {
         super()
         setDescription "Installs the carthage dependencies for the given project"
     }

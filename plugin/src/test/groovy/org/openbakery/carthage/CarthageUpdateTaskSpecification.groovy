@@ -75,7 +75,6 @@ class CarthageUpdateTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.runWithResult("which", "carthage")
-
 	}
 
 	def "run carthage update"() {
@@ -119,7 +118,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 		1 * commandRunner.run(_, [CARTHAGE_USR_BIN_PATH,
 								  ACTION_UPDATE,
 								  ARG_PLATFORM,
-								  "iOS",
+								  CARTHAGE_PLATFORM_IOS,
 								  ARG_CACHE_BUILDS], _) >> {
 			args -> args[2] instanceof ConsoleOutputAppender
 		}
