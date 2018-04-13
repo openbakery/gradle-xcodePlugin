@@ -38,6 +38,3 @@ xcuserdata
 .idea/
 *.iml
 local.properties
-
-#Spock outputs
-out/
