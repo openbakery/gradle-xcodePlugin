@@ -1,7 +1,10 @@
 package org.openbakery.carthage
 
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.output.ConsoleOutputAppender
@@ -13,19 +16,26 @@ import static org.openbakery.xcode.Type.*
 class CarthageUpdateTaskSpecification extends Specification {
 
 	File projectDir
+	File cartFile
 	Project project
 	CarthageUpdateTask carthageUpdateTask;
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
 	def setup() {
 		projectDir = File.createTempDir()
+
+		cartFile = new File(projectDir, "Cartfile")
+		cartFile << 'github "Alamofire/Alamofire"'
 
 		project = ProjectBuilder.builder()
 				.withProjectDir(projectDir)
 				.build()
 
-		project.buildDir = new File('build').absoluteFile
+		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		carthageUpdateTask = project.getTasks().getByPath('carthageUpdate')
@@ -107,9 +117,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 		commandRunner.runWithResult("which", "carthage") >> CARTHAGE_USR_BIN_PATH
 
 		File carthageDirectory = new File(projectDir, "Carthage")
-		File platformDirectory = new File(new File(carthageDirectory, "Build"), "tvOS")
 		carthageDirectory.mkdirs()
-		platformDirectory.mkdirs()
 
 		when:
 		carthageUpdateTask.update()
@@ -124,17 +132,46 @@ class CarthageUpdateTaskSpecification extends Specification {
 		}
 	}
 
-	def "skip update if Carthage exists"() {
+	def "does not update if cartfile is missing"() {
 		given:
-		File carthageDirectory = new File(projectDir, "Carthage")
-		File platformDirectory = new File(new File(carthageDirectory, "Build"), "iOS")
-		carthageDirectory.mkdirs()
-		platformDirectory.mkdirs()
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+		project.xcodebuild.type = platform
 
 		when:
+		cartFile.delete()
 		carthageUpdateTask.update()
 
 		then:
-		0 * commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+		0 * commandRunner.run(_, [CARTHAGE_USR_BIN_PATH,
+								  ACTION_UPDATE,
+								  ARG_PLATFORM,
+								  carthagePlatform,
+								  ARG_CACHE_BUILDS], _) >> {
+			args -> args[2] instanceof ConsoleOutputAppender
+		}
+
+		where:
+		platform | carthagePlatform
+		tvOS     | CARTHAGE_PLATFORM_TVOS
+		macOS    | CARTHAGE_PLATFORM_MACOS
+		watchOS  | CARTHAGE_PLATFORM_WATCHOS
+		iOS      | CARTHAGE_PLATFORM_IOS
+	}
+
+	def "output directory should be relative to the xcodebuild platform type"() {
+		when:
+		project.xcodebuild.type = platform
+
+		then:
+		Provider<File> outputDirectory = carthageUpdateTask.getOutputDirectory()
+		outputDirectory.isPresent()
+		outputDirectory.get().name == carthagePlatform
+
+		where:
+		platform | carthagePlatform
+		tvOS     | CARTHAGE_PLATFORM_TVOS
+		macOS    | CARTHAGE_PLATFORM_MACOS
+		watchOS  | CARTHAGE_PLATFORM_WATCHOS
+		iOS      | CARTHAGE_PLATFORM_IOS
 	}
 }
