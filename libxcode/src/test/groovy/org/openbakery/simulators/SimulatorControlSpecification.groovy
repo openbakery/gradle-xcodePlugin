@@ -404,11 +404,12 @@ class SimulatorControlSpecification extends Specification {
 		destination.os = '9.0'
 
 		when:
-		SimulatorDevice device = simulatorControl.getDevice(destination)
+		Optional<SimulatorDevice> device = simulatorControl.getDevice(destination)
 
 		then:
-		device.name == "iPhone 4s"
-		device.identifier == "5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+		device.present
+		device.get().name == "iPhone 4s"
+		device.get().identifier == "5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 	}
 
 	def "get 8.4 device for destination xcode 7.1"() {
@@ -421,11 +422,12 @@ class SimulatorControlSpecification extends Specification {
 		destination.os = '8.4'
 
 		when:
-		SimulatorDevice device = simulatorControl.getDevice(destination)
+		Optional<SimulatorDevice> device = simulatorControl.getDevice(destination)
 
 		then:
-		device.name == "iPad 2"
-		device.identifier == "E5089648-1CE4-40D5-8295-8E026BDDFF52"
+		device.present
+		device.get().name == "iPad 2"
+		device.get().identifier == "E5089648-1CE4-40D5-8295-8E026BDDFF52"
 	}
 
 	def "get 9.1 device for destination xcode 7.1"() {
@@ -438,11 +440,12 @@ class SimulatorControlSpecification extends Specification {
 		destination.os = '9.1'
 
 		when:
-		SimulatorDevice device = simulatorControl.getDevice(destination)
+		Optional<SimulatorDevice> device = simulatorControl.getDevice(destination)
 
 		then:
-		device.name == "iPad 2"
-		device.identifier == "D72F7CC6-8426-4E0A-A234-34747B1F30DD"
+		device.present
+		device.get().name == "iPad 2"
+		device.get().identifier == "D72F7CC6-8426-4E0A-A234-34747B1F30DD"
 	}
 
 

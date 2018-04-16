@@ -215,24 +215,17 @@ class SimulatorControl {
 	}
 
 
-	SimulatorRuntime getRuntime(Destination destination) {
-		return getRuntimes()
+	Optional<SimulatorRuntime> getRuntime(Destination destination) {
+		return Optional.ofNullable(getRuntimes()
 				.findAll { it.type == destination.targetType }
 				.findAll { it.version?.equals(new Version(destination.os)) }
-				.find()
+				.find())
 	}
 
-	SimulatorDevice getDevice(Destination destination) {
-		SimulatorRuntime runtime = getRuntime(destination)
-		if (runtime != null) {
-
-			for (SimulatorDevice device in getDevices(runtime)) {
-				if (device.name.equalsIgnoreCase(destination.name)) {
-					return device
-				}
-			}
-		}
-		return null
+	Optional<SimulatorDevice> getDevice(final Destination destination) {
+		return getRuntime(destination)
+				.map { runtime -> getDevices(runtime)
+				.find { device -> device.name.equalsIgnoreCase(destination.name) } }
 	}
 
 	SimulatorDevice getDeviceWithIdentifier(String identifier) {

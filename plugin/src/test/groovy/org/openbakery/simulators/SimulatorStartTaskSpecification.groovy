@@ -65,7 +65,7 @@ class SimulatorStartTaskSpecification extends Specification {
 
 	def "run"() {
 		given:
-		simulatorControl.getDevice(_) >> devices9_1[0]
+		simulatorControl.getDevice(_) >> Optional.ofNullable(devices9_1[0])
 		destinationResolver.getDestinations(_) >> destinations
 
 		when:
