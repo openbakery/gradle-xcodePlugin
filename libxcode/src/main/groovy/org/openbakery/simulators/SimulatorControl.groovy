@@ -1,5 +1,6 @@
 package org.openbakery.simulators
 
+import groovy.transform.CompileStatic
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.xcode.Destination
@@ -9,6 +10,7 @@ import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+@CompileStatic
 class SimulatorControl {
 
 
@@ -128,7 +130,7 @@ class SimulatorControl {
 	}
 
 	SimulatorDevice parseIdentifierFromDevicePairs(String line) {
-		def tokenizer = new StringTokenizer(line, "()");
+		def tokenizer = new StringTokenizer(line, "()")
 		if (tokenizer.hasMoreTokens()) {
 			// ignore first token
 			tokenizer.nextToken()
@@ -189,7 +191,7 @@ class SimulatorControl {
 
 		for (SimulatorRuntime runtime in getRuntimes()) {
 			if (runtime.type == type) {
-				result.add(runtime);
+				result.add(runtime)
 			}
 		}
 		Collections.sort(result, new SimulatorRuntimeComparator())
@@ -355,6 +357,7 @@ class SimulatorControl {
 		} catch (CommandRunnerException ex) {
 			// ignore, this exception means that no simulator was running
 		}
+
 		try {
 			commandRunner.run("killall", "Simulator") // for xcode 7
 		} catch (CommandRunnerException ex) {
