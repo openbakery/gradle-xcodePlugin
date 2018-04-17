@@ -4,6 +4,8 @@
 ## Gradle
 .gradle
 userHome
+gradlew.bat
+gradle.properties
 
 ## Build generated
 build/
