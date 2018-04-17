@@ -601,12 +601,13 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageUpdateTask carthageUpdateTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME)
-		CarthageCleanTask carthageCleanTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME)
+		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
+		if (bootStrapTask.hasCartFile()) {
+			addDependencyToBuild(project, bootStrapTask)
 
-		if (carthageUpdateTask.hasCartFile()) {
-			addDependencyToBuild(project, carthageUpdateTask)
-			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(carthageCleanTask);
+			project.getTasks()
+					.getByName(BasePlugin.CLEAN_TASK_NAME)
+					.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
 		}
 	}
 
