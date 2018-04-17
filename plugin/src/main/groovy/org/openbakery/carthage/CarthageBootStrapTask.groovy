@@ -4,25 +4,25 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.ConsoleOutputAppender
 
-class CarthageUpdateTask extends AbstractCarthageTaskBase {
+class CarthageBootStrapTask extends AbstractCarthageTaskBase {
 
-	CarthageUpdateTask() {
+	CarthageBootStrapTask() {
 		super()
-		setDescription "Update and rebuild the Carthage project dependencies"
+		setDescription "Check out and build the Carthage project dependencies"
 	}
 
 	@TaskAction
 	void update() {
 		if (hasCartFile()) {
-			logger.info('Update Carthage for platform ' + carthagePlatformName)
+			logger.info('Boostrap Carthage for platform ' + carthagePlatformName)
 
 			def output = services.get(StyledTextOutputFactory)
-					.create(CarthageUpdateTask)
+					.create(CarthageBootStrapTask)
 
 			commandRunner.run(
 					project.projectDir.absolutePath,
 					[getCarthageCommand(),
-					 ACTION_UPDATE,
+					 ACTION_BOOTSTRAP,
 					 ARG_PLATFORM,
 					 carthagePlatformName,
 					 ARG_CACHE_BUILDS],

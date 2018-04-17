@@ -14,6 +14,4 @@ class CarthageCleanTask extends DefaultTask {
 	def clean() {
 		project.file("Carthage").deleteDir()
 	}
-
-
 }
