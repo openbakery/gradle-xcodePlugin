@@ -69,7 +69,9 @@ uploadArchives {
 			repository(url: publishURL) {
 				authentication(userName: publishUser, password: publishPassword)
 			}
-			
+
+			mavenLocal()
+
 			pom.project {
 				licenses {
 					license {
