@@ -23,6 +23,11 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		super()
 	}
 
+	@Input
+	String getRequiredXcodeVersion() {
+		return getProjectXcodeVersion()
+	}
+
 	@InputFile
 	@Optional
 	@PathSensitive(PathSensitivity.RELATIVE)

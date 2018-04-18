@@ -15,7 +15,6 @@ class CarthageBootStrapTask extends AbstractCarthageTaskBase {
 	void update() {
 		if (hasCartFile()) {
 			logger.info('Boostrap Carthage for platform ' + carthagePlatformName)
-
 			def output = services.get(StyledTextOutputFactory)
 					.create(CarthageBootStrapTask)
 
@@ -26,6 +25,7 @@ class CarthageBootStrapTask extends AbstractCarthageTaskBase {
 					 ARG_PLATFORM,
 					 carthagePlatformName,
 					 ARG_CACHE_BUILDS],
+					xcode.getXcodeSelectEnvValue(project.xcodebuild.xcodeVersion),
 					new ConsoleOutputAppender(output))
 		}
 	}

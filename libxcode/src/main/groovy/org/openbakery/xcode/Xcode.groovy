@@ -13,6 +13,9 @@ class Xcode {
 	String xcodePath
 	Version version = null
 
+	public static final String XCODE_CONTENT_DEVELOPER = "Contents/Developer"
+	public static final String ENV_DEVELOPER_DIR = "DEVELOPER_DIR"
+	public static final String XCODE_CONTENT_XCODEBUILD = "Contents/Developer/usr/bin/xcodebuild"
 
 	public Xcode(CommandRunner commandRunner) {
 		this(commandRunner, null)
@@ -26,30 +29,47 @@ class Xcode {
 		}
 	}
 
+	/**
+	 * Provide the environments values to provide to the command line runner to select
+	 * a Xcode version without using `xcode-select -s` who requires `sudo`.
+	 *
+	 * @param version : The required Xcode version
+	 * @return A map of environment variables to pass to the command runner
+	 */
+	Map<String, String> getXcodeSelectEnvValue(String version) {
+		setVersionFromString(version)
+
+		HashMap<String, String> result = new HashMap<String, String>()
+		result.put(ENV_DEVELOPER_DIR, new File(xcodePath, XCODE_CONTENT_DEVELOPER).absolutePath)
+		return result
+	}
+
 	void setVersionFromString(String version) {
-		Version versionToCompare = new Version(version)
+		Optional<Version> requiredVersion = Optional.ofNullable(version)
+				.map { new Version(it) }
+
 		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
 
+		Iterator<File> files = installedXcodes.split("\n").iterator()
+				.collect { new File(it, XCODE_CONTENT_XCODEBUILD) }
+				.findAll { it.exists() }
+				.iterator()
 
-		for (String xcode : installedXcodes.split("\n")) {
-			File xcodeBuildFile = new File(xcode, "Contents/Developer/usr/bin/xcodebuild");
-			if (xcodeBuildFile.exists()) {
-				Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
-				if (xcodeVersion.suffix != null && versionToCompare.suffix != null) {
-					if (xcodeVersion.suffix.equalsIgnoreCase(versionToCompare.suffix)) {
-						xcodePath = xcode
-						this.version = xcodeVersion
-						return
-					}
-				} else if (xcodeVersion.toString().startsWith(versionToCompare.toString())) {
-					xcodePath = xcode
+		for (File xcodeBuildFile : files) {
+			Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
+			if (xcodeVersion.suffix != null && requiredVersion.get().suffix != null) {
+				if (xcodeVersion.suffix.equalsIgnoreCase(requiredVersion.get().suffix)) {
+					xcodePath = new File(xcodeBuildFile.absolutePath - XCODE_CONTENT_XCODEBUILD)
 					this.version = xcodeVersion
 					return
 				}
+			} else if (xcodeVersion.toString().startsWith(requiredVersion.get().toString())) {
+				xcodePath = new File(xcodeBuildFile.absolutePath - XCODE_CONTENT_XCODEBUILD)
+				this.version = xcodeVersion
+				return
 			}
 		}
 		throw new IllegalStateException("No Xcode found with build number " + version);
-
 	}
 
 	Version getXcodeVersion(String xcodebuildCommand) {
@@ -103,8 +123,9 @@ class Xcode {
 	@Override
 	public String toString() {
 		return "Xcode{" +
-						"xcodePath='" + xcodePath + '\'' +
-						", version=" + version +
-						'}';
+				"xcodePath='" + xcodePath + '\'' +
+				", version=" + version +
+				'}';
 	}
+
 }

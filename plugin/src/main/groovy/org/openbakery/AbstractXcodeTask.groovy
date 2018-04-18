@@ -202,9 +202,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	Xcode getXcode() {
 		if (xcode == null) {
-			xcode = new Xcode(commandRunner, project.xcodebuild.xcodeVersion)
+			xcode = new Xcode(commandRunner, getProjectXcodeVersion())
 		}
 		return xcode
+	}
+
+	String getProjectXcodeVersion() {
+		return project.xcodebuild.xcodeVersion
 	}
 
 	DestinationResolver getDestinationResolver() {
