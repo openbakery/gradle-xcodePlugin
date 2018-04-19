@@ -170,6 +170,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 
 	def "xcodebuild has all available tvOS destinations"() {
 		when:
+		xcodeBuildForTestTask.parameters.simulator = true
 		xcodeBuildForTestTask.parameters.type = Type.tvOS
 		def destinations = xcodeBuildForTestTask.xcodebuild.destinations
 
