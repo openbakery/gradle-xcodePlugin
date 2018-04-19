@@ -602,13 +602,11 @@ class XcodePlugin implements Plugin<Project> {
 
 	private configureCarthageDependencies(Project project) {
 		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
-		if (bootStrapTask.hasCartFile()) {
-			addDependencyToBuild(project, bootStrapTask)
+		addDependencyToBuild(project, bootStrapTask)
 
-			project.getTasks()
-					.getByName(BasePlugin.CLEAN_TASK_NAME)
-					.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
-		}
+		project.getTasks()
+				.getByName(BasePlugin.CLEAN_TASK_NAME)
+				.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
 	}
 
 	private void configureOCLint(Project project) {
