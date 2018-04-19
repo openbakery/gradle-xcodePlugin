@@ -1,27 +1,34 @@
 package org.openbakery.xcode
 
+import groovy.transform.CompileStatic
 import org.openbakery.CommandRunner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+@CompileStatic
 class Xcode {
-	private static Logger logger = LoggerFactory.getLogger(Xcode.class)
+	private Version version = null
+	private String xcodePath
 
-
-	CommandRunner commandRunner
-
-	String xcodePath
-	Version version = null
+	private final CommandRunner commandRunner
 
 	public static final String XCODE_CONTENT_DEVELOPER = "Contents/Developer"
 	public static final String ENV_DEVELOPER_DIR = "DEVELOPER_DIR"
-	public static final String XCODE_CONTENT_XCODEBUILD = "Contents/Developer/usr/bin/xcodebuild"
+	public static final String XCODE_CONTENT_XC_RUN = "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcrun"
+	public static final String XCODE_CONTENT_XCODE_BUILD = "$XCODE_CONTENT_DEVELOPER/usr/bin/xcodebuild"
 
-	public Xcode(CommandRunner commandRunner) {
+	private final Logger logger = LoggerFactory.getLogger(Xcode.class)
+
+	private static final Pattern VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
+
+	Xcode(CommandRunner commandRunner) {
 		this(commandRunner, null)
 	}
 
-	public Xcode(CommandRunner commandRunner, String version) {
+	Xcode(CommandRunner commandRunner, String version) {
 		logger.debug("create xcode with version {}", version)
 		this.commandRunner = commandRunner
 		if (version != null) {
@@ -44,42 +51,58 @@ class Xcode {
 		return result
 	}
 
-	void setVersionFromString(String version) {
-		Optional<Version> requiredVersion = Optional.ofNullable(version)
-				.map { new Version(it) }
-
-		String installedXcodes = commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
-
-		Iterator<File> files = installedXcodes.split("\n").iterator()
-				.collect { new File(it, XCODE_CONTENT_XCODEBUILD) }
-				.findAll { it.exists() }
-				.iterator()
-
-		for (File xcodeBuildFile : files) {
-			Version xcodeVersion = getXcodeVersion(xcodeBuildFile.absolutePath)
-			if (xcodeVersion.suffix != null && requiredVersion.get().suffix != null) {
-				if (xcodeVersion.suffix.equalsIgnoreCase(requiredVersion.get().suffix)) {
-					xcodePath = new File(xcodeBuildFile.absolutePath - XCODE_CONTENT_XCODEBUILD)
-					this.version = xcodeVersion
-					return
-				}
-			} else if (xcodeVersion.toString().startsWith(requiredVersion.get().toString())) {
-				xcodePath = new File(xcodeBuildFile.absolutePath - XCODE_CONTENT_XCODEBUILD)
-				this.version = xcodeVersion
-				return
-			}
+	void setVersionFromString(String version) throws IllegalArgumentException {
+		if (version == null) {
+			throw new IllegalArgumentException()
 		}
-		throw new IllegalStateException("No Xcode found with build number " + version);
+
+		final Version requiredVersion = new Version(version)
+
+		Optional<File> result = Optional.ofNullable(resolveInstalledXcodeVersionsList()
+				.split("\n")
+				.iterator()
+				.collect { new File(it as File, XCODE_CONTENT_XCODE_BUILD) }
+				.findAll { it.exists() }
+				.find {
+					Version candidate = getXcodeVersion(it.absolutePath)
+
+					boolean versionStartWith = candidate.toString()
+							.startsWith(requiredVersion.toString())
+
+					boolean versionHasSuffix = (candidate.suffix != null
+							&& requiredVersion.suffix != null
+							&& candidate.suffix.equalsIgnoreCase(requiredVersion.suffix))
+
+					return versionHasSuffix || versionStartWith
+				})
+
+		if (result.isPresent()) {
+			selectXcode(result.get())
+		} else {
+			throw new IllegalStateException("No Xcode found with build number " + version)
+		}
 	}
 
-	Version getXcodeVersion(String xcodebuildCommand) {
-		String xcodeVersion = commandRunner.runWithResult(xcodebuildCommand, "-version");
+	void selectXcode(File file) {
+		String absolutePath = file.absolutePath
+		Version xcodeVersion = getXcodeVersion(absolutePath)
+		xcodePath = new File(absolutePath - XCODE_CONTENT_XCODE_BUILD)
+		this.version = xcodeVersion
+	}
 
-		def VERSION_PATTERN = ~/Xcode\s([^\s]*)\nBuild\sversion\s([^\s]*)/
-		def matcher = VERSION_PATTERN.matcher(xcodeVersion)
+	String resolveInstalledXcodeVersionsList() {
+		return commandRunner.runWithResult("mdfind",
+				"kMDItemCFBundleIdentifier=com.apple.dt.Xcode")
+	}
+
+	Version getXcodeVersion(String xcodeBuildCommand) {
+		String xcodeVersion = commandRunner.runWithResult(xcodeBuildCommand,
+				"-version")
+
+		Matcher matcher = VERSION_PATTERN.matcher(xcodeVersion)
 		if (matcher.matches()) {
-			Version version = new Version(matcher[0][1])
-			version.suffix = matcher[0][2]
+			Version version = new Version(matcher.group(1))
+			version.suffix = matcher.group(2)
 			return version
 		}
 		return null
@@ -95,37 +118,36 @@ class Xcode {
 	String getPath() {
 		if (xcodePath == null) {
 			String result = commandRunner.runWithResult("xcode-select", "-p")
-			xcodePath = result - "/Contents/Developer"
+			xcodePath = result - "/$XCODE_CONTENT_DEVELOPER"
 		}
 		return xcodePath
 	}
 
-
 	String getXcodebuild() {
 		if (xcodePath != null) {
-			return xcodePath + "/Contents/Developer/usr/bin/xcodebuild"
+			return new File(xcodePath, XCODE_CONTENT_XCODE_BUILD).absolutePath
 		}
 		return "xcodebuild"
 	}
 
 	String getAltool() {
-		return getPath() + "/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
+		return getPath() + "/Contents/Applications/Application Loader" +
+				".app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 	}
 
 	String getXcrun() {
-		return getPath() + "/Contents/Developer/usr/bin/xcrun"
+		return getPath() + XCODE_CONTENT_XC_RUN
 	}
 
 	String getSimctl() {
-		return getPath() + "/Contents/Developer/usr/bin/simctl"
+		return getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/simctl"
 	}
 
 	@Override
-	public String toString() {
+	String toString() {
 		return "Xcode{" +
 				"xcodePath='" + xcodePath + '\'' +
 				", version=" + version +
-				'}';
+				'}'
 	}
-
 }
