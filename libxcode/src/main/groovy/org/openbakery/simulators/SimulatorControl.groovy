@@ -1,6 +1,5 @@
 package org.openbakery.simulators
 
-import groovy.transform.CompileStatic
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.xcode.Destination
@@ -152,7 +151,6 @@ class SimulatorControl {
 		return null
 	}
 
-
 	public void waitForDevice(SimulatorDevice device, int timeoutMS = 10000) {
 		def start = System.currentTimeMillis()
 		while ((System.currentTimeMillis() - start) < timeoutMS) {
@@ -225,8 +223,10 @@ class SimulatorControl {
 
 	Optional<SimulatorDevice> getDevice(final Destination destination) {
 		return getRuntime(destination)
-				.map { runtime -> getDevices(runtime)
-				.find { device -> device.name.equalsIgnoreCase(destination.name) } }
+				.map { runtime ->
+			getDevices(runtime)
+					.find { device -> device.name.equalsIgnoreCase(destination.name) }
+		}
 	}
 
 	SimulatorDevice getDeviceWithIdentifier(String identifier) {

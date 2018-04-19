@@ -95,7 +95,7 @@ class SimulatorStartTaskSpecification extends Specification {
 		then:
 		1 * simulatorControl.getDevice((Destination) _) >> { arguments ->
 			destination = arguments[0]
-			return devices9_1[0]
+			return Optional.of(devices9_1[0])
 		}
 		destination != null
 		destination.name == 'iPhone 6s'
