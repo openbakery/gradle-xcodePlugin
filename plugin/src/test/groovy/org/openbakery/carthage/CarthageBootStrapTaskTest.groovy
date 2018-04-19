@@ -7,6 +7,7 @@ import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
+import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -17,6 +18,7 @@ class CarthageBootStrapTaskTest extends Specification {
 
 	CarthageBootStrapTask subject
 	CommandRunner commandRunner = Mock(CommandRunner)
+	Xcode mockXcode = Mock(Xcode)
 	File projectDir
 	File cartFile
 	Project project
@@ -64,8 +66,9 @@ class CarthageBootStrapTaskTest extends Specification {
 				 ARG_PLATFORM,
 				 carthagePlatform,
 				 ARG_CACHE_BUILDS]
+				, _
 				, _) >> {
-			args -> args[2] instanceof ConsoleOutputAppender
+			args -> args[3] instanceof ConsoleOutputAppender
 		}
 
 		where:
@@ -86,12 +89,11 @@ class CarthageBootStrapTaskTest extends Specification {
 		subject.update()
 
 		then:
-		0 * commandRunner.run(_, [CARTHAGE_USR_BIN_PATH,
-								  ACTION_UPDATE,
-								  ARG_PLATFORM,
-								  carthagePlatform,
-								  ARG_CACHE_BUILDS], _) >> {
-			args -> args[2] instanceof ConsoleOutputAppender
+		0 * commandRunner.run(_,
+				getCommandRunnerArgsForPlatform(carthagePlatform),
+				_,
+				_) >> {
+			args -> args[3] instanceof ConsoleOutputAppender
 		}
 
 		where:
@@ -104,6 +106,7 @@ class CarthageBootStrapTaskTest extends Specification {
 
 	def "The subject output directory should be platform dependant"() {
 		when:
+		subject.xcode.getXcodeSelectEnvValue(_) >> new HashMap<String, String>()
 		project.xcodebuild.type = platform
 
 		then:
@@ -117,5 +120,31 @@ class CarthageBootStrapTaskTest extends Specification {
 		macOS    | CARTHAGE_PLATFORM_MACOS
 		watchOS  | CARTHAGE_PLATFORM_WATCHOS
 		iOS      | CARTHAGE_PLATFORM_IOS
+	}
+
+	def "The xcode selection should be applied if a xcode version is defined"() {
+		when:
+		subject.xcode.getXcodeSelectEnvValue(_) >> new HashMap<String, String>()
+		project.xcodebuild.type = iOS
+		project.xcodebuild.version = version
+
+		subject.xcode = mockXcode
+		subject.xcode.setVersionFromString(_) >> _
+		subject.update()
+
+		then:
+		1 * mockXcode.getXcodeSelectEnvValue(version)
+
+		where:
+		version | _
+		"7.1.1" | _
+	}
+
+	private List<String> getCommandRunnerArgsForPlatform(String carthagePlatform) {
+		return [CARTHAGE_USR_BIN_PATH,
+				ACTION_UPDATE,
+				ARG_PLATFORM,
+				carthagePlatform,
+				ARG_CACHE_BUILDS]
 	}
 }

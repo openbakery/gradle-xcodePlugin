@@ -18,7 +18,8 @@ class Xcode {
 	public static final String XCODE_CONTENT_DEVELOPER = "Contents/Developer"
 	public static final String ENV_DEVELOPER_DIR = "DEVELOPER_DIR"
 	public static final String XCODE_CONTENT_XC_RUN = "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcrun"
-	public static final String XCODE_CONTENT_XCODE_BUILD = "$XCODE_CONTENT_DEVELOPER/usr/bin/xcodebuild"
+	public static
+	final String XCODE_CONTENT_XCODE_BUILD = "$XCODE_CONTENT_DEVELOPER/usr/bin/xcodebuild"
 
 	private final Logger logger = LoggerFactory.getLogger(Xcode.class)
 
@@ -45,9 +46,11 @@ class Xcode {
 	 */
 	Map<String, String> getXcodeSelectEnvValue(String version) {
 		setVersionFromString(version)
-
+		File file = new File(xcodePath, XCODE_CONTENT_DEVELOPER)
 		HashMap<String, String> result = new HashMap<String, String>()
-		result.put(ENV_DEVELOPER_DIR, new File(xcodePath, XCODE_CONTENT_DEVELOPER).absolutePath)
+		if (file.exists()) {
+			result.put(ENV_DEVELOPER_DIR, file.absolutePath)
+		}
 		return result
 	}
 

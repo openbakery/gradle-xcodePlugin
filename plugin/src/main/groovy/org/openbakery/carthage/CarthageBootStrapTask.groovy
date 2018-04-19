@@ -20,14 +20,15 @@ class CarthageBootStrapTask extends AbstractCarthageTaskBase {
 			def output = services.get(StyledTextOutputFactory)
 					.create(CarthageBootStrapTask)
 
-			commandRunner.run(
-					project.projectDir.absolutePath,
-					[getCarthageCommand(),
-					 ACTION_BOOTSTRAP,
-					 ARG_PLATFORM,
-					 carthagePlatformName,
-					 ARG_CACHE_BUILDS],
-					xcode.getXcodeSelectEnvValue(getRequiredXcodeVersion()),
+			List<String> args = [getCarthageCommand(),
+								 ACTION_BOOTSTRAP,
+								 ARG_PLATFORM,
+								 carthagePlatformName,
+								 ARG_CACHE_BUILDS]
+
+			commandRunner.run(project.projectDir.absolutePath,
+					args,
+					getRequiredXcodeVersion() != null ? xcode.getXcodeSelectEnvValue(getRequiredXcodeVersion()) : null,
 					new ConsoleOutputAppender(output))
 		}
 	}

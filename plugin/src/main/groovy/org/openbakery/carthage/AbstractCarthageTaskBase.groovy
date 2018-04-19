@@ -24,6 +24,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	String getRequiredXcodeVersion() {
 		return getProjectXcodeVersion()
 	}

@@ -76,8 +76,7 @@ class CommandRunner {
 			commandOutputBuffer = new CircularFifoBuffer(20);
 		}
 
-		def commandsAsStrings = commandList.collect { it.toString() }
-		// GStrings don't play well with ProcessBuilder
+		def commandsAsStrings = commandList.collect { it.toString() } // GStrings don't play well with ProcessBuilder
 		def processBuilder = new ProcessBuilder(commandsAsStrings)
 		processBuilder.redirectErrorStream(true)
 		processBuilder.directory(new File(directory))
