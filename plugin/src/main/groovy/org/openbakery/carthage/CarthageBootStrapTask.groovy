@@ -1,9 +1,11 @@
 package org.openbakery.carthage
 
+import groovy.transform.CompileStatic
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.ConsoleOutputAppender
 
+@CompileStatic
 class CarthageBootStrapTask extends AbstractCarthageTaskBase {
 
 	CarthageBootStrapTask() {
@@ -25,7 +27,7 @@ class CarthageBootStrapTask extends AbstractCarthageTaskBase {
 					 ARG_PLATFORM,
 					 carthagePlatformName,
 					 ARG_CACHE_BUILDS],
-					xcode.getXcodeSelectEnvValue(project.xcodebuild.xcodeVersion),
+					xcode.getXcodeSelectEnvValue(getRequiredXcodeVersion()),
 					new ConsoleOutputAppender(output))
 		}
 	}
