@@ -322,18 +322,21 @@ class XcodeBuildPluginExtension {
 
 	// should be removed an replaced by the xcodebuildParameters.outputPath
 	File getOutputPath() {
-		String path = getConfiguration() + "-"
-		if (type == Type.iOS) {
-			if (simulator) {
-				path += PathHelper.IPHONE_SIMULATOR
-			} else {
-				path += PathHelper.IPHONE_OS
-			}
-		} else if (type == Type.tvOS) {
-			if (simulator) {
-				path += PathHelper.APPLE_TV_SIMULATOR
-			} else {
-				path += PathHelper.APPLE_TV_OS
+		String path = getConfiguration()
+		if (type != Type.macOS) {
+			path += "-"
+			if (type == Type.iOS) {
+				if (simulator) {
+					path += PathHelper.IPHONE_SIMULATOR
+				} else {
+					path += PathHelper.IPHONE_OS
+				}
+			} else if (type == Type.tvOS) {
+				if (simulator) {
+					path += PathHelper.APPLE_TV_SIMULATOR
+				} else {
+					path += PathHelper.APPLE_TV_OS
+				}
 			}
 		}
 		return new File(getSymRoot(), path)
