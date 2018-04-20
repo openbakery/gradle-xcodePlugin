@@ -46,14 +46,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 
-
-
 	def getiOSIcons() {
 		ArrayList<String> icons = new ArrayList<>();
 
 		File applicationBundle = parameters.applicationBundle
 		def fileList = applicationBundle.list(
-						[accept: { d, f -> f ==~ /Icon(-\d+)??\.png/ }] as FilenameFilter // matches Icon.png or Icon-72.png
+				[accept: { d, f -> f ==~ /Icon(-\d+)??\.png/ }] as FilenameFilter // matches Icon.png or Icon-72.png
 		).toList()
 
 		def applicationPath = "Applications/" + parameters.applicationBundleName
@@ -67,7 +65,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 	def getMacOSXIcons() {
-		File appInfoPlist  = new File(parameters.applicationBundle, "Contents/Info.plist")
+		File appInfoPlist = new File(parameters.applicationBundle, "Contents/Info.plist")
 		ArrayList<String> icons = new ArrayList<>();
 
 		def icnsFileName = plistHelper.getValueFromPlist(appInfoPlist, "CFBundleIconFile")
@@ -81,7 +79,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		return icons
 	}
-
 
 
 	def getValueFromBundleInfoPlist(File bundle, String key) {
@@ -160,7 +157,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		content.append("	<key>CreationDate</key>\n")
 		content.append("	<date>" + creationDate + "</date>\n")
 		content.append("	<key>Name</key>\n")
-		content.append("	<string>" + name  + "</string>\n")
+		content.append("	<string>" + name + "</string>\n")
 		content.append("	<key>SchemeName</key>\n")
 		content.append("	<string>" + schemeName + "</string>\n")
 		content.append("</dict>\n")
@@ -171,7 +168,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 
-	def createFrameworks(def archiveDirectory, Xcodebuild 	xcodebuild) {
+	def createFrameworks(def archiveDirectory, Xcodebuild xcodebuild) {
 
 		File frameworksPath = new File(archiveDirectory, "Products/Applications/" + parameters.applicationBundleName + "/Frameworks")
 		if (frameworksPath.exists()) {
@@ -184,7 +181,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 			logger.debug("swiftlibs to add: {}", libNames);
 
-			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/iphoneos")
+			File swiftLibs = new File(xcodebuild.getToolchainDirectory(),
+					"usr/lib/swift/" + getSwiftLibFolderName())
+
+            logger.debug("swiftlibs to add: {}", swiftLibs);
 
 			swiftLibs.eachFile() {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
@@ -196,14 +196,32 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	}
 
+	public String getSwiftLibFolderName() {
+		String result
+		switch (parameters.type) {
+			case Type.tvOS:
+				result = "appletvos"
+				break
+
+			case Type.iOS:
+				result = "iphoneos"
+				break
+
+			default:
+				break
+		}
+
+		return result
+	}
+
 	def getSwiftSupportDirectory() {
 		def swiftSupportPath = "SwiftSupport"
 
 		if (xcode.version.major > 6) {
-			swiftSupportPath += "/iphoneos"
+			swiftSupportPath += "/" + getSwiftLibFolderName()
 		}
 
-		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath);
+		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath)
 		if (!swiftSupportDirectory.exists()) {
 			swiftSupportDirectory.mkdirs()
 		}
@@ -221,7 +239,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		// if frameworks directory is emtpy
 		File appPath = new File(applicationsDirectory, "Products/Applications/" + parameters.applicationBundleName)
 		deleteDirectoryIfEmpty(appPath, "Frameworks")
-
 
 
 	}
@@ -367,7 +384,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			return
 		}
 
-
 		// create xcarchive
 		// copy application bundle
 		copy(parameters.applicationBundle, getApplicationsDirectory())
@@ -427,7 +443,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		if (!plugins.exists()) {
 			return
 		}
-		plugins.eachFile (FileType.DIRECTORIES) { file ->
+		plugins.eachFile(FileType.DIRECTORIES) { file ->
 			if (file.toString().endsWith("xctest")) {
 				FileUtils.deleteDirectory(file)
 				return true
@@ -486,7 +502,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	File getArchiveDirectory() {
 
-		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
+		def archiveDirectoryName = XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" + project.xcodebuild.bundleName
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
