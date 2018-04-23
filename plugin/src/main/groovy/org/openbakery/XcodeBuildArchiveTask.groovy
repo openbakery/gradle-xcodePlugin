@@ -441,6 +441,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	}
 
+    // TODO: Define a `exportOptionsPlist` to avoid that kind of issue
 	def removeUnneededDylibsFromBundle(File bundle) {
 		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
