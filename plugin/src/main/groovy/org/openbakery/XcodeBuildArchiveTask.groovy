@@ -406,6 +406,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		File applicationsDirectory = getApplicationsDirectory()
+
 		File archiveDirectory = getArchiveDirectory()
 		createInfoPlist(archiveDirectory)
 		createFrameworks(archiveDirectory, xcodebuild)
@@ -417,6 +418,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		if (project.xcodebuild.type == Type.iOS || project.xcodebuild.type == Type.tvOS) {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
 			convertInfoPlistToBinary(applicationFolder)
+
+            removeUnneededDylibsFromBundle(applicationFolder)
 		}
 
 		logger.debug("create archive done")
@@ -437,6 +440,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 	}
+
+    def removeUnneededDylibsFromBundle(File bundle) {
+        File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
+        if (libswiftRemoteMirror.exists()) {
+            libswiftRemoteMirror.delete()
+        }
+    }
 
 	def deleteXCTestIfExists(File applicationsDirectory) {
 		File plugins = new File(applicationsDirectory, project.xcodebuild.applicationBundle.name + "/Contents/Plugins")
