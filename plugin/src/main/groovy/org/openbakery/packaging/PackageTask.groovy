@@ -287,9 +287,9 @@ class PackageTask extends AbstractDistributeTask {
 		}
 	}
 
-    private File getInfoPlistFile() {
+	private File getInfoPlistFile() {
 		return new File(getAppContentPath() + "Info.plist")
-    }
+	}
 
 	private String getAppContentPath() {
 

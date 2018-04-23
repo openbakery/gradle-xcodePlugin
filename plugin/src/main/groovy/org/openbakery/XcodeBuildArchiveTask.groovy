@@ -184,7 +184,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			File swiftLibs = new File(xcodebuild.getToolchainDirectory(),
 					"usr/lib/swift/" + getSwiftLibFolderName())
 
-            logger.debug("swiftlibs to add: {}", swiftLibs);
+			logger.debug("swiftlibs to add: {}", swiftLibs);
 
 			swiftLibs.eachFile() {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
@@ -419,7 +419,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
 			convertInfoPlistToBinary(applicationFolder)
 
-            removeUnneededDylibsFromBundle(applicationFolder)
+			removeUnneededDylibsFromBundle(applicationFolder)
 		}
 
 		logger.debug("create archive done")
@@ -441,12 +441,12 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	}
 
-    def removeUnneededDylibsFromBundle(File bundle) {
-        File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
-        if (libswiftRemoteMirror.exists()) {
-            libswiftRemoteMirror.delete()
-        }
-    }
+	def removeUnneededDylibsFromBundle(File bundle) {
+		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
+		if (libswiftRemoteMirror.exists()) {
+			libswiftRemoteMirror.delete()
+		}
+	}
 
 	def deleteXCTestIfExists(File applicationsDirectory) {
 		File plugins = new File(applicationsDirectory, project.xcodebuild.applicationBundle.name + "/Contents/Plugins")
