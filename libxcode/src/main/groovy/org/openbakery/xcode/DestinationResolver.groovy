@@ -16,7 +16,8 @@ class DestinationResolver {
 
 
 	List<Destination> allFor(XcodebuildParameters parameters) {
-		if (parameters.type == Type.iOS && !parameters.simulator) {
+		if ((parameters.type == Type.iOS || parameters.type == Type.tvOS)
+				&& !parameters.simulator) {
 			return []
 		}
 		return simulatorControl.getAllDestinations(parameters.type)

@@ -1,31 +1,26 @@
 package org.openbakery.xcode
 
 enum Type {
-	iOS("iOS"),
-	macOS("macOS"),
-	tvOS("tvOS"),
-	watchOS("watchOS")
+    iOS("iOS"),
+    macOS("macOS"),
+    tvOS("tvOS"),
+    watchOS("watchOS")
 
+    private final String value
 
-	String value;
+    private static final String BACKWARD_COMPATIBILITY_MAC_OS = "osx"
 
-	Type(String value) {
-		this.value = value
-	}
+    Type(String value) {
+        this.value = value
+    }
 
-	static Type typeFromString(String string) {
-		if (string == null) {
-			return iOS
-		}
-		for (Type type in Type.values()) {
-			// for backward compatibility
-			if (string.toLowerCase().equalsIgnoreCase("osx")) {
-				return Type.macOS
-			}
-			if (string.toLowerCase().startsWith(type.value.toLowerCase())) {
-				return type
-			}
-		}
-		return iOS
-	}
+    String getValue() {
+        return value
+    }
+
+    static Type typeFromString(final String string) {
+        return values()
+                .findAll { string?.toLowerCase()?.startsWith(it.value.toLowerCase()) }
+                .find() ?: (string?.toLowerCase()?.startsWith(BACKWARD_COMPATIBILITY_MAC_OS) ? macOS : null)
+    }
 }

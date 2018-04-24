@@ -1,6 +1,7 @@
 package org.openbakery.xcode
 
 import org.apache.commons.io.FilenameUtils
+import org.openbakery.util.PathHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -35,24 +36,24 @@ class XcodebuildParameters {
 	@Override
 	public String toString() {
 		return "XcodebuildParameters {" +
-						", scheme='" + scheme + '\'' +
-						", target='" + target + '\'' +
-						", simulator=" + simulator +
-						", type=" + type +
-						", workspace='" + workspace + '\'' +
-						", configuration='" + configuration + '\'' +
-						", bitcode=" + bitcode +
-						", dstRoot=" + dstRoot +
-						", objRoot=" + objRoot +
-						", symRoot=" + symRoot +
-						", sharedPrecompsDir=" + sharedPrecompsDir +
-						", derivedDataPath=" + derivedDataPath +
-						", arch=" + arch +
-						", additionalParameters=" + additionalParameters +
-						", configuredDestinations=" + configuredDestinations +
-						", xctestrun=" + xctestrun +
-						", applicationBundle=" + applicationBundle +
-						'}'
+				", scheme='" + scheme + '\'' +
+				", target='" + target + '\'' +
+				", simulator=" + simulator +
+				", type=" + type +
+				", workspace='" + workspace + '\'' +
+				", configuration='" + configuration + '\'' +
+				", bitcode=" + bitcode +
+				", dstRoot=" + dstRoot +
+				", objRoot=" + objRoot +
+				", symRoot=" + symRoot +
+				", sharedPrecompsDir=" + sharedPrecompsDir +
+				", derivedDataPath=" + derivedDataPath +
+				", arch=" + arch +
+				", additionalParameters=" + additionalParameters +
+				", configuredDestinations=" + configuredDestinations +
+				", xctestrun=" + xctestrun +
+				", applicationBundle=" + applicationBundle +
+				'}'
 	}
 
 
@@ -98,7 +99,6 @@ class XcodebuildParameters {
 	}
 
 
-
 	void setDestination(def destination) {
 
 		if (destination instanceof List) {
@@ -142,12 +142,15 @@ class XcodebuildParameters {
 
 	File getOutputPath() {
 		if (type == Type.iOS) {
-			if (simulator) {
-				return new File(getSymRoot(), "${configuration}-iphonesimulator")
-			} else {
-				return new File(getSymRoot(), "${configuration}-iphoneos")
-			}
+			return PathHelper.resolveIosSymRoot(simulator,
+					symRoot,
+					configuration)
+		} else if (type == Type.tvOS) {
+			return PathHelper.resolveAppleTvSymRoot(simulator,
+					symRoot,
+					configuration)
 		}
-		return new File(getSymRoot(), configuration)
+
+		return PathHelper.resolveMacOsSymRoot(symRoot, configuration)
 	}
 }

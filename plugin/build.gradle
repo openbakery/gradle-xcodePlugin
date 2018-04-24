@@ -15,11 +15,10 @@ if (project.hasProperty("publishURL")) {
 if (project.hasProperty("publishUser")) {
 	publishUser = project.publishUser
 }
+
 if (project.hasProperty("publishPassword")) {
 	publishPassword = project.publishPassword
 }
-
-
 
 cobertura.coverageFormats = ['html', 'xml']
 
@@ -65,7 +64,7 @@ uploadArchives {
 	repositories {
 		mavenDeployer {
 			configuration = configurations.deployerJars
-			
+
 			repository(url: publishURL) {
 				authentication(userName: publishUser, password: publishPassword)
 			}

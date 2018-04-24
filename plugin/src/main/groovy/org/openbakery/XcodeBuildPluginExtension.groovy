@@ -20,16 +20,12 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
-import org.openbakery.xcode.Destination
-import org.openbakery.xcode.Devices
-import org.openbakery.xcode.Type
-import org.openbakery.xcode.Xcode
-import org.openbakery.xcode.XcodebuildParameters
+import org.openbakery.util.PathHelper
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
+import org.openbakery.xcode.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
 
 /*
 
@@ -109,8 +105,6 @@ class XcodeBuildPluginExtension {
 	Xcode xcode
 
 	HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
-
-
 
 	/**
 	 * internal parameters
@@ -249,7 +243,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-
 	void setArch(Object arch) {
 		if (arch instanceof List) {
 			logger.debug("Arch is List: " + arch + " - " + arch.getClass().getName())
@@ -278,7 +271,7 @@ class XcodeBuildPluginExtension {
 			if (index == -1) {
 				this.environment.put(environmentString, null)
 			} else {
-				this.environment.put(environmentString.substring(0, index),environmentString.substring(index + 1))
+				this.environment.put(environmentString.substring(0, index), environmentString.substring(index + 1))
 			}
 		}
 	}
@@ -327,15 +320,23 @@ class XcodeBuildPluginExtension {
 		return bundleName
 	}
 
-
 	// should be removed an replaced by the xcodebuildParameters.outputPath
 	File getOutputPath() {
 		String path = getConfiguration()
-		if (type == Type.iOS) {
-			if (simulator) {
-				path += "-iphonesimulator"
-			} else {
-				path += "-iphoneos"
+		if (type != Type.macOS) {
+			path += "-"
+			if (type == Type.iOS) {
+				if (simulator) {
+					path += PathHelper.IPHONE_SIMULATOR
+				} else {
+					path += PathHelper.IPHONE_OS
+				}
+			} else if (type == Type.tvOS) {
+				if (simulator) {
+					path += PathHelper.APPLE_TV_SIMULATOR
+				} else {
+					path += PathHelper.APPLE_TV_OS
+				}
 			}
 		}
 		return new File(getSymRoot(), path)
@@ -421,8 +422,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-
-
 	void setType(String type) {
 		this.type = Type.typeFromString(type)
 	}
@@ -471,7 +470,6 @@ class XcodeBuildPluginExtension {
 		logger.debug("using xcode {}", xcode)
 		return xcode
 	}
-
 
 
 	XcodebuildParameters getXcodebuildParameters() {

@@ -1,11 +1,13 @@
 package org.openbakery.xcode
 
+import org.openbakery.util.PathHelper
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class XcodebuildParametersSpecification extends Specification {
 
 
-	XcodebuildParameters first =  new XcodebuildParameters()
+	XcodebuildParameters first = new XcodebuildParameters()
 	XcodebuildParameters second = new XcodebuildParameters()
 
 	def setup() {
@@ -16,7 +18,7 @@ class XcodebuildParametersSpecification extends Specification {
 		first.workspace = "workspace"
 		first.configuration = "configuration"
 		first.additionalParameters = "additionalParameters"
-		first.devices =  Devices.UNIVERSAL
+		first.devices = Devices.UNIVERSAL
 		first.configuredDestinations = ["iPhone 4s"]
 
 	}
@@ -49,7 +51,6 @@ class XcodebuildParametersSpecification extends Specification {
 		then:
 		first.simulator == true
 	}
-
 
 
 	def "simulator is merged reverse"() {
@@ -174,7 +175,8 @@ class XcodebuildParametersSpecification extends Specification {
 		first.outputPath == new File("sym/debug-iphonesimulator")
 	}
 
-	def "outputPath with different configurations"(simulator, configuration, type, outputPath) {
+	@Unroll
+	def "path type: #type in config #type in #configuration mode and simulator:#simulator"() {
 		when:
 		first.configuration = configuration
 		first.type = type
@@ -182,15 +184,22 @@ class XcodebuildParametersSpecification extends Specification {
 		first.symRoot = new File("sym")
 
 		then:
-		first.outputPath == new File(outputPath)
+		File file = type == Type.macOS ? new File("sym/${outputPath}")
+				: new File("sym/${configuration}-${outputPath}")
+
+		first.outputPath == file
 
 		where:
 		simulator | configuration | type       | outputPath
-		false     | "debug"       | Type.iOS   | "sym/debug-iphoneos"
-		false     | "release"     | Type.iOS   | "sym/release-iphoneos"
-		true      | "debug"       | Type.iOS   | "sym/debug-iphonesimulator"
-		true      | "release"     | Type.iOS   | "sym/release-iphonesimulator"
-		false     | "release"     | Type.macOS | "sym/release"
+		false     | "debug"       | Type.iOS   | PathHelper.IPHONE_OS
+		false     | "release"     | Type.iOS   | PathHelper.IPHONE_OS
+		true      | "debug"       | Type.iOS   | PathHelper.IPHONE_SIMULATOR
+		true      | "release"     | Type.iOS   | PathHelper.IPHONE_SIMULATOR
+		false     | "release"     | Type.macOS | "release"
+		false     | "debug"       | Type.tvOS  | PathHelper.APPLE_TV_OS
+		false     | "release"     | Type.tvOS  | PathHelper.APPLE_TV_OS
+		true      | "debug"       | Type.tvOS  | PathHelper.APPLE_TV_SIMULATOR
+		true      | "release"     | Type.tvOS  | PathHelper.APPLE_TV_SIMULATOR
 	}
 
 }

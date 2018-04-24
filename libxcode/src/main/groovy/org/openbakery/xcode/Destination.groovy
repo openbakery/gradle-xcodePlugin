@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils
 /*
  * User: rene
  */
+
 class Destination {
 
 	String platform = null
@@ -26,15 +27,19 @@ class Destination {
 		this.os = os
 	}
 
+	public Type getTargetType() {
+		return Type.typeFromString(platform)
+	}
+
 	@Override
-	public java.lang.String toString() {
+	public String toString() {
 		return "Destination{" +
-						"platform='" + platform + '\'' +
-						", name='" + name + '\'' +
-						", arch='" + arch + '\'' +
-						", id='" + id + '\'' +
-						", os='" + os + '\'' +
-						'}';
+				"platform='" + platform + '\'' +
+				", name='" + name + '\'' +
+				", arch='" + arch + '\'' +
+				", id='" + id + '\'' +
+				", os='" + os + '\'' +
+				'}';
 	}
 
 	boolean equals(other) {
@@ -48,9 +53,9 @@ class Destination {
 		}
 
 		if (StringUtils.equalsIgnoreCase(arch, otherDestination.arch) &&
-						StringUtils.equalsIgnoreCase(name, otherDestination.name) &&
-						StringUtils.equalsIgnoreCase(os, otherDestination.os) &&
-						StringUtils.equalsIgnoreCase(platform, otherDestination.platform)) {
+				StringUtils.equalsIgnoreCase(name, otherDestination.name) &&
+				StringUtils.equalsIgnoreCase(os, otherDestination.os) &&
+				StringUtils.equalsIgnoreCase(platform, otherDestination.platform)) {
 			return true
 		}
 		return false
@@ -67,7 +72,7 @@ class Destination {
 	}
 
 
-	public java.lang.String toPrettyString() {
+	public String toPrettyString() {
 		StringBuilder builder = new StringBuilder()
 		builder.append(name)
 		if (!StringUtils.isEmpty(platform)) {

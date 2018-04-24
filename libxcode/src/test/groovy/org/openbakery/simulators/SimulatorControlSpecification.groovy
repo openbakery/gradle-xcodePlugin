@@ -7,15 +7,24 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class SimulatorControlSpecification extends Specification {
 
 	File projectDir
 	SimulatorControl simulatorControl
-	CommandRunner commandRunner = Mock(CommandRunner);
-	Xcode xcode = Mock(Xcode);
+	CommandRunner commandRunner = Mock(CommandRunner)
+	Xcode xcode = Mock(Xcode)
 
-	def SIMCTL = "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+	private static
+	final String SIM_CTL_LIST_UNAVAILABLE = "src/test/Resource/simctl-list-unavailable.txt"
+
+	private static final String RES_PATH = "src/test/Resource"
+	private static final String SIMCTL = "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+	private static final String SIM_CTL_LIST_XCODE7 = "${RES_PATH}/simctl-list-xcode7.txt"
+	private static final String SIM_CTL_LIST_XCODE8 = "${RES_PATH}/simctl-list-xcode8.txt"
+	private static final String SIM_CTL_LIST_XCODE9 = "${RES_PATH}/simctl-list-xcode9.txt"
+	private static final String SIM_CTL_LIST_XCODE9_1 = "${RES_PATH}/simctl-list-xcode9_1.txt"
 
 	def setup() {
 		xcode.getSimctl() >> SIMCTL
@@ -28,30 +37,33 @@ class SimulatorControlSpecification extends Specification {
 
 
 	void mockXcode6() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-unavailable.txt"))
+		mockWithFile(SIM_CTL_LIST_UNAVAILABLE)
 	}
 
 	void mockXcode7() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7.txt"))
+		mockWithFile(SIM_CTL_LIST_XCODE7)
 	}
 
 	void mockXcode8() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode8.txt"))
+		mockWithFile(SIM_CTL_LIST_XCODE8)
 	}
 
 	void mockXcode9() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9.txt"))
+		mockWithFile(SIM_CTL_LIST_XCODE9)
 	}
 
 	void mockXcode9_1() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9_1.txt"))
+		mockWithFile(SIM_CTL_LIST_XCODE9_1)
+	}
+
+	void mockWithFile(String uri) {
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File(uri))
 	}
 
 
 	def "get runtimes"() {
 		given:
 		mockXcode6()
-
 
 		expect:
 		List<Runtime> runtimes = simulatorControl.getRuntimes()
@@ -72,7 +84,6 @@ class SimulatorControlSpecification extends Specification {
 		runtime1.buildNumber.equals("11D167")
 		runtime1.identifier.equals("com.apple.CoreSimulator.SimRuntime.iOS-7-1")
 	}
-
 
 	def "get most recent iOS runtime"() {
 
@@ -145,7 +156,6 @@ class SimulatorControlSpecification extends Specification {
 	}
 
 
-
 	def "devices iOS7"() {
 		given:
 		mockXcode6()
@@ -161,7 +171,6 @@ class SimulatorControlSpecification extends Specification {
 		devices.get(0).identifier.equals("73C126C8-FD53-44EA-80A3-84F5F19508C0")
 		devices.get(0).state.equals("Shutdown")
 	}
-
 
 
 	def "devices iOS8"() {
@@ -181,8 +190,6 @@ class SimulatorControlSpecification extends Specification {
 	}
 
 
-
-
 	def "delete All"() {
 		given:
 		mockXcode6()
@@ -191,22 +198,22 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.deleteAll()
 
 		then:
-		1* commandRunner.runWithResult([SIMCTL, "delete", "73C126C8-FD53-44EA-80A3-84F5F19508C0"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "15F68098-3B21-411D-B553-1C3161C100E7"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "545260B4-C6B8-4D3A-9348-AD3B882D8D17"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "454F3900-7B07-422E-A731-D46C821888B5"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "F60A8735-97D9-48A8-9728-3CC53394F7FC"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "B8278DAC-97EE-4097-88CA-5650960882A5"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "E06E8144-D4AB-4616-A19E-9A489FB0CC17"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "0560469A-813F-4AF7-826C-4598802A7FFD"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "F029A31F-3CBF-422D-AEF4-D05675BAEDEF"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "6F2558A0-A789-443B-B142-7BA707E3C9E8"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "075026D3-C77E-40F9-944C-EBCB565E17D5"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "5C4434E1-81AC-4448-8237-26029A57E594"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "E85B0A4D-6B82-4F7C-B4CF-3C00E4EFF3D1"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "A7400DB8-CDF3-4E6F-AF87-EB2B296D82C5"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "29C34492-7006-41D7-B634-8703972F725C"])
-		1* commandRunner.runWithResult([SIMCTL, "delete", "50D9CBF1-608C-4866-9B5F-234D7FACBC16"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "73C126C8-FD53-44EA-80A3-84F5F19508C0"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "15F68098-3B21-411D-B553-1C3161C100E7"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "545260B4-C6B8-4D3A-9348-AD3B882D8D17"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "454F3900-7B07-422E-A731-D46C821888B5"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "F60A8735-97D9-48A8-9728-3CC53394F7FC"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "B8278DAC-97EE-4097-88CA-5650960882A5"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "E06E8144-D4AB-4616-A19E-9A489FB0CC17"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "0560469A-813F-4AF7-826C-4598802A7FFD"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "F029A31F-3CBF-422D-AEF4-D05675BAEDEF"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "6F2558A0-A789-443B-B142-7BA707E3C9E8"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "075026D3-C77E-40F9-944C-EBCB565E17D5"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "5C4434E1-81AC-4448-8237-26029A57E594"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "E85B0A4D-6B82-4F7C-B4CF-3C00E4EFF3D1"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "A7400DB8-CDF3-4E6F-AF87-EB2B296D82C5"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "29C34492-7006-41D7-B634-8703972F725C"])
+		1 * commandRunner.runWithResult([SIMCTL, "delete", "50D9CBF1-608C-4866-9B5F-234D7FACBC16"])
 	}
 
 
@@ -397,11 +404,12 @@ class SimulatorControlSpecification extends Specification {
 		destination.os = '9.0'
 
 		when:
-		SimulatorDevice device = simulatorControl.getDevice(destination)
+		Optional<SimulatorDevice> device = simulatorControl.getDevice(destination)
 
 		then:
-		device.name == "iPhone 4s"
-		device.identifier == "5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
+		device.present
+		device.get().name == "iPhone 4s"
+		device.get().identifier == "5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 	}
 
 	def "get 8.4 device for destination xcode 7.1"() {
@@ -414,11 +422,12 @@ class SimulatorControlSpecification extends Specification {
 		destination.os = '8.4'
 
 		when:
-		SimulatorDevice device = simulatorControl.getDevice(destination)
+		Optional<SimulatorDevice> device = simulatorControl.getDevice(destination)
 
 		then:
-		device.name == "iPad 2"
-		device.identifier == "E5089648-1CE4-40D5-8295-8E026BDDFF52"
+		device.present
+		device.get().name == "iPad 2"
+		device.get().identifier == "E5089648-1CE4-40D5-8295-8E026BDDFF52"
 	}
 
 	def "get 9.1 device for destination xcode 7.1"() {
@@ -431,11 +440,12 @@ class SimulatorControlSpecification extends Specification {
 		destination.os = '9.1'
 
 		when:
-		SimulatorDevice device = simulatorControl.getDevice(destination)
+		Optional<SimulatorDevice> device = simulatorControl.getDevice(destination)
 
 		then:
-		device.name == "iPad 2"
-		device.identifier == "D72F7CC6-8426-4E0A-A234-34747B1F30DD"
+		device.present
+		device.get().name == "iPad 2"
+		device.get().identifier == "D72F7CC6-8426-4E0A-A234-34747B1F30DD"
 	}
 
 
@@ -526,7 +536,6 @@ class SimulatorControlSpecification extends Specification {
 	}
 
 
-
 	def "xcode 8 has Apple TV device type "() {
 		given:
 		mockXcode8()
@@ -596,7 +605,6 @@ class SimulatorControlSpecification extends Specification {
 
 	}
 
-
 	def "devices iOS10"() {
 		given:
 		mockXcode8()
@@ -641,35 +649,28 @@ class SimulatorControlSpecification extends Specification {
 		devices.size() == 15
 	}
 
+	@Unroll
+	def "Ensure that the compilation runtime: #runtimeType with name : #runtimeName and #deviceCount devices is properly defined"() {
+		expect:
+		mockWithFile(ctlFile)
 
-	def "devices iOS11.1 runtimes" () {
-		given:
-		mockXcode9_1()
+		SimulatorRuntime runtime = simulatorControl
+				.getRuntimes()
+				.find { it.type == runtimeType }
 
-		when:
-		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
+		runtime != null
+		runtime.name == runtimeName
+		runtime.type == runtimeType
 
-		then:
-		runtimes != null
-		runtimes.size() == 3
-		runtimes.get(0).name == "iOS 11.1"
-	}
+		simulatorControl.getDevices(runtime)
+				.size() == deviceCount
 
-	def "devices iOS11.1"() {
-		given:
-		mockXcode9_1()
-
-		when:
-		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
-		SimulatorRuntime runtime = runtimes.get(0)
-		List<SimulatorDevice> devices = simulatorControl.getDevices(runtimes.get(0))
-
-		then:
-		devices != null
-		devices.size() == 18
-		runtime.name == "iOS 11.1"
+		where:
+		ctlFile               | runtimeType  | runtimeName   | deviceCount
+		SIM_CTL_LIST_XCODE9_1 | Type.tvOS    | "tvOS 11.1"   | 3
+		SIM_CTL_LIST_XCODE9_1 | Type.iOS     | "iOS 11.1"    | 18
+		SIM_CTL_LIST_XCODE9_1 | Type.watchOS | "watchOS 4.1" | 6
+		SIM_CTL_LIST_XCODE9   | Type.iOS     | "iOS 11.0"    | 15
 	}
 
 }
-
-
