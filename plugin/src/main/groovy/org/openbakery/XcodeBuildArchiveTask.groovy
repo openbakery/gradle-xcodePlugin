@@ -50,8 +50,102 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
         return archiveDirectory
     }
 
+    @TaskAction
+    def archive() {
+//        if (project.xcodebuild.useXcodebuildArchive) {
+//
+        File outputFile = new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
+        commandRunner.setOutputFile(outputFile)
 
-    private ArrayList<String> getiOSIcons() {
+        commandRunner.run("xcodebuild",
+                "archive",
+                "-scheme",
+                project.xcodebuild.scheme,
+                "-archivePath",
+                new File(project.buildDir, "archive/" + project.xcodebuild.scheme + ".xcarchive").absolutePath,
+                "-xcconfig", "test.xcconfig")
+
+//        xcodebuild.executeArchive(createXcodeBuildOutputAppender("XcodeBuildArchive"),
+//                project.xcodebuild.environment,
+//                getArchiveDirectory().absolutePath)
+
+//            return
+////        }
+
+//        parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
+////        if (parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)) {
+////            logger.debug("Create zip archive")
+////
+////            // create zip archive
+////            String zipFileName = parameters.bundleName
+////            if (project.xcodebuild.bundleNameSuffix != null) {
+////                zipFileName += project.xcodebuild.bundleNameSuffix
+////            }
+////            zipFileName += ".zip"
+////
+////            def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
+////            def baseDirectory = parameters.applicationBundle.parentFile
+////
+////            createZip(zipFile, baseDirectory, parameters.applicationBundle)
+////            return
+////        }
+//
+//        logger.debug("Create xcarchive")
+//        Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, getDestinations())
+//
+////        if (project.xcodebuild.useXcodebuildArchive) {
+//
+//            File outputFile = new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
+//            commandRunner.setOutputFile(outputFile)
+//
+//            xcodebuild.executeArchive(createXcodeBuildOutputAppender("XcodeBuildArchive"), project.xcodebuild.environment, getArchiveDirectory().absolutePath)
+//
+//            return
+////        }
+//
+//        // create xcarchive
+//        // copy application bundle
+//        copy(parameters.applicationBundle, getApplicationsDirectory())
+//
+//        File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
+//        if (onDemandResources.exists()) {
+//            copy(onDemandResources, getProductsDirectory())
+//        }
+//
+//        // copy onDemandResources
+//
+//        def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
+//        dSymDirectory.mkdirs()
+//        copyDsyms(parameters.outputPath, dSymDirectory)
+//
+//        List<File> appBundles = getAppBundles(parameters.outputPath)
+//        for (File bundle : appBundles) {
+//            createEntitlements(bundle)
+//            createExtensionSupportDirectory(bundle, xcodebuild)
+//        }
+//
+//        File applicationsDirectory = getApplicationsDirectory()
+//
+//        File archiveDirectory = getArchiveDirectory()
+//        createInfoPlist(archiveDirectory)
+//        createFrameworks(archiveDirectory, xcodebuild)
+//        deleteEmptyFrameworks(archiveDirectory)
+//        deleteXCTestIfExists(applicationsDirectory)
+//        deleteFrameworksInExtension(applicationsDirectory)
+//        copyBCSymbolMaps(archiveDirectory)
+//
+//        if (project.xcodebuild.type == Type.iOS || project.xcodebuild.type == Type.tvOS) {
+//            File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
+//            convertInfoPlistToBinary(applicationFolder)
+//
+//            removeUnneededDylibsFromBundle(applicationFolder)
+//        }
+//
+//        logger.debug("create archive done")
+    }
+
+
+    ArrayList<String> getiOSIcons() {
         return parameters.applicationBundle
                 .list()
                 .findAll { it.matches(ICON_FILE_MATCHER) }
@@ -337,79 +431,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
         }
     }
 
-    @TaskAction
-    def archive() {
-        parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
-        if (parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)) {
-            logger.debug("Create zip archive")
-
-            // create zip archive
-            String zipFileName = parameters.bundleName
-            if (project.xcodebuild.bundleNameSuffix != null) {
-                zipFileName += project.xcodebuild.bundleNameSuffix
-            }
-            zipFileName += ".zip"
-
-            def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
-            def baseDirectory = parameters.applicationBundle.parentFile
-
-            createZip(zipFile, baseDirectory, parameters.applicationBundle)
-            return
-        }
-
-        logger.debug("Create xcarchive")
-        Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, getDestinations())
-
-        if (project.xcodebuild.useXcodebuildArchive) {
-
-            File outputFile = new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
-            commandRunner.setOutputFile(outputFile)
-
-            xcodebuild.executeArchive(createXcodeBuildOutputAppender("XcodeBuildArchive"), project.xcodebuild.environment, getArchiveDirectory().absolutePath)
-
-            return
-        }
-
-        // create xcarchive
-        // copy application bundle
-        copy(parameters.applicationBundle, getApplicationsDirectory())
-
-        File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
-        if (onDemandResources.exists()) {
-            copy(onDemandResources, getProductsDirectory())
-        }
-
-        // copy onDemandResources
-
-        def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
-        dSymDirectory.mkdirs()
-        copyDsyms(parameters.outputPath, dSymDirectory)
-
-        List<File> appBundles = getAppBundles(parameters.outputPath)
-        for (File bundle : appBundles) {
-            createEntitlements(bundle)
-            createExtensionSupportDirectory(bundle, xcodebuild)
-        }
-
-        File applicationsDirectory = getApplicationsDirectory()
-
-        File archiveDirectory = getArchiveDirectory()
-        createInfoPlist(archiveDirectory)
-        createFrameworks(archiveDirectory, xcodebuild)
-        deleteEmptyFrameworks(archiveDirectory)
-        deleteXCTestIfExists(applicationsDirectory)
-        deleteFrameworksInExtension(applicationsDirectory)
-        copyBCSymbolMaps(archiveDirectory)
-
-        if (project.xcodebuild.type == Type.iOS || project.xcodebuild.type == Type.tvOS) {
-            File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
-            convertInfoPlistToBinary(applicationFolder)
-
-            removeUnneededDylibsFromBundle(applicationFolder)
-        }
-
-        logger.debug("create archive done")
-    }
 
     def copyBCSymbolMaps(File archiveDirectory) {
         if (!parameters.bitcode) {
