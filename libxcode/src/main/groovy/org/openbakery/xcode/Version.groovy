@@ -30,8 +30,6 @@ class Version implements Comparable<Version> {
 		} catch (InputMismatchException ex) {
 			suffix = versionScanner.next()
 		}
-
-
 	}
 
 	@Override

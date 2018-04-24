@@ -23,7 +23,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	public ExpectedException exception = ExpectedException.none()
 
 	def setup() {
 		projectDir = File.createTempDir()

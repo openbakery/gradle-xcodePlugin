@@ -27,6 +27,7 @@ import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
+import org.openbakery.carthage.CarthageBootStrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
@@ -90,7 +91,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
 	public static final String XCODE_BUILD_FOR_TEST_TASK_NAME = "xcodebuildForTest"
-	public static final String XCODE_TEST_RUN_TASK_NAME =  "xcodetestrun"
+	public static final String XCODE_TEST_RUN_TASK_NAME = "xcodetestrun"
 	public static final String ARCHIVE_TASK_NAME = "archive"
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String SIMULATORS_CREATE_TASK_NAME = "simulatorsCreate"
@@ -129,6 +130,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
+	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
 
@@ -141,8 +143,6 @@ class XcodePlugin implements Plugin<Project> {
 
 
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
-
-
 
 
 	void apply(Project project) {
@@ -597,16 +597,16 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageUpdateTask carthageUpdateTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME)
-		CarthageCleanTask carthageCleanTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME)
+		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
+		addDependencyToBuild(project, bootStrapTask)
 
-		if (carthageUpdateTask.hasCartFile()) {
-			addDependencyToBuild(project, carthageUpdateTask)
-			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(carthageCleanTask);
-		}
+		project.getTasks()
+				.getByName(BasePlugin.CLEAN_TASK_NAME)
+				.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
 	}
 
 	private void configureOCLint(Project project) {
@@ -614,7 +614,7 @@ class XcodePlugin implements Plugin<Project> {
 
 		Task ocLintTask = project.getTasks().create(OCLINT_TASK_NAME);
 		ocLintTask.group = ANALYTICS_GROUP_NAME
-		ocLintTask.description = "Runs: " +  BasePlugin.CLEAN_TASK_NAME + " " + XCODE_BUILD_TASK_NAME + " " + OCLINT_REPORT_TASK_NAME
+		ocLintTask.description = "Runs: " + BasePlugin.CLEAN_TASK_NAME + " " + XCODE_BUILD_TASK_NAME + " " + OCLINT_REPORT_TASK_NAME
 		ocLintTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME))
 
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)
