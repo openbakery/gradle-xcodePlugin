@@ -1,13 +1,12 @@
 package org.openbakery
 
-import groovy.transform.CompileStatic
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.PathHelper
 
-@CompileStatic
+//@CompileStatic
 class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
     private ProvisioningProfileReader reader
@@ -23,6 +22,8 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
     PrepareXcodeArchivingTask() {
         super()
+        dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+        dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
         dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
         dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 
@@ -36,8 +37,7 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
     @Input
     String getBundleIdentifier() {
-        File plistFile = new File(project.projectDir, getXcodeExtension().getInfoPlist())
-        return plistHelper.getValueFromPlist(plistFile, "CFBundleIdentifier")
+        return getXcodeExtension().buildConfiguration.bundleIdentifier
     }
 
     Optional<File> getProvisioningFile() {
@@ -57,9 +57,14 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
     @TaskAction
     void generate() {
-        getXcConfigFile().text = "//:configuration = GradleXcode"
+        security.getKeychainList()
+        getXcConfigFile().text = ""
         computeProvisioningFile(getProvisioningFile()
-                .orElseThrow { new IllegalArgumentException() })
+                .orElseThrow {
+            new IllegalArgumentException("Cannot resolve a valid provisioning " +
+                    "profile for bundle identifier : " +
+                    getBundleIdentifier())
+        })
     }
 
     private void computeProvisioningFile(File file) {
@@ -72,6 +77,15 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
     }
 
     private String getCodeSignIdentity() {
+        //CODE_SIGN_IDENTITY = iPhone Developer:
+
+        File file = new File(URI.create(getXcodeExtension().signing.certificateURI))
+        println "file : " + file.exists()
+        println "file : " + file.absolutePath
+
+        getKeyContent()
+            .splitEachLine()
+
         return "iPhone Distribution: " +
                 reader.getTeamName() +
                 " (" + reader.getTeamIdentifierPrefix() + ")"
@@ -80,5 +94,15 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
     private void append(String key, String value) {
         getXcConfigFile()
                 .append(System.getProperty("line.separator") + key + " = " + value)
+    }
+
+    private String getKeyContent() {
+        return commandRunner.runWithResult(["openssl",
+                                            "pkcs12",
+                                            "-nokeys",
+                                            "-in",
+                                            file.absolutePath,
+                                            "-passin",
+                                            "pass:" + getXcodeExtension().signing.certificatePassword])
     }
 }
