@@ -53,7 +53,6 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 			setValueForPlist("CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
-			println "// add suffix to bundleIdentifier : " + bundleIdentifier + " //// " + project.infoplist.bundleIdentifierSuffix
 		}
 
 		// Modify bundle bundleName
