@@ -13,8 +13,8 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
     private ProvisioningProfileReader reader
 
     public static final String NAME = "prepareArchiving"
+    public static final String FILE_NAME = "archive.xcconfig"
 
-    private static final String FILE_NAME = "archive.xcconfig"
     private static final String KEY_BUNDLE_IDENTIFIER = "PRODUCT_BUNDLE_IDENTIFIER"
     private static final String KEY_CODE_SIGN_IDENTITY = "CODE_SIGN_IDENTITY"
     private static final String KEY_DEVELOPMENT_TEAM = "DEVELOPMENT_TEAM"
@@ -64,9 +64,9 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
     private void computeProvisioningFile(File file) {
         reader = new ProvisioningProfileReader(file, commandRunner)
+        append(KEY_BUNDLE_IDENTIFIER, reader.getApplicationIdentifier())
         append(KEY_CODE_SIGN_IDENTITY, getCodeSignIdentity())
         append(KEY_DEVELOPMENT_TEAM, reader.getTeamIdentifierPrefix())
-        append(KEY_BUNDLE_IDENTIFIER, reader.getApplicationIdentifier())
         append(KEY_PROVISIONING_PROFILE_ID, reader.getUUID())
         append(KEY_PROVISIONING_PROFILE_SPEC, reader.getName())
     }
