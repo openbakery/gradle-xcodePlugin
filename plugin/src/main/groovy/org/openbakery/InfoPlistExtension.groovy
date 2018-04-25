@@ -16,18 +16,18 @@
 package org.openbakery
 
 class InfoPlistExtension {
-	def String bundleIdentifier = null
-	def String bundleIdentifierSuffix = null
-	def String bundleName = null
-	def String bundleDisplayName = null
-	def String bundleDisplayNameSuffix = null
-	def String version = null
-	def String versionSuffix = null
-	def String versionPrefix = null
-	def String shortVersionString = null
-	def String shortVersionStringSuffix = null
-	def String shortVersionStringPrefix = null
-	def List<String> commands = null
+	String bundleIdentifier = null
+	String bundleIdentifierSuffix = null
+	String bundleName = null
+	String bundleDisplayName = null
+	String bundleDisplayNameSuffix = null
+	String version = null
+	String versionSuffix = null
+	String versionPrefix = null
+	String shortVersionString = null
+	String shortVersionStringSuffix = null
+	String shortVersionStringPrefix = null
+	List<String> commands = null
 
 
 

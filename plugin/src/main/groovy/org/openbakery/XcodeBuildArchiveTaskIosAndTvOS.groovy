@@ -16,33 +16,33 @@
 package org.openbakery
 
 import org.gradle.api.tasks.*
-import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Xcodebuild
 
 //@CompileStatic
 class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
-    public static final String FOLDER_ARCHIVE = "archive"
-    public static final String FOLDER_XCCONFIG = "xcconfig"
+    public static final String NAME = "archive"
 
     XcodeBuildArchiveTaskIosAndTvOS() {
         super()
 
         dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
         dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+        dependsOn(PrepareXcodeArchivingTask.NAME)
 
         this.description = "Prepare the app bundle that it can be archive"
+    }
+
+    @InputFile
+    File getXcConfigFile() {
+        return new File(PathHelper.resolveArchiveFolder(project),
+                PrepareXcodeArchivingTask.FILE_NAME)
     }
 
     @Input
     String getScheme() {
         return project.xcodebuild.scheme
-    }
-
-    @InputFile
-    @Optional
-    File getProvisioningFile() {
-        return project.xcodebuild.signing.mobileProvisionFile.first()
     }
 
     @OutputFile
@@ -53,33 +53,14 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
     @OutputDirectory
     File getOutputDirectory() {
-        def archiveDirectory = new File(project.getBuildDir(), FOLDER_ARCHIVE
-                + "/" + project.xcodebuild.scheme + ".xcarchive")
+        File archiveDirectory = new File(PathHelper.resolveArchiveFolder(project),
+                getScheme() + ".xcarchive")
         archiveDirectory.mkdirs()
         return archiveDirectory
     }
 
-    @OutputFile
-    File getXcconfigFile() {
-        return new File(getOutputDirectory(), "project.xcconfig")
-    }
-
     @TaskAction
     private void archive() {
-        generateXConfigFile()
-        runArchiving()
-    }
-
-    private void generateXConfigFile() {
-        File file = getProvisioningFile()
-        if (file.exists()) {
-            ProvisioningProfileReader reader = new ProvisioningProfileReader(file, commandRunner)
-            println reader.getTeamIdentifierPrefix()
-            println reader.getUUID()
-        }
-    }
-
-    private void runArchiving() {
         Xcodebuild xcodebuild = new Xcodebuild(project.projectDir,
                 commandRunner,
                 xcode,
@@ -90,6 +71,6 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
         xcodebuild.archive(getScheme(),
                 getOutputDirectory(),
-                project.file("test.xcconfig"))
+                getXcConfigFile())
     }
 }

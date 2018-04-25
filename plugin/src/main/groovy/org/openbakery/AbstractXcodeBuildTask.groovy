@@ -6,13 +6,11 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.util.ConfigureUtil
-import org.openbakery.codesign.Security
 import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodebuildParameters
-
 /**
  * User: rene
  * Date: 15.07.13
@@ -96,4 +94,11 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		return new XcodeBuildOutputAppender(progressLogger, output)
 	}
 
+	XcodeBuildPluginExtension getXcodeExtension() {
+		return project.getExtensions().getByType(XcodeBuildPluginExtension.class)
+	}
+
+	InfoPlistExtension getInfoPlistExtension() {
+		return project.getExtensions().getByType(InfoPlistExtension.class)
+	}
 }

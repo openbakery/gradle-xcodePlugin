@@ -159,6 +159,14 @@ class ProvisioningProfileReader {
 		return config.getString("TeamIdentifier")
 	}
 
+	String getTeamName() {
+		return config.getString("TeamName")
+	}
+
+	String getName() {
+		return config.getString("Name")
+	}
+
 	File getPlistFromProvisioningProfile() {
 		if (provisioningPlist == null) {
 			// unpack provisioning profile to plain plist

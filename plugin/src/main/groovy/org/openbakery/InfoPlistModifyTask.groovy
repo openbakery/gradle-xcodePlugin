@@ -27,9 +27,6 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
-
-
-
 	@TaskAction
 	def prepare() {
 
@@ -56,6 +53,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		if (project.infoplist.bundleIdentifierSuffix != null) {
 			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 			setValueForPlist("CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
+			println "// add suffix to bundleIdentifier : " + bundleIdentifier + " //// " + project.infoplist.bundleIdentifierSuffix
 		}
 
 		// Modify bundle bundleName
@@ -151,9 +149,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		modfied = true
 		logger.lifecycle("Set {} to {}", key, value)
 		plistHelper.setValueForPlist(infoPlist, key, value)
-
 	}
-
 
 	void setValueForPlist(String command) {
 		modfied = true

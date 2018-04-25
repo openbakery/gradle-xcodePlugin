@@ -1,6 +1,7 @@
 package org.openbakery.util
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Project
 import org.openbakery.xcode.Type
 
 @CompileStatic
@@ -9,6 +10,8 @@ class PathHelper {
 	public static final String APPLE_TV_SIMULATOR = "appletvsimulator"
 	public static final String IPHONE_SIMULATOR = "iphonesimulator"
 	public static final String IPHONE_OS = "iphoneos"
+
+	private static final String FOLDER_ARCHIVE = "archive"
 
 	static File resolvePath(Type type,
 							boolean simulator,
@@ -62,6 +65,10 @@ class PathHelper {
 									String configuration) {
 		return new File(symRoot,
 				configuration)
+	}
+
+	static File resolveArchiveFolder(Project project) {
+		return new File(project.getBuildDir(), FOLDER_ARCHIVE)
 	}
 
 	private static File resolveSymRoot(File symRoot,

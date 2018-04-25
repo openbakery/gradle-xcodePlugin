@@ -477,9 +477,15 @@ class XcodePlugin implements Plugin<Project> {
     private void configureArchive(Project project) {
         if (project.xcodebuild.type == Type.tvOS
                 || project.xcodebuild.type == Type.iOS) {
-            XcodeBuildArchiveTaskIosAndTvOS task = project.tasks.create(ARCHIVE_TASK_NAME,
+            PrepareXcodeArchivingTask prepareXcodeArchivingTask = project.tasks.create(
+                    PrepareXcodeArchivingTask.NAME,
+                    PrepareXcodeArchivingTask.class)
+            prepareXcodeArchivingTask.setGroup(XCODE_GROUP_NAME)
+
+            XcodeBuildArchiveTaskIosAndTvOS archiveTask = project.tasks.create(
+                    XcodeBuildArchiveTaskIosAndTvOS.NAME,
                     XcodeBuildArchiveTaskIosAndTvOS.class)
-            task.setGroup(XCODE_GROUP_NAME)
+            archiveTask.setGroup(XCODE_GROUP_NAME)
         } else {
             XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
             xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
