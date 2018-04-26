@@ -211,20 +211,6 @@ class PackageTask_WatchAppSpecification extends Specification {
 		new File(outputPath, "Payload/ExampleWatchKit.app/Frameworks/MyFramework.framework").exists()
 	}
 
-	def "do not copy frameworks in app extension"() {
-		given:
-		createExampleApp()
-		createFrameworkIn(applicationBundle)
-		createFrameworkIn(watchkitExtensionBundle)
-
-		when:
-		packageTask.packageApplication()
-
-		then:
-		!(new File(outputPath, "Payload/ExampleWatchKit.app/" + watchkitExtensionPath + "/Frameworks").exists())
-
-	}
-
 	def "remove libswiftRemoteMirror.dylib from app"() {
 		given:
 		createExampleApp()

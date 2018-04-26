@@ -111,7 +111,6 @@ class PackageTask extends AbstractDistributeTask {
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-				removeFrameworkFromExtensions(bundle)
 				removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
 			}
@@ -147,18 +146,8 @@ class PackageTask extends AbstractDistributeTask {
 		return reader.getProfileType()
 	}
 
-	def removeFrameworkFromExtensions(File bundle) {
-		// appex extensions should not contain extensions
-		if (FilenameUtils.getExtension(bundle.toString()).equalsIgnoreCase("appex"))  {
-			File frameworksPath = new File(bundle, "Frameworks")
-			if (frameworksPath.exists()) {
-				FileUtils.deleteDirectory(frameworksPath)
-			}
-		}
 
-	}
-
-	def removeUnneededDylibsFromBundle(File bundle) {
+    def removeUnneededDylibsFromBundle(File bundle) {
 		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
 			libswiftRemoteMirror.delete()
