@@ -6,7 +6,7 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.appledoc.AppledocCleanTask
+import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Type
@@ -85,7 +85,7 @@ class PackageTaskSpecification extends Specification {
 		keychain.delete()
 	}
 
-	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework = false, boolean adHoc = true, boolean bitcode = false) {
+	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean adHoc = true, boolean withFramework = false, boolean bitcode = false) {
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
@@ -546,9 +546,9 @@ class PackageTaskSpecification extends Specification {
 		!entries.contains("BCSymbolMaps/")
 	}
 
-	def "copy sticker extension support directory"() {
+	def "include sticker extension support folder for AppStore IPA"() {
 		given:
-		mockExampleApp(false, false)
+		mockExampleApp(false, false, false)
 		applicationDummy.createPlugin(Extension.sticker)
 		project.xcodebuild.signing.addMobileProvisionFile(applicationDummy.mobileProvisionFile.last())
 
@@ -558,5 +558,19 @@ class PackageTaskSpecification extends Specification {
 
 		then:
 		entries.contains("MessagesApplicationExtensionSupport/MessagesApplicationExtensionStub")
+	}
+
+	def "don't include sticker extension support folder for AdHoc IPA"() {
+		given:
+		mockExampleApp(false, false)
+		applicationDummy.createPlugin(Extension.sticker)
+		project.xcodebuild.signing.addMobileProvisionFile(applicationDummy.mobileProvisionFile.last())
+
+		when:
+		packageTask.packageApplication()
+		List<String> entries = ipaEntries()
+
+		then:
+		!entries.contains("MessagesApplicationExtensionSupport/MessagesApplicationExtensionStub")
 	}
 }

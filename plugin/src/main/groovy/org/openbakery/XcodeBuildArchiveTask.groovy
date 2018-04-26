@@ -18,6 +18,7 @@ package org.openbakery
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
@@ -170,40 +171,45 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		FileUtils.writeStringToFile(infoPlist, content.toString())
 	}
 
-
-	def createFrameworks(def archiveDirectory, Xcodebuild 	xcodebuild) {
-
-		File frameworksPath = new File(archiveDirectory, "Products/Applications/" + parameters.applicationBundleName + "/Frameworks")
+	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle, boolean bitcode) {
+        File frameworksPath = appBundle.frameworksPath
 		if (frameworksPath.exists()) {
-
-
 			def libNames = []
 			frameworksPath.eachFile() {
 				libNames.add(it.getName())
 			}
 
-			logger.debug("swiftlibs to add: {}", libNames);
+			logger.debug("swiftlibs to add: {}", libNames)
 
-			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/iphoneos")
+			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
 
 			swiftLibs.eachFile() {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
 				if (libNames.contains(it.name)) {
-					copy(it, getSwiftSupportDirectory())
+					copy(it, getSwiftSupportDirectory(appBundle.platformName))
+
+					if (!bitcode) {
+						File destination = new File(frameworksPath, it.getName())
+						commandRunner.run(["/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath])
+					}
 				}
 			}
 		}
 
+		ApplicationBundle watchAppBundle = appBundle.watchAppBundle
+		if (watchAppBundle != null) {
+			createFrameworks(xcodebuild, watchAppBundle, true)
+		}
 	}
 
-	def getSwiftSupportDirectory() {
+	def getSwiftSupportDirectory(String platformName) {
 		def swiftSupportPath = "SwiftSupport"
 
 		if (xcode.version.major > 6) {
-			swiftSupportPath += "/iphoneos"
+			swiftSupportPath += "/$platformName"
 		}
 
-		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath);
+		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath)
 		if (!swiftSupportDirectory.exists()) {
 			swiftSupportDirectory.mkdirs()
 		}
@@ -308,7 +314,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 	}
 
-	def createExtensionSupportDirectory(File bundle, Xcodebuild xcodebuild) {
+	def createExtensionSupportDirectory(File bundle, Xcodebuild xcodebuild, File archiveDirectory) {
 		String extensionIdentifier = getValueFromBundleInfoPlist(bundle, "NSExtension:NSExtensionPointIdentifier")
 		if (extensionIdentifier == null) {
 			logger.debug("No support directory created, because no extension identifier found in bundle {}", bundle)
@@ -323,10 +329,18 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		switch (extension) {
 			case Extension.sticker:
-				File supportDirectory = new File(getArchiveDirectory(), "MessagesApplicationExtensionSupport")
+				File supportDirectory = new File(archiveDirectory, "MessagesApplicationExtensionSupport")
 				if (supportDirectory.mkdirs()) {
 					File stub = new File(xcodebuild.getPlatformDirectory(), "/Library/Application Support/MessagesApplicationExtensionStub/MessagesApplicationExtensionStub")
 					copy(stub, supportDirectory)
+				}
+				break
+			case Extension.watch:
+				File supportDirectory = new File(archiveDirectory, "WatchKitSupport2")
+                if (supportDirectory.mkdirs()) {
+                    File platformDirectory = new File(xcodebuild.getWatchOSPlatformDirectory())
+                    File stub = new File(platformDirectory, "Developer/SDKs/WatchOS.sdk/Library/Application Support/WatchKit/WK")
+                    copy(stub, supportDirectory)
 				}
 				break
 			default:
@@ -369,8 +383,11 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 		// create xcarchive
+		File archiveDirectory = getArchiveDirectory()
+		File applicationsDirectory = getApplicationsDirectory()
+
 		// copy application bundle
-		copy(parameters.applicationBundle, getApplicationsDirectory())
+		copy(parameters.applicationBundle, applicationsDirectory)
 
 		File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
 		if (onDemandResources.exists()) {
@@ -378,35 +395,67 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		// copy onDemandResources
-
-		def dSymDirectory = new File(getArchiveDirectory(), "dSYMs")
+		def dSymDirectory = new File(archiveDirectory, "dSYMs")
 		dSymDirectory.mkdirs()
 		copyDsyms(parameters.outputPath, dSymDirectory)
+        if (parameters.watchOutputPath.exists()) {
+            copyDsyms(parameters.watchOutputPath, dSymDirectory)
+        }
+
+		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 
 		List<File> appBundles = getAppBundles(parameters.outputPath)
 		for (File bundle : appBundles) {
 			createEntitlements(bundle)
-			createExtensionSupportDirectory(bundle, xcodebuild)
+			createExtensionSupportDirectory(bundle, xcodebuild, archiveDirectory)
 		}
 
-		File applicationsDirectory = getApplicationsDirectory()
-		File archiveDirectory = getArchiveDirectory()
+		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)
+
 		createInfoPlist(archiveDirectory)
-		createFrameworks(archiveDirectory, xcodebuild)
+		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
 		deleteFrameworksInExtension(applicationsDirectory)
 		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
-			File applicationFolder = new File(getArchiveDirectory(), "Products/Applications/" + parameters.applicationBundleName)
 			convertInfoPlistToBinary(applicationFolder)
+            copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
 		}
 
 		logger.debug("create archive done")
 	}
 
-	def copyBCSymbolMaps(File archiveDirectory) {
+    private void copyWatchFrameworks(ApplicationBundle archiveAppBundle, File watchOutputPath) {
+        ApplicationBundle watchAppBundle = archiveAppBundle.watchAppBundle
+        if (watchAppBundle != null && watchOutputPath.exists()) {
+            watchAppBundle.getAppExtensionBundles()
+                    .collect { new File(it, "Frameworks") }
+                    .findAll { it.exists() }
+                    .each { frameworksPath ->
+                        FileUtils.cleanDirectory(frameworksPath)
+
+                        watchOutputPath.listFiles()
+                                .findAll { it.toString().endsWith(".framework") }
+                                .each { framework ->
+                                    cleanCopyFramework(framework, frameworksPath)
+                                }
+                    }
+        }
+    }
+
+    def cleanCopyFramework(File source, destination) {
+		ant.exec(failonerror: "true", executable: 'rsync') {
+			arg(value: '-r')
+			arg(line: '--exclude .DS_Store --exclude CVS --exclude .svn --exclude .git --exclude .hg --exclude Headers --exclude PrivateHeaders --exclude Modules')
+			arg(value: '--copy-links')
+			arg(value: source.absolutePath)
+			arg(value: destination.absolutePath)
+		}
+	}
+
+    def copyBCSymbolMaps(File archiveDirectory) {
 		if (!parameters.bitcode) {
 			logger.debug("bitcode is not activated, so to not create BCSymbolMaps")
 			return

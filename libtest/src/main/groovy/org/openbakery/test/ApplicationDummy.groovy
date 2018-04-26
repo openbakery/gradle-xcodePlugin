@@ -2,6 +2,7 @@ package org.openbakery.test
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
+import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Extension
@@ -28,7 +29,7 @@ class ApplicationDummy {
 		FileUtils.deleteDirectory(directory)
 	}
 
-	File create(boolean adHoc = true, boolean includeProvisioning = true) {
+	File create(ProvisioningProfileType profileType) {
 		// create dummy app
 		File appDirectory = applicationBundle
 		if (!appDirectory.exists()) {
@@ -48,14 +49,31 @@ class ApplicationDummy {
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
-		if (includeProvisioning) {
-			if (adHoc) {
+		switch (profileType) {
+			case ProvisioningProfileType.Development:
+				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Development.mobileprovision"))
+				break
+            case ProvisioningProfileType.AdHoc:
 				mobileProvisionFile.add(new File("../libtest/src/main/Resource/test.mobileprovision"))
-			} else {
+				break
+			case ProvisioningProfileType.Enterprise:
+				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Enterprise.mobileprovision"))
+				break
+			case ProvisioningProfileType.AppStore:
 				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Appstore.mobileprovision"))
-			}
+				break
 		}
+
 		return appDirectory
+	}
+
+	File create(boolean adHoc = true, boolean includeProvisioning = true) {
+		if (!includeProvisioning) {
+			return create(null)
+		}
+
+		ProvisioningProfileType profileType = adHoc ? ProvisioningProfileType.AdHoc : ProvisioningProfileType.AppStore
+		return create(profileType)
 	}
 
 	File createPlugin(Extension extension = Extension.today) {

@@ -38,6 +38,28 @@ class TestHelper {
 		return appDirectory
 	}
 
+	static File createWatchOSOutput(File destinationDirectory, String name) {
+		File appDirectory = new File(destinationDirectory,  "${name}.app")
+		appDirectory.mkdirs()
+
+		File app = new File(appDirectory, "Watch-Example")
+		FileUtils.writeStringToFile(app, "dummy")
+
+		File framework = new File(destinationDirectory, "Library.framework")
+		framework.mkdirs()
+
+		File binary = new File(framework,"Binary")
+		FileUtils.writeStringToFile(binary, "foo")
+
+		File headers = new File(framework, "Headers")
+		headers.mkdirs()
+
+		File modules = new File(framework, "Modules")
+		modules.mkdirs()
+
+		return appDirectory
+	}
+
 	static def createFile(File file, String content) {
 		FileUtils.writeStringToFile(file, content)
 	}

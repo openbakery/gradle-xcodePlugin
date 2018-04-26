@@ -10,6 +10,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
@@ -72,7 +73,7 @@ class PackageTask extends AbstractDistributeTask {
 			copy(bcSymbolsMaps, applicationFolder.parentFile)
 		}
 
-		enumerateExtensionSupportDirectories(getArchiveDirectory()) { File supportDirectory ->
+		enumerateExtensionSupportFolders(getArchiveDirectory()) { File supportDirectory ->
 			copy(supportDirectory, applicationFolder.parentFile)
 		}
 
@@ -110,7 +111,6 @@ class PackageTask extends AbstractDistributeTask {
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-				removeFrameworkFromExtensions(bundle)
 				removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
 			}
@@ -127,38 +127,27 @@ class PackageTask extends AbstractDistributeTask {
 		File appBundle = appBundles.last()
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 
-			boolean isAdHoc = isAdHoc(appBundle)
-			createIpa(applicationFolder, !isAdHoc)
+			ProvisioningProfileType profileType = getProvisioningProfileType(appBundle)
+			boolean includeSupportFolders = profileType == ProvisioningProfileType.AppStore
+			createIpa(applicationFolder, includeSupportFolders)
 		} else {
 			createPackage(appBundle)
 		}
 
 	}
 
-
-
-
-	boolean isAdHoc(File appBundle) {
+	ProvisioningProfileType getProvisioningProfileType(File appBundle) {
 		File provisionFile = getProvisionFileForBundle(appBundle)
 		if (provisionFile == null) {
-			return false
+			return null
 		}
+
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
-		return reader.isAdHoc()
+		return reader.getProfileType()
 	}
 
-	def removeFrameworkFromExtensions(File bundle) {
-		// appex extensions should not contain extensions
-		if (FilenameUtils.getExtension(bundle.toString()).equalsIgnoreCase("appex"))  {
-			File frameworksPath = new File(bundle, "Frameworks")
-			if (frameworksPath.exists()) {
-				FileUtils.deleteDirectory(frameworksPath)
-			}
-		}
 
-	}
-
-	def removeUnneededDylibsFromBundle(File bundle) {
+    def removeUnneededDylibsFromBundle(File bundle) {
 		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
 			libswiftRemoteMirror.delete()
@@ -187,7 +176,7 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 
-	private void createZipPackage(File packagePath, String extension, boolean includeSwiftSupport) {
+	private void createZipPackage(File packagePath, String extension, boolean includeSupportFolders) {
 		File packageBundle = new File(outputPath, getIpaFileName() + "." + extension)
 		if (!packageBundle.parentFile.exists()) {
 			packageBundle.parentFile.mkdirs()
@@ -196,10 +185,14 @@ class PackageTask extends AbstractDistributeTask {
 		List<File> filesToZip = []
 		filesToZip << packagePath
 
-		if (includeSwiftSupport) {
-			File swiftSupportPath =  addSwiftSupport(packagePath, applicationBundleName)
+		if (includeSupportFolders) {
+			File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
 			if (swiftSupportPath != null) {
 				filesToZip << swiftSupportPath
+			}
+
+			enumerateExtensionSupportFolders(packagePath.getParentFile()) { File supportFolder ->
+				filesToZip << supportFolder
 			}
 		}
 
@@ -208,26 +201,22 @@ class PackageTask extends AbstractDistributeTask {
 			filesToZip << bcSymbolMapsPath
 		}
 
-		enumerateExtensionSupportDirectories(packagePath.getParentFile()) { File supportDirectory ->
-			filesToZip << supportDirectory
-		}
-
 		createZip(packageBundle, packagePath.getParentFile(), packagePath, *filesToZip)
 	}
 
-	private void enumerateExtensionSupportDirectories(File parentDirectory, Closure closure) {
-		def directoryNames = ["MessagesApplicationExtensionSupport"]
+	private void enumerateExtensionSupportFolders(File parentFolder, Closure closure) {
+		def folderNames = ["MessagesApplicationExtensionSupport", "WatchKitSupport2"]
 
-		for (String name in directoryNames) {
-			File supportDirectory = new File(parentDirectory, name)
-			if (supportDirectory.exists()) {
-				closure(supportDirectory)
+		for (String name in folderNames) {
+			File supportFolder = new File(parentFolder, name)
+			if (supportFolder.exists()) {
+				closure(supportFolder)
 			}
 		}
 	}
 
-	private void createIpa(File payloadPath, boolean addSwiftSupport) {
-		createZipPackage(payloadPath, "ipa", addSwiftSupport)
+	private void createIpa(File payloadPath, boolean includeSupportFolders) {
+		createZipPackage(payloadPath, "ipa", includeSupportFolders)
 	}
 
 	private void createPackage(File packagePath) {
