@@ -283,51 +283,57 @@ class Xcodebuild {
 
 
 	String getToolchainDirectory() {
-			String buildSetting = getBuildSetting("TOOLCHAIN_DIR")
-			if (buildSetting != null) {
-				return buildSetting
-			}
-			return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+		String buildSetting = getBuildSetting("TOOLCHAIN_DIR")
+		if (buildSetting != null) {
+			return buildSetting
 		}
+		return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+	}
 
 	String getPlatformDirectory() {
 		return getBuildSetting("PLATFORM_DIR")
 	}
 
-		String loadBuildSettings() {
-			def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
+	String getWatchOSPlatformDirectory() {
+		File platformsDirectory = new File(platformDirectory).getParentFile()
+		File platformDirectory = new File(platformsDirectory, "WatchOS.platform")
+		return platformDirectory.getAbsolutePath()
+	}
 
-			if (parameters.scheme != null && parameters.workspace != null) {
-				commandList.add("-scheme");
-				commandList.add(parameters.scheme)
-				commandList.add("-workspace")
-				commandList.add(parameters.workspace)
-			}
+	String loadBuildSettings() {
+		def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
 
-			return commandRunner.runWithResult(this.projectDirectory.absolutePath, commandList)
+		if (parameters.scheme != null && parameters.workspace != null) {
+			commandList.add("-scheme");
+			commandList.add(parameters.scheme)
+			commandList.add("-workspace")
+			commandList.add(parameters.workspace)
 		}
 
-		private String getBuildSetting(String key) {
-			if (buildSettings == null) {
-				buildSettings = new HashMap<>()
-				String[] buildSettingsData = loadBuildSettings().split("\n")
-				for (line in buildSettingsData) {
-					int index = line.indexOf("=")
-					if (index > 0) {
-						String settingsKey = line.substring(0, index).trim()
-						String settingsValue = line.substring(index + 1, line.length()).trim()
-						buildSettings.put(settingsKey, settingsValue)
-					}
+		return commandRunner.runWithResult(this.projectDirectory.absolutePath, commandList)
+	}
+
+	private String getBuildSetting(String key) {
+		if (buildSettings == null) {
+			buildSettings = new HashMap<>()
+			String[] buildSettingsData = loadBuildSettings().split("\n")
+			for (line in buildSettingsData) {
+				int index = line.indexOf("=")
+				if (index > 0) {
+					String settingsKey = line.substring(0, index).trim()
+					String settingsValue = line.substring(index + 1, line.length()).trim()
+					buildSettings.put(settingsKey, settingsValue)
 				}
 			}
-			return buildSettings.get(key)
 		}
+		return buildSettings.get(key)
+	}
 
 	@Override
 	public String toString() {
 		return "Xcodebuild{" +
-						"xcodePath='" + xcodePath + '\'' +
-						parameters +
-						'}'
+				"xcodePath='" + xcodePath + '\'' +
+				parameters +
+				'}'
 	}
 }

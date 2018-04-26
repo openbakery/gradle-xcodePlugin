@@ -60,6 +60,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 
 		appDirectory = TestHelper.createDummyApp(buildOutputDirectory, "Example")
+
 		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
 	}
 
@@ -168,8 +169,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
 	}
 
-	def setupProjectWithWatchApp(String name, String platformDirectory) {
-		File stubDirectory = new File(platformDirectory, "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit")
+	def setupProjectWithWatchApp(String name, String watchOSPlatformDirectory) {
+        // stub WatchKit
+		File stubDirectory = new File(watchOSPlatformDirectory, "Developer/SDKs/WatchOS.sdk/Library/Application Support/WatchKit")
 		stubDirectory.mkdirs()
 		File stub = new File(stubDirectory, "WK")
 		FileUtils.writeStringToFile(stub, "fixture")
@@ -182,6 +184,12 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
 		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
 		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
+
+        File framework = new File(appDirectory, "PlugIns/Watch.appex/Frameworks/Library.framework")
+        framework.mkdirs()
+
+        File binary = new File(framework,"Binary")
+        FileUtils.writeStringToFile(binary, "bar")
 
 		return appDirectory
 	}
@@ -738,7 +746,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		Xcodebuild xcodebuild = createXcodeBuild("9")
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 
-		setupProjectWithWatchApp("Example", xcodebuild.platformDirectory)
+		setupProjectWithWatchApp("Example", xcodebuild.watchOSPlatformDirectory)
 
 		when:
 		xcodeBuildArchiveTask.archive()
@@ -759,7 +767,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 		project.xcodebuild.bitcode = false
 
-		def watchAppDirectory = setupProjectWithWatchApp("Example", xcodebuild.platformDirectory)
+		def watchAppDirectory = setupProjectWithWatchApp("Example", xcodebuild.watchOSPlatformDirectory)
 		mockSwiftLibs(xcodebuild, watchAppDirectory)
 
 		File watchosLibswiftWatchKit = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Watch/Example.app/Frameworks/libswiftWatchKit.dylib")
@@ -787,5 +795,29 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		iphoneosSupportLibswiftWatchKit.exists()
 		FileUtils.readFileToString(iphoneosSupportLibswiftWatchKit).equals("bar")
 		1 * commandRunner.run(iphoneosBitcodeStrip)
+	}
+
+	def "copy frameworks into watch appex"() {
+		given:
+		Xcodebuild xcodebuild = createXcodeBuild("9")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		project.xcodebuild.bitcode = false
+
+        def watchosBuildDir = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-watchos")
+        TestHelper.createWatchOSOutput(watchosBuildDir, "Watch")
+
+		setupProjectWithWatchApp("Example", xcodebuild.watchOSPlatformDirectory)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+        File frameworkPath = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Watch/Example.app/Plugins/Watch.appex/Frameworks/Library.framework")
+		File binaryPath = new File(frameworkPath, "Binary")
+
+        binaryPath.exists()
+        FileUtils.readFileToString(binaryPath).equals("foo")
+        !new File(frameworkPath, "Headers").exists()
+        !new File(frameworkPath, "Modules").exists()
 	}
 }

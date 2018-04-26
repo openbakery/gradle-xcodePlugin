@@ -93,6 +93,17 @@ public class ApplicationBundle {
 		}
 	}
 
+	File getPlugInsPath() {
+		switch (type) {
+			case Type.macOS:
+			case Type.iOS:
+			case Type.watchOS:
+				return new File(applicationPath, "PlugIns")
+			default:
+				return null
+		}
+	}
+
 	ApplicationBundle getWatchAppBundle() {
 		if (type != Type.iOS) {
 			return null
@@ -111,4 +122,23 @@ public class ApplicationBundle {
 
 		return new ApplicationBundle(watchAppBundle, Type.watchOS, simulator)
 	}
+
+    ArrayList<File> getAppExtensionBundles() {
+        File pluginsDirectory
+        File appBundle = this.applicationPath
+
+        if (this.type == Type.iOS || this.type == Type.watchOS) {
+            pluginsDirectory = new File(appBundle, "PlugIns")
+        }	else if (this.type == Type.macOS) {
+            pluginsDirectory = new File(appBundle, "Contents/PlugIns")
+        } else {
+            return []
+        }
+
+        if (pluginsDirectory.exists()) {
+            return pluginsDirectory.listFiles().findAll { it.isDirectory() && it.name.endsWith(".appex") }
+        }
+
+        return []
+    }
 }

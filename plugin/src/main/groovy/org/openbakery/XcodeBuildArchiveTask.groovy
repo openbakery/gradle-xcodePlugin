@@ -338,8 +338,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			case Extension.watch:
 				File supportDirectory = new File(archiveDirectory, "WatchKitSupport2")
                 if (supportDirectory.mkdirs()) {
-					File stub = new File(xcodebuild.getPlatformDirectory(), "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit/WK")
-					copy(stub, supportDirectory)
+                    File platformDirectory = new File(xcodebuild.getWatchOSPlatformDirectory())
+                    File stub = new File(platformDirectory, "Developer/SDKs/WatchOS.sdk/Library/Application Support/WatchKit/WK")
+                    copy(stub, supportDirectory)
 				}
 				break
 			default:
@@ -397,6 +398,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		def dSymDirectory = new File(archiveDirectory, "dSYMs")
 		dSymDirectory.mkdirs()
 		copyDsyms(parameters.outputPath, dSymDirectory)
+        if (parameters.watchOutputPath.exists()) {
+            copyDsyms(parameters.watchOutputPath, dSymDirectory)
+        }
 
 		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 
@@ -412,17 +416,46 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
-		// deleteFrameworksInExtension(applicationsDirectory)
+		deleteFrameworksInExtension(applicationsDirectory)
 		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
 			convertInfoPlistToBinary(applicationFolder)
+            copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
 		}
 
 		logger.debug("create archive done")
 	}
 
-	def copyBCSymbolMaps(File archiveDirectory) {
+    private void copyWatchFrameworks(ApplicationBundle archiveAppBundle, File watchOutputPath) {
+        ApplicationBundle watchAppBundle = archiveAppBundle.watchAppBundle
+        if (watchAppBundle != null && watchOutputPath.exists()) {
+            watchAppBundle.getAppExtensionBundles()
+                    .collect { new File(it, "Frameworks") }
+                    .findAll { it.exists() }
+                    .each { frameworksPath ->
+                        FileUtils.cleanDirectory(frameworksPath)
+
+                        watchOutputPath.listFiles()
+                                .findAll { it.toString().endsWith(".framework") }
+                                .each { framework ->
+                                    cleanCopyFramework(framework, frameworksPath)
+                                }
+                    }
+        }
+    }
+
+    def cleanCopyFramework(File source, destination) {
+		ant.exec(failonerror: "true", executable: 'rsync') {
+			arg(value: '-r')
+			arg(line: '--exclude .DS_Store --exclude CVS --exclude .svn --exclude .git --exclude .hg --exclude Headers --exclude PrivateHeaders --exclude Modules')
+			arg(value: '--copy-links')
+			arg(value: source.absolutePath)
+			arg(value: destination.absolutePath)
+		}
+	}
+
+    def copyBCSymbolMaps(File archiveDirectory) {
 		if (!parameters.bitcode) {
 			logger.debug("bitcode is not activated, so to not create BCSymbolMaps")
 			return
