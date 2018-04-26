@@ -286,7 +286,7 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
 	}
 
-	def "xcodebuild has carthage dependency"() {
+	def "xcodebuild has carthage bootstrap dependency"() {
 		when:
 		File projectDir = new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -298,13 +298,18 @@ class XcodePluginSpecification extends Specification {
 
 		then:
 
-		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME))
+		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME))
 	}
 
 
 	def "has carthage clean task"() {
 		expect:
 		project.tasks.findByName('carthageClean') instanceof CarthageCleanTask
+	}
+
+	def "has carthage update task"() {
+		expect:
+		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
 	}
 
 	def "clean has carthage clean dependency"() {

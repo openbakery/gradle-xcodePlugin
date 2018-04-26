@@ -24,7 +24,7 @@ class PackageTaskSpecification extends Specification {
 
 
 	Project project
-	PackageTask packageTask;
+	PackageTask packageTask
 
 	ApplicationDummy applicationDummy
 	CommandRunner commandRunner = Mock(CommandRunner)
@@ -441,8 +441,6 @@ class PackageTaskSpecification extends Specification {
 		when:
 		def dependsOn = packageTask.getDependsOn()
 		then:
-		dependsOn.size() == 3
-
 		dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
 		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
@@ -450,9 +448,10 @@ class PackageTaskSpecification extends Specification {
 
 	def "finalized"() {
 		when:
-		def finalized = packageTask.finalizedBy.values
+		def finalized = packageTask.finalizedBy.getDependencies()
+		def keychainRemoveTask = project.getTasks().getByPath(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 		then:
-		finalized.contains(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+		finalized.contains(keychainRemoveTask)
 	}
 
 

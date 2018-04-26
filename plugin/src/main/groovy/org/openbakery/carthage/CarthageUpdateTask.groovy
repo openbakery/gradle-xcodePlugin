@@ -2,52 +2,31 @@ package org.openbakery.carthage
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutputFactory
-import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 
-class CarthageUpdateTask extends AbstractXcodeTask {
+class CarthageUpdateTask extends AbstractCarthageTaskBase {
 
-
-	public CarthageUpdateTask() {
+	CarthageUpdateTask() {
 		super()
-		setDescription "Installs the carthage dependencies for the given project"
+		setDescription "Update and rebuild the Carthage project dependencies"
 	}
 
 	@TaskAction
 	void update() {
+		if (hasCartFile()) {
+			logger.info('Update Carthage for platform ' + carthagePlatformName)
 
-		File carthageDirectory = new File(project.projectDir, "Carthage")
-		if (carthageDirectory.exists()) {
-			return
+			def output = services.get(StyledTextOutputFactory)
+					.create(CarthageUpdateTask)
+
+			commandRunner.run(
+					project.projectDir.absolutePath,
+					[getCarthageCommand(),
+					 ACTION_UPDATE,
+					 ARG_PLATFORM,
+					 carthagePlatformName,
+					 ARG_CACHE_BUILDS],
+					new ConsoleOutputAppender(output))
 		}
-
-		def carthageCommand = getCarthageCommand()
-
-		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		commandRunner.run(project.projectDir.absolutePath, [carthageCommand, "update"], new ConsoleOutputAppender(output))
-
-	}
-
-	String getCarthageCommand() {
-		try {
-			return commandRunner.runWithResult("which", "carthage")
-		} catch (CommandRunnerException) {
-			// ignore, because try again with full path below
-
-		}
-
-		try {
-			def fullPath = "/usr/local/bin/carthage"
-			commandRunner.runWithResult("ls", fullPath)
-			return fullPath
-		} catch (CommandRunnerException) {
-			// ignore, because blow an exception is thrown
-		}
-		throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
-	}
-
-	boolean hasCartfile() {
-		File cartfile = new File(project.projectDir, "Cartfile")
-		return cartfile.exists()
 	}
 }

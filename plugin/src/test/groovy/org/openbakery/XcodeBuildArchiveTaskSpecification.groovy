@@ -33,7 +33,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	PlistHelperStub plistHelper = new PlistHelperStub()
 
 	def setup() {
-
 		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
 		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -209,7 +208,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		when:
 		def dependsOn = xcodeBuildArchiveTask.getDependsOn()
 		then:
-		dependsOn.size() == 3
+		dependsOn.size() == 2
 
 		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
