@@ -6,56 +6,59 @@ import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Xcodebuild
 
 @CompileStatic
+@CacheableTask
 class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
-    public static final String NAME = "archive"
+	public static final String TASK_NAME = "archive"
 
-    XcodeBuildArchiveTaskIosAndTvOS() {
-        super()
+	XcodeBuildArchiveTaskIosAndTvOS() {
+		super()
 
-        dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
-        dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
-        dependsOn(PrepareXcodeArchivingTask.NAME)
+		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
+		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		dependsOn(PrepareXcodeArchivingTask.NAME)
 
-        this.description = "Prepare the app bundle that it can be archive"
-    }
+		this.description = "Prepare the app bundle that it can be archive"
+	}
 
-    @InputFile
-    File getXcConfigFile() {
-        return new File(PathHelper.resolveArchiveFolder(project),
-                PrepareXcodeArchivingTask.FILE_NAME)
-    }
+	@InputFile
+	File getXcConfigFile() {
+		return new File(PathHelper.resolveArchiveFolder(project),
+				PrepareXcodeArchivingTask.FILE_NAME)
+	}
 
-    @Input
-    String getScheme() {
-        return getXcodeExtension().scheme
-    }
+	@Input
+	String getScheme() {
+		return getXcodeExtension().scheme
+	}
 
-    @OutputFile
-    File getOutputTextFile() {
-        return new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
-    }
+	@OutputFile
+	File getOutputTextFile() {
+		return new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
+	}
 
-    @OutputDirectory
-    File getOutputDirectory() {
-        File archiveDirectory = new File(PathHelper.resolveArchiveFolder(project),
-                getScheme() + ".xcarchive")
-        archiveDirectory.mkdirs()
-        return archiveDirectory
-    }
+	@OutputDirectory
+	File getOutputDirectory() {
+		File archiveDirectory = PathHelper.resolveArchiveFolder(project)
+		archiveDirectory.mkdirs()
+		return archiveDirectory
+	}
 
-    @TaskAction
-    private void archive() {
-        Xcodebuild xcodeBuild = new Xcodebuild(project.projectDir,
-                commandRunner,
-                xcode,
-                parameters,
-                getDestinations())
+	@TaskAction
+	private void archive() {
+		Xcodebuild xcodeBuild = new Xcodebuild(project.projectDir,
+				commandRunner,
+				xcode,
+				parameters,
+				getDestinations())
 
-        commandRunner.setOutputFile(getOutputTextFile())
+		commandRunner.setOutputFile(getOutputTextFile())
 
-        xcodeBuild.archive(getScheme(),
-                getOutputDirectory(),
-                getXcConfigFile())
-    }
+		File outputFile = new File(getOutputDirectory(), getScheme() + ".xcarchive")
+		outputFile.mkdir()
+
+		xcodeBuild.archive(getScheme(),
+				outputFile,
+				getXcConfigFile())
+	}
 }

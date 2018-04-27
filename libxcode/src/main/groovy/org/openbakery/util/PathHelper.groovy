@@ -12,6 +12,7 @@ class PathHelper {
 	public static final String IPHONE_OS = "iphoneos"
 
 	private static final String FOLDER_ARCHIVE = "archive"
+	private static final String FOLDER_PACKAGE = "package"
 
 	static File resolvePath(Type type,
 							boolean simulator,
@@ -67,14 +68,18 @@ class PathHelper {
 				configuration)
 	}
 
-	static File resolveArchiveFolder(Project project) {
-		return new File(project.getBuildDir(), FOLDER_ARCHIVE)
-	}
-
 	private static File resolveSymRoot(File symRoot,
 									   String configuration,
 									   String destination) {
 		return new File(symRoot,
 				"${configuration}-${destination}")
+	}
+
+	static File resolveArchiveFolder(Project project) {
+		return new File(project.getBuildDir(), FOLDER_ARCHIVE)
+	}
+
+	static File resolvePackageFolder(Project project) {
+		return new File(project.getBuildDir(), FOLDER_PACKAGE)
 	}
 }

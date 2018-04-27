@@ -1,14 +1,13 @@
 package org.openbakery
 
+import groovy.transform.CompileStatic
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.PathHelper
 
-import java.util.regex.Pattern
-
-//@CompileStatic
+@CompileStatic
 class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
 	private ProvisioningProfileReader reader
@@ -21,7 +20,6 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 	private static final String KEY_DEVELOPMENT_TEAM = "DEVELOPMENT_TEAM"
 	private static final String KEY_PROVISIONING_PROFILE_ID = "PROVISIONING_PROFILE"
 	private static final String KEY_PROVISIONING_PROFILE_SPEC = "PROVISIONING_PROFILE_SPECIFIER"
-	private static final Pattern PATTERN = ~/^\s{4}friendlyName:\s(?<friendlyName>[^\n]+)/
 
 	PrepareXcodeArchivingTask() {
 		super()
@@ -34,23 +32,15 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 	}
 
 	@Input
+	@Override
 	List<String> getProvisioningUriList() {
-		return getXcodeExtension().signing.mobileProvisionURI
+		return super.getProvisioningUriList()
 	}
 
 	@Input
+	@Override
 	String getBundleIdentifier() {
-		return getXcodeExtension().buildConfiguration.bundleIdentifier
-	}
-
-	Optional<File> getProvisioningFile() {
-		List<File> provisioningList = getProvisioningUriList()
-				.collect { it -> new File(new URI(it)) }
-
-		return Optional.ofNullable(ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
-				provisioningList,
-				commandRunner,
-				plistHelper))
+		return super.getBundleIdentifier()
 	}
 
 	@OutputFile
@@ -60,10 +50,6 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	void generate() {
-		computeXcConfigFile()
-	}
-
-	private void computeXcConfigFile() {
 		getXcConfigFile().text = ""
 
 		computeProvisioningFile(getProvisioningFile()
@@ -85,29 +71,8 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		append(KEY_PROVISIONING_PROFILE_SPEC, reader.getName())
 	}
 
-	private Optional<String> getCodeSignIdentity() {
-		return Optional.ofNullable(getKeyContent()
-				.split(System.getProperty("line.separator"))
-				.find { PATTERN.matcher(it).matches() })
-				.map { PATTERN.matcher(it) }
-				.filter { it.matches() }
-				.map { it.group("friendlyName") }
-	}
-
 	private void append(String key, String value) {
 		getXcConfigFile()
 				.append(System.getProperty("line.separator") + key + " = " + value)
-	}
-
-	private String getKeyContent() {
-		File file = new File(URI.create(getXcodeExtension().signing.certificateURI))
-		assert file.exists()
-		return commandRunner.runWithResult(["openssl",
-											"pkcs12",
-											"-nokeys",
-											"-in",
-											file.absolutePath,
-											"-passin",
-											"pass:" + getXcodeExtension().signing.certificatePassword])
 	}
 }

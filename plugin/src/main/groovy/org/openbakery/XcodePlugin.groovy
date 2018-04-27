@@ -25,8 +25,8 @@ import org.gradle.api.tasks.testing.Test
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
-import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
+import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
@@ -45,28 +45,14 @@ import org.openbakery.deploygate.DeployGateUploadTask
 import org.openbakery.hockeyapp.HockeyAppCleanTask
 import org.openbakery.hockeyapp.HockeyAppPluginExtension
 import org.openbakery.hockeyapp.HockeyAppUploadTask
-import org.openbakery.hockeykit.HockeyKitArchiveTask
-import org.openbakery.hockeykit.HockeyKitCleanTask
-import org.openbakery.hockeykit.HockeyKitImageTask
-import org.openbakery.hockeykit.HockeyKitManifestTask
-import org.openbakery.hockeykit.HockeyKitPluginExtension
-import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
+import org.openbakery.hockeykit.*
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
-import org.openbakery.packaging.ReleaseNotesTask
-import org.openbakery.signing.KeychainCleanupTask
-import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.packaging.PackageTask
-import org.openbakery.signing.KeychainRemoveFromSearchListTask
-import org.openbakery.signing.ProvisioningCleanupTask
-import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.simulators.SimulatorKillTask
-import org.openbakery.simulators.SimulatorsCleanTask
-import org.openbakery.simulators.SimulatorsCreateTask
-import org.openbakery.simulators.SimulatorsListTask
-import org.openbakery.simulators.SimulatorStartTask
-import org.openbakery.simulators.SimulatorRunAppTask
-import org.openbakery.simulators.SimulatorInstallAppTask
+import org.openbakery.packaging.PackageTaskIosAndTvOS
+import org.openbakery.packaging.ReleaseNotesTask
+import org.openbakery.signing.*
+import org.openbakery.simulators.*
 import org.openbakery.xcode.Type
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -483,7 +469,7 @@ class XcodePlugin implements Plugin<Project> {
 			prepareXcodeArchivingTask.setGroup(XCODE_GROUP_NAME)
 
 			XcodeBuildArchiveTaskIosAndTvOS archiveTask = project.tasks.create(
-					XcodeBuildArchiveTaskIosAndTvOS.NAME,
+					XcodeBuildArchiveTaskIosAndTvOS.TASK_NAME,
 					XcodeBuildArchiveTaskIosAndTvOS.class)
 			archiveTask.setGroup(XCODE_GROUP_NAME)
 		} else {
@@ -538,11 +524,22 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configurePackage(Project project) {
-		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
+		if (project.xcodebuild.type == Type.tvOS
+				|| project.xcodebuild.type == Type.iOS) {
+			project.task(PackageTaskIosAndTvOS.TASK_NAME,
+					type: PackageTaskIosAndTvOS,
+					group: XCODE_GROUP_NAME)
 
+		} else {
+			PackageTask packageTask = project.task(PACKAGE_TASK_NAME,
+					type: PackageTask,
+					group: XCODE_GROUP_NAME)
+
+			XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
+			packageTask.shouldRunAfter(xcodeBuildTask)
+		}
 
 		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME, type: ReleaseNotesTask, group: XCODE_GROUP_NAME)
-
 		//ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
 
 		//KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
@@ -553,8 +550,6 @@ class XcodePlugin implements Plugin<Project> {
 			keychainCleanupTask.clean()
 		}
 */
-		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
-		packageTask.shouldRunAfter(xcodeBuildTask)
 	}
 
 	private configureAppstore(Project project) {

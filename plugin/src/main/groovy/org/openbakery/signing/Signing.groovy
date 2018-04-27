@@ -13,7 +13,7 @@ class Signing {
 
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
-
+	SigningMethod method
 	String identity
 	String certificateURI
 	String certificatePassword

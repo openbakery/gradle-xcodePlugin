@@ -17,16 +17,15 @@ class PlistHelper {
 		this.commandRunner = commandRunner
 	}
 
-
 /**
-	 * Reads the value for the given key from the given plist
-	 *
-	 * @param plist
-	 * @param key
-     * @param commandRunner The commandRunner to execute commands (This is espacially needed for Unit Tests)
- 	 *
-	 * @return returns the value for the given key
-	 */
+ * Reads the value for the given key from the given plist
+ *
+ * @param plist
+ * @param key
+ * @param commandRunner The commandRunner to execute commands (This is espacially needed for Unit Tests)
+ *
+ * @return returns the value for the given key
+ */
 	def getValueFromPlist(File plist, String key) {
 
 		try {
@@ -73,6 +72,12 @@ class PlistHelper {
 
 	void addValueForPlist(File plist, String key, String value) {
 		commandForPlist(plist, "Add :" + key + " string " + value)
+	}
+
+	void addDictForPlist(File plist, String key, Map<String, String> map) {
+		commandForPlist(plist, "Add :" + key + " dict")
+		map.keySet()
+				.each { it -> addValueForPlist(plist, ":$key:$it", map.get(it)) }
 	}
 
 	void addValueForPlist(File plist, String key, Number value) {

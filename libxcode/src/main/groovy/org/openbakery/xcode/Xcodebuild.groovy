@@ -42,6 +42,19 @@ class Xcodebuild {
 		}
 	}
 
+	public void packageIpa(File archivePath,
+						   File exportPath,
+						   File exportOptionsPlist) {
+		assert archivePath != null && archivePath.exists()
+		assert exportPath != null && exportPath.exists()
+		assert exportOptionsPlist != null && exportOptionsPlist.exists()
+
+		commandRunner.run("xcodebuild", "-exportArchive",
+				"-archivePath", archivePath.absolutePath,
+				"-exportPath", exportPath.absolutePath,
+				"-exportOptionsPlist", exportOptionsPlist.absolutePath)
+	}
+
 	public void archive(String scheme,
 						File outputPath,
 						File xcconfig) {
