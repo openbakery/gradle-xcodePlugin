@@ -8,6 +8,8 @@ import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Xcodebuild
 
+import java.util.Optional
+
 @CompileStatic
 class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
@@ -31,18 +33,21 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	}
 
 	@Input
-	String getBundleIdentifier() {
-		return super.getBundleIdentifier()
+	String getOptionalBundleIdentifier() {
+		return Optional.ofNullable(super.getBundleIdentifier())
+				.orElseThrow { new IllegalArgumentException("Invalid bundle identifier") }
 	}
 
 	@Input
 	String getMethod() {
-		return getXcodeExtension().getSigning().method.getValue()
+		return Optional.ofNullable(getXcodeExtension().getSigning().method.getValue())
+				.orElseThrow { new IllegalArgumentException("Invalid signing method") }
 	}
 
 	@Input
 	String getScheme() {
-		return getXcodeExtension().scheme
+		return Optional.ofNullable(getXcodeExtension().scheme)
+				.orElseThrow { new IllegalArgumentException("Invalid signing method") }
 	}
 
 	@InputDirectory
@@ -76,7 +81,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 				.orElseThrow {
 			new IllegalArgumentException("Cannot resolve a valid provisioning " +
 					"profile for bundle identifier : " +
-					getBundleIdentifier())
+					getOptionalBundleIdentifier())
 		}, commandRunner)
 	}
 
