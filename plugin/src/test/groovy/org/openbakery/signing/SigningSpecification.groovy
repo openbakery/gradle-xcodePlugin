@@ -50,7 +50,7 @@ class SigningSpecification extends Specification {
 		"ad-hoc"      | SigningMethod.AdHoc
 		"app-store"   | SigningMethod.AppStore
 		"development" | SigningMethod.Dev
-		"enterprise"  | SigningMethod.Entreprise
+		"enterprise"  | SigningMethod.Enterprise
 	}
 
 	def "Should throw an expection when trying to parse an invalid signature method"() {

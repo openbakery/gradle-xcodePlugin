@@ -11,8 +11,10 @@ class PathHelper {
 	public static final String IPHONE_SIMULATOR = "iphonesimulator"
 	public static final String IPHONE_OS = "iphoneos"
 
+	private static final String ARCHIVE_FILE_NAME = "archive.xcconfig"
 	private static final String FOLDER_ARCHIVE = "archive"
 	private static final String FOLDER_PACKAGE = "package"
+	private static final String EXTENSION_XC_ARCHIVE = ".xcarchive"
 
 	static File resolvePath(Type type,
 							boolean simulator,
@@ -77,6 +79,15 @@ class PathHelper {
 
 	static File resolveArchiveFolder(Project project) {
 		return new File(project.getBuildDir(), FOLDER_ARCHIVE)
+	}
+
+	static File resolveArchiveFile(Project project,
+								   String scheme) {
+		return new File(resolveArchiveFolder(project), scheme + EXTENSION_XC_ARCHIVE)
+	}
+
+	static File resolveXcConfigFile(Project project) {
+		return new File(resolveArchiveFolder(project), ARCHIVE_FILE_NAME)
 	}
 
 	static File resolvePackageFolder(Project project) {

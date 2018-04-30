@@ -13,7 +13,6 @@ class Signing {
 
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
-	SigningMethod method
 	String identity
 	String certificateURI
 	String certificatePassword
@@ -39,6 +38,7 @@ class Signing {
 	Object mobileProvisionDestinationRoot
 	List<File> mobileProvisionFile = new ArrayList<File>()
 
+	private SigningMethod method
 
 	public Signing(Project project) {
 		this.project = project;
@@ -71,6 +71,10 @@ class Signing {
 	public void setMethod(String method) {
 		this.method = SigningMethod.fromString(method)
 				.orElseThrow { new IllegalArgumentException("Method : $method is not a valid export method") }
+	}
+
+	SigningMethod getMethod() {
+		return method
 	}
 
 	File getSigningDestinationRoot() {

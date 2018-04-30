@@ -57,16 +57,18 @@ class Xcodebuild {
 
 	public void archive(String scheme,
 						File outputPath,
-						File xcconfig) {
+						File xcConfig) {
+		outputPath.mkdirs()
+
 		assert scheme != null
-		assert outputPath.exists() && outputPath.isDirectory()
-		assert xcconfig.exists() && !xcconfig.isDirectory()
+		assert outputPath.isDirectory()
+		assert xcConfig.exists() && !xcConfig.isDirectory()
 
 		commandRunner.run("xcodebuild",
 				ACTION_ARCHIVE,
 				ARGUMENT_SCHEME, scheme,
 				ARGUMENT_ARCHIVE_PATH, outputPath.absolutePath,
-				ARGUMENT_XCCONFIG, xcconfig.absolutePath)
+				ARGUMENT_XCCONFIG, xcConfig.absolutePath)
 	}
 
 	def execute(OutputAppender outputAppender, Map<String, String> environment) {

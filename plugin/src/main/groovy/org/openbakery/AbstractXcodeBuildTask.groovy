@@ -125,13 +125,16 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		return getXcodeExtension().signing.mobileProvisionURI
 	}
 
-	Optional<String> getCodeSignIdentity() {
+	String getSignatureFriendlyName() {
 		return Optional.ofNullable(getKeyContent()
 				.split(System.getProperty("line.separator"))
 				.find { PATTERN.matcher(it).matches() })
 				.map { PATTERN.matcher(it) }
 				.filter { it.matches() }
 				.map { it.group("friendlyName") }
+				.orElseThrow {
+			new IllegalArgumentException("Failed to resolve the code signing identity from the certificate ")
+		}
 	}
 
 	private String getKeyContent() {

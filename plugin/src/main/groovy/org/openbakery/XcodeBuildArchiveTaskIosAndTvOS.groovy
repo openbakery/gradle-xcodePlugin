@@ -14,7 +14,6 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	XcodeBuildArchiveTaskIosAndTvOS() {
 		super()
 
-//		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(PrepareXcodeArchivingTask.NAME)
 
@@ -23,8 +22,7 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@InputFile
 	File getXcConfigFile() {
-		return new File(PathHelper.resolveArchiveFolder(project),
-				PrepareXcodeArchivingTask.FILE_NAME)
+		return PathHelper.resolveXcConfigFile(project)
 	}
 
 	@Input
@@ -54,11 +52,8 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 		commandRunner.setOutputFile(getOutputTextFile())
 
-		File outputFile = new File(getOutputDirectory(), getScheme() + ".xcarchive")
-		outputFile.mkdir()
-
 		xcodeBuild.archive(getScheme(),
-				outputFile,
+				PathHelper.resolveArchiveFile(project, scheme),
 				getXcConfigFile())
 	}
 }

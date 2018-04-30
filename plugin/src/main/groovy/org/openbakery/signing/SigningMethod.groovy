@@ -1,9 +1,12 @@
 package org.openbakery.signing
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 enum SigningMethod {
 	AppStore("app-store"),
 	AdHoc("ad-hoc"),
-	Entreprise("enterprise"),
+	Enterprise("enterprise"),
 	Dev("development")
 
 	private final String value
@@ -16,7 +19,7 @@ enum SigningMethod {
 		return value
 	}
 
-	public static Optional<SigningMethod> fromString(value) {
+	static Optional<SigningMethod> fromString(value) {
 		return Optional.ofNullable(values().find { it.getValue() == value })
 	}
 }

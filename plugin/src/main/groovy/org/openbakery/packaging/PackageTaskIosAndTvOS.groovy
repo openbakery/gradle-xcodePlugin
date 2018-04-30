@@ -105,9 +105,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		// certificate
 		plistHelper.addValueForPlist(file,
 				PLIST_KEY_SIGNING_CERTIFICATE,
-				getCodeSignIdentity().orElseThrow {
-					new IllegalArgumentException("Failed to resolve the code signing identity from the certificate ")
-				})
+				getSignatureFriendlyName())
 
 		// BitCode should be compiled only for AppStore builds
 		plistHelper.addValueForPlist(file,
