@@ -32,7 +32,6 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		super()
 	}
 
-
 	void setTarget(String target) {
 		parameters.target = target
 	}

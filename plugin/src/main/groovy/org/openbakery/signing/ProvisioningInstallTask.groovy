@@ -18,6 +18,7 @@ package org.openbakery.signing
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
@@ -28,7 +29,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	ProvisioningInstallTask() {
 		super()
-//		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
+		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
 		this.description = "Installs the given provisioning profile"
 	}
 

@@ -83,11 +83,11 @@ class InfoPlistModifyTaskSpecification extends Specification {
 		plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier") == expectedResult
 
 		where:
-		configuration | scheme | suffix   | bundleId        | expectedResult
-		"Release"     | "Test" | "suffix" | "he.lllo.world" | "he.lllo.worldsuffix"
-		"Release"     | "Test" | ""       | "he.lllo.world" | "he.lllo.world"
-		"Release"     | "Test" | null     | "he.lllo.world" | null
-		"Debug"       | "Test" | null     | "he.lllo.world" | null
+		configuration | scheme | suffix    | bundleId       | expectedResult
+		"Release"     | "Test" | ".suffix" | "he.llo.world" | "he.llo.world.suffix"
+		"Release"     | "Test" | ""        | "he.llo.world" | "he.llo.world"
+		"Release"     | "Test" | null      | "he.llo.world" | null
+		"Debug"       | "Test" | null      | "he.llo.world" | null
 	}
 
 	def "modify BundleIdentifier"() {

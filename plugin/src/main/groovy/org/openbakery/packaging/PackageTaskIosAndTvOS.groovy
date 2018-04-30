@@ -5,6 +5,7 @@ import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeBuildTask
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Xcodebuild
 
@@ -19,6 +20,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	private static final String XC_ARCHIVE_EXTENSION = ".xcarchive"
 	private static final String PLIST_KEY_METHOD = "method"
+	private static final String PLIST_KEY_COMPILE_BITCODE = "compileBitcode"
 	private static final String PLIST_KEY_PROVISIONING_PROFILE = "provisioningProfiles"
 	private static final String PLIST_KEY_SIGNING_CERTIFICATE = "signingCertificate"
 
@@ -39,8 +41,8 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	}
 
 	@Input
-	String getMethod() {
-		return Optional.ofNullable(getXcodeExtension().getSigning().method.getValue())
+	SigningMethod getMethod() {
+		return Optional.ofNullable(getXcodeExtension().getSigning().method)
 				.orElseThrow { new IllegalArgumentException("Invalid signing method") }
 	}
 
@@ -91,7 +93,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		plistHelper.create(file)
 		plistHelper.addValueForPlist(file,
 				PLIST_KEY_METHOD,
-				getMethod())
+				getMethod().value)
 
 		// provisioning profiles
 		HashMap<String, String> map = new HashMap<>()
@@ -106,6 +108,11 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 				getCodeSignIdentity().orElseThrow {
 					new IllegalArgumentException("Failed to resolve the code signing identity from the certificate ")
 				})
+
+		// BitCode should be compiled only for AppStore builds
+		plistHelper.addValueForPlist(file,
+				PLIST_KEY_COMPILE_BITCODE,
+				getMethod() == SigningMethod.AppStore)
 	}
 
 	private void packageIt() {

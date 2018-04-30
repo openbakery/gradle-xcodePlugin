@@ -3,11 +3,8 @@ package org.openbakery.signing
 enum SigningMethod {
 	AppStore("app-store"),
 	AdHoc("ad-hoc"),
-	Package("package"),
 	Entreprise("enterprise"),
-	Developement("development"),
-	DeveloperId("developer-id"),
-	MacApplication("mac-application")
+	Dev("development")
 
 	private final String value
 
@@ -17,5 +14,9 @@ enum SigningMethod {
 
 	String getValue() {
 		return value
+	}
+
+	public static Optional<SigningMethod> fromString(value) {
+		return Optional.ofNullable(values().find { it.getValue() == value })
 	}
 }

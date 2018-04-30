@@ -32,14 +32,12 @@ class Signing {
 	Object signingDestinationRoot
 	Object keychainPathInternal
 	final Project project
-	final String keychainName =  KEYCHAIN_NAME_BASE + System.currentTimeMillis() +  ".keychain"
+	final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
 	CommandRunner commandRunner
 
 
 	Object mobileProvisionDestinationRoot
 	List<File> mobileProvisionFile = new ArrayList<File>()
-
-
 
 
 	public Signing(Project project) {
@@ -70,6 +68,10 @@ class Signing {
 		this.keychain = project.file(keychain)
 	}
 
+	public void setMethod(String method) {
+		this.method = SigningMethod.fromString(method)
+				.orElseThrow { new IllegalArgumentException("Method : $method is not a valid export method") }
+	}
 
 	File getSigningDestinationRoot() {
 		return project.file(signingDestinationRoot)
@@ -109,16 +111,16 @@ class Signing {
 	}
 
 
-    File getEntitlementsFile() {
-        if (entitlementsFile != null) {
-            if (entitlementsFile instanceof File) {
-                return entitlementsFile
-            }
-            return project.file(entitlementsFile)
+	File getEntitlementsFile() {
+		if (entitlementsFile != null) {
+			if (entitlementsFile instanceof File) {
+				return entitlementsFile
+			}
+			return project.file(entitlementsFile)
 
-        }
-        return null
-    }
+		}
+		return null
+	}
 
 	boolean hasEntitlementsFile() {
 		return entitlementsFile != null && entitlementsFile.exists()
@@ -132,8 +134,6 @@ class Signing {
 		return this.identity
 	}
 
-
-
 	public void entitlements(Map<String, Object> entitlements) {
 		this.entitlements = entitlements
 
@@ -143,17 +143,17 @@ class Signing {
 	public String toString() {
 		if (this.keychain != null) {
 			return "Signing{" +
-							" identity='" + identity + '\'' +
-							", mobileProvisionURI='" + mobileProvisionURI + '\'' +
-							", keychain='" + keychain + '\'' +
-							'}';
+					" identity='" + identity + '\'' +
+					", mobileProvisionURI='" + mobileProvisionURI + '\'' +
+					", keychain='" + keychain + '\'' +
+					'}';
 		}
 		return "Signing{" +
-						" identity='" + identity + '\'' +
-						", certificateURI='" + certificateURI + '\'' +
-						", certificatePassword='" + certificatePassword + '\'' +
-						", mobileProvisionURI='" + mobileProvisionURI + '\'' +
-						'}';
+				" identity='" + identity + '\'' +
+				", certificateURI='" + certificateURI + '\'' +
+				", certificatePassword='" + certificatePassword + '\'' +
+				", mobileProvisionURI='" + mobileProvisionURI + '\'' +
+				'}';
 	}
 
 	CodesignParameters getCodesignParameters() {
