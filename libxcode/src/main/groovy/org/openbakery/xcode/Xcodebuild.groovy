@@ -15,9 +15,13 @@ class Xcodebuild {
 	XcodebuildParameters parameters
 	List<Destination> destinations
 
+	public static final String EXECUTABLE = "xcodebuild"
 	public static final String ACTION_ARCHIVE = "archive"
+	public static final String ACTION_EXPORT_ARCHIVE = "-exportArchive"
 	public static final String ARGUMENT_SCHEME = "-scheme"
 	public static final String ARGUMENT_ARCHIVE_PATH = "-archivePath"
+	public static final String ARGUMENT_EXPORT_PATH = "-exportPath"
+	public static final String ARGUMENT_EXPORT_OPTIONS_PLIST = "-exportOptionsPlist"
 	public static final String ARGUMENT_XCCONFIG = "-xcconfig"
 
 	public Xcodebuild(File projectDirectory, CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, List<Destination> destinations) {
@@ -45,14 +49,16 @@ class Xcodebuild {
 	public void packageIpa(File archivePath,
 						   File exportPath,
 						   File exportOptionsPlist) {
+
 		assert archivePath != null && archivePath.exists()
 		assert exportPath != null && exportPath.exists()
 		assert exportOptionsPlist != null && exportOptionsPlist.exists()
 
-		commandRunner.run("xcodebuild", "-exportArchive",
-				"-archivePath", archivePath.absolutePath,
-				"-exportPath", exportPath.absolutePath,
-				"-exportOptionsPlist", exportOptionsPlist.absolutePath)
+		commandRunner.run(EXECUTABLE,
+				ACTION_EXPORT_ARCHIVE,
+				ARGUMENT_ARCHIVE_PATH, archivePath.absolutePath,
+				ARGUMENT_EXPORT_PATH, exportPath.absolutePath,
+				ARGUMENT_EXPORT_OPTIONS_PLIST, exportOptionsPlist.absolutePath)
 	}
 
 	public void archive(String scheme,
@@ -64,7 +70,7 @@ class Xcodebuild {
 		assert outputPath.isDirectory()
 		assert xcConfig.exists() && !xcConfig.isDirectory()
 
-		commandRunner.run("xcodebuild",
+		commandRunner.run(EXECUTABLE,
 				ACTION_ARCHIVE,
 				ARGUMENT_SCHEME, scheme,
 				ARGUMENT_ARCHIVE_PATH, outputPath.absolutePath,
