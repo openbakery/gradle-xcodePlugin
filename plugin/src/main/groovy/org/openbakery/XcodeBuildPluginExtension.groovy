@@ -140,6 +140,13 @@ class XcodeBuildPluginExtension {
 
 	}
 
+	Optional<BuildConfiguration> getBuildTargetConfiguration(String scheme,
+															 String configuration) {
+		return Optional.ofNullable(projectSettings.get(scheme, null))
+				.map { it -> it.buildSettings }
+				.map { bs -> (BuildConfiguration) bs.get(configuration) }
+	}
+
 	String getWorkspace() {
 		if (workspace != null) {
 			return workspace

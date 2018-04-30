@@ -37,10 +37,18 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		return super.getProvisioningUriList()
 	}
 
-	@Input
-	@Override
 	String getBundleIdentifier() {
-		return super.getBundleIdentifier()
+		String result = super.getBundleIdentifier()
+
+		if (result.contains("\$(PRODUCT_BUNDLE_IDENTIFIER)")) {
+			File projectFile = new File(getXcodeExtension().projectFile, "project.pbxproj")
+			XcodeProjectFile pj = new XcodeProjectFile(project, projectFile)
+			pj.parse()
+
+			result = pj.getBuildConfiguration(getXcodeExtension().target,
+					getXcodeExtension().configuration).bundleIdentifier
+		}
+		return result
 	}
 
 	@OutputFile
@@ -53,11 +61,13 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		getXcConfigFile().text = ""
 
 		computeProvisioningFile(getProvisioningFile()
-				.orElseThrow {
-			new IllegalArgumentException("Cannot resolve a valid provisioning " +
-					"profile for bundle identifier : " +
-					getBundleIdentifier())
-		})
+				.orElseThrow { cannotResolveValidProvisioning() })
+	}
+
+	private IllegalArgumentException cannotResolveValidProvisioning() {
+		return new IllegalArgumentException("Cannot resolve a valid provisioning " +
+				"profile for bundle identifier : " +
+				getBundleIdentifier())
 	}
 
 	private void computeProvisioningFile(File file) {

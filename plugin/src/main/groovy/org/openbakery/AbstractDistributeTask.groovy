@@ -9,7 +9,7 @@ import java.util.regex.Pattern
  * User: rene
  * Date: 11/11/14
  */
-class AbstractDistributeTask extends AbstractXcodeTask {
+class AbstractDistributeTask extends AbstractXcodeBuildTask {
 
 	private File archiveDirectory;
 

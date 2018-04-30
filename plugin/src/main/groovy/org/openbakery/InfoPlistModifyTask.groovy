@@ -17,11 +17,12 @@ package org.openbakery
 
 import org.gradle.api.tasks.TaskAction
 
-
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
 	File infoPlist
 	Boolean modfied = false
+
+	public static final String KeyBundleIdentifier = "CFBundleIdentifier"
 
 	public InfoPlistModifyTask() {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
@@ -29,7 +30,6 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 	@TaskAction
 	def prepare() {
-
 		if (!project.infoplist.hasValuesToModify()) {
 			logger.debug("Nothing to modify")
 			return;
@@ -45,15 +45,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		logger.debug("Try to updating {}", infoPlist)
 
-		if (project.infoplist.bundleIdentifier != null) {
-			setValueForPlist("CFBundleIdentifier", project.infoplist.bundleIdentifier)
-		}
-
-		// add suffix to bundleIdentifier
-		if (project.infoplist.bundleIdentifierSuffix != null) {
-			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
-			setValueForPlist("CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
-		}
+		modifyBundleIdentifier()
 
 		// Modify bundle bundleName
 		if (project.infoplist.bundleName != null) {
@@ -77,7 +69,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		modifyShortVersion(infoPlist)
 
 
-		for(String command in project.infoplist.commands) {
+		for (String command in project.infoplist.commands) {
 			setValueForPlist(command)
 		}
 
@@ -140,9 +132,27 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
 		setValueForPlist("CFBundleShortVersionString", shortVersionString)
-
 	}
 
+	private void modifyBundleIdentifier() {
+		InfoPlistExtension extension = getInfoPlistExtension()
+
+		// Resolve bundle identifier
+		if (extension.bundleIdentifier != null) {
+			setValueForPlist(KeyBundleIdentifier, extension.bundleIdentifier)
+		} else {
+			XcodeBuildPluginExtension xcodeExtension = getXcodeExtension()
+			xcodeExtension.getBuildTargetConfiguration(xcodeExtension.scheme, xcodeExtension.configuration)
+					.map { it -> it.bundleIdentifier }
+					.ifPresent { it -> setValueForPlist(KeyBundleIdentifier, it) }
+		}
+
+		// Add suffix to bundleIdentifier if defined
+		if (extension.bundleIdentifierSuffix != null) {
+			String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, KeyBundleIdentifier)
+			setValueForPlist(KeyBundleIdentifier, bundleIdentifier + extension.bundleIdentifierSuffix)
+		}
+	}
 
 	void setValueForPlist(String key, String value) {
 		modfied = true

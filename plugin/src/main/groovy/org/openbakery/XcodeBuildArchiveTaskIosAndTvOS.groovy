@@ -14,7 +14,7 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	XcodeBuildArchiveTaskIosAndTvOS() {
 		super()
 
-		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
+//		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(PrepareXcodeArchivingTask.NAME)
 
