@@ -47,19 +47,11 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 	@TaskAction
 	void generate() {
 		getXcConfigFile().text = ""
-
-		computeProvisioningFile(getProvisioningFile()
-				.orElseThrow { cannotResolveValidProvisioning() })
+		computeProvisioningFile()
 	}
 
-	private IllegalArgumentException cannotResolveValidProvisioning() {
-		return new IllegalArgumentException("Cannot resolve a valid provisioning " +
-				"profile for bundle identifier : " +
-				getBundleIdentifier())
-	}
-
-	private void computeProvisioningFile(File file) {
-		reader = new ProvisioningProfileReader(file, commandRunner)
+	private void computeProvisioningFile() {
+		reader = new ProvisioningProfileReader(getProvisioningFile(), commandRunner)
 		append(KEY_BUNDLE_IDENTIFIER, reader.getApplicationIdentifier())
 		append(KEY_CODE_SIGN_IDENTITY, getSignatureFriendlyName())
 		append(KEY_DEVELOPMENT_TEAM, reader.getTeamIdentifierPrefix())

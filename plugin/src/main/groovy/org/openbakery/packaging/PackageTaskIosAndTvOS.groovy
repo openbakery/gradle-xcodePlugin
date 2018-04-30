@@ -18,7 +18,6 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	public static final String TASK_NAME = "package"
 
-	private static final String XC_ARCHIVE_EXTENSION = ".xcarchive"
 	private static final String PLIST_KEY_METHOD = "method"
 	private static final String PLIST_KEY_COMPILE_BITCODE = "compileBitcode"
 	private static final String PLIST_KEY_PROVISIONING_PROFILE = "provisioningProfiles"
@@ -35,9 +34,8 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	}
 
 	@Input
-	String getOptionalBundleIdentifier() {
-		return Optional.ofNullable(super.getBundleIdentifier())
-				.orElseThrow { new IllegalArgumentException("Invalid bundle identifier") }
+	String getBundleIdentifier() {
+		return super.getBundleIdentifier()
 	}
 
 	@Input
@@ -54,8 +52,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@InputDirectory
 	File getArchiveFile() {
-		return new File(PathHelper.resolveArchiveFolder(project),
-				getScheme() + XC_ARCHIVE_EXTENSION)
+		return PathHelper.resolveArchiveFile(project, scheme)
 	}
 
 	@OutputDirectory
@@ -80,11 +77,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	private void setupProvisioningProfileReader() {
 		reader = new ProvisioningProfileReader(getProvisioningFile()
-				.orElseThrow {
-			new IllegalArgumentException("Cannot resolve a valid provisioning " +
-					"profile for bundle identifier : " +
-					getOptionalBundleIdentifier())
-		}, commandRunner)
+				, commandRunner)
 	}
 
 	private void generateExportOptionPlist() {

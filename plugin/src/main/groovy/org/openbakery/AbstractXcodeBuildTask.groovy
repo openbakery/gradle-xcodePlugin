@@ -104,21 +104,25 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	String getBundleIdentifier() {
 		File infoPlist = new File(project.projectDir, getXcodeExtension().infoPlist)
-		plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
+		return plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
 	}
 
 	InfoPlistExtension getInfoPlistExtension() {
 		return project.getExtensions().getByType(InfoPlistExtension.class)
 	}
 
-	Optional<File> getProvisioningFile() {
+	File getProvisioningFile() {
 		List<File> provisioningList = getProvisioningUriList()
 				.collect { it -> new File(new URI(it)) }
 
 		return Optional.ofNullable(ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
 				provisioningList,
 				commandRunner,
-				plistHelper))
+				plistHelper)).orElseThrow {
+			new IllegalArgumentException("Cannot resolve a valid provisioning " +
+					"profile for bundle identifier : " +
+					bundleIdentifier)
+		}
 	}
 
 	List<String> getProvisioningUriList() {

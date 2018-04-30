@@ -8,7 +8,7 @@ import org.openbakery.xcode.Xcodebuild
 @CompileStatic
 @CacheableTask
 class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
-	
+
 	public static final String TASK_NAME = "archive"
 
 	XcodeBuildArchiveTaskIosAndTvOS() {
