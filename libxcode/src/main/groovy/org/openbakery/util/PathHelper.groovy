@@ -86,6 +86,10 @@ class PathHelper {
 		return new File(resolveArchiveFolder(project), scheme + EXTENSION_XC_ARCHIVE)
 	}
 
+	static File resolveArchivingLogFile(Project project) {
+		return new File(resolveArchiveFolder(project), "xcodebuild-archive-output.txt")
+	}
+
 	static File resolveXcConfigFile(Project project) {
 		return new File(resolveArchiveFolder(project), ARCHIVE_FILE_NAME)
 	}

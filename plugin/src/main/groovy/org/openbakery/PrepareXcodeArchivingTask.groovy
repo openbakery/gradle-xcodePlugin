@@ -11,9 +11,10 @@ import org.openbakery.util.PathHelper
 class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
 	private ProvisioningProfileReader reader
+	private final File outputFile
 
 	public static final String NAME = "prepareArchiving"
-	
+
 	private static final String KEY_BUNDLE_IDENTIFIER = "PRODUCT_BUNDLE_IDENTIFIER"
 	private static final String KEY_CODE_SIGN_IDENTITY = "CODE_SIGN_IDENTITY"
 	private static final String KEY_DEVELOPMENT_TEAM = "DEVELOPMENT_TEAM"
@@ -22,12 +23,14 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
 	PrepareXcodeArchivingTask() {
 		super()
+
 		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 
 		this.description = "Prepare the archive configuration file"
+		this.outputFile = PathHelper.resolveXcConfigFile(project)
 	}
 
 	@Input
@@ -38,7 +41,7 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
 	@OutputFile
 	File getXcConfigFile() {
-		return PathHelper.resolveXcConfigFile(project)
+		return outputFile
 	}
 
 	@TaskAction

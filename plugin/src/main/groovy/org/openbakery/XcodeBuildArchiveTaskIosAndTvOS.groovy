@@ -8,7 +8,7 @@ import org.openbakery.xcode.Xcodebuild
 @CompileStatic
 @CacheableTask
 class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
-
+	
 	public static final String TASK_NAME = "archive"
 
 	XcodeBuildArchiveTaskIosAndTvOS() {
@@ -32,7 +32,7 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@OutputFile
 	File getOutputTextFile() {
-		return new File(project.getBuildDir(), "xcodebuild-archive-output.txt")
+		return PathHelper.resolveArchivingLogFile(project)
 	}
 
 	@OutputDirectory
