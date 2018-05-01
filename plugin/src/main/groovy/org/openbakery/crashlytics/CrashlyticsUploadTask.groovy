@@ -19,14 +19,14 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
-import org.openbakery.XcodePlugin
 import org.openbakery.output.ConsoleOutputAppender
+import org.openbakery.packaging.PackageTask
 
 class CrashlyticsUploadTask extends AbstractDistributeTask {
 
 	CrashlyticsUploadTask() {
 		super()
-		dependsOn(XcodePlugin.PACKAGE_TASK_NAME)
+		dependsOn(PackageTask.NAME)
 		this.description = "Upload the IPA to crashlytics for crash reports"
 	}
 

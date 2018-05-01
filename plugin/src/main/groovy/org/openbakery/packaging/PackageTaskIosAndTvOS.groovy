@@ -1,12 +1,15 @@
 package org.openbakery.packaging
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Task
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeBuildTask
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 import java.util.Optional
@@ -16,7 +19,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	private ProvisioningProfileReader reader
 
-	public static final String TASK_NAME = "package"
+	public static final String NAME = "packageWithXcodeBuild"
 
 	private static final String PLIST_KEY_METHOD = "method"
 	private static final String PLIST_KEY_COMPILE_BITCODE = "compileBitcode"
@@ -31,6 +34,14 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
 		finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+
+		onlyIf(new Spec<Task>() {
+			@Override
+			boolean isSatisfiedBy(Task task) {
+				return getXcodeExtension().getType() == Type.iOS ||
+						getXcodeExtension().getType() == Type.tvOS
+			}
+		})
 	}
 
 	@Input

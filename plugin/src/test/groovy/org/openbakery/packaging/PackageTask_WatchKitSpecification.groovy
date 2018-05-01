@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PathHelper
@@ -15,7 +14,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 
 
 	Project project
-	PackageTask packageTask;
+	PackageLegacyTask packageTask;
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 
@@ -45,7 +44,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 
-		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask = project.getTasks().getByPath(PackageTask.NAME)
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner

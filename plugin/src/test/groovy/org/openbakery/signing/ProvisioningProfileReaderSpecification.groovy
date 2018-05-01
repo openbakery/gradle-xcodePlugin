@@ -1,31 +1,28 @@
 package org.openbakery.signing
 
-import ch.qos.logback.core.util.FileUtil
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
-import org.openbakery.xcode.Type
-import org.openbakery.XcodePlugin
+import org.openbakery.packaging.PackageLegacyTask
 import org.openbakery.packaging.PackageTask
 import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.equalTo
 import static org.hamcrest.Matchers.is
 
-
 class ProvisioningProfileReaderSpecification extends Specification {
 
 	Project project
 
-	PackageTask packageTask;
+	PackageLegacyTask packageTask;
 
 	File projectDir
 	File buildOutputDirectory
@@ -44,7 +41,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
-		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask = project.getTasks().getByPath(PackageTask.NAME)
 
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration)

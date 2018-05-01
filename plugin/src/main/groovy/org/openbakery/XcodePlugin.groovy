@@ -48,12 +48,12 @@ import org.openbakery.hockeyapp.HockeyAppUploadTask
 import org.openbakery.hockeykit.*
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
+import org.openbakery.packaging.PackageLegacyTask
 import org.openbakery.packaging.PackageTask
 import org.openbakery.packaging.PackageTaskIosAndTvOS
 import org.openbakery.packaging.ReleaseNotesTask
 import org.openbakery.signing.*
 import org.openbakery.simulators.*
-import org.openbakery.xcode.Type
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -101,7 +101,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
-	public static final String PACKAGE_TASK_NAME = 'package'
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
@@ -522,22 +521,17 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configurePackage(Project project) {
-		if (project.xcodebuild.type == Type.tvOS
-				|| project.xcodebuild.type == Type.iOS) {
-			project.task(PackageTaskIosAndTvOS.TASK_NAME,
-					type: PackageTaskIosAndTvOS,
-					group: XCODE_GROUP_NAME)
+		configureModernPackager(project)
+		configureLegacyPackager(project)
 
-		} else {
-			PackageTask packageTask = project.task(PACKAGE_TASK_NAME,
-					type: PackageTask,
-					group: XCODE_GROUP_NAME)
+		project.task(PackageTask.NAME,
+				type: PackageTask.class,
+				group: XCODE_GROUP_NAME)
 
-			XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
-			packageTask.shouldRunAfter(xcodeBuildTask)
-		}
+		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME,
+				type: ReleaseNotesTask,
+				group: XCODE_GROUP_NAME)
 
-		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME, type: ReleaseNotesTask, group: XCODE_GROUP_NAME)
 		//ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
 
 		//KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
@@ -549,6 +543,22 @@ class XcodePlugin implements Plugin<Project> {
 		}
 */
 	}
+
+	private void configureModernPackager(Project project) {
+		project.task(PackageTaskIosAndTvOS.NAME,
+				type: PackageTaskIosAndTvOS,
+				group: XCODE_GROUP_NAME)
+	}
+
+	private void configureLegacyPackager(Project project) {
+		PackageLegacyTask packageTask = project.task(PackageLegacyTask.NAME,
+				type: PackageLegacyTask,
+				group: XCODE_GROUP_NAME)
+
+		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
+		packageTask.shouldRunAfter(xcodeBuildTask)
+	}
+
 
 	private configureAppstore(Project project) {
 		project.task(APPSTORE_UPLOAD_TASK_NAME, type: AppstoreUploadTask, group: APPSTORE_GROUP_NAME)

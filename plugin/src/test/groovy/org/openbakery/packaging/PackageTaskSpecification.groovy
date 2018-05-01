@@ -23,7 +23,7 @@ class PackageTaskSpecification extends Specification {
 
 
 	Project project
-	PackageTask packageTask
+	PackageLegacyTask packageTask
 
 	ApplicationDummy applicationDummy
 	CommandRunner commandRunner = Mock(CommandRunner)
@@ -55,7 +55,7 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 
-		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask = project.getTasks().getByPath(PackageTask.NAME)
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner

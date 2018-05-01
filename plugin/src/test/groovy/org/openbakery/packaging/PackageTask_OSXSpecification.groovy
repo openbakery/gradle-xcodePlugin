@@ -5,7 +5,6 @@ import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PathHelper
@@ -18,7 +17,7 @@ import java.util.zip.ZipFile
 class PackageTask_OSXSpecification  extends Specification {
 
 	Project project
-	PackageTask packageTask;
+	PackageLegacyTask packageTask;
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 
@@ -57,7 +56,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		project.xcodebuild.signing.keychain = keychain.absolutePath
 		project.xcodebuild.signing.identity = 'iPhone Developer: Firstname Surename (AAAAAAAAAA)'
 
-		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask = project.getTasks().getByPath(PackageTask.NAME)
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
