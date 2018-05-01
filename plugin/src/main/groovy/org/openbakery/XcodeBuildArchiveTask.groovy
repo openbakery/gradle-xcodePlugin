@@ -28,8 +28,6 @@ import static groovy.io.FileType.FILES
 
 class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
-	public static final String ARCHIVE_FOLDER = "archive"
-
 	XcodeBuildArchiveTask() {
 		super()
 
