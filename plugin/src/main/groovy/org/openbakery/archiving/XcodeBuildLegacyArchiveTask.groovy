@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery
+package org.openbakery.archiving
 
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Task
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractXcodeBuildTask
+import org.openbakery.BuildConfiguration
+import org.openbakery.CommandRunnerException
+import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type

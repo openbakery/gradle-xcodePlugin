@@ -9,6 +9,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
+import org.openbakery.archiving.XcodeBuildArchiveTask
+import org.openbakery.archiving.XcodeBuildArchiveTaskIosAndTvOS
+import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask

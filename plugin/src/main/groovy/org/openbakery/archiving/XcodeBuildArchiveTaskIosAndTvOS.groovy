@@ -1,9 +1,12 @@
-package org.openbakery
+package org.openbakery.archiving
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Task
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
+import org.openbakery.AbstractXcodeBuildTask
+import org.openbakery.PrepareXcodeArchivingTask
+import org.openbakery.XcodePlugin
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild

@@ -1,4 +1,6 @@
-package org.openbakery
+package org.openbakery.archiving
+
+import org.openbakery.AbstractXcodeBuildTask
 
 class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 

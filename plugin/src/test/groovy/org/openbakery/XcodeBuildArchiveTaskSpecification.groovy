@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
