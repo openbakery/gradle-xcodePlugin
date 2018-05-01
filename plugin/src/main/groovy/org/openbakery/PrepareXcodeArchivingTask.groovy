@@ -7,6 +7,8 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.PathHelper
 
+import java.util.function.Consumer
+
 @CompileStatic
 class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
@@ -17,6 +19,7 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 
 	private static final String KEY_BUNDLE_IDENTIFIER = "PRODUCT_BUNDLE_IDENTIFIER"
 	private static final String KEY_CODE_SIGN_IDENTITY = "CODE_SIGN_IDENTITY"
+	private static final String KEY_CODE_SIGN_ENTITLEMENTS = "CODE_SIGN_ENTITLEMENTS"
 	private static final String KEY_DEVELOPMENT_TEAM = "DEVELOPMENT_TEAM"
 	private static final String KEY_PROVISIONING_PROFILE_ID = "PROVISIONING_PROFILE"
 	private static final String KEY_PROVISIONING_PROFILE_SPEC = "PROVISIONING_PROFILE_SPECIFIER"
@@ -57,6 +60,14 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		append(KEY_DEVELOPMENT_TEAM, reader.getTeamIdentifierPrefix())
 		append(KEY_PROVISIONING_PROFILE_ID, reader.getUUID())
 		append(KEY_PROVISIONING_PROFILE_SPEC, reader.getName())
+
+		Optional.ofNullable(getXcodeExtension().signing.entitlementsFile)
+			.ifPresent(new Consumer<File>() {
+			@Override
+			void accept(File file) {
+				append(KEY_CODE_SIGN_ENTITLEMENTS, file.absolutePath)
+			}
+		})
 	}
 
 	private void append(String key, String value) {
