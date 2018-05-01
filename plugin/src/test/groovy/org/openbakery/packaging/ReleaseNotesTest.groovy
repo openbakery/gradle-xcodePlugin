@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
-import org.openbakery.packaging.ReleaseNotesTask
+import org.openbakery.ReleaseNotesTask
 import org.junit.Before
 import org.junit.After
 import org.junit.Test

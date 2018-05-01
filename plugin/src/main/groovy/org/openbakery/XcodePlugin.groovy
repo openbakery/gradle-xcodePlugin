@@ -54,7 +54,6 @@ import org.openbakery.oclint.OCLintTask
 import org.openbakery.packaging.PackageLegacyTask
 import org.openbakery.packaging.PackageTask
 import org.openbakery.packaging.PackageTaskIosAndTvOS
-import org.openbakery.packaging.ReleaseNotesTask
 import org.openbakery.signing.*
 import org.openbakery.simulators.*
 import org.slf4j.Logger

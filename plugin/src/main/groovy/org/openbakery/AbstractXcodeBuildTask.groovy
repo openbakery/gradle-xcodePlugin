@@ -99,7 +99,8 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	XcodeBuildPluginExtension getXcodeExtension() {
-		return project.getExtensions().getByType(XcodeBuildPluginExtension.class)
+		return project.getExtensions()
+				.getByType(XcodeBuildPluginExtension.class)
 	}
 
 	String getBundleIdentifier() {

@@ -71,7 +71,7 @@ class XcodeBuildPluginExtension {
 	boolean simulator = true
 	Type type = Type.iOS
 
-	String target = null
+	String target
 	Object dstRoot
 	Object objRoot
 	Object symRoot
