@@ -433,6 +433,9 @@ class XcodeBuildPluginExtension {
 		this.type = Type.typeFromString(type)
 	}
 
+	Type getType() {
+		return type
+	}
 
 	boolean getSimulator() {
 		if (type == Type.macOS) {

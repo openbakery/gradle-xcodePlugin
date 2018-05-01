@@ -1,15 +1,18 @@
 package org.openbakery
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Task
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.util.PathHelper
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 @CompileStatic
 @CacheableTask
 class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
-	public static final String TASK_NAME = "archive"
+	public static final String NAME = "xcodeBuildArchive"
 
 	XcodeBuildArchiveTaskIosAndTvOS() {
 		super()
@@ -17,7 +20,15 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(PrepareXcodeArchivingTask.NAME)
 
-		this.description = "Prepare the app bundle that it can be archive"
+		onlyIf(new Spec<Task>() {
+			@Override
+			boolean isSatisfiedBy(Task task) {
+				return getXcodeExtension().getType() == Type.iOS ||
+						getXcodeExtension().getType() == Type.tvOS
+			}
+		})
+
+		this.description = "Use the xcodebuild archiver to create the project archive"
 	}
 
 	@InputFile

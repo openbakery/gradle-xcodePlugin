@@ -23,7 +23,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Project project
 
-	XcodeBuildArchiveTask xcodeBuildArchiveTask
+	XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask
 
 	File projectDir
 	File buildOutputDirectory

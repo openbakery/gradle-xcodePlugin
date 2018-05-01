@@ -461,21 +461,21 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureArchive(Project project) {
-		if (project.xcodebuild.type == Type.tvOS
-				|| project.xcodebuild.type == Type.iOS) {
-			PrepareXcodeArchivingTask prepareXcodeArchivingTask = project.tasks.create(
-					PrepareXcodeArchivingTask.NAME,
-					PrepareXcodeArchivingTask.class)
-			prepareXcodeArchivingTask.setGroup(XCODE_GROUP_NAME)
+		PrepareXcodeArchivingTask prepareXcodeArchivingTask = project.getTasks().
+				create(PrepareXcodeArchivingTask.NAME, PrepareXcodeArchivingTask.class)
+		prepareXcodeArchivingTask.setGroup(XCODE_GROUP_NAME)
 
-			XcodeBuildArchiveTaskIosAndTvOS archiveTask = project.tasks.create(
-					XcodeBuildArchiveTaskIosAndTvOS.TASK_NAME,
-					XcodeBuildArchiveTaskIosAndTvOS.class)
-			archiveTask.setGroup(XCODE_GROUP_NAME)
-		} else {
-			XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
-			xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
-		}
+		XcodeBuildArchiveTaskIosAndTvOS archiveTask = project.getTasks().
+				create(XcodeBuildArchiveTaskIosAndTvOS.NAME, XcodeBuildArchiveTaskIosAndTvOS.class)
+		archiveTask.setGroup(XCODE_GROUP_NAME)
+
+		XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask = project.getTasks().
+				create(XcodeBuildLegacyArchiveTask.NAME, XcodeBuildLegacyArchiveTask.class)
+		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME)
+
+		XcodeBuildArchiveTask task = project.tasks.create(XcodeBuildArchiveTask.NAME,
+				XcodeBuildArchiveTask.class)
+		task.setGroup(XCODE_GROUP_NAME)
 
 		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
 	}
