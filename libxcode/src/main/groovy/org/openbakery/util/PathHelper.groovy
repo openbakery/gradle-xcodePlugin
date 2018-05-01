@@ -10,9 +10,9 @@ class PathHelper {
 	public static final String APPLE_TV_SIMULATOR = "appletvsimulator"
 	public static final String IPHONE_SIMULATOR = "iphonesimulator"
 	public static final String IPHONE_OS = "iphoneos"
+	public static final String FOLDER_ARCHIVE = "archive"
 
 	private static final String ARCHIVE_FILE_NAME = "archive.xcconfig"
-	private static final String FOLDER_ARCHIVE = "archive"
 	private static final String FOLDER_PACKAGE = "package"
 	private static final String EXTENSION_XC_ARCHIVE = ".xcarchive"
 
