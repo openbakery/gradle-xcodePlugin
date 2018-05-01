@@ -59,7 +59,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 		archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Example.xcarchive")
 
-		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+		outputPath = PathHelper.resolvePackageFolder(project)
 
 		File payloadDirectory = new File(outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "ExampleWatchKit.app");

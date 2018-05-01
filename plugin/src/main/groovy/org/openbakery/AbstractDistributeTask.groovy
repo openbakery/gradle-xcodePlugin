@@ -1,11 +1,9 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
-import org.openbakery.packaging.PackageTask
 import org.openbakery.util.PathHelper
 
 import java.util.regex.Pattern
-
 /**
  * User: rene
  * Date: 11/11/14
@@ -90,7 +88,7 @@ class AbstractDistributeTask extends AbstractXcodeBuildTask {
 	}
 
 	File getBundle(String extension) {
-		File packageDirectory = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
+		File packageDirectory = PathHelper.resolvePackageFolder(project)
 
 		if (!packageDirectory.exists()) {
 			throw new IllegalStateException("package does not exist: " + packageDirectory)

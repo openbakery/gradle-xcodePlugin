@@ -67,7 +67,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 		archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Example.xcarchive")
 
-		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+		outputPath = PathHelper.resolvePackageFolder(project)
 
 		appDirectory = new File(outputPath, "Example.app");
 

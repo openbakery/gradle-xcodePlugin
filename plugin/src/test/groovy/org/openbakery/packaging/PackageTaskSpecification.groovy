@@ -85,7 +85,7 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework = false, boolean adHoc = true, boolean bitcode = false) {
-		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+		outputPath = PathHelper.resolvePackageFolder(project)
 
 		archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Example.xcarchive")
 

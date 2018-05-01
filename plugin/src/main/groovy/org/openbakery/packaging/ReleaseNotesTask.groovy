@@ -18,7 +18,7 @@ package org.openbakery.packaging
 import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-	
+import org.openbakery.util.PathHelper
 import org.pegdown.PegDownProcessor
 
 
@@ -29,7 +29,7 @@ import org.pegdown.PegDownProcessor
  */
 class ReleaseNotesTask extends DefaultTask {
 
-	File outputPath = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
+	File outputPath = PathHelper.resolvePackageFolder(project)
 
 
 	ReleaseNotesTask() {

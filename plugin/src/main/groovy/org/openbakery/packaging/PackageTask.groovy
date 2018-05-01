@@ -10,6 +10,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
@@ -50,7 +51,7 @@ class PackageTask extends AbstractDistributeTask {
 			logger.lifecycle("not a device build, so no codesign and packaging needed")
 			return
 		}
-		outputPath = new File(project.getBuildDir(), PACKAGE_PATH)
+		outputPath = PathHelper.resolvePackageFolder(project)
 
 		File applicationFolder = createApplicationFolder()
 
