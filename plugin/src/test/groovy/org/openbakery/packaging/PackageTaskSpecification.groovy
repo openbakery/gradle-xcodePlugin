@@ -6,16 +6,14 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.appledoc.AppledocCleanTask
+import org.openbakery.XcodePlugin
+import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.test.ApplicationDummy
+import org.openbakery.testdouble.PlistHelperStub
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Type
-import org.openbakery.XcodeBuildArchiveTask
-import org.openbakery.XcodePlugin
-import org.openbakery.output.StyledTextOutputStub
-import org.openbakery.testdouble.PlistHelperStub
-import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
