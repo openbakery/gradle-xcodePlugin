@@ -9,5 +9,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		dependsOn(XcodeBuildArchiveTaskIosAndTvOS.NAME,
 				XcodeBuildLegacyArchiveTask.NAME)
+
+		setDescription("Archive and export the project")
 	}
 }

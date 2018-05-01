@@ -30,7 +30,7 @@ import static groovy.io.FileType.FILES
 
 class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 
-	public static final String NAME = "legacyArchive"
+	public static final String NAME = "archiveLegacy"
 
 	XcodeBuildLegacyArchiveTask() {
 		super()

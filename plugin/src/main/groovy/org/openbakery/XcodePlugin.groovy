@@ -476,8 +476,6 @@ class XcodePlugin implements Plugin<Project> {
 		XcodeBuildArchiveTask task = project.tasks.create(XcodeBuildArchiveTask.NAME,
 				XcodeBuildArchiveTask.class)
 		task.setGroup(XCODE_GROUP_NAME)
-
-		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
 	}
 
 	private void configureSimulatorTasks(Project project) {

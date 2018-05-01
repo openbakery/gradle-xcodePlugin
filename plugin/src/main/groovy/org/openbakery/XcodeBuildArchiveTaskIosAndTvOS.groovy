@@ -12,13 +12,15 @@ import org.openbakery.xcode.Xcodebuild
 @CacheableTask
 class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
-	public static final String NAME = "xcodeBuildArchive"
+	public static final String NAME = "archiveXcodeBuild"
 
 	XcodeBuildArchiveTaskIosAndTvOS() {
 		super()
 
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(PrepareXcodeArchivingTask.NAME)
+
+		this.description = "Use the xcodebuild archiver to create the project archive"
 
 		onlyIf(new Spec<Task>() {
 			@Override
@@ -27,8 +29,6 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 						getXcodeExtension().getType() == Type.tvOS
 			}
 		})
-
-		this.description = "Use the xcodebuild archiver to create the project archive"
 	}
 
 	@InputFile
