@@ -46,7 +46,9 @@ class XcodePluginSpecification extends Specification {
 
 	def "contain task archive"() {
 		expect:
-		project.tasks.findByName('archive') instanceof XcodeBuildLegacyArchiveTask
+		project.tasks.findByName(XcodeBuildArchiveTask.NAME) instanceof XcodeBuildArchiveTask
+		project.tasks.findByName(XcodeBuildLegacyArchiveTask.NAME) instanceof XcodeBuildLegacyArchiveTask
+		project.tasks.findByName(XcodeBuildArchiveTaskIosAndTvOS.NAME) instanceof XcodeBuildArchiveTaskIosAndTvOS
 	}
 
 

@@ -48,7 +48,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		project.xcodebuild.signing.identity = "my identity"
 
 
-		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
+		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodeBuildLegacyArchiveTask.NAME)
 		xcodeBuildArchiveTask.plistHelper = plistHelper
 		xcodeBuildArchiveTask.commandRunner = commandRunner
 		xcodeBuildArchiveTask.xcode.commandRunner = commandRunner
