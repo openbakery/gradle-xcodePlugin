@@ -9,7 +9,6 @@ import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.packaging.PackageLegacyTask
-import org.openbakery.packaging.PackageTask
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 import spock.lang.Specification
@@ -41,7 +40,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		project.xcodebuild.type = Type.macOS
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
-		packageTask = project.getTasks().getByPath(PackageTask.NAME)
+		packageTask = project.getTasks().getByPath(PackageLegacyTask.NAME)
 
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration)

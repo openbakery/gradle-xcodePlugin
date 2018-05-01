@@ -44,7 +44,7 @@ class PackageTask_WatchKitSpecification extends Specification {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 
-		packageTask = project.getTasks().getByPath(PackageTask.NAME)
+		packageTask = project.getTasks().getByPath(PackageLegacyTask.NAME)
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
