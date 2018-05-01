@@ -8,6 +8,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.test.ApplicationDummy
+import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Type
 import org.openbakery.XcodeBuildArchiveTask
@@ -88,7 +89,7 @@ class PackageTaskSpecification extends Specification {
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework = false, boolean adHoc = true, boolean bitcode = false) {
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 
-		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
+		archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Example.xcarchive")
 
 		File payloadDirectory = new File(outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");

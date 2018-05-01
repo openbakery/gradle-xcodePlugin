@@ -4,9 +4,8 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.XcodeBuildArchiveTask
+import org.openbakery.util.PathHelper
 import spock.lang.Specification
-
 /**
  * User: rene
  * Date: 11/11/14
@@ -36,7 +35,7 @@ class HockeyAppTaskSpecification extends Specification {
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")
 
-		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
+		File archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Test.xcarchive")
 		archiveDirectory.mkdirs()
 
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");

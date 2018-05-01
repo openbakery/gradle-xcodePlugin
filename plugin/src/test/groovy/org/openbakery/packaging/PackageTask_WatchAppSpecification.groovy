@@ -4,11 +4,11 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.xcode.Type
-import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.util.PathHelper
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 class PackageTask_WatchAppSpecification extends Specification {
@@ -57,7 +57,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
-		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
+		archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Example.xcarchive")
 
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 

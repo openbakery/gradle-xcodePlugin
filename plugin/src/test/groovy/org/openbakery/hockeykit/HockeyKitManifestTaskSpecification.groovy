@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.PlistHelperStub
-import org.openbakery.XcodeBuildArchiveTask
+import org.openbakery.util.PathHelper
 import spock.lang.Specification
 
 class HockeyKitManifestTaskSpecification extends Specification {
@@ -35,7 +35,7 @@ class HockeyKitManifestTaskSpecification extends Specification {
 
 		hockeyKitManifestTask.commandRunner = commandRunner
 
-		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
+		File archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Test.xcarchive")
 		archiveDirectory.mkdirs()
 
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
