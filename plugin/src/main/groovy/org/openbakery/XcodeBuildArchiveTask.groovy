@@ -19,6 +19,7 @@ import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Xcodebuild
@@ -40,7 +41,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 	def getOutputDirectory() {
-		def archiveDirectory = new File(project.getBuildDir(), ARCHIVE_FOLDER)
+		def archiveDirectory = PathHelper.resolveArchiveFolder(project)
 		archiveDirectory.mkdirs()
 		return archiveDirectory
 	}
@@ -513,7 +514,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	File getArchiveDirectory() {
 
-		def archiveDirectoryName = XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" + project.xcodebuild.bundleName
+		def archiveDirectoryName = new File(PathHelper.resolveArchiveFolder(project),
+				getXcodeExtension().bundleName)
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveDirectoryName += project.xcodebuild.bundleNameSuffix
