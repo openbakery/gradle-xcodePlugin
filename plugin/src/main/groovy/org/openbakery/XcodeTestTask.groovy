@@ -85,7 +85,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} finally {
 			testResultParser = new TestResultParser(testLogsDirectory, destinations)
 			testResultParser.parseAndStore(outputDirectory)
-			//Provide coverage with the test result destinations for id use.
+			//Provide coverage with the test result destinations for id use for new xcode 9 coverage file path.
 			project.coverage.setTestResultDestinations(testResultParser.testResults.keySet().toList())
 
 			int numberSuccess = testResultParser.numberSuccess()
