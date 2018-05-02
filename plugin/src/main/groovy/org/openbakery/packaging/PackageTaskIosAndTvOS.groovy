@@ -22,6 +22,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	public static final String NAME = "packageWithXcodeBuild"
 
 	private static final String PLIST_KEY_METHOD = "method"
+	private static final String PLIST_KEY_SIGNING_STYLE = "signingStyle"
 	private static final String PLIST_KEY_COMPILE_BITCODE = "compileBitcode"
 	private static final String PLIST_KEY_PROVISIONING_PROFILE = "provisioningProfiles"
 	private static final String PLIST_KEY_SIGNING_CERTIFICATE = "signingCertificate"
@@ -42,6 +43,23 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 						getXcodeExtension().getType() == Type.tvOS
 			}
 		})
+	}
+
+	@Input
+	boolean getBitCode() {
+		boolean result = getXcodeExtension().bitcode
+		SigningMethod method = getMethod()
+
+		if (method == SigningMethod.AppStore
+				&& getXcodeExtension().type == Type.tvOS) {
+			assert result: "Invalid configuration for the TvOS target " +
+					"`AppStore` upload requires BitCode enabled."
+		} else if (method != SigningMethod.AppStore) {
+			assert !result: "The BitCode setting (`xcodebuild.bitcode`) should be enabled only " +
+					"for the `AppStore` signing method"
+		}
+
+		return result
 	}
 
 	@Input
@@ -114,7 +132,11 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		// BitCode should be compiled only for AppStore builds
 		plistHelper.addValueForPlist(file,
 				PLIST_KEY_COMPILE_BITCODE,
-				getMethod() == SigningMethod.AppStore)
+				getBitCode())
+
+		plistHelper.addValueForPlist(file,
+				PLIST_KEY_SIGNING_STYLE,
+				"manual")
 	}
 
 	private void packageIt() {
