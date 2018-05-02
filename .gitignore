@@ -4,6 +4,8 @@
 ## Gradle
 .gradle
 userHome
+gradlew.bat
+gradle.properties
 
 ## Build generated
 build/
@@ -38,3 +40,6 @@ xcuserdata
 .idea/
 *.iml
 local.properties
+
+#Spock outputs
+out/

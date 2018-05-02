@@ -29,6 +29,10 @@ import org.slf4j.LoggerFactory
 
 import java.text.DateFormat
 
+enum ProvisioningProfileType {
+	Development, AdHoc, Enterprise, AppStore
+}
+
 class ProvisioningProfileReader {
 
 	enum EntitlementAction {
@@ -376,4 +380,15 @@ class ProvisioningProfileReader {
 		return !provisionedDevices.empty
 	}
 
+	ProvisioningProfileType getProfileType() {
+		def getTaskAllow = config.getBoolean("Entitlements.get-task-allow", false)
+		def hasDevices = !config.getList("ProvisionedDevices").empty
+		def isEnterprise = config.getBoolean("ProvisionsAllDevices", false)
+
+        if (hasDevices) {
+			return getTaskAllow ? ProvisioningProfileType.Development : ProvisioningProfileType.AdHoc
+		}
+
+		return isEnterprise ? ProvisioningProfileType.Enterprise : ProvisioningProfileType.AppStore
+	}
 }

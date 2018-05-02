@@ -20,7 +20,7 @@ public class ApplicationBundle {
 		addPluginsToAppBundle(applicationPath, bundles)
 
 		if (isDeviceBuildOf(Type.iOS)) {
-			addWatchToAppBundle(applicationPath, bundles)
+			addWatchToAppBundle(bundles)
 		}
 		bundles.add(applicationPath)
 		return bundles;
@@ -59,18 +59,11 @@ public class ApplicationBundle {
 		}
 	}
 
-	private void addWatchToAppBundle(File appBundle, ArrayList<File> bundles) {
-		File watchDirectory
-		watchDirectory = new File(appBundle, "Watch")
-		if (watchDirectory.exists()) {
-			for (File bundle : watchDirectory.listFiles()) {
-				if (bundle.isDirectory()) {
-					if (bundle.name.endsWith(".app")) {
-						addPluginsToAppBundle(bundle, bundles)
-						bundles.add(bundle)
-					}
-				}
-			}
+	private void addWatchToAppBundle(ArrayList<File> bundles) {
+		def watchAppBundle = getWatchAppBundle()
+		if (watchAppBundle != null) {
+			addPluginsToAppBundle(watchAppBundle.applicationPath, bundles)
+			bundles.add(watchAppBundle.applicationPath)
 		}
 	}
 
@@ -81,4 +74,71 @@ public class ApplicationBundle {
 		return !this.simulator
 	}
 
+	String getPlatformName() {
+		switch (type) {
+			case Type.iOS: return "iphoneos"
+			case Type.watchOS: return "watchos"
+			default: return null
+		}
+	}
+
+	File getFrameworksPath() {
+		switch (type) {
+			case Type.macOS:
+			case Type.iOS:
+			case Type.watchOS:
+				return new File(applicationPath, "Frameworks")
+            default:
+				return null
+		}
+	}
+
+	File getPlugInsPath() {
+		switch (type) {
+			case Type.macOS:
+			case Type.iOS:
+			case Type.watchOS:
+				return new File(applicationPath, "PlugIns")
+			default:
+				return null
+		}
+	}
+
+	ApplicationBundle getWatchAppBundle() {
+		if (type != Type.iOS) {
+			return null
+		}
+
+		File watchDirectory = new File(applicationPath, "Watch")
+		if (!watchDirectory.exists()) {
+			return null
+		}
+
+		File watchAppBundle = watchDirectory.listFiles().find { it.isDirectory() && it.name.endsWith(".app") }
+		if (!watchAppBundle) {
+			// TODO: print error, throw exception
+			return null
+		}
+
+		return new ApplicationBundle(watchAppBundle, Type.watchOS, simulator)
+	}
+
+    ArrayList<File> getAppExtensionBundles() {
+        File pluginsDirectory
+        File appBundle = this.applicationPath
+
+        if (this.type == Type.iOS || this.type == Type.watchOS) {
+            pluginsDirectory = new File(appBundle, "PlugIns")
+        }	else if (this.type == Type.macOS) {
+            pluginsDirectory = new File(appBundle, "Contents/PlugIns")
+        } else {
+            return []
+        }
+
+        if (pluginsDirectory.exists()) {
+            return pluginsDirectory.listFiles().findAll { it.isDirectory() && it.name.endsWith(".appex") }
+        }
+
+        return []
+    }
 }

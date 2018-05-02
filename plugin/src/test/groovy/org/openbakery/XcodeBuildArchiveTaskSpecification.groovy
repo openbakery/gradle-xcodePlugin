@@ -33,7 +33,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	PlistHelperStub plistHelper = new PlistHelperStub()
 
 	def setup() {
-
 		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
 		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -60,6 +59,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 
 		appDirectory = TestHelper.createDummyApp(buildOutputDirectory, "Example")
+
 		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
 	}
 
@@ -73,39 +73,68 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(lib, "foo")
 	}
 
-	def createSwiftLibs(Xcodebuild xcodebuild) {
+	def createSwiftLibs(Xcodebuild xcodebuild, boolean includeWatchLib = false, String platform = "iphoneos") {
 		def swiftLibs = [
-						"libswiftCore.dylib",
-						"libswiftCoreGraphics.dylib",
-						"libswiftDarwin.dylib",
-						"libswiftDispatch.dylib",
-						"libswiftFoundation.dylib",
-						"libswiftObjectiveC.dylib",
-						"libswiftSecurity.dylib",
-						"libswiftUIKit.dylib"
+				"libswiftCore.dylib",
+				"libswiftCoreGraphics.dylib",
+				"libswiftDarwin.dylib",
+				"libswiftDispatch.dylib",
+				"libswiftFoundation.dylib",
+				"libswiftObjectiveC.dylib",
+				"libswiftSecurity.dylib",
+				"libswiftUIKit.dylib"
 		]
 
-		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/iphoneos")
+		if (includeWatchLib) {
+			swiftLibs.add(0, "libswiftWatchKit.dylib")
+		}
+
+		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/$platform")
 		swiftLibsDirectory.mkdirs()
 
 		swiftLibs.each { item ->
 			File lib = new File(swiftLibsDirectory, item)
 			FileUtils.writeStringToFile(lib, "bar")
 		}
+
 		return swiftLibs
 	}
 
-	void mockSwiftLibs(Xcodebuild xcodebuild) {
-		def swiftLibs = createSwiftLibs(xcodebuild)
-		swiftLibs[0..4].each { item ->
-			File lib = new File(appDirectory, "Frameworks/" + item)
-			FileUtils.writeStringToFile(lib, "foo")
+	void mockSwiftLibs(Xcodebuild xcodebuild, File watchAppDirectory = null) {
+		def includeWatchLibs = watchAppDirectory != null
+
+		def swiftLibs = createSwiftLibs(xcodebuild, includeWatchLibs)
+		def libFiles = swiftLibs[0..4].collect { new File(appDirectory, "Frameworks/" + it) }
+
+		if (includeWatchLibs) {
+			def watchSwiftLibs = createSwiftLibs(xcodebuild, true, "watchos")
+            libFiles += watchSwiftLibs[0..4].collect { new File(watchAppDirectory, "Frameworks/" + it) }
 		}
+
+		libFiles.forEach { FileUtils.writeStringToFile(it, "foo") }
+	}
+
+	void createWatchKitStub(String platformDirectory) {
+		File stubDirectory = new File(platformDirectory, "/Developer/SDKs/iPhoneOS.sdk/Library/Application Support/WatchKit")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "WK")
+		FileUtils.writeStringToFile(stub, "fixture")
+	}
+
+	List<String> bitcodeStripCommand(File dylib, Xcodebuild xcodebuild, String platform = "iphoneos") {
+		return [
+            "/usr/bin/xcrun",
+            "bitcode_strip",
+            "${xcodebuild.toolchainDirectory}/usr/lib/swift/${platform}/${dylib.name}",
+            "-r",
+            "-o",
+            dylib.absolutePath
+		]
 	}
 
 	Xcodebuild createXcodeBuild(String version) {
 		XcodeFake xcode = createXcode(version)
-		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\n"
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  TOOLCHAIN_DIR = " + xcode.path + "/Contents/Developer/Toolchains/Swift_2.3.xctoolchain\nPLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
 		return new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 	}
 
@@ -137,9 +166,32 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
-
 	}
 
+	def setupProjectWithWatchApp(String name, String watchOSPlatformDirectory) {
+        // stub WatchKit
+		File stubDirectory = new File(watchOSPlatformDirectory, "Developer/SDKs/WatchOS.sdk/Library/Application Support/WatchKit")
+		stubDirectory.mkdirs()
+		File stub = new File(stubDirectory, "WK")
+		FileUtils.writeStringToFile(stub, "fixture")
+
+		setupProject()
+
+		File appDirectory = new File(appDirectory, "Watch/${name}.app")
+		appDirectory.mkdirs()
+
+		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
+		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
+
+        File framework = new File(appDirectory, "PlugIns/Watch.appex/Frameworks/Library.framework")
+        framework.mkdirs()
+
+        File binary = new File(framework,"Binary")
+        FileUtils.writeStringToFile(binary, "bar")
+
+		return appDirectory
+	}
 
 	def "archiveDirectory"() {
 		when:
@@ -343,26 +395,51 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
 	}
 
-	def "copy swift framework"() {
+	def "copy swift framework with bitcode enabled"() {
 		given:
 		Xcodebuild xcodebuild = createXcodeBuild("7")
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 		mockSwiftLibs(xcodebuild)
-
-		when:
-		xcodeBuildArchiveTask.archive()
+		project.xcodebuild.bitcode = true
 
 		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
 		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
 		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
+		List<String> bitcodeStrip = bitcodeStripCommand(libswiftCore, xcodebuild)
+
+		when:
+		xcodeBuildArchiveTask.archive()
 
 		then:
 		libswiftCore.exists()
 		supportLibswiftDirectory.list().length == 5
 		supportLibswiftCore.exists()
 		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
+		0 * commandRunner.run(bitcodeStrip)
 	}
 
+	def "copy swift framework with bitcode disabled"() {
+		given:
+		Xcodebuild xcodebuild = createXcodeBuild("9")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		mockSwiftLibs(xcodebuild)
+		project.xcodebuild.bitcode = false
+
+		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
+		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
+		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
+		List<String> bitcodeStrip = bitcodeStripCommand(libswiftCore, xcodebuild)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+		libswiftCore.exists()
+		supportLibswiftDirectory.list().length == 5
+		supportLibswiftCore.exists()
+		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
+		1 * commandRunner.run(bitcodeStrip)
+	}
 
 	def "copy swift with non default toolchain"() {
 		given:
@@ -634,7 +711,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	def "copy message extension support folder"() {
 		given:
 		XcodeFake xcode = createXcode("8")
-		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "Contents/Developer/Platforms/iPhoneOS.platform\n"
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> "  PLATFORM_DIR = " + xcode.path + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
 		Xcodebuild xcodebuild = new Xcodebuild(new File("."), commandRunner, xcode, new XcodebuildParameters(), [])
 		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
 
@@ -661,5 +738,85 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		supportMessagesDirectory.exists()
 		supportMessagesDirectory.list().length == 1
 		supportMessagesStub.exists()
+	}
+
+	def "copy watchkit support folder"() {
+        given:
+		Xcodebuild xcodebuild = createXcodeBuild("9")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+
+		setupProjectWithWatchApp("Example", xcodebuild.watchOSPlatformDirectory)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		File supportDirectory = new File(projectDir, "build/archive/Example.xcarchive/WatchKitSupport2")
+		File supportStub = new File(supportDirectory, 'WK')
+
+		then:
+		supportDirectory.exists()
+		supportDirectory.list().length == 1
+		supportStub.exists()
+	}
+
+	def "copy watchkit swift framework"() {
+		given:
+		Xcodebuild xcodebuild = createXcodeBuild("9")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+
+		project.xcodebuild.bitcode = false
+
+		def watchAppDirectory = setupProjectWithWatchApp("Example", xcodebuild.watchOSPlatformDirectory)
+		mockSwiftLibs(xcodebuild, watchAppDirectory)
+
+		File watchosLibswiftWatchKit = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Watch/Example.app/Frameworks/libswiftWatchKit.dylib")
+		File watchosSupportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/watchos")
+		File watchosSupportLibswiftWatchKit = new File(watchosSupportLibswiftDirectory, "libswiftWatchKit.dylib")
+		List<String> watchosBitcodeStrip = bitcodeStripCommand(watchosLibswiftWatchKit, xcodebuild, "watchos")
+
+		File iphoneosLibswiftWatchKit = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftWatchKit.dylib")
+		File iphoneosSupportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
+		File iphoneosSupportLibswiftWatchKit = new File(iphoneosSupportLibswiftDirectory, "libswiftWatchKit.dylib")
+		List<String> iphoneosBitcodeStrip = bitcodeStripCommand(iphoneosLibswiftWatchKit, xcodebuild)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+		watchosLibswiftWatchKit.exists()
+		watchosSupportLibswiftDirectory.list().length == 5
+		watchosSupportLibswiftWatchKit.exists()
+		FileUtils.readFileToString(watchosSupportLibswiftWatchKit).equals("bar")
+		0 * commandRunner.run(watchosBitcodeStrip)
+
+		iphoneosLibswiftWatchKit.exists()
+		iphoneosSupportLibswiftDirectory.list().length == 5
+		iphoneosSupportLibswiftWatchKit.exists()
+		FileUtils.readFileToString(iphoneosSupportLibswiftWatchKit).equals("bar")
+		1 * commandRunner.run(iphoneosBitcodeStrip)
+	}
+
+	def "copy frameworks into watch appex"() {
+		given:
+		Xcodebuild xcodebuild = createXcodeBuild("9")
+		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
+		project.xcodebuild.bitcode = false
+
+        def watchosBuildDir = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-watchos")
+        TestHelper.createWatchOSOutput(watchosBuildDir, "Watch")
+
+		setupProjectWithWatchApp("Example", xcodebuild.watchOSPlatformDirectory)
+
+		when:
+		xcodeBuildArchiveTask.archive()
+
+		then:
+        File frameworkPath = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Watch/Example.app/Plugins/Watch.appex/Frameworks/Library.framework")
+		File binaryPath = new File(frameworkPath, "Binary")
+
+        binaryPath.exists()
+        FileUtils.readFileToString(binaryPath).equals("foo")
+        !new File(frameworkPath, "Headers").exists()
+        !new File(frameworkPath, "Modules").exists()
 	}
 }

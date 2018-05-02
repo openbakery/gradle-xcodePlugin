@@ -150,4 +150,15 @@ class XcodebuildParameters {
 		}
 		return new File(getSymRoot(), configuration)
 	}
+
+	File getWatchOutputPath() {
+		if (type == Type.iOS) {
+			if (simulator) {
+				return new File(getSymRoot(), "${configuration}-watchosimulator")
+			} else {
+				return new File(getSymRoot(), "${configuration}-watchos")
+			}
+		}
+		return new File(getSymRoot(), configuration)
+	}
 }

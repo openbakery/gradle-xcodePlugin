@@ -1,6 +1,7 @@
 package org.openbakery.coverage
 
 import org.gradle.api.Project
+import org.openbakery.xcode.Destination
 
 class CoveragePluginExtension {
 
@@ -8,6 +9,7 @@ class CoveragePluginExtension {
 	def String exclude = null
 	def String include = null
 	def String outputFormat = null
+	def List<Destination> testResultDestinations
 
 	private final Project project
 
@@ -26,6 +28,9 @@ class CoveragePluginExtension {
 		this.outputDirectory = outputDirectory
 	}
 
+	void setTestResultDestinations(List<Destination> destinations){
+		testResultDestinations = destinations
+	}
 
 	String[] getOutputParameter() {
 		if (outputFormat != null) {

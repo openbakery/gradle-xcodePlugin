@@ -69,7 +69,7 @@ uploadArchives {
 			repository(url: publishURL) {
 				authentication(userName: publishUser, password: publishPassword)
 			}
-			
+
 			pom.project {
 				licenses {
 					license {
