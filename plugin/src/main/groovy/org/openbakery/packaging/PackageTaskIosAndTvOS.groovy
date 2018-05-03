@@ -26,6 +26,8 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	private static final String PLIST_KEY_COMPILE_BITCODE = "compileBitcode"
 	private static final String PLIST_KEY_PROVISIONING_PROFILE = "provisioningProfiles"
 	private static final String PLIST_KEY_SIGNING_CERTIFICATE = "signingCertificate"
+	private static final String PLIST_VALUE_SIGNING_METHOD_MANUAL = "manual"
+
 
 	PackageTaskIosAndTvOS() {
 		super()
@@ -113,30 +115,40 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		File file = getExportOptionsPlistFile()
 
 		plistHelper.create(file)
-		plistHelper.addValueForPlist(file,
-				PLIST_KEY_METHOD,
+
+		// Signing  method
+		addStringValueForPlist(PLIST_KEY_METHOD,
 				getMethod().value)
 
-		// provisioning profiles
+		// Provisioning profiles map list
 		HashMap<String, String> map = new HashMap<>()
 		map.put(reader.getApplicationIdentifier(), reader.getName())
 		plistHelper.addDictForPlist(file,
 				PLIST_KEY_PROVISIONING_PROFILE,
 				map)
 
-		// certificate
-		plistHelper.addValueForPlist(file,
-				PLIST_KEY_SIGNING_CERTIFICATE,
+		// Certificate name
+		addStringValueForPlist(PLIST_KEY_SIGNING_CERTIFICATE,
 				getSignatureFriendlyName())
 
-		// BitCode should be compiled only for AppStore builds
+		// BitCode
 		plistHelper.addValueForPlist(file,
 				PLIST_KEY_COMPILE_BITCODE,
 				getBitCode())
 
-		plistHelper.addValueForPlist(file,
-				PLIST_KEY_SIGNING_STYLE,
-				"manual")
+		// SigningMethod
+		addStringValueForPlist(PLIST_KEY_SIGNING_STYLE,
+				PLIST_VALUE_SIGNING_METHOD_MANUAL)
+	}
+
+	private void addStringValueForPlist(String key,
+										String value) {
+		assert key != null
+		assert value != null
+
+		plistHelper.addValueForPlist(getExportOptionsPlistFile(),
+				key,
+				value)
 	}
 
 	private void packageIt() {
