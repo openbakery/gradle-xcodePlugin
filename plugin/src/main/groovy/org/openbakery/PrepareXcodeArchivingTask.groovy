@@ -15,6 +15,7 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 	private ProvisioningProfileReader reader
 	private final File outputFile
 
+	public static final String DESCRIPTION = "Prepare the archive configuration file"
 	public static final String NAME = "prepareArchiving"
 
 	private static final String KEY_BUNDLE_IDENTIFIER = "PRODUCT_BUNDLE_IDENTIFIER"
@@ -32,7 +33,7 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 
-		this.description = "Prepare the archive configuration file"
+		this.description = DESCRIPTION
 		this.outputFile = PathHelper.resolveXcConfigFile(project)
 	}
 
@@ -62,7 +63,8 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		append(KEY_PROVISIONING_PROFILE_SPEC, reader.getName())
 
 		Optional.ofNullable(getXcodeExtension().signing.entitlementsFile)
-			.ifPresent(new Consumer<File>() {
+				.filter { File file -> file.exists() }
+				.ifPresent(new Consumer<File>() {
 			@Override
 			void accept(File file) {
 				append(KEY_CODE_SIGN_ENTITLEMENTS, file.absolutePath)

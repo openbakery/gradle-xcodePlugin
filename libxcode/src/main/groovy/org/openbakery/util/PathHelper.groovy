@@ -12,9 +12,8 @@ class PathHelper {
 	public static final String IPHONE_OS = "iphoneos"
 	public static final String FOLDER_ARCHIVE = "archive"
 	public static final String FOLDER_PACKAGE = "package"
-
-	private static final String ARCHIVE_FILE_NAME = "archive.xcconfig"
-	private static final String EXTENSION_XC_ARCHIVE = ".xcarchive"
+	public static final String ARCHIVE_FILE_NAME = "archive.xcconfig"
+	public static final String EXTENSION_XC_ARCHIVE = ".xcarchive"
 
 	static File resolvePath(Type type,
 							boolean simulator,

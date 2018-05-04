@@ -1,5 +1,6 @@
 package org.openbakery
 
+import groovy.transform.TypeChecked
 import org.gradle.api.logging.LogLevel
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
@@ -13,6 +14,7 @@ import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodebuildParameters
 
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
@@ -20,6 +22,7 @@ import java.util.regex.Pattern
  * Date: 15.07.13
  * Time: 11:57
  */
+@TypeChecked
 abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	XcodebuildParameters parameters = new XcodebuildParameters()
@@ -116,13 +119,14 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		List<File> provisioningList = getProvisioningUriList()
 				.collect { it -> new File(new URI(it)) }
 
+		println "provisioningList : " + provisioningList
+
 		return Optional.ofNullable(ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
 				provisioningList,
 				commandRunner,
 				plistHelper)).orElseThrow {
 			new IllegalArgumentException("Cannot resolve a valid provisioning " +
-					"profile for bundle identifier : " +
-					bundleIdentifier)
+					"profile for bundle identifier : " + bundleIdentifier)
 		}
 	}
 
@@ -135,22 +139,51 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 				.split(System.getProperty("line.separator"))
 				.find { PATTERN.matcher(it).matches() })
 				.map { PATTERN.matcher(it) }
-				.filter { it.matches() }
-				.map { it.group("friendlyName") }
-				.orElseThrow {
+				.filter { Matcher it -> it.matches() }
+				.map { Matcher it ->
+			return it.group("friendlyName")
+		}
+		.orElseThrow {
 			new IllegalArgumentException("Failed to resolve the code signing identity from the certificate ")
 		}
 	}
 
 	private String getKeyContent() {
-		File file = new File(URI.create(getXcodeExtension().signing.certificateURI))
-		assert file.exists()
-		return commandRunner.runWithResult(["openssl",
-											"pkcs12",
-											"-nokeys",
-											"-in",
-											file.absolutePath,
-											"-passin",
-											"pass:" + getXcodeExtension().signing.certificatePassword])
+		final String certificatePassword = getCertificatePassword()
+		return Optional.ofNullable(getCertificateFile())
+				.filter { File file -> file.exists() }
+				.map { File file ->
+			return commandRunner.runWithResult(["openssl",
+												"pkcs12",
+												"-nokeys",
+												"-in",
+												file.absolutePath,
+												"-passin",
+												"pass:" + certificatePassword])
+		}
+		.orElseThrow {
+			new IllegalArgumentException("Cannot resolve the content of the certificate file : ${getCertificateFile().absolutePath}")
+		}
+
+	}
+
+	private File getCertificateFile() {
+		return new File(URI.create(getCertificateString()))
+	}
+
+	private String getCertificateString() throws IllegalArgumentException {
+		return Optional.ofNullable(getXcodeExtension().signing.certificateURI)
+				.filter { String it -> it != null && !it.isEmpty() }
+				.orElseThrow {
+			new IllegalArgumentException("The certificateURI value is null or empty : " + getXcodeExtension().signing.certificateURI)
+		}
+	}
+
+	private String getCertificatePassword() {
+		return Optional.ofNullable(getXcodeExtension().signing.certificatePassword)
+				.filter { it != null && !it.isEmpty() }
+				.orElseThrow {
+			new IllegalArgumentException("The signing certificate password is not defined")
+		}
 	}
 }

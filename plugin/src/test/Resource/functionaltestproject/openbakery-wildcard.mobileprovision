@@ -1,0 +1,42 @@
+// a Dummy Mobile Provistioning File to test the ProvisioningProfileIDReader
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ApplicationIdentifierPrefix</key>
+	<array>
+		<string>AAAAAAAAAAA</string>
+	</array>
+	<key>CreationDate</key>
+	<date>2011-06-16T08:57:51Z</date>
+	<key>DeveloperCertificates</key>
+	<array>
+		<data>
+		</data>
+	</array>
+	<key>Entitlements</key>
+	<dict>
+		<key>application-identifier</key>
+		<string>AAAAAAAAAAA.org.openbakery.test.Example.*</string>
+		<key>get-task-allow</key>
+		<false/>
+		<key>keychain-access-groups</key>
+		<array>
+			<string>AAAAAAAAAAA.*</string>
+		</array>
+	</dict>
+	<key>ExpirationDate</key>
+	<date>2079-07-04T08:57:51Z</date>
+	<key>Name</key>
+	<string>ad hoc</string>
+	<key>ProvisionedDevices</key>
+	<array>
+		<string>1234asdf</string>
+	</array>
+	<key>TimeToLive</key>
+	<integer>24855</integer>
+	<key>UUID</key>
+	<string>XXXXFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF</string>
+	<key>Version</key>
+	<integer>1</integer>
+</dict>
+</plist>

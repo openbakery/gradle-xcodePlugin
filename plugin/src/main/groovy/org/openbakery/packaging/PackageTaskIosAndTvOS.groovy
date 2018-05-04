@@ -19,6 +19,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	private ProvisioningProfileReader reader
 
+	public static final String DESCRIPTION = "Package the IPA from the generate archive by using Xcodebuild"
 	public static final String NAME = "packageWithXcodeBuild"
 
 	private static final String PLIST_KEY_METHOD = "method"
@@ -27,16 +28,19 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	private static final String PLIST_KEY_PROVISIONING_PROFILE = "provisioningProfiles"
 	private static final String PLIST_KEY_SIGNING_CERTIFICATE = "signingCertificate"
 	private static final String PLIST_VALUE_SIGNING_METHOD_MANUAL = "manual"
-
+	private static final String FILE_EXPORT_OPTIONS_PLIST = "exportOptions.plist"
 
 	PackageTaskIosAndTvOS() {
 		super()
+
+		description = DESCRIPTION
 
 		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
 		finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+
 
 		onlyIf(new Spec<Task>() {
 			@Override
@@ -45,6 +49,11 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 						getXcodeExtension().getType() == Type.tvOS
 			}
 		})
+	}
+
+	@Override
+	File getProvisioningFile() {
+		return super.getProvisioningFile()
 	}
 
 	@Input
@@ -70,6 +79,12 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	}
 
 	@Input
+	@Override
+	String getSignatureFriendlyName() {
+		return super.getSignatureFriendlyName()
+	}
+
+	@Input
 	SigningMethod getMethod() {
 		return Optional.ofNullable(getXcodeExtension().getSigning().method)
 				.orElseThrow { new IllegalArgumentException("Invalid signing method") }
@@ -78,7 +93,16 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	@Input
 	String getScheme() {
 		return Optional.ofNullable(getXcodeExtension().scheme)
-				.orElseThrow { new IllegalArgumentException("Invalid signing method") }
+				.orElseThrow { new IllegalArgumentException("Invalid scheme") }
+	}
+
+	@Input
+	Map<String, String> getProvisioningMap() {
+		setupProvisioningProfileReader()
+
+		HashMap<String, String> map = new HashMap<>()
+		map.put(reader.getApplicationIdentifier(), reader.getName())
+		return map
 	}
 
 	@InputDirectory
@@ -95,20 +119,21 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@OutputFile
 	File getExportOptionsPlistFile() {
-		return new File(project.buildDir, "exportOptions.plist")
+		return new File(project.buildDir, FILE_EXPORT_OPTIONS_PLIST)
 	}
 
 	@TaskAction
 	private void packageArchive() {
 		assert getArchiveFile().exists() && getArchiveFile().isDirectory()
-		setupProvisioningProfileReader()
 		generateExportOptionPlist()
 		packageIt()
 	}
 
 	private void setupProvisioningProfileReader() {
-		reader = new ProvisioningProfileReader(getProvisioningFile()
-				, commandRunner)
+		if (reader == null) {
+			reader = new ProvisioningProfileReader(getProvisioningFile(),
+					commandRunner)
+		}
 	}
 
 	private void generateExportOptionPlist() {
@@ -121,11 +146,9 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 				getMethod().value)
 
 		// Provisioning profiles map list
-		HashMap<String, String> map = new HashMap<>()
-		map.put(reader.getApplicationIdentifier(), reader.getName())
 		plistHelper.addDictForPlist(file,
 				PLIST_KEY_PROVISIONING_PROFILE,
-				map)
+				getProvisioningMap())
 
 		// Certificate name
 		addStringValueForPlist(PLIST_KEY_SIGNING_CERTIFICATE,
