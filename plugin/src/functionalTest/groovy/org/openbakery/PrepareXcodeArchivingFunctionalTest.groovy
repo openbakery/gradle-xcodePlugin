@@ -91,7 +91,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 				.withPluginClasspath(pluginClasspath)
 				.buildAndFail()
 
-		then:
+		then: "The build should fail due to invalidate configuration"
 		result.output.contains("> Cannot resolve a valid provisioning profile for bundle identifier : "
 				+ exceptionValue)
 
@@ -120,7 +120,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 				.withPluginClasspath(pluginClasspath)
 				.buildAndFail()
 
-		then:
+		then: "The build should fail due to invalidate configuration"
 		result.output.contains("The signing certificate password is not defined")
 	}
 
@@ -161,13 +161,16 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 
 		then: "The task should complete without error"
 
-		result.task(":" + PrepareXcodeArchivingTask.NAME).outcome == TaskOutcome.SUCCESS
+		result.task(":" + PrepareXcodeArchivingTask.NAME)
+				.outcome == TaskOutcome.SUCCESS
 
 		and: "The archive xcconfig file should be properly generated and populated from configured values"
 
 		File outputFile = new File(testProjectDir.root, "build/"
 				+ PathHelper.FOLDER_ARCHIVE
 				+ "/" + PathHelper.ARCHIVE_FILE_NAME)
+
+		outputFile.exists()
 
 		String text = outputFile.text
 		text.contains("PRODUCT_BUNDLE_IDENTIFIER = org.openbakery.test.ExampleWidget")
