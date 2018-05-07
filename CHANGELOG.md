@@ -2,6 +2,13 @@
 
 Bugfixes
 * Enabled codesigning for iOS Simuator builds, otherwise unit tests with binary frameworks does not workspace. Issue #378
+* Updated WatchKit Support. Issue #390
+* Updated Cartage Support
+ * Only build specific platform. Issue #384
+ * Bootstrap support: Issue # 389
+* Support for transformations on build settings. Issue #382
+* Updated path for the codecoverage in Xcode 9. Issue #381
+* Update keychain partition list. Issue #375
 
 # 0.15.2 (January 24, 2018)
 
