@@ -1,4 +1,4 @@
-# 0.15.3 (TBA)
+# 0.15.3 (May 7, 2018)
 
 Bugfixes
 * Enabled codesigning for iOS Simuator builds, otherwise unit tests with binary frameworks does not workspace. Issue #378
