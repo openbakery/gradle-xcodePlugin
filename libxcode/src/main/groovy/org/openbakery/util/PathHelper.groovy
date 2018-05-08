@@ -12,8 +12,8 @@ class PathHelper {
 	public static final String IPHONE_OS = "iphoneos"
 	public static final String FOLDER_ARCHIVE = "archive"
 	public static final String FOLDER_PACKAGE = "package"
-	public static final String ARCHIVE_FILE_NAME = "archive.xcconfig"
-	public static final String EXTENSION_XC_ARCHIVE = ".xcarchive"
+	public static final String GENERATED_XCARCHIVE_FILE_NAME = "archive.xcconfig"
+	public static final String EXTENSION_XCARCHIVE = ".xcarchive"
 
 	static File resolvePath(Type type,
 							boolean simulator,
@@ -82,7 +82,7 @@ class PathHelper {
 
 	static File resolveArchiveFile(Project project,
 								   String scheme) {
-		return new File(resolveArchiveFolder(project), scheme + EXTENSION_XC_ARCHIVE)
+		return new File(resolveArchiveFolder(project), scheme + EXTENSION_XCARCHIVE)
 	}
 
 	static File resolveArchivingLogFile(Project project) {
@@ -90,7 +90,7 @@ class PathHelper {
 	}
 
 	static File resolveXcConfigFile(Project project) {
-		return new File(resolveArchiveFolder(project), ARCHIVE_FILE_NAME)
+		return new File(resolveArchiveFolder(project), GENERATED_XCARCHIVE_FILE_NAME)
 	}
 
 	static File resolvePackageFolder(Project project) {

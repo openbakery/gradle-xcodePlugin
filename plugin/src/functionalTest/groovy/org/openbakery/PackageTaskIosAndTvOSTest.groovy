@@ -1,8 +1,9 @@
-package org.openbakery.packaging
+package org.openbakery
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import org.openbakery.packaging.PackageTaskIosAndTvOS
 import spock.lang.Specification
 
 class PackageTaskIosAndTvOSTest extends Specification {

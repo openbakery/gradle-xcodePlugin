@@ -168,7 +168,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 
 		File outputFile = new File(testProjectDir.root, "build/"
 				+ PathHelper.FOLDER_ARCHIVE
-				+ "/" + PathHelper.ARCHIVE_FILE_NAME)
+				+ "/" + PathHelper.GENERATED_XCARCHIVE_FILE_NAME)
 
 		outputFile.exists()
 
