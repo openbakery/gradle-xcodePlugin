@@ -30,6 +30,7 @@ import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.archiving.XcodeBuildArchiveTask
 import org.openbakery.archiving.XcodeBuildArchiveTaskIosAndTvOS
 import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
+import org.openbakery.carthage.CarthageBootStrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
@@ -117,6 +118,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
+	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
 
@@ -614,16 +616,16 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageUpdateTask carthageUpdateTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME)
-		CarthageCleanTask carthageCleanTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME)
+		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
+		addDependencyToBuild(project, bootStrapTask)
 
-		if (carthageUpdateTask.hasCartFile()) {
-			addDependencyToBuild(project, carthageUpdateTask)
-			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(carthageCleanTask);
-		}
+		project.getTasks()
+				.getByName(BasePlugin.CLEAN_TASK_NAME)
+				.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
 	}
 
 	private void configureOCLint(Project project) {

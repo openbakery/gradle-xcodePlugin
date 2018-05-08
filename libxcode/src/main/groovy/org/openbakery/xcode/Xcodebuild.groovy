@@ -66,6 +66,8 @@ class Xcodebuild {
 						File xcConfig) {
 		outputPath.mkdirs()
 
+		println "version : " + xcode.version
+
 		assert scheme != null
 		assert outputPath.isDirectory()
 		assert xcConfig.exists() && !xcConfig.isDirectory()

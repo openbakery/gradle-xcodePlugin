@@ -34,7 +34,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	PlistHelperStub plistHelper = new PlistHelperStub()
 
 	def setup() {
-
 		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
 		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
