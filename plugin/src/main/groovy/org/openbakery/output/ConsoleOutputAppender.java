@@ -15,7 +15,6 @@ public class ConsoleOutputAppender implements OutputAppender {
 	@Override
 	public void append(String line) {
 		output.withStyle(StyledTextOutput.Style.Info).println(line);
-
 	}
 
 }
