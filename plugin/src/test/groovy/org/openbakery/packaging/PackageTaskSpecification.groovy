@@ -210,7 +210,7 @@ class PackageTaskSpecification extends Specification {
 	def "swift Framework xcode 6"() {
 		given:
 		mockXcodeVersion()
-		project.xcodebuild.version = 6
+		project.xcodebuild.version.set("6")
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true, false, false)
 
@@ -228,7 +228,7 @@ class PackageTaskSpecification extends Specification {
 	def "SwiftSupport should be added for Appstore IPA"() {
 		given:
 		mockXcodeVersion()
-		project.xcodebuild.version = 7
+		project.xcodebuild.version.set("7")
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true, false, false)
 
@@ -246,7 +246,7 @@ class PackageTaskSpecification extends Specification {
 	def "SwiftSupport should not be added for AdHoc IPA"() {
 		given:
 		mockXcodeVersion()
-		project.xcodebuild.version = 7
+		project.xcodebuild.version.set("7")
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true)
 

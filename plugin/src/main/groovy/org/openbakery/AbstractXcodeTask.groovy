@@ -52,7 +52,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		security = new Security(commandRunner)
 	}
 
-
 	/**
 	 * Copies a file to a new location
 	 *
@@ -77,7 +76,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 		ant.exec(failonerror: "true",
-								executable: 'ditto') {
+				executable: 'ditto') {
 			arg(value: source.absolutePath)
 			arg(value: destinationPath.absolutePath)
 		}
@@ -102,7 +101,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		}
 
 		try {
-			ant.get(src: address, dest: toDirectory.getPath(), verbose:true)
+			ant.get(src: address, dest: toDirectory.getPath(), verbose: true)
 		} catch (Exception ex) {
 			logger.error("cannot download file from the given location: {}", address)
 			throw ex
@@ -151,7 +150,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		logger.debug("baseDirectory: {} ", baseDirectory)
 
 		for (File file : filesToZip) {
-			logger.debug("create of: {}: {}", file, file.exists() )
+			logger.debug("create of: {}: {}", file, file.exists())
 		}
 
 		def arguments = []
@@ -166,8 +165,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		logger.debug("arguments: {}", arguments)
 
 		ant.exec(failonerror: 'true',
-						executable: '/usr/bin/zip',
-						dir: baseDirectory) {
+				executable: '/usr/bin/zip',
+				dir: baseDirectory) {
 
 			for (def argument : arguments) {
 				arg(value: argument)
@@ -189,7 +188,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	List<File> getAppBundles(File appPath) {
-		ApplicationBundle applicationBundle = new ApplicationBundle(new File(appPath,project.xcodebuild.applicationBundle.name), project.xcodebuild.type, project.xcodebuild.simulator)
+		ApplicationBundle applicationBundle = new ApplicationBundle(new File(appPath, project.xcodebuild.applicationBundle.name), project.xcodebuild.type, project.xcodebuild.simulator)
 		return applicationBundle.getBundles()
 	}
 
@@ -208,7 +207,10 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 	String getProjectXcodeVersion() {
-		return project.xcodebuild.xcodeVersion
+		return project.extensions.
+				getByType(XcodeBuildPluginExtension).
+				version.
+				getOrNull()
 	}
 
 	DestinationResolver getDestinationResolver() {

@@ -18,6 +18,7 @@ package org.openbakery
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
 import org.openbakery.util.PathHelper
@@ -27,38 +28,10 @@ import org.openbakery.xcode.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/*
-
-^
-should be migrated to this -> and renamed to Device
-
-enum Devices {
-	PHONE(1<<0),
-	PAD(1<<1),
-	WATCH(1<<2),
-	TV(1<<3)
-
-	private final int value;
-
-	Devices(int value) {
-		this.value = value
-	}
-
-	public int getValue() {
-		return value
-	}
-
-	public boolean is(Devices device) {
-		return (this.value & device.value) > 0
-	}
-
-}
- */
-
-
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
+	final Property<String> version
 
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
@@ -113,6 +86,9 @@ class XcodeBuildPluginExtension {
 
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
+
+		this.version = project.objects.property(String)
+
 		this.signing = new Signing(project)
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
@@ -281,14 +257,6 @@ class XcodeBuildPluginExtension {
 				this.environment.put(environmentString.substring(0, index), environmentString.substring(index + 1))
 			}
 		}
-	}
-
-
-	void setVersion(String version) {
-		this.xcodeVersion = version
-		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
-		xcode = null
-		//getXcode()
 	}
 
 
