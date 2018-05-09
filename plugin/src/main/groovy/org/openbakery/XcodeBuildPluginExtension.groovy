@@ -32,6 +32,7 @@ class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
 	final Property<String> version
+	final Signing signing
 
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
@@ -50,7 +51,7 @@ class XcodeBuildPluginExtension {
 	Object symRoot
 	Object sharedPrecompsDir
 	Object derivedDataPath
-	Signing signing = null
+
 	def additionalParameters = null
 	String bundleNameSuffix = null
 	List<String> arch = null
@@ -87,9 +88,10 @@ class XcodeBuildPluginExtension {
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
 
+		this.signing = project.objects.newInstance(Signing, project)
 		this.version = project.objects.property(String)
 
-		this.signing = new Signing(project)
+
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(commandRunner)

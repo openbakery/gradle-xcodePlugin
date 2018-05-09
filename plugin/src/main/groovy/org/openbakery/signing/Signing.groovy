@@ -4,6 +4,8 @@ import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.CodesignParameters
 
+import javax.inject.Inject
+
 /**
  *
  * @author René Pirringer
@@ -40,7 +42,8 @@ class Signing {
 
 	private SigningMethod method
 
-	public Signing(Project project) {
+	@Inject
+	Signing(Project project) {
 		this.project = project;
 		this.commandRunner = new CommandRunner()
 
