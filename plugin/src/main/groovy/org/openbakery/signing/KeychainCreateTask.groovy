@@ -38,6 +38,8 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	@Input
 	final Property<Integer> keychainTimeout = project.objects.property(Integer)
 
+	static final String KEYCHAIN_DEFAULT_PASSWORD = "This_is_the_default_keychain_password"
+
 	private File temporaryCertificateFile
 
 	KeychainCreateTask() {
@@ -90,7 +92,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	private void createKeyChainAndImportCertificate() {
 		security.get()
 				.createKeychain(keyChainFile.asFile.getOrNull(),
-				certificatePassword.get())
+				KEYCHAIN_DEFAULT_PASSWORD)
 
 		security.get()
 				.importCertificate(temporaryCertificateFile,
@@ -108,7 +110,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 		if (systemVersion.minor >= 12) {
 			security.get().setPartitionList(keyChainFile.asFile.get(),
-					certificatePassword.get())
+					KEYCHAIN_DEFAULT_PASSWORD)
 		}
 
 	}

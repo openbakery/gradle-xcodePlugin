@@ -3,7 +3,7 @@ package org.openbakery.util
 import org.openbakery.xcode.Version
 
 class SystemUtil {
-	public static Version getOsVersion() {
+	static Version getOsVersion() {
 		Version result = new Version()
 		String versionString = System.getProperty("os.version")
 		Scanner scanner = new Scanner(versionString).useDelimiter("\\.")

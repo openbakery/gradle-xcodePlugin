@@ -27,7 +27,7 @@ class Signing {
 	String identity
 
 	List<String> mobileProvisionURI = null
-	String keychainPassword = "This_is_the_default_keychain_password"
+
 	String plugin
 	Object entitlementsFile
 
@@ -91,7 +91,7 @@ class Signing {
 		if (!mobileProvision.exists()) {
 			throw new IllegalArgumentException("given mobile provision file does not exist: " + mobileProvision.absolutePath)
 		}
-		mobileProvisionFile.add(mobileProvision)
+		mobileProvisionFile.add(This_is_the_default_keychain_passwordmobileProvision)
 	}
 
 
