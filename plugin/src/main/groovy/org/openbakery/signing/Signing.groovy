@@ -1,27 +1,33 @@
 package org.openbakery.signing
 
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.CodesignParameters
 
 import javax.inject.Inject
 
-/**
- *
- * @author René Pirringer
- *
- */
 class Signing {
+
+	final DirectoryProperty signingDestinationRoot = project.layout.directoryProperty()
+	final Property<String> certificatePassword
+	final Property<Integer> timeout = project.objects.property(Integer)
+	final RegularFileProperty certificate
+	final RegularFileProperty keychain = project.layout.fileProperty()
+	final RegularFileProperty keyChainFile = project.layout.fileProperty()
+
+	@Internal
+	Object keychainPathInternal
 
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
 	String identity
-	String certificateURI
-	String certificatePassword
+
 	List<String> mobileProvisionURI = null
 	String keychainPassword = "This_is_the_default_keychain_password"
-	File keychain
-	Integer timeout = 3600
 	String plugin
 	Object entitlementsFile
 
@@ -30,74 +36,45 @@ class Signing {
 	/**
 	 * internal parameters
 	 */
-	Object signingDestinationRoot
-	Object keychainPathInternal
-	final Project project
-	final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
+	private final Project project
+	private final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
 	CommandRunner commandRunner
 
-
-	Object mobileProvisionDestinationRoot
 	List<File> mobileProvisionFile = new ArrayList<File>()
 
 	private SigningMethod method
 
 	@Inject
 	Signing(Project project) {
-		this.project = project;
+		this.project = project
+		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
+		this.certificate = project.layout.fileProperty()
+		this.certificatePassword = project.objects.property(String)
 		this.commandRunner = new CommandRunner()
-
-		this.signingDestinationRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("codesign")
-		}
-
-		this.keychainPathInternal = {
-			if (this.keychain != null) {
-				return this.keychain
-			}
-			return new File(this.signingDestinationRoot, keychainName)
-		}
-
-		this.mobileProvisionDestinationRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("provision")
-		}
-
+		this.keyChainFile.set(signingDestinationRoot.file(keychainName))
+		this.timeout.set(3600)
 	}
 
 	void setKeychain(Object keychain) {
 		if (keychain instanceof String && keychain.matches("^~/.*")) {
 			keychain = keychain.replaceFirst("~", System.getProperty('user.home'))
 		}
-		this.keychain = project.file(keychain)
+		this.keychain.set(project.file(keychain))
 	}
 
 	public void setMethod(String method) {
 		this.method = SigningMethod.fromString(method)
-				.orElseThrow { new IllegalArgumentException("Method : $method is not a valid export method") }
+				.orElseThrow {
+			new IllegalArgumentException("Method : $method is not a valid export method")
+		}
 	}
 
 	SigningMethod getMethod() {
 		return method
 	}
 
-	File getSigningDestinationRoot() {
-		return project.file(signingDestinationRoot)
-	}
-
-	void setSigningDestinationRoot(Object keychainDestinationRoot) {
-		this.signingDestinationRoot = keychainDestinationRoot
-	}
-
 	File getKeychainPathInternal() {
 		return project.file(keychainPathInternal)
-	}
-
-	File getMobileProvisionDestinationRoot() {
-		return project.file(mobileProvisionDestinationRoot)
-	}
-
-	void setMobileProvisionDestinationRoot(Object mobileProvisionDestinationRoot) {
-		this.mobileProvisionDestinationRoot = mobileProvisionDestinationRoot
 	}
 
 	void setMobileProvisionURI(Object mobileProvisionURI) {
@@ -146,6 +123,10 @@ class Signing {
 
 	}
 
+	void setCertificateURI(String uri) {
+		certificate.set(new File(new URI(uri)))
+	}
+
 	@Override
 	public String toString() {
 		if (this.keychain != null) {
@@ -157,8 +138,8 @@ class Signing {
 		}
 		return "Signing{" +
 				" identity='" + identity + '\'' +
-				", certificateURI='" + certificateURI + '\'' +
-				", certificatePassword='" + certificatePassword + '\'' +
+				", certificateURI='" + certificate.getOrNull() + '\'' +
+				", certificatePassword='" + certificatePassword.getOrNull() + '\'' +
 				", mobileProvisionURI='" + mobileProvisionURI + '\'' +
 				'}';
 	}

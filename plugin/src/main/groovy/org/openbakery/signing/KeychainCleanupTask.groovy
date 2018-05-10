@@ -16,7 +16,6 @@
 package org.openbakery.signing
 
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.XcodeBuildPluginExtension
 
 class KeychainCleanupTask extends AbstractKeychainTask {
 
@@ -29,11 +28,11 @@ class KeychainCleanupTask extends AbstractKeychainTask {
 
 	@TaskAction
 	def clean() {
-		if (project.xcodebuild.signing.keychain) {
-			logger.debug("Nothing to cleanup")
-			return
-		}
-		cleanupKeychain()
+//		if (project.xcodebuild.signing.keychain) {
+//			logger.debug("Nothing to cleanup")
+//			return
+//		}
+//		cleanupKeychain()
 	}
 
 }

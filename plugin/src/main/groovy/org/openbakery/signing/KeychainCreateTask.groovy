@@ -15,70 +15,109 @@
  */
 package org.openbakery.signing
 
+import groovy.transform.CompileStatic
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.InvalidUserDataException
-import org.openbakery.xcode.Type
-import org.openbakery.XcodePlugin
+import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.util.FileUtil
+import org.openbakery.util.SystemUtil
+import org.openbakery.xcode.Version
 
+@CompileStatic
 class KeychainCreateTask extends AbstractKeychainTask {
 
+	@InputFile
+	final RegularFileProperty certificateFile = newInputFile()
+
+	@Input
+	final Property<String> certificatePassword = project.objects.property(String)
+
+	@Input
+	final Property<Integer> keychainTimeout = project.objects.property(Integer)
+
+	private File temporaryCertificateFile
 
 	KeychainCreateTask() {
 		super()
 		this.description = "Create a keychain that is used for signing the app"
+		onlyIf {
+			XcodeBuildPluginExtension extension = project
+					.getExtensions()
+					.findByType(XcodeBuildPluginExtension)
+
+			Signing signing = extension.signing
+
+			if (!signing.certificate.present)
+				logger.warn("Not signing certificate defined, will skip the keychain creation")
+
+			if (!signing.certificatePassword.present)
+				logger.warn("Not signing certificate password defined, will skip the keychain creation")
+
+			if (keyChainFile.present && keyChainFile.asFile.get().exists()) {
+				logger.debug("Using keychain : " + keyChainFile.get())
+			}
+
+			return (signing.certificate.present &&
+					signing.certificatePassword.present) ||
+					(keyChainFile.present && keyChainFile.asFile.get().exists())
+		}
 	}
 
 	@TaskAction
-	def create() {
+	void create() {
+		createTemporaryCertificateFile()
+		createKeyChainAndImportCertificate()
+		addKeyChainToThePartitionList()
+		setupOptionalTimeout()
+	}
 
+	private void createTemporaryCertificateFile() {
+		temporaryCertificateFile = FileUtil.download(project,
+				outputDirectory.asFile.get(),
+				certificateFile.asFile.get().toURI().toString())
 
-
-		if (project.xcodebuild.signing.keychain) {
-			if (!project.xcodebuild.signing.keychain.exists()) {
-				throw new IllegalStateException("Keychain not found: " + project.xcodebuild.signing.keychain.absolutePath)
+		// Delete the temporary file on completion
+		project.gradle.buildFinished {
+			if (temporaryCertificateFile.exists()) {
+				temporaryCertificateFile.delete()
 			}
-			logger.debug("Using keychain {}", project.xcodebuild.signing.keychain)
-			logger.debug("Internal keychain {}", project.xcodebuild.signing.keychainPathInternal)
-			return
-		}
-
-		if (project.xcodebuild.signing.certificateURI == null) {
-			logger.debug("not certificateURI specifed so do not create the keychain");
-			return
-		}
-
-
-		if (project.xcodebuild.signing.certificatePassword == null) {
-			throw new InvalidUserDataException("Property project.xcodebuild.signing.certificatePassword is missing")
-		}
-
-		// first cleanup old keychain
-		cleanupKeychain()
-
-		def certificateFile = download(project.xcodebuild.signing.signingDestinationRoot, project.xcodebuild.signing.certificateURI)
-
-		File keychain = project.xcodebuild.signing.keychainPathInternal
-
-		security.createKeychain(keychain, project.xcodebuild.signing.keychainPassword)
-		security.importCertificate(new File(certificateFile), project.xcodebuild.signing.certificatePassword, keychain)
-
-
-		if (getOSVersion().minor >= 9) {
-			List<File> keychainList = getKeychainList()
-			keychainList.add(keychain)
-			setKeychainList(keychainList)
-		}
-
-		if (getOSVersion().minor >= 12) {
-			security.setPartitionList(keychain, project.xcodebuild.signing.keychainPassword)
-		}
-
-		// Set a custom timeout on the keychain if requested
-		if (project.xcodebuild.signing.timeout != null) {
-			security.setTimeout(project.xcodebuild.signing.timeout, keychain)
 		}
 	}
 
+	private void createKeyChainAndImportCertificate() {
+		security.get()
+				.createKeychain(keyChainFile.asFile.getOrNull(),
+				certificatePassword.get())
 
+		security.get()
+				.importCertificate(temporaryCertificateFile,
+				certificatePassword.get(),
+				keyChainFile.asFile.get())
+	}
 
+	private void addKeyChainToThePartitionList() {
+		Version systemVersion = SystemUtil.getOsVersion()
+		if (systemVersion.minor >= 9) {
+			List<File> keychainList = getKeychainList()
+			keychainList.add(keyChainFile.asFile.get())
+			setKeychainList(keychainList)
+		}
+
+		if (systemVersion.minor >= 12) {
+			security.get().setPartitionList(keyChainFile.asFile.get(),
+					certificatePassword.get())
+		}
+
+	}
+
+	private void setupOptionalTimeout() {
+		if (keychainTimeout.present) {
+			security.get()
+					.setTimeout(keychainTimeout.get(),
+					keyChainFile.asFile.get())
+		}
+	}
 }

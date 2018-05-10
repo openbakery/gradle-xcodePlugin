@@ -15,20 +15,17 @@
  */
 package org.openbakery
 
-
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Security
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.xcode.DestinationResolver
-import org.openbakery.xcode.Version
-import org.openbakery.xcode.Xcode
 import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.DestinationResolver
+import org.openbakery.xcode.Xcode
 
 import java.text.SimpleDateFormat
-
 /**
  *
  * @author René Pirringer
@@ -110,23 +107,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		File destinationFile = new File(toDirectory, FilenameUtils.getName(address))
 		return destinationFile.absolutePath
 	}
-
-	def getOSVersion() {
-		Version result = new Version()
-		String versionString = System.getProperty("os.version")
-		Scanner scanner = new Scanner(versionString).useDelimiter("\\.")
-		if (scanner.hasNext()) {
-			result.major = scanner.nextInt()
-		}
-		if (scanner.hasNext()) {
-			result.minor = scanner.nextInt()
-		}
-		if (scanner.hasNext()) {
-			result.maintenance = scanner.nextInt();
-		}
-		return result
-	}
-
 
 	def createZip(File fileToZip) {
 		File zipFile = new File(fileToZip.parentFile, FilenameUtils.getBaseName(fileToZip.getName()) + ".zip")

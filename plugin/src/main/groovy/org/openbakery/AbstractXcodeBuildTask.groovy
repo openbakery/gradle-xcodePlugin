@@ -150,21 +150,18 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	private String getKeyContent() {
 		final String certificatePassword = getCertificatePassword()
-		return Optional.ofNullable(getCertificateFile())
-				.filter { File file -> file.exists() }
-				.map { File file ->
-			return commandRunner.runWithResult(["openssl",
-												"pkcs12",
-												"-nokeys",
-												"-in",
-												file.absolutePath,
-												"-passin",
-												"pass:" + certificatePassword])
-		}
-		.orElseThrow {
-			new IllegalArgumentException("Cannot resolve the content of the certificate file : ${getCertificateFile().absolutePath}")
-		}
+		File file = xcodeExtension.signing
+				.certificate
+				.get()
+				.asFile
 
+		return commandRunner.runWithResult(["openssl",
+											"pkcs12",
+											"-nokeys",
+											"-in",
+											file.absolutePath,
+											"-passin",
+											"pass:" + certificatePassword])
 	}
 
 	private File getCertificateFile() {
@@ -172,15 +169,19 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	private String getCertificateString() throws IllegalArgumentException {
-		return Optional.ofNullable(getXcodeExtension().signing.certificateURI)
-				.filter { String it -> it != null && !it.isEmpty() }
-				.orElseThrow {
-			new IllegalArgumentException("The certificateURI value is null or empty : " + getXcodeExtension().signing.certificateURI)
-		}
+//		return Optional.ofNullable(getXcodeExtension().signing.certificate)
+//				.filter { String it -> it != null && !it.isEmpty() }
+//				.orElseThrow {
+//			new IllegalArgumentException("The certificateURI value is null or empty : " + getXcodeExtension().signing.certificateURI)
+//		}
+
+		return getXcodeExtension()
+				.signing
+				.certificate
 	}
 
 	private String getCertificatePassword() {
-		return Optional.ofNullable(getXcodeExtension().signing.certificatePassword)
+		return Optional.ofNullable(getXcodeExtension().signing.certificatePassword.getOrNull())
 				.filter { it != null && !it.isEmpty() }
 				.orElseThrow {
 			new IllegalArgumentException("The signing certificate password is not defined")

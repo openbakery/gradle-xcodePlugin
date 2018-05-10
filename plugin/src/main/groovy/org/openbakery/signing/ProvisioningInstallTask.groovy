@@ -20,11 +20,11 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.util.FileUtil
 
 class ProvisioningInstallTask extends AbstractXcodeTask {
 
 	public final static PROVISIONING_NAME_BASE = "gradle-"
-
 
 
 	ProvisioningInstallTask() {
@@ -40,7 +40,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 			provisionPath.mkdirs()
 		}
 
-		File mobileProvisionFileLinkToLibrary =  new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + mobileProvisionFile.getName());
+		File mobileProvisionFileLinkToLibrary = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + mobileProvisionFile.getName());
 		if (mobileProvisionFileLinkToLibrary.exists()) {
 			mobileProvisionFileLinkToLibrary.delete()
 		}
@@ -60,9 +60,9 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 		}
 
 		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
-			def mobileProvisionFile = download(project.xcodebuild.signing.mobileProvisionDestinationRoot, mobileProvisionURI)
-
-
+			def mobileProvisionFile = FileUtil.download(project,
+					project.xcodebuild.signing.mobileProvisionDestinationRoot,
+					mobileProvisionURI).absolutePath
 
 			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, this.plistHelper)
 

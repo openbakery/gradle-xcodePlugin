@@ -1,52 +1,54 @@
 package org.openbakery.signing
 
-import org.apache.commons.lang.StringUtils
-import org.openbakery.AbstractXcodeTask
-import org.openbakery.XcodeBuildPluginExtension
+import groovy.transform.CompileStatic
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.OutputFile
 import org.openbakery.codesign.Security
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 23.08.13
- * Time: 11:39
- * To change this template use File | Settings | File Templates.
- */
-abstract class AbstractKeychainTask extends AbstractXcodeTask {
+@CompileStatic
+abstract class AbstractKeychainTask extends DefaultTask {
 
-	Security security
+	@OutputFile
+	final RegularFileProperty keyChainFile = newOutputFile()
+
+	final Property<Security> security = project.objects.property(Security)
+	final DirectoryProperty outputDirectory = newOutputDirectory()
 
 	AbstractKeychainTask() {
-		security = new Security(commandRunner)
+		setupGarbageCleaner()
 	}
-
 
 	List<File> getKeychainList() {
-		return security.getKeychainList()
+		return security.get().getKeychainList()
 	}
 
-	def setKeychainList(List<File> keychainList) {
-		security.setKeychainList(keychainList)
+	void setKeychainList(List<File> keychainList) {
+		security.get().setKeychainList(keychainList)
 	}
 
-	/**
-	 * remove all gradle keychains from the keychain search list
-	 * @return
-	 */
-	def removeGradleKeychainsFromSearchList() {
-		List<File>keychainList = getKeychainList()
-		logger.debug("project.xcodebuild.signing.keychain should not be removed: {}", project.xcodebuild.signing.keychainPathInternal)
-		if (project.xcodebuild.signing.keychainPathInternal != null) {
-			keychainList.remove(project.xcodebuild.signing.keychainPathInternal)
+	void removeGradleKeychainsFromSearchList() {
+		if (keyChainFile.present) {
+			logger.info("Remove the temporary keychain from search list")
+			List<File> list = getKeychainList()
+			list.remove(keyChainFile.get())
+			setKeychainList(list)
 		}
-		setKeychainList(keychainList)
 	}
 
-	def cleanupKeychain() {
-		project.xcodebuild.signing.signingDestinationRoot.deleteDir()
-		removeGradleKeychainsFromSearchList()
+	void deleteTemporaryKeyChainFile() {
+		if (keyChainFile.present) {
+			logger.info("Delete the temporary keychain file")
+			keyChainFile.get().asFile.delete()
+		}
 	}
 
-
-
+	private void setupGarbageCleaner() {
+		project.gradle.buildFinished {
+			removeGradleKeychainsFromSearchList()
+			deleteTemporaryKeyChainFile()
+		}
+	}
 }

@@ -36,6 +36,7 @@ import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
+import org.openbakery.codesign.Security
 import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
@@ -133,11 +134,16 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
 
+	private XcodeBuildPluginExtension xcodeBuildPluginExtension
+
+	private CommandRunner commandRunner
+	private Security securityTool
+
 	void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class);
 
 		System.setProperty("java.awt.headless", "true");
-
+		setupTools(project)
 		configureExtensions(project)
 		configureClean(project)
 		configureBuild(project)
@@ -162,6 +168,10 @@ class XcodePlugin implements Plugin<Project> {
 		configureProperties(project)
 	}
 
+	void setupTools(Project project) {
+		this.commandRunner = new CommandRunner()
+		this.securityTool = new Security(commandRunner)
+	}
 
 	void configureProperties(Project project) {
 
@@ -424,7 +434,10 @@ class XcodePlugin implements Plugin<Project> {
 
 
 	void configureExtensions(Project project) {
-		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
+		xcodeBuildPluginExtension = project.extensions.create("xcodebuild",
+				XcodeBuildPluginExtension,
+				project)
+
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("appstore", AppstorePluginExtension, project)
@@ -503,7 +516,16 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureKeychain(Project project) {
-		project.task(KEYCHAIN_CREATE_TASK_NAME, type: KeychainCreateTask, group: XCODE_GROUP_NAME)
+		project.tasks.create(KEYCHAIN_CREATE_TASK_NAME, KeychainCreateTask.class) {
+			it.group = XCODE_GROUP_NAME
+			it.certificateFile.set(xcodeBuildPluginExtension.signing.certificate)
+			it.certificatePassword.set(xcodeBuildPluginExtension.signing.certificatePassword)
+			it.outputDirectory.set(xcodeBuildPluginExtension.signing.signingDestinationRoot)
+			it.keyChainFile.set(xcodeBuildPluginExtension.signing.keyChainFile)
+			it.keychainTimeout.set(xcodeBuildPluginExtension.signing.timeout)
+			it.security.set(securityTool)
+		}
+
 		project.task(KEYCHAIN_CLEAN_TASK_NAME, type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
 		project.task(KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME, type: KeychainRemoveFromSearchListTask, group: XCODE_GROUP_NAME)
 	}

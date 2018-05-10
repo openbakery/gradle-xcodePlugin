@@ -3,6 +3,8 @@ package org.openbakery.signing
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.Security
@@ -12,6 +14,9 @@ import spock.lang.Specification
 
 class KeychainCreateTaskSpecification extends Specification {
 
+	@Rule
+	final TemporaryFolder tmpDirectory = new TemporaryFolder()
+
 	Project project
 	KeychainCreateTask keychainCreateTask
 
@@ -19,12 +24,9 @@ class KeychainCreateTaskSpecification extends Specification {
 	File keychainDestinationFile
 	File certificateFile
 
-	File tmpDirectory
 	File loginKeychain
 
 	def setup() {
-		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild')
-
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
