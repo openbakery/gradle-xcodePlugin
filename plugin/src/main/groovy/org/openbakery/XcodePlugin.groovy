@@ -99,7 +99,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_IMAGE_TASK_NAME = "hockeykitImage"
 	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykitClean"
 	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
-	public static final String KEYCHAIN_CREATE_TASK_NAME = "keychainCreate"
 	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
 	public static final String KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME = "keychainRemove"
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
@@ -452,7 +451,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureTestRunDependencies(Project project) {
 		for (XcodeTestRunTask xcodeTestRunTask : project.getTasks().withType(XcodeTestRunTask.class)) {
 			if (xcodeTestRunTask.runOnDevice()) {
-				xcodeTestRunTask.dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+				xcodeTestRunTask.dependsOn(KeychainCreateTask.TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 				xcodeTestRunTask.finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 			}
 		}
@@ -516,7 +515,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureKeychain(Project project) {
-		project.tasks.create(KEYCHAIN_CREATE_TASK_NAME, KeychainCreateTask.class) {
+		project.tasks.create(KeychainCreateTask.TASK_NAME, KeychainCreateTask.class) {
 			it.group = XCODE_GROUP_NAME
 			it.certificateFile.set(xcodeBuildPluginExtension.signing.certificate)
 			it.certificatePassword.set(xcodeBuildPluginExtension.signing.certificatePassword)

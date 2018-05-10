@@ -12,6 +12,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
@@ -37,12 +38,12 @@ class PackageLegacyTask extends AbstractDistributeTask {
 		super()
 		setDescription("Signs the app bundle that was created by the build and creates the ipa")
 		dependsOn(
-						XcodePlugin.KEYCHAIN_CREATE_TASK_NAME,
-						XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
+				KeychainCreateTask.TASK_NAME,
+				XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
 		)
 
 		finalizedBy(
-						XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
+				XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
 		)
 
 		onlyIf(new Spec<Task>() {
@@ -90,7 +91,7 @@ class PackageLegacyTask extends AbstractDistributeTask {
 			copy(supportDirectory, applicationFolder.parentFile)
 		}
 
-		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator)
+		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath, project.xcodebuild.type, project.xcodebuild.simulator)
 		appBundles = applicationBundle.getBundles()
 
 		File resourceRules = new File(applicationFolder, applicationBundleName + "/ResourceRules.plist")
@@ -164,7 +165,7 @@ class PackageLegacyTask extends AbstractDistributeTask {
 
 	def removeFrameworkFromExtensions(File bundle) {
 		// appex extensions should not contain extensions
-		if (FilenameUtils.getExtension(bundle.toString()).equalsIgnoreCase("appex"))  {
+		if (FilenameUtils.getExtension(bundle.toString()).equalsIgnoreCase("appex")) {
 			File frameworksPath = new File(bundle, "Frameworks")
 			if (frameworksPath.exists()) {
 				FileUtils.deleteDirectory(frameworksPath)
@@ -186,7 +187,7 @@ class PackageLegacyTask extends AbstractDistributeTask {
 	}
 
 
-	def addSwiftSupport(File payloadPath,  String applicationBundleName) {
+	def addSwiftSupport(File payloadPath, String applicationBundleName) {
 		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
 		if (!frameworksPath.exists()) {
 			return null
@@ -212,7 +213,7 @@ class PackageLegacyTask extends AbstractDistributeTask {
 		filesToZip << packagePath
 
 		if (includeSwiftSupport) {
-			File swiftSupportPath =  addSwiftSupport(packagePath, applicationBundleName)
+			File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
 			if (swiftSupportPath != null) {
 				filesToZip << swiftSupportPath
 			}

@@ -5,6 +5,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.util.PathHelper
 
 import java.util.function.Consumer
@@ -28,7 +29,7 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 	PrepareXcodeArchivingTask() {
 		super()
 
-		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+		dependsOn(KeychainCreateTask.TASK_NAME)
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)

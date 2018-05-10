@@ -38,13 +38,15 @@ class KeychainCreateTask extends AbstractKeychainTask {
 	@Input
 	final Property<Integer> keychainTimeout = project.objects.property(Integer)
 
+	static final String TASK_NAME = "keychainCreate"
+	static final String TASK_DESCRIPTION = "Create a keychain that is used for signing the app"
 	static final String KEYCHAIN_DEFAULT_PASSWORD = "This_is_the_default_keychain_password"
 
 	private File temporaryCertificateFile
 
 	KeychainCreateTask() {
 		super()
-		this.description = "Create a keychain that is used for signing the app"
+		this.description = TASK_DESCRIPTION
 		onlyIf {
 			XcodeBuildPluginExtension extension = project
 					.getExtensions()
@@ -52,11 +54,13 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 			Signing signing = extension.signing
 
-			if (!signing.certificate.present)
-				logger.warn("Not signing certificate defined, will skip the keychain creation")
+			if (!signing.certificate.present) {
+				logger.warn("No signing certificate defined, will skip the keychain creation")
+			}
 
-			if (!signing.certificatePassword.present)
-				logger.warn("Not signing certificate password defined, will skip the keychain creation")
+			if (!signing.certificatePassword.present) {
+				logger.warn("No signing certificate password defined, will skip the keychain creation")
+			}
 
 			if (keyChainFile.present && keyChainFile.asFile.get().exists()) {
 				logger.debug("Using keychain : " + keyChainFile.get())
@@ -98,6 +102,13 @@ class KeychainCreateTask extends AbstractKeychainTask {
 				.importCertificate(temporaryCertificateFile,
 				certificatePassword.get(),
 				keyChainFile.asFile.get())
+
+		// Delete the temporary keychain on completion
+		project.gradle.buildFinished {
+			if (keyChainFile.asFile.get()) {
+				keyChainFile.asFile.get().delete()
+			}
+		}
 	}
 
 	private void addKeyChainToThePartitionList() {
@@ -112,7 +123,6 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			security.get().setPartitionList(keyChainFile.asFile.get(),
 					KEYCHAIN_DEFAULT_PASSWORD)
 		}
-
 	}
 
 	private void setupOptionalTimeout() {

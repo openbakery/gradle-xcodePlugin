@@ -8,6 +8,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
+import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
@@ -440,7 +441,7 @@ class PackageTaskSpecification extends Specification {
 		when:
 		def dependsOn = packageTask.getDependsOn()
 		then:
-		dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+		dependsOn.contains(KeychainCreateTask.TASK_NAME)
 		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 
 	}

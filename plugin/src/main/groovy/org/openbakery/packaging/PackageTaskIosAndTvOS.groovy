@@ -7,6 +7,7 @@ import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeBuildTask
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
@@ -35,7 +36,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 		description = DESCRIPTION
 
-		dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
+		dependsOn(KeychainCreateTask.TASK_NAME)
 		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
