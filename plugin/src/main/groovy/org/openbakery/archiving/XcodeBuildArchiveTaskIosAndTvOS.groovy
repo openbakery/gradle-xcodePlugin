@@ -6,7 +6,7 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeBuildTask
 import org.openbakery.PrepareXcodeArchivingTask
-import org.openbakery.XcodePlugin
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
@@ -20,7 +20,7 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	XcodeBuildArchiveTaskIosAndTvOS() {
 		super()
 
-		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		dependsOn(ProvisioningInstallTask.TASK_NAME)
 		dependsOn(PrepareXcodeArchivingTask.NAME)
 
 		this.description = "Use the xcodebuild archiver to create the project archive"

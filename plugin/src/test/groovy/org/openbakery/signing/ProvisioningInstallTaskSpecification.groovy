@@ -5,9 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.XcodePlugin
 import spock.lang.Specification
-
 
 class ProvisioningInstallTaskSpecification extends Specification {
 
@@ -30,7 +28,7 @@ class ProvisioningInstallTaskSpecification extends Specification {
 
 		project.xcodebuild.simulator = false
 
-		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		provisioningInstallTask = project.getTasks().getByPath(ProvisioningInstallTask.TASK_NAME)
 
 		provisioningInstallTask.commandRunner = commandRunner
 

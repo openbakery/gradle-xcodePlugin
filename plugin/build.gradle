@@ -45,6 +45,7 @@ dependencies {
 	compile 'org.pegdown:pegdown:1.5.+'
 	compile 'org.openbakery.coverage:CoverageReport:0.9.4'
 	deployerJars 'org.apache.maven.wagon:wagon-ssh:2.10'
+	compile 'de.undercouch:gradle-download-task:3.4.3'
 }
 
 jar {

@@ -58,6 +58,7 @@ import org.openbakery.packaging.PackageTask
 import org.openbakery.packaging.PackageTaskIosAndTvOS
 import org.openbakery.signing.*
 import org.openbakery.simulators.*
+import org.openbakery.util.PlistHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -102,7 +103,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
 	public static final String KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME = "keychainRemove"
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
-	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
@@ -136,6 +136,7 @@ class XcodePlugin implements Plugin<Project> {
 	private XcodeBuildPluginExtension xcodeBuildPluginExtension
 
 	private CommandRunner commandRunner
+	private PlistHelper plistHelper
 	private Security securityTool
 
 	void apply(Project project) {
@@ -169,6 +170,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	void setupTools(Project project) {
 		this.commandRunner = new CommandRunner()
+		this.plistHelper = new PlistHelper(commandRunner)
 		this.securityTool = new Security(commandRunner)
 	}
 
@@ -451,7 +453,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureTestRunDependencies(Project project) {
 		for (XcodeTestRunTask xcodeTestRunTask : project.getTasks().withType(XcodeTestRunTask.class)) {
 			if (xcodeTestRunTask.runOnDevice()) {
-				xcodeTestRunTask.dependsOn(KeychainCreateTask.TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+				xcodeTestRunTask.dependsOn(KeychainCreateTask.TASK_NAME, ProvisioningInstallTask.TASK_NAME)
 				xcodeTestRunTask.finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 			}
 		}
@@ -541,7 +543,14 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configureProvisioning(Project project) {
-		project.task(PROVISIONING_INSTALL_TASK_NAME, type: ProvisioningInstallTask, group: XCODE_GROUP_NAME)
+		project.tasks.create(ProvisioningInstallTask.TASK_NAME,
+				ProvisioningInstallTask) {
+			it.group = XCODE_GROUP_NAME
+			it.commandRunnerProperty.set(commandRunner)
+			it.plistHelperProperty.set(plistHelper)
+			it.mobileProvisiongList.set(xcodeBuildPluginExtension.signing.mobileProvisionURI)
+			it.outputDirectory.set(xcodeBuildPluginExtension.signing.signingDestinationRoot)
+		}
 		project.task(PROVISIONING_CLEAN_TASK_NAME, type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 	}
 

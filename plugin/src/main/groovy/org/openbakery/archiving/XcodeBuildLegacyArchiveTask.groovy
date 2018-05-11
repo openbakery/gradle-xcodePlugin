@@ -25,6 +25,7 @@ import org.openbakery.BuildConfiguration
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
@@ -40,7 +41,7 @@ class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 		super()
 
 		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME,
-			XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+				ProvisioningInstallTask.TASK_NAME)
 
 		this.description = "Use the legacy archiver to create the project archive"
 

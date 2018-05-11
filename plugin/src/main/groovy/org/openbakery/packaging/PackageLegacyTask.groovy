@@ -13,6 +13,7 @@ import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
@@ -39,7 +40,7 @@ class PackageLegacyTask extends AbstractDistributeTask {
 		setDescription("Signs the app bundle that was created by the build and creates the ipa")
 		dependsOn(
 				KeychainCreateTask.TASK_NAME,
-				XcodePlugin.PROVISIONING_INSTALL_TASK_NAME,
+				ProvisioningInstallTask.TASK_NAME
 		)
 
 		finalizedBy(

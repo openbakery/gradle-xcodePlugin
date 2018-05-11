@@ -1,87 +1,117 @@
-/*
- * Copyright 2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.openbakery.signing
 
+import de.undercouch.gradle.tasks.download.Download
+import groovy.transform.CompileStatic
 import org.apache.commons.io.FilenameUtils
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractXcodeTask
-import org.openbakery.XcodePlugin
+import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.util.FileUtil
+import org.openbakery.util.PlistHelper
 
-class ProvisioningInstallTask extends AbstractXcodeTask {
+@CompileStatic
+class ProvisioningInstallTask extends Download {
+
+	@Input
+	final Provider<List<String>> mobileProvisiongList = project.objects.listProperty(String)
+
+	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
+	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
+
+	final DirectoryProperty outputDirectory = newOutputDirectory()
 
 	public final static PROVISIONING_NAME_BASE = "gradle-"
 
+	static final String TASK_NAME = "provisioningInstall"
+	static final String TASK_DESCRIPTION = "Installs the given provisioning profile"
 
 	ProvisioningInstallTask() {
 		super()
-		dependsOn(XcodePlugin.PROVISIONING_CLEAN_TASK_NAME)
-		this.description = "Installs the given provisioning profile"
+		this.description = TASK_DESCRIPTION
+
+		this.onlyIf { !mobileProvisiongList.get().empty }
 	}
-
-
-	void linkToLibraray(File mobileProvisionFile) {
-		File provisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
-		if (!provisionPath.exists()) {
-			provisionPath.mkdirs()
-		}
-
-		File mobileProvisionFileLinkToLibrary = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + mobileProvisionFile.getName());
-		if (mobileProvisionFileLinkToLibrary.exists()) {
-			mobileProvisionFileLinkToLibrary.delete()
-		}
-
-
-		commandRunner.run(["/bin/ln", "-s", mobileProvisionFile.absolutePath, mobileProvisionFileLinkToLibrary.absolutePath])
-
-	}
+//
+//	void linkToLibraray(File mobileProvisionFile) {
+//		File provisionPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
+//		if (!provisionPath.exists()) {
+//			provisionPath.mkdirs()
+//		}
+//
+//		File mobileProvisionFileLinkToLibrary = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/" + mobileProvisionFile.getName());
+//		if (mobileProvisionFileLinkToLibrary.exists()) {
+//			mobileProvisionFileLinkToLibrary.delete()
+//		}
+//
+//		commandRunner.run(["/bin/ln", "-s", mobileProvisionFile.absolutePath, mobileProvisionFileLinkToLibrary.absolutePath])
+//	}
 
 	@TaskAction
-	def install() {
+	@Override
+	public void download() throws IOException {
+		this.src(mobileProvisiongList.get().asList())
+		this.dest(outputDirectory.asFile.get())
+		this.acceptAnyCertificate(true)
 
+		super.download()
 
-		if (project.xcodebuild.signing.mobileProvisionURI == null) {
-			logger.lifecycle("No provisioning profile specifed so do nothing here")
-			return
+		final List<File> files = rename()
+
+		deleteFilesOnExit(files)
+
+//
+//		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
+//			def mobileProvisionFile = FileUtil.download(project,
+//					project.xcodebuild.signing.mobileProvisionDestinationRoot,
+//					mobileProvisionURI).absolutePath
+//
+//			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, this.plistHelper)
+//
+//			String uuid = provisioningProfileIdReader.getUUID()
+//
+//
+//			String extension = FilenameUtils.getExtension(mobileProvisionFile)
+//			String mobileProvisionName
+//			mobileProvisionName = PROVISIONING_NAME_BASE + uuid + "." + extension
+//
+//
+//			File downloadedFile = new File(mobileProvisionFile)
+//			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)
+//			downloadedFile.renameTo(renamedProvisionFile)
+//
+//			project.xcodebuild.signing.addMobileProvisionFile(renamedProvisionFile)
+//
+//			linkToLibraray(renamedProvisionFile)
+//		}
+
+	}
+
+	private List<File> rename() {
+		return  mobileProvisiongList.get()
+				.collect { new File(outputDirectory.get().asFile, FilenameUtils.getName(it)) }
+				.collect { return renameProvisioningFile(it) }
+	}
+
+	private void deleteFilesOnExit(final List<File> files) {
+		project.gradle.buildFinished {
+			files.each { it.delete() }
 		}
 
-		for (String mobileProvisionURI : project.xcodebuild.signing.mobileProvisionURI) {
-			def mobileProvisionFile = FileUtil.download(project,
-					project.xcodebuild.signing.mobileProvisionDestinationRoot,
-					mobileProvisionURI).absolutePath
+		return files
+	}
 
-			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, this.plistHelper)
+	private File renameProvisioningFile(File file) {
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(file,
+				commandRunnerProperty.get(),
+				plistHelperProperty.get())
 
-			String uuid = provisioningProfileIdReader.getUUID()
+		String fileName = reader.getUUID() + "." + FilenameUtils.getExtension(file.getName())
 
-
-			String extension = FilenameUtils.getExtension(mobileProvisionFile)
-			String mobileProvisionName
-			mobileProvisionName = PROVISIONING_NAME_BASE + uuid + "." + extension
-
-
-			File downloadedFile = new File(mobileProvisionFile)
-			File renamedProvisionFile = new File(downloadedFile.getParentFile(), mobileProvisionName)
-			downloadedFile.renameTo(renamedProvisionFile)
-
-			project.xcodebuild.signing.addMobileProvisionFile(renamedProvisionFile)
-
-			linkToLibraray(renamedProvisionFile)
-		}
-
+		File result = new File(outputDirectory.get().asFile, fileName)
+		assert file.renameTo(result): "Failed to rename the provisioning file"
+		return result
 	}
 }

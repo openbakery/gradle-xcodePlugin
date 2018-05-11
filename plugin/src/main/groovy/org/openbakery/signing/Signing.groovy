@@ -3,6 +3,7 @@ package org.openbakery.signing
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.openbakery.CommandRunner
@@ -18,6 +19,8 @@ class Signing {
 	final RegularFileProperty certificate
 	final RegularFileProperty keychain = project.layout.fileProperty()
 	final RegularFileProperty keyChainFile = project.layout.fileProperty()
+	final ListProperty<String> mobileProvisionURI = project.objects.listProperty(String)
+//	final ConfigurableFileCollection registeredProvisioningFiles = project.files()
 
 	@Internal
 	Object keychainPathInternal
@@ -26,7 +29,7 @@ class Signing {
 
 	String identity
 
-	List<String> mobileProvisionURI = null
+//	List<String> mobileProvisionURI = null
 
 	String plugin
 	Object entitlementsFile
@@ -37,7 +40,8 @@ class Signing {
 	 * internal parameters
 	 */
 	private final Project project
-	private final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
+	private
+	final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
 	CommandRunner commandRunner
 
 	List<File> mobileProvisionFile = new ArrayList<File>()
@@ -48,6 +52,7 @@ class Signing {
 	Signing(Project project) {
 		this.project = project
 		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
+		this.signingDestinationRoot.asFile.get().mkdirs()
 		this.certificate = project.layout.fileProperty()
 		this.certificatePassword = project.objects.property(String)
 		this.commandRunner = new CommandRunner()
@@ -77,22 +82,31 @@ class Signing {
 		return project.file(keychainPathInternal)
 	}
 
-	void setMobileProvisionURI(Object mobileProvisionURI) {
-		if (mobileProvisionURI instanceof List) {
-			this.mobileProvisionURI = mobileProvisionURI;
-		} else {
-			this.mobileProvisionURI = new ArrayList<String>();
-			this.mobileProvisionURI.add(mobileProvisionURI.toString());
-		}
+//	void setMobileProvisionURI(Object mobileProvisionURI) {
+//		if (mobileProvisionURI instanceof List) {
+//			this.mobileProvisionURI = mobileProvisionURI;
+//		} else {
+//			this.mobileProvisionURI = new ArrayList<String>();
+//			this.mobileProvisionURI.add(mobileProvisionURI.toString());
+//		}
+//	}
+
+	@Deprecated
+	void setMobileProvisionURI(List<String> list) {
+		list.each { this.mobileProvisionURI.add(it) }
 	}
 
-
-	void addMobileProvisionFile(File mobileProvision) {
-		if (!mobileProvision.exists()) {
-			throw new IllegalArgumentException("given mobile provision file does not exist: " + mobileProvision.absolutePath)
-		}
-		mobileProvisionFile.add(This_is_the_default_keychain_passwordmobileProvision)
+	@Deprecated
+	void setMobileProvisionURI(String string) {
+		this.mobileProvisionURI.add(string)
 	}
+
+//	void addMobileProvisionFile(File mobileProvision) {
+//		if (!mobileProvision.exists()) {
+//			throw new IllegalArgumentException("given mobile provision file does not exist: " + mobileProvision.absolutePath)
+//		}
+//		mobileProvisionFile.add(mobileProvision)
+//	}
 
 
 	File getEntitlementsFile() {
@@ -147,7 +161,7 @@ class Signing {
 	CodesignParameters getCodesignParameters() {
 		CodesignParameters result = new CodesignParameters()
 		result.signingIdentity = getIdentity()
-		result.mobileProvisionFiles = getMobileProvisionFile().clone()
+		result.mobileProvisionFiles = mobileProvisionFile.clone()
 		result.keychain = getKeychain()
 		if (entitlements != null) {
 			result.entitlements = entitlements.clone()

@@ -6,6 +6,7 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
@@ -159,7 +160,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		dependsOn.size() == 2
 
 		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
-		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		dependsOn.contains(ProvisioningInstallTask.TASK_NAME)
 
 	}
 

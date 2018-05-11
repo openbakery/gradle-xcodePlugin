@@ -7,6 +7,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
@@ -243,7 +244,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 		then:
 		!xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(KeychainCreateTask.TASK_NAME))
-		!xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME))
+		!xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(ProvisioningInstallTask.TASK_NAME))
 	}
 
 	def "when keychain dependency then also has finalized keychain remove"() {
@@ -269,7 +270,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 		then:
 		xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(KeychainCreateTask.TASK_NAME))
-		xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME))
+		xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(ProvisioningInstallTask.TASK_NAME))
 	}
 
 

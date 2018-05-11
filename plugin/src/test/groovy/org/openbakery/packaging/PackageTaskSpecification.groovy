@@ -9,6 +9,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
@@ -442,7 +443,7 @@ class PackageTaskSpecification extends Specification {
 		def dependsOn = packageTask.getDependsOn()
 		then:
 		dependsOn.contains(KeychainCreateTask.TASK_NAME)
-		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		dependsOn.contains(ProvisioningInstallTask.TASK_NAME)
 
 	}
 
