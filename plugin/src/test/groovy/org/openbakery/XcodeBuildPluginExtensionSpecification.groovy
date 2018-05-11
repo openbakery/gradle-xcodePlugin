@@ -513,7 +513,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.type = Type.macOS
 		extension.simulator = false
 		extension.target = "ExampleOSX"
-		extension.scheme = "ExampleScheme"
+		extension.scheme.set("ExampleScheme")
 
 		extension.workspace = "workspace"
 		extension.configuration = "configuration"

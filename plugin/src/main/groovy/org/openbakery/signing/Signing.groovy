@@ -5,6 +5,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.CodesignParameters
@@ -14,13 +15,17 @@ import javax.inject.Inject
 class Signing {
 
 	final DirectoryProperty signingDestinationRoot = project.layout.directoryProperty()
+	final DirectoryProperty provisioningDestinationRoot = project.layout.directoryProperty()
 	final Property<String> certificatePassword
 	final Property<Integer> timeout = project.objects.property(Integer)
+	final Property<SigningMethod> signingMethod = project.objects.property(SigningMethod)
 	final RegularFileProperty certificate
 	final RegularFileProperty keychain = project.layout.fileProperty()
 	final RegularFileProperty keyChainFile = project.layout.fileProperty()
-	final ListProperty<String> mobileProvisionURI = project.objects.listProperty(String)
-//	final ConfigurableFileCollection registeredProvisioningFiles = project.files()
+	final ListProperty<String> mobileProvisionList = project.objects.listProperty(String)
+
+	@Internal
+	final Provider<List<File>> registeredProvisioningFiles = project.objects.listProperty(File)
 
 	@Internal
 	Object keychainPathInternal
@@ -28,8 +33,6 @@ class Signing {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
 	String identity
-
-//	List<String> mobileProvisionURI = null
 
 	String plugin
 	Object entitlementsFile
@@ -46,13 +49,11 @@ class Signing {
 
 	List<File> mobileProvisionFile = new ArrayList<File>()
 
-	private SigningMethod method
-
 	@Inject
 	Signing(Project project) {
 		this.project = project
 		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
-		this.signingDestinationRoot.asFile.get().mkdirs()
+		this.provisioningDestinationRoot.set(project.layout.buildDirectory.dir("provision"))
 		this.certificate = project.layout.fileProperty()
 		this.certificatePassword = project.objects.property(String)
 		this.commandRunner = new CommandRunner()
@@ -68,46 +69,23 @@ class Signing {
 	}
 
 	public void setMethod(String method) {
-		this.method = SigningMethod.fromString(method)
+		signingMethod.set(SigningMethod.fromString(method)
 				.orElseThrow {
 			new IllegalArgumentException("Method : $method is not a valid export method")
-		}
-	}
-
-	SigningMethod getMethod() {
-		return method
+		})
 	}
 
 	File getKeychainPathInternal() {
 		return project.file(keychainPathInternal)
 	}
 
-//	void setMobileProvisionURI(Object mobileProvisionURI) {
-//		if (mobileProvisionURI instanceof List) {
-//			this.mobileProvisionURI = mobileProvisionURI;
-//		} else {
-//			this.mobileProvisionURI = new ArrayList<String>();
-//			this.mobileProvisionURI.add(mobileProvisionURI.toString());
-//		}
-//	}
-
-	@Deprecated
 	void setMobileProvisionURI(List<String> list) {
-		list.each { this.mobileProvisionURI.add(it) }
+		list.each { this.mobileProvisionList.add(it) }
 	}
 
-	@Deprecated
-	void setMobileProvisionURI(String string) {
-		this.mobileProvisionURI.add(string)
+	void setMobileProvisionURI(String value) {
+		this.mobileProvisionList.add(value)
 	}
-
-//	void addMobileProvisionFile(File mobileProvision) {
-//		if (!mobileProvision.exists()) {
-//			throw new IllegalArgumentException("given mobile provision file does not exist: " + mobileProvision.absolutePath)
-//		}
-//		mobileProvisionFile.add(mobileProvision)
-//	}
-
 
 	File getEntitlementsFile() {
 		if (entitlementsFile != null) {
@@ -146,7 +124,7 @@ class Signing {
 		if (this.keychain != null) {
 			return "Signing{" +
 					" identity='" + identity + '\'' +
-					", mobileProvisionURI='" + mobileProvisionURI + '\'' +
+					", mobileProvisionURI='" + mobileProvisionList.get() + '\'' +
 					", keychain='" + keychain + '\'' +
 					'}';
 		}
@@ -154,14 +132,14 @@ class Signing {
 				" identity='" + identity + '\'' +
 				", certificateURI='" + certificate.getOrNull() + '\'' +
 				", certificatePassword='" + certificatePassword.getOrNull() + '\'' +
-				", mobileProvisionURI='" + mobileProvisionURI + '\'' +
+				", mobileProvisionURI='" + mobileProvisionList.get() + '\'' +
 				'}';
 	}
 
 	CodesignParameters getCodesignParameters() {
 		CodesignParameters result = new CodesignParameters()
 		result.signingIdentity = getIdentity()
-		result.mobileProvisionFiles = mobileProvisionFile.clone()
+		result.mobileProvisionFiles = registeredProvisioningFiles.getFiles().asList().clone() as List<File>
 		result.keychain = getKeychain()
 		if (entitlements != null) {
 			result.entitlements = entitlements.clone()

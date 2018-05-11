@@ -142,7 +142,8 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			setValueForPlist(KeyBundleIdentifier, extension.bundleIdentifier)
 		} else {
 			XcodeBuildPluginExtension xcodeExtension = getXcodeExtension()
-			xcodeExtension.getBuildTargetConfiguration(xcodeExtension.scheme, xcodeExtension.configuration)
+			xcodeExtension.getBuildTargetConfiguration(xcodeExtension.scheme.get(),
+					xcodeExtension.configuration)
 					.map { it -> it.bundleIdentifier }
 					.ifPresent { it -> setValueForPlist(KeyBundleIdentifier, it) }
 		}

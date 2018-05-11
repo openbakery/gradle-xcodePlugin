@@ -131,7 +131,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	List<String> getProvisioningUriList() {
-		return getXcodeExtension().signing.mobileProvisionURI.get()
+		return getXcodeExtension().signing.mobileProvisionList.get()
 	}
 
 	String getSignatureFriendlyName() {

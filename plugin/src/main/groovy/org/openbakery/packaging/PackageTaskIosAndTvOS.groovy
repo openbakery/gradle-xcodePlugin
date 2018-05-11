@@ -2,6 +2,8 @@ package org.openbakery.packaging
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Task
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeBuildTask
@@ -14,14 +16,21 @@ import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
-import java.util.Optional
-
 @CompileStatic
 class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
+	@Input
+	public final Property<SigningMethod> signingMethod = project.objects.property(SigningMethod)
+
+	@Input
+	final Provider<String> scheme = project.objects.property(String)
+
+//	@Input
+//	public final Provider<Type> targetType = project.objects.property(Type)
+
 	private ProvisioningProfileReader reader
 
-	public static final String DESCRIPTION = "Package the IPA from the generate archive by using Xcodebuild"
+	public static final String DESCRIPTION = "Package the archive with Xcode-build"
 	public static final String NAME = "packageWithXcodeBuild"
 
 	private static final String PLIST_KEY_METHOD = "method"
@@ -43,7 +52,6 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 		finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 
-
 		onlyIf(new Spec<Task>() {
 			@Override
 			boolean isSatisfiedBy(Task task) {
@@ -61,7 +69,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	@Input
 	boolean getBitCode() {
 		boolean result = getXcodeExtension().bitcode
-		SigningMethod method = getMethod()
+		SigningMethod method = signingMethod.get()
 
 		if (method == SigningMethod.AppStore
 				&& getXcodeExtension().type == Type.tvOS) {
@@ -87,18 +95,6 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	}
 
 	@Input
-	SigningMethod getMethod() {
-		return Optional.ofNullable(getXcodeExtension().getSigning().method)
-				.orElseThrow { new IllegalArgumentException("Invalid signing method") }
-	}
-
-	@Input
-	String getScheme() {
-		return Optional.ofNullable(getXcodeExtension().scheme)
-				.orElseThrow { new IllegalArgumentException("Invalid scheme") }
-	}
-
-	@Input
 	Map<String, String> getProvisioningMap() {
 		setupProvisioningProfileReader()
 
@@ -109,7 +105,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@InputDirectory
 	File getArchiveFile() {
-		return PathHelper.resolveArchiveFile(project, scheme)
+		return PathHelper.resolveArchiveFile(project, scheme.get())
 	}
 
 	@OutputDirectory
@@ -145,7 +141,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 		// Signing  method
 		addStringValueForPlist(PLIST_KEY_METHOD,
-				getMethod().value)
+				signingMethod.get().value)
 
 		// Provisioning profiles map list
 		plistHelper.addDictForPlist(file,

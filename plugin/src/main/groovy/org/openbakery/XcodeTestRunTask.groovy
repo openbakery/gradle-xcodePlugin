@@ -152,7 +152,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 				CodesignParameters parameters = new CodesignParameters()
 				parameters.signingIdentity = getSigningIdentity()
 				parameters.keychain = project.xcodebuild.signing.keychainPathInternal
-				parameters.mobileProvisionFiles = project.xcodebuild.signing.mobileProvisionFile
+				parameters.mobileProvisionFiles = project.extensions.getByType(XcodeBuildPluginExtension).signing.registeredProvisioningFiles.getFiles().asList()
 				parameters.type = project.xcodebuild.type
 				codesign = new Codesign(xcode, parameters, commandRunner, plistHelper)
 				if (project.xcodebuild.signing.hasEntitlementsFile()) {

@@ -23,12 +23,13 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeBuildTask
 import org.openbakery.BuildConfiguration
 import org.openbakery.CommandRunnerException
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.util.PathHelper
-import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 import static groovy.io.FileType.FILES
@@ -322,8 +323,12 @@ class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		String applicationIdentifier = "UNKNOWN00ID";
+
 		// if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
-		File provisioningProfile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
+		File provisioningProfile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
+				project.extensions.getByType(XcodeBuildPluginExtension).signing.registeredProvisioningFiles.getFiles().asList(),
+				this.commandRunner,
+				this.plistHelper)
 		if (provisioningProfile != null && provisioningProfile.exists()) {
 			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, commandRunner)
 			applicationIdentifier = reader.getApplicationIdentifierPrefix()
@@ -530,7 +535,7 @@ class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 
 
 	File getArchiveDirectory() {
-		def archiveDirectoryName = PathHelper.FOLDER_ARCHIVE + "/" +  project.xcodebuild.bundleName
+		def archiveDirectoryName = PathHelper.FOLDER_ARCHIVE + "/" + project.xcodebuild.bundleName
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveDirectoryName += project.xcodebuild.bundleNameSuffix

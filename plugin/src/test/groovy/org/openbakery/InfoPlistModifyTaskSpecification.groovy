@@ -70,7 +70,7 @@ class InfoPlistModifyTaskSpecification extends Specification {
 
 		def extension = project.extensions.getByType(XcodeBuildPluginExtension)
 		extension.projectSettings = projectSettings
-		extension.scheme = scheme
+		extension.scheme.set(scheme)
 		extension.configuration = configuration
 
 		project.infoplist.bundleIdentifierSuffix = suffix

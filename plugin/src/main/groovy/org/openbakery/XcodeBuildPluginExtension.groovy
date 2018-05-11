@@ -32,7 +32,9 @@ class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
 	final Property<String> version
+	final Property<String> scheme
 	final Signing signing
+
 
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
@@ -40,7 +42,7 @@ class XcodeBuildPluginExtension {
 	XcodebuildParameters _parameters = new XcodebuildParameters()
 
 	String infoPlist = null
-	String scheme = null
+
 	String configuration = 'Debug'
 	boolean simulator = true
 	Type type = Type.iOS
@@ -87,10 +89,10 @@ class XcodeBuildPluginExtension {
 
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
+		this.version = project.objects.property(String)
+		this.scheme = project.objects.property(String)
 
 		this.signing = project.objects.newInstance(Signing, project)
-		this.version = project.objects.property(String)
-
 
 		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
@@ -118,9 +120,9 @@ class XcodeBuildPluginExtension {
 
 	}
 
-	Optional<BuildConfiguration> getBuildTargetConfiguration(String scheme,
+	Optional<BuildConfiguration> getBuildTargetConfiguration(String schemeName,
 															 String configuration) {
-		return Optional.ofNullable(projectSettings.get(scheme, null))
+		return Optional.ofNullable(projectSettings.get(schemeName, null))
 				.map { it -> it.buildSettings }
 				.map { bs -> (BuildConfiguration) bs.get(configuration) }
 	}
@@ -454,7 +456,7 @@ class XcodeBuildPluginExtension {
 
 	XcodebuildParameters getXcodebuildParameters() {
 		def result = new XcodebuildParameters()
-		result.scheme = this.scheme
+		result.scheme = this.scheme.get()
 		result.target = this.target
 		result.simulator = this.simulator
 		result.type = this.type

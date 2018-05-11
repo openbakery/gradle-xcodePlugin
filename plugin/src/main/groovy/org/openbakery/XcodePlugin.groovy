@@ -482,9 +482,11 @@ class XcodePlugin implements Plugin<Project> {
 				create(PrepareXcodeArchivingTask.NAME, PrepareXcodeArchivingTask.class)
 		prepareXcodeArchivingTask.setGroup(XCODE_GROUP_NAME)
 
-		XcodeBuildArchiveTaskIosAndTvOS archiveTask = project.getTasks().
-				create(XcodeBuildArchiveTaskIosAndTvOS.NAME, XcodeBuildArchiveTaskIosAndTvOS.class)
-		archiveTask.setGroup(XCODE_GROUP_NAME)
+		project.getTasks().create(XcodeBuildArchiveTaskIosAndTvOS.NAME,
+				XcodeBuildArchiveTaskIosAndTvOS.class) {
+			it.setGroup(XCODE_GROUP_NAME)
+			it.scheme.set(xcodeBuildPluginExtension.scheme)
+		}
 
 		XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask = project.getTasks().
 				create(XcodeBuildLegacyArchiveTask.NAME, XcodeBuildLegacyArchiveTask.class)
@@ -528,7 +530,14 @@ class XcodePlugin implements Plugin<Project> {
 		}
 
 		project.task(KEYCHAIN_CLEAN_TASK_NAME, type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
-		project.task(KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME, type: KeychainRemoveFromSearchListTask, group: XCODE_GROUP_NAME)
+
+		project.tasks.create(KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME,
+				KeychainRemoveFromSearchListTask.class) {
+			it.group = XCODE_GROUP_NAME
+			it.keyChainFile.set(xcodeBuildPluginExtension.signing.keyChainFile)
+			it.outputDirectory.set(xcodeBuildPluginExtension.signing.signingDestinationRoot)
+			it.security.set(securityTool)
+		}
 	}
 
 	private void configureTest(Project project) {
@@ -547,9 +556,14 @@ class XcodePlugin implements Plugin<Project> {
 				ProvisioningInstallTask) {
 			it.group = XCODE_GROUP_NAME
 			it.commandRunnerProperty.set(commandRunner)
+			it.mobileProvisioningList.set(xcodeBuildPluginExtension.signing.mobileProvisionList)
+			it.outputDirectory.set(xcodeBuildPluginExtension.signing.provisioningDestinationRoot)
 			it.plistHelperProperty.set(plistHelper)
-			it.mobileProvisiongList.set(xcodeBuildPluginExtension.signing.mobileProvisionURI)
-			it.outputDirectory.set(xcodeBuildPluginExtension.signing.signingDestinationRoot)
+
+			// We use the result of the task to populate the read only value
+			xcodeBuildPluginExtension.signing
+					.registeredProvisioningFiles
+					.set(it.registeredProvisioning)
 		}
 		project.task(PROVISIONING_CLEAN_TASK_NAME, type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 	}
@@ -579,9 +593,12 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureModernPackager(Project project) {
-		project.task(PackageTaskIosAndTvOS.NAME,
-				type: PackageTaskIosAndTvOS,
-				group: XCODE_GROUP_NAME)
+		project.tasks.create(PackageTaskIosAndTvOS.NAME,
+				PackageTaskIosAndTvOS) {
+			it.group = XCODE_GROUP_NAME
+			it.signingMethod.set(xcodeBuildPluginExtension.signing.signingMethod)
+			it.scheme.set(xcodeBuildPluginExtension.scheme)
+		}
 	}
 
 	private void configureLegacyPackager(Project project) {
