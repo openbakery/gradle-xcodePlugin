@@ -99,8 +99,6 @@ class ProvisioningInstallTask extends Download {
 		project.gradle.buildFinished {
 			files.each { it.delete() }
 		}
-
-		return files
 	}
 
 	private File renameProvisioningFile(File file) {
