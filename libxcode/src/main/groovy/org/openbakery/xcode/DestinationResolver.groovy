@@ -10,10 +10,9 @@ class DestinationResolver {
 
 	SimulatorControl simulatorControl
 
-	public DestinationResolver(SimulatorControl simulatorControl) {
+	DestinationResolver(SimulatorControl simulatorControl) {
 		this.simulatorControl = simulatorControl
 	}
-
 
 	List<Destination> allFor(XcodebuildParameters parameters) {
 		if (parameters.type == Type.iOS && !parameters.simulator) {
@@ -33,8 +32,6 @@ class DestinationResolver {
 
 		def allDestinations = allFor(parameters)
 		def runtime = simulatorControl.getMostRecentRuntime(parameters.type)
-
-
 
 		if (isSimulatorFor(parameters)) {
 			// filter only on simulator builds
@@ -60,21 +57,20 @@ class DestinationResolver {
 
 				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
 
-
 				switch (parameters.devices) {
 					case Devices.PHONE:
 						availableDestinations = allDestinations.findAll {
-							d -> d.name.contains("iPhone");
-						};
-						break;
+							d -> d.name.contains("iPhone")
+						}
+						break
 					case Devices.PAD:
 						availableDestinations = allDestinations.findAll {
-							d -> d.name.contains("iPad");
-						};
-						break;
+							d -> d.name.contains("iPad")
+						}
+						break
 					default:
-						availableDestinations.addAll(allDestinations);
-						break;
+						availableDestinations.addAll(allDestinations)
+						break
 				}
 			}
 		} else if (parameters.configuredDestinations != null) {
@@ -94,7 +90,7 @@ class DestinationResolver {
 	}
 
 	private List<Destination> findMatchingDestinations(Destination destination, List<Destination> allDestinations) {
-		def result = [];
+		List<Destination> result = []
 
 		logger.debug("finding matching destination for: {}", destination)
 
@@ -123,31 +119,28 @@ class DestinationResolver {
 			logger.debug("FOUND matching destination: {}", device)
 
 			result << device
-
 		}
 
-		return result.asList();
+		return result
 	}
 
-
-	private boolean matches(String first, String second) {
+	private static boolean matches(String first, String second) {
 		if (first != null && second == null) {
-			return true;
+			return true
 		}
 
 		if (first == null && second != null) {
-			return true;
+			return true
 		}
 
-		if (first.equals(second)) {
-			return true;
+		if (first == second) {
+			return true
 		}
 
 		if (second.matches(first)) {
-			return true;
+			return true
 		}
 
-		return false;
-
+		return false
 	}
 }

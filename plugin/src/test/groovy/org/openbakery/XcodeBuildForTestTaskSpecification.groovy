@@ -17,8 +17,7 @@ import spock.lang.Specification
 class XcodeBuildForTestTaskSpecification extends Specification {
 
 	Project project
-	CommandRunner commandRunner = Mock(CommandRunner);
-
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	XcodeBuildForTestTask xcodeBuildForTestTask
 
@@ -26,14 +25,13 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild/build")
 
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 
 		xcodeBuildForTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_FOR_TEST_TASK_NAME)
 		xcodeBuildForTestTask.commandRunner = commandRunner
 		xcodeBuildForTestTask.xcode = new XcodeFake()
 		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
 		project.xcodebuild.plistHelper = new PlistHelperStub()
-
 	}
 
 	def cleanup() {
@@ -44,9 +42,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 	def "instance is of type XcodeBuildForTestTask"() {
 		expect:
 		xcodeBuildForTestTask instanceof  XcodeBuildForTestTask
-
 	}
-
 
 	def "depends on"() {
 		when:
@@ -58,12 +54,10 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		dependsOn.contains(XcodePlugin.SIMULATORS_KILL_TASK_NAME)
 	}
 
-
 	def "has xcodebuild"() {
 		expect:
 		xcodeBuildForTestTask.xcodebuild instanceof Xcodebuild
 	}
-
 
 	def "xcodebuild has merged parameters"() {
 		when:
@@ -87,7 +81,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		givenOutputFile == new File(project.getBuildDir(), "for-testing/xcodebuild-output.txt")
 	}
 
-
 	def "IllegalArgumentException_when_no_scheme_or_target_given"() {
 		when:
 		xcodeBuildForTestTask.buildForTest()
@@ -96,8 +89,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		thrown(IllegalArgumentException)
 	}
 
-
-	def "xcodebuild is exectued"() {
+	def "xcodebuild is executed"() {
 		def commandList
 		project.xcodebuild.scheme = 'myscheme'
 
@@ -108,7 +100,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		commandList.contains("build-for-testing")
 		commandList.contains("myscheme")
-
 	}
 
 	def "has output appender"() {
@@ -132,7 +123,22 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		then:
 		destinations.size() == 14
 		destinations[0].platform == "iOS Simulator"
+	}
 
+	def "xcodebuild has only the project's configured iOS destination"() {
+		when:
+		Destination destination = new Destination()
+		destination.platform = "iOS Simulator"
+		destination.name = "iPhone X"
+		destination.os = "11.3"
+		xcodeBuildForTestTask.parameters.destination = destination
+		def destinations = xcodeBuildForTestTask.xcodebuild.destinations
+
+		then:
+		destinations.size() == 1
+		destinations[0].platform == "iOS Simulator"
+		destinations[0].name == "iPhone X"
+		destinations[0].os == "11.3"
 	}
 
 	def "xcodebuild has all available iOS destinations for most recent runtime"() {
@@ -150,10 +156,9 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		destinations.size() == 12
 		destinations[0].platform == "iOS Simulator"
 		destinations[0].os == "9.1"
-
 	}
 
-	def "xcodebuild has all available iOS destinations with multiple SDKs "() {
+	def "xcodebuild has all available iOS destinations with multiple SDKs"() {
 		when:
 		xcodeBuildForTestTask.parameters.simulator = true
 		xcodeBuildForTestTask.parameters.type = Type.iOS
@@ -165,7 +170,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		destinations.size() == 22
 		destinations[0].platform == "iOS Simulator"
 		destinations[0].os == "9.1"
-
 	}
 
 	def "xcodebuild has all available tvOS destinations"() {
@@ -187,7 +191,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		then:
 		destinations.size() == 0
 	}
-
 
 	def "has test bundle as result for iOS Simulator"() {
 		project.xcodebuild.target = 'myscheme'
@@ -234,8 +237,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		new File(project.getBuildDir(), "for-testing/Example-iOS.testbundle").exists()
 	}
 
-
-
 	def "has app in test bundle"() {
 		given:
 		project.xcodebuild.target = 'myscheme'
@@ -247,7 +248,6 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		File sym = TestHelper.createDummyApp(new File(symDirectory, "Test-iphonesimulator"), "Example")
 		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
 		FileUtils.copyFile(xctestrun, new File(symDirectory, "Example_iphonesimulator.xctestrun"))
-
 
 		xcodeBuildForTestTask.parameters.symRoot = sym
 
@@ -261,6 +261,4 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		new File(testBundle, "Test-iphonesimulator/Example.app").exists()
 		new File(testBundle, "Example_iphonesimulator.xctestrun").exists()
 	}
-
-
 }
