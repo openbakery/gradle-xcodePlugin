@@ -15,6 +15,9 @@
  */
 package org.openbakery
 
+import org.gradle.api.Project
+import org.gradle.api.provider.Property
+
 class InfoPlistExtension {
 	String bundleIdentifier = null
 	String bundleIdentifierSuffix = null
@@ -29,7 +32,11 @@ class InfoPlistExtension {
 	String shortVersionStringPrefix = null
 	List<String> commands = null
 
+	final Property<String> configurationBundleIdentifier
 
+	InfoPlistExtension(Project project) {
+		this.configurationBundleIdentifier = project.objects.property(String)
+	}
 
 	void setCommands(Object commands) {
 		if (commands instanceof List) {
@@ -42,16 +49,16 @@ class InfoPlistExtension {
 
 	boolean hasValuesToModify() {
 		return bundleIdentifier != null ||
-						bundleIdentifierSuffix != null ||
-						bundleName != null ||
-						bundleDisplayName != null ||
-						bundleDisplayNameSuffix != null ||
-						version != null ||
-						versionSuffix != null ||
-						versionPrefix != null ||
-						shortVersionString != null ||
-						shortVersionStringSuffix != null ||
-						shortVersionStringPrefix != null ||
-						commands != null;
+				bundleIdentifierSuffix != null ||
+				bundleName != null ||
+				bundleDisplayName != null ||
+				bundleDisplayNameSuffix != null ||
+				version != null ||
+				versionSuffix != null ||
+				versionPrefix != null ||
+				shortVersionString != null ||
+				shortVersionStringSuffix != null ||
+				shortVersionStringPrefix != null ||
+				commands != null;
 	}
 }

@@ -15,12 +15,15 @@
  */
 package org.openbakery
 
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskAction
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
 	File infoPlist
 	Boolean modfied = false
+
+	public final Provider<String> configurationBundleIdentifier = project.objects.property(String)
 
 	public static final String KeyBundleIdentifier = "CFBundleIdentifier"
 
@@ -78,6 +81,8 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		} else {
 			logger.debug("Nothing was modified!")
 		}
+
+		configurationBundleIdentifier.set(getBundleIdentifier())
 	}
 
 	private void modifyVersion(File infoPlist) {

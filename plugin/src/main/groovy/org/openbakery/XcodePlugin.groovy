@@ -134,6 +134,7 @@ class XcodePlugin implements Plugin<Project> {
 
 
 	private XcodeBuildPluginExtension xcodeBuildPluginExtension
+	private InfoPlistExtension infoPlistExtension
 
 	private CommandRunner commandRunner
 	private PlistHelper plistHelper
@@ -439,7 +440,10 @@ class XcodePlugin implements Plugin<Project> {
 				XcodeBuildPluginExtension,
 				project)
 
-		project.extensions.create("infoplist", InfoPlistExtension)
+		infoPlistExtension = project.extensions.create("infoplist",
+				InfoPlistExtension,
+				project)
+
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("appstore", AppstorePluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
@@ -478,9 +482,20 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureArchive(Project project) {
-		PrepareXcodeArchivingTask prepareXcodeArchivingTask = project.getTasks().
-				create(PrepareXcodeArchivingTask.NAME, PrepareXcodeArchivingTask.class)
-		prepareXcodeArchivingTask.setGroup(XCODE_GROUP_NAME)
+
+		project.getTasks()
+				.create(PrepareXcodeArchivingTask.NAME,
+				PrepareXcodeArchivingTask.class) {
+			it.group = XCODE_GROUP_NAME
+
+			it.certificateFriendlyName.set(xcodeBuildPluginExtension.signing.certificateFriendlyName)
+			it.commandRunnerProperty.set(commandRunner)
+			it.configurationBundleIdentifier.set(infoPlistExtension.configurationBundleIdentifier)
+			it.entitlementsFile.set(xcodeBuildPluginExtension.signing.entitlementsFile)
+			it.outputFile.set(xcodeBuildPluginExtension.signing.xcConfigFile)
+			it.plistHelperProperty.set(plistHelper)
+			it.registeredProvisioningFiles.set(xcodeBuildPluginExtension.signing.registeredProvisioningFiles)
+		}
 
 		project.getTasks().create(XcodeBuildArchiveTaskIosAndTvOS.NAME,
 				XcodeBuildArchiveTaskIosAndTvOS.class) {
@@ -548,16 +563,22 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configureInfoPlist(Project project) {
-		project.task(INFOPLIST_MODIFY_TASK_NAME, type: InfoPlistModifyTask, group: XCODE_GROUP_NAME)
+		project.tasks.create(INFOPLIST_MODIFY_TASK_NAME,
+				InfoPlistModifyTask) {
+			it.group = XCODE_GROUP_NAME
+			infoPlistExtension.configurationBundleIdentifier.set(it.configurationBundleIdentifier)
+		}
 	}
 
 	private configureProvisioning(Project project) {
 		project.tasks.create(ProvisioningInstallTask.TASK_NAME,
 				ProvisioningInstallTask) {
 			it.group = XCODE_GROUP_NAME
+
 			it.commandRunnerProperty.set(commandRunner)
 			it.mobileProvisioningList.set(xcodeBuildPluginExtension.signing.mobileProvisionList)
 			it.outputDirectory.set(xcodeBuildPluginExtension.signing.provisioningDestinationRoot)
+			it.plistHelperProperty.set(plistHelper)
 			it.plistHelperProperty.set(plistHelper)
 
 			// We use the result of the task to populate the read only value

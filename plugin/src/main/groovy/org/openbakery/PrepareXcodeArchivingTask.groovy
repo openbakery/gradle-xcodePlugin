@@ -1,21 +1,42 @@
 package org.openbakery
 
 import groovy.transform.CompileStatic
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.DefaultTask
+import org.gradle.api.Transformer
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.*
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.util.PathHelper
-
-import java.util.function.Consumer
+import org.openbakery.util.PlistHelper
 
 @CompileStatic
-class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
+class PrepareXcodeArchivingTask extends DefaultTask {
 
-	private ProvisioningProfileReader reader
-	private final File outputFile
+	@InputFile
+	@Optional
+	final Provider<RegularFile> entitlementsFile = newInputFile()
+
+	@OutputFile
+	final Provider<RegularFile> outputFile = newOutputFile()
+
+	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
+	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
+	final ListProperty<File> registeredProvisioningFiles = project.objects.listProperty(File)
+	final Property<String> configurationBundleIdentifier = project.objects.property(String)
+	final Property<String> certificateFriendlyName = project.objects.property(String)
+
+	@Internal
+	private Property<String> entitlementsFilePath = project.objects.property(String)
+
+	@Internal
+	final Property<File> provisioningForConfiguration = project.objects.property(File)
+
+	@Internal
+	final Property<ProvisioningProfileReader> provisioningReader = project.objects.property(ProvisioningProfileReader)
 
 	public static final String DESCRIPTION = "Prepare the archive configuration file"
 	public static final String NAME = "prepareArchiving"
@@ -36,46 +57,55 @@ class PrepareXcodeArchivingTask extends AbstractXcodeBuildTask {
 		dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 
 		this.description = DESCRIPTION
-		this.outputFile = PathHelper.resolveXcConfigFile(project)
-	}
 
-	@Input
-	@Override
-	List<String> getProvisioningUriList() {
-		return super.getProvisioningUriList()
-	}
+		this.entitlementsFilePath.set(entitlementsFile.map(new Transformer<String, RegularFile>() {
+			@Override
+			String transform(RegularFile regularFile) {
+				return regularFile.asFile.absolutePath
+			}
+		}))
 
-	@OutputFile
-	File getXcConfigFile() {
-		return outputFile
+		this.provisioningForConfiguration.set(configurationBundleIdentifier.map(new Transformer<File, String>() {
+			@Override
+			File transform(String bundleIdentifier) {
+				return ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
+						registeredProvisioningFiles.get().asList() as List<File>,
+						commandRunnerProperty.get(),
+						plistHelperProperty.get())
+			}
+		}))
+
+		this.provisioningReader.set(provisioningForConfiguration.map(new Transformer<ProvisioningProfileReader, File>() {
+			@Override
+			ProvisioningProfileReader transform(File file) {
+				return new ProvisioningProfileReader(file,
+						commandRunnerProperty.get())
+			}
+		}))
 	}
 
 	@TaskAction
 	void generate() {
-		getXcConfigFile().text = ""
-		computeProvisioningFile()
-	}
+		outputFile.get().asFile.text = ""
 
-	private void computeProvisioningFile() {
-		reader = new ProvisioningProfileReader(getProvisioningFile(), commandRunner)
-		append(KEY_BUNDLE_IDENTIFIER, reader.getApplicationIdentifier())
-		append(KEY_CODE_SIGN_IDENTITY, getSignatureFriendlyName())
-		append(KEY_DEVELOPMENT_TEAM, reader.getTeamIdentifierPrefix())
-		append(KEY_PROVISIONING_PROFILE_ID, reader.getUUID())
-		append(KEY_PROVISIONING_PROFILE_SPEC, reader.getName())
+		append(KEY_CODE_SIGN_IDENTITY, certificateFriendlyName.get())
+		append(KEY_BUNDLE_IDENTIFIER, configurationBundleIdentifier.get())
 
-		Optional.ofNullable(getXcodeExtension().signing.entitlementsFile)
-				.filter { File file -> file.exists() }
-				.ifPresent(new Consumer<File>() {
-			@Override
-			void accept(File file) {
-				append(KEY_CODE_SIGN_ENTITLEMENTS, file.absolutePath)
-			}
-		})
+		if (provisioningReader.present) {
+			ProvisioningProfileReader reader = provisioningReader.get()
+			append(KEY_DEVELOPMENT_TEAM, reader.getTeamIdentifierPrefix())
+			append(KEY_PROVISIONING_PROFILE_ID, reader.getUUID())
+			append(KEY_PROVISIONING_PROFILE_SPEC, reader.getName())
+		}
+
+		if (entitlementsFilePath.present) {
+			append(KEY_CODE_SIGN_ENTITLEMENTS, entitlementsFilePath.get())
+		}
 	}
 
 	private void append(String key, String value) {
-		getXcConfigFile()
+		outputFile.get()
+				.asFile
 				.append(System.getProperty("line.separator") + key + " = " + value)
 	}
 }
