@@ -500,7 +500,10 @@ class XcodePlugin implements Plugin<Project> {
 		project.getTasks().create(XcodeBuildArchiveTaskIosAndTvOS.NAME,
 				XcodeBuildArchiveTaskIosAndTvOS.class) {
 			it.setGroup(XCODE_GROUP_NAME)
+			it.commandRunnerProperty.set(commandRunner)
+			it.outputArchiveFile.set(xcodeBuildPluginExtension.schemeArchiveFile)
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
+			it.xcConfigFile.set(xcodeBuildPluginExtension.signing.xcConfigFile)
 		}
 
 		XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask = project.getTasks().

@@ -2,10 +2,13 @@ package org.openbakery.archiving
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Task
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeBuildTask
+import org.openbakery.CommandRunner
 import org.openbakery.PrepareXcodeArchivingTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.util.PathHelper
@@ -18,6 +21,14 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@Input
 	final Provider<String> scheme = project.objects.property(String)
+
+	@InputFile
+	final Property<RegularFile> xcConfigFile = newInputFile()
+
+	@OutputFile
+	final Provider<RegularFile> outputArchiveFile = newOutputFile()
+
+	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
 
 	public static final String NAME = "archiveXcodeBuild"
 
@@ -38,11 +49,6 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		})
 	}
 
-	@InputFile
-	File getXcConfigFile() {
-		return PathHelper.resolveXcConfigFile(project)
-	}
-
 	@OutputFile
 	File getOutputTextFile() {
 		return PathHelper.resolveArchivingLogFile(project)
@@ -58,7 +64,7 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	@TaskAction
 	private void archive() {
 		Xcodebuild xcodeBuild = new Xcodebuild(project.projectDir,
-				commandRunner,
+				commandRunnerProperty.get(),
 				xcode,
 				parameters,
 				getDestinations())
@@ -66,7 +72,7 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		commandRunner.setOutputFile(getOutputTextFile())
 
 		xcodeBuild.archive(scheme.get(),
-				PathHelper.resolveArchiveFile(project, scheme.get()),
-				getXcConfigFile())
+				outputArchiveFile.get().asFile,
+				xcConfigFile.get().asFile)
 	}
 }

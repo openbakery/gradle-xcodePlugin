@@ -25,18 +25,12 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 
 	final ListProperty<File> registeredProvisioningFiles = project.objects.listProperty(File)
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
+	final Property<File> provisioningForConfiguration = project.objects.property(File)
 	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
+	final Property<ProvisioningProfileReader> provisioningReader = project.objects.property(ProvisioningProfileReader)
 	final Property<String> certificateFriendlyName = project.objects.property(String)
 	final Property<String> configurationBundleIdentifier = project.objects.property(String)
-
-	@Internal
-	private Property<String> entitlementsFilePath = project.objects.property(String)
-
-	@Internal
-	final Property<File> provisioningForConfiguration = project.objects.property(File)
-
-	@Internal
-	final Property<ProvisioningProfileReader> provisioningReader = project.objects.property(ProvisioningProfileReader)
+	final Property<String> entitlementsFilePath = project.objects.property(String)
 
 	public static final String DESCRIPTION = "Prepare the archive configuration file"
 	public static final String NAME = "prepareArchiving"

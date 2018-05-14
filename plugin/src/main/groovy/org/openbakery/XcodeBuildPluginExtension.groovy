@@ -18,6 +18,10 @@ package org.openbakery
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
+import org.gradle.api.Transformer
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
@@ -33,6 +37,9 @@ class XcodeBuildPluginExtension {
 
 	final Property<String> version
 	final Property<String> scheme
+	final DirectoryProperty archiveDirectory
+	final RegularFileProperty schemeArchiveFile
+
 	final Signing signing
 
 
@@ -92,6 +99,10 @@ class XcodeBuildPluginExtension {
 		this.version = project.objects.property(String)
 		this.scheme = project.objects.property(String)
 
+		this.archiveDirectory = project.layout.directoryProperty()
+		this.schemeArchiveFile = project.layout.fileProperty()
+		configurePaths()
+
 		this.signing = project.objects.newInstance(Signing, project)
 
 		this.variableResolver = new VariableResolver(project)
@@ -118,6 +129,20 @@ class XcodeBuildPluginExtension {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
 		}
 
+	}
+
+	private void configurePaths() {
+		this.archiveDirectory.set(project.layout
+				.buildDirectory
+				.dir(PathHelper.FOLDER_ARCHIVE))
+
+		this.schemeArchiveFile.set(scheme.map(new Transformer<RegularFile, String>() {
+			@Override
+			RegularFile transform(String scheme) {
+				return archiveDirectory.get()
+						.file(scheme + PathHelper.EXTENSION_XCARCHIVE)
+			}
+		}))
 	}
 
 	Optional<BuildConfiguration> getBuildTargetConfiguration(String schemeName,
