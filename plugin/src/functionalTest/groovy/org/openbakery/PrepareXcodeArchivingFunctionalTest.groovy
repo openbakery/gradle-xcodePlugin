@@ -8,7 +8,6 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import org.openbakery.util.PathHelper
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import java.nio.file.Paths
 
@@ -69,61 +68,6 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 				+ PrepareXcodeArchivingTask.DESCRIPTION)
 	}
 
-	@Unroll("It should fail to resolve provisioning for bundleIdentifier : #bundleIdentifier")
-	def "Should try to resolve provisioning for the bundle identifier"() {
-		setup:
-		setupBuildFile()
-
-		when:
-		if (bundleIdentifier != null) {
-			buildFile << """
-			xcodebuild {
-				infoplist {
-					bundleIdentifier = "$bundleIdentifier"
-				}
-			}
-			"""
-		}
-
-		BuildResult result = GradleRunner.create()
-				.withProjectDir(testProjectDir.root)
-				.withArguments(PrepareXcodeArchivingTask.NAME)
-				.withPluginClasspath(pluginClasspath)
-				.buildAndFail()
-
-		then: "The build should fail due to invalidate configuration"
-		result.output.contains("> Cannot resolve a valid provisioning profile for bundle identifier : "
-				+ exceptionValue)
-
-		where:
-		bundleIdentifier            | exceptionValue
-		null                        | "\$(PRODUCT_BUNDLE_IDENTIFIER)"
-		"invalid.bundle.identifier" | "invalid.bundle.identifier"
-	}
-
-	def "The task should fail due to invalid configuration"() {
-		setup:
-		setupBuildFile()
-
-		when:
-		buildFile << """
-			xcodebuild {
-				infoplist {
-					bundleIdentifier = "org.openbakery.test.ExampleWidget"
-				}
-			}
-			"""
-
-		BuildResult result = GradleRunner.create()
-				.withProjectDir(testProjectDir.root)
-				.withArguments(PrepareXcodeArchivingTask.NAME)
-				.withPluginClasspath(pluginClasspath)
-				.buildAndFail()
-
-		then: "The build should fail due to invalidate configuration"
-		result.output.contains("The signing certificate password is not defined")
-	}
-
 	def "The task should complete without error and generate the xcconfig file"() {
 		setup:
 		setupBuildFile()
@@ -152,7 +96,6 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 			}
 			"""
 
-
 		BuildResult result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
 				.withArguments(PrepareXcodeArchivingTask.NAME)
@@ -178,6 +121,65 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 		text.contains("PROVISIONING_PROFILE = XXXXFFFF-AAAA-BBBB-CCCC-DDDDEEEEFFFF")
 		text.contains("PROVISIONING_PROFILE_SPECIFIER = ad hoc")
 		text.contains("DEVELOPMENT_TEAM = XXXYYYZZZZ")
+
+		and: "Should no contain any entitlements information"
+		!text.contains("CODE_SIGN_ENTITLEMENTS =")
+	}
+
+	def "If present the entitlements file should be present into the xcconfig file"() {
+		setup:
+		setupBuildFile()
+
+		when:
+		buildFile << """
+			xcodebuild {
+				infoplist {
+					bundleIdentifier = "org.openbakery.test.ExampleWidget"
+				}
+			}
+			"""
+
+		final File certificate = findResource("fake_distribution.p12")
+		assert certificate.exists()
+
+		final File entitlementsFile = findResource("fake.entitlements")
+		assert entitlementsFile.exists()
+
+		buildFile << """
+			xcodebuild {
+				infoplist {
+					bundleIdentifier = "org.openbakery.test.ExampleWidget"
+				}
+
+				signing {
+					certificateURI = "${certificate.toURI().toString()}"
+					certificatePassword = "p4ssword"
+					entitlementsFile = project.file("${entitlementsFile.absolutePath}")
+				}
+			}
+			"""
+
+		BuildResult result = GradleRunner.create()
+				.withProjectDir(testProjectDir.root)
+				.withArguments(PrepareXcodeArchivingTask.NAME)
+				.withPluginClasspath(pluginClasspath)
+				.build()
+
+		then: "The task should complete without error"
+
+		result.task(":" + PrepareXcodeArchivingTask.NAME)
+				.outcome == TaskOutcome.SUCCESS
+
+		and: "The archive xcconfig should contains the path to the entitlements file"
+
+		File outputFile = new File(testProjectDir.root, "build/"
+				+ PathHelper.FOLDER_ARCHIVE
+				+ "/" + PathHelper.GENERATED_XCARCHIVE_FILE_NAME)
+
+		outputFile.exists()
+
+		String text = outputFile.text
+		text.contains("CODE_SIGN_ENTITLEMENTS = ${entitlementsFile.absolutePath}")
 	}
 
 	private File findResource(String name) {

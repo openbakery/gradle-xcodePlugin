@@ -23,11 +23,11 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 	@OutputFile
 	final Provider<RegularFile> outputFile = newOutputFile()
 
+	final ListProperty<File> registeredProvisioningFiles = project.objects.listProperty(File)
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
 	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
-	final ListProperty<File> registeredProvisioningFiles = project.objects.listProperty(File)
-	final Property<String> configurationBundleIdentifier = project.objects.property(String)
 	final Property<String> certificateFriendlyName = project.objects.property(String)
+	final Property<String> configurationBundleIdentifier = project.objects.property(String)
 
 	@Internal
 	private Property<String> entitlementsFilePath = project.objects.property(String)
@@ -41,12 +41,12 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 	public static final String DESCRIPTION = "Prepare the archive configuration file"
 	public static final String NAME = "prepareArchiving"
 
-	private static final String KEY_BUNDLE_IDENTIFIER = "PRODUCT_BUNDLE_IDENTIFIER"
-	private static final String KEY_CODE_SIGN_IDENTITY = "CODE_SIGN_IDENTITY"
-	private static final String KEY_CODE_SIGN_ENTITLEMENTS = "CODE_SIGN_ENTITLEMENTS"
-	private static final String KEY_DEVELOPMENT_TEAM = "DEVELOPMENT_TEAM"
-	private static final String KEY_PROVISIONING_PROFILE_ID = "PROVISIONING_PROFILE"
-	private static final String KEY_PROVISIONING_PROFILE_SPEC = "PROVISIONING_PROFILE_SPECIFIER"
+	static final String KEY_BUNDLE_IDENTIFIER = "PRODUCT_BUNDLE_IDENTIFIER"
+	static final String KEY_CODE_SIGN_IDENTITY = "CODE_SIGN_IDENTITY"
+	static final String KEY_CODE_SIGN_ENTITLEMENTS = "CODE_SIGN_ENTITLEMENTS"
+	static final String KEY_DEVELOPMENT_TEAM = "DEVELOPMENT_TEAM"
+	static final String KEY_PROVISIONING_PROFILE_ID = "PROVISIONING_PROFILE"
+	static final String KEY_PROVISIONING_PROFILE_SPEC = "PROVISIONING_PROFILE_SPECIFIER"
 
 	PrepareXcodeArchivingTask() {
 		super()
@@ -82,10 +82,20 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 						commandRunnerProperty.get())
 			}
 		}))
+
+		this.onlyIf {
+			return certificateFriendlyName.present &&
+					configurationBundleIdentifier.present &&
+					provisioningForConfiguration.present &&
+					outputFile.present &&
+					provisioningForConfiguration.present
+		}
 	}
 
 	@TaskAction
 	void generate() {
+		logger.lifecycle("Preparing archiving")
+
 		outputFile.get().asFile.text = ""
 
 		append(KEY_CODE_SIGN_IDENTITY, certificateFriendlyName.get())
@@ -108,4 +118,5 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 				.asFile
 				.append(System.getProperty("line.separator") + key + " = " + value)
 	}
+
 }
