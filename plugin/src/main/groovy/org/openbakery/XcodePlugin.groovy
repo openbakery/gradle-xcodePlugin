@@ -631,8 +631,12 @@ class XcodePlugin implements Plugin<Project> {
 		project.tasks.create(PackageTaskIosAndTvOS.NAME,
 				PackageTaskIosAndTvOS) {
 			it.group = XCODE_GROUP_NAME
+
+			it.bitCode.set(xcodeBuildPluginExtension.bitcode)
 			it.buildType.set(xcodeBuildPluginExtension.type)
 			it.certificateFriendlyName.set(xcodeBuildPluginExtension.signing.certificateFriendlyName)
+			it.commandRunner.set(xcodeBuildPluginExtension.commandRunner)
+			it.plistHelper.set(xcodeBuildPluginExtension.plistHelper)
 			it.registeredProvisioningFiles.set(xcodeBuildPluginExtension.signing.registeredProvisioning)
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
 			it.signingMethod.set(xcodeBuildPluginExtension.signing.signingMethod)

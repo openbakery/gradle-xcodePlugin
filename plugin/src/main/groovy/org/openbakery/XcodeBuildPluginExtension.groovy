@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory
 class XcodeBuildPluginExtension {
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
+	final Property<Boolean> bitcode
 	final Property<String> version
 	final Property<String> scheme
 	final DirectoryProperty archiveDirectory
@@ -73,8 +74,6 @@ class XcodeBuildPluginExtension {
 	String ipaFileName = null
 	File projectFile
 
-	Boolean bitcode = false
-
 	boolean useXcodebuildArchive = false
 
 
@@ -98,7 +97,8 @@ class XcodeBuildPluginExtension {
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(commandRunner)
 
-		this.project = project;
+		this.project = project
+		this.bitcode = project.objects.property(Boolean)
 		this.version = project.objects.property(String)
 		this.scheme = project.objects.property(String)
 
@@ -504,7 +504,7 @@ class XcodeBuildPluginExtension {
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
-		result.bitcode = this.bitcode
+		result.bitcode = this.bitcode.get()
 		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {

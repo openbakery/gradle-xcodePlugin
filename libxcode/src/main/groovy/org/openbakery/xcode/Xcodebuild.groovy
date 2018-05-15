@@ -47,9 +47,10 @@ class Xcodebuild {
 		}
 	}
 
-	public void packageIpa(File archivePath,
-						   File exportPath,
-						   File exportOptionsPlist) {
+	public static void packageIpa(CommandRunner commandRunner,
+								  File archivePath,
+								  File exportPath,
+								  File exportOptionsPlist) {
 
 		assert archivePath != null && archivePath.exists()
 		assert exportPath != null && exportPath.exists()

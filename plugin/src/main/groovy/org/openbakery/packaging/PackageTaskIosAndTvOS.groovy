@@ -2,13 +2,14 @@ package org.openbakery.packaging
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
-import org.openbakery.AbstractXcodeBuildTask
+import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.KeychainCreateTask
@@ -16,11 +17,12 @@ import org.openbakery.signing.ProvisioningFile
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 @CompileStatic
-class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
+class PackageTaskIosAndTvOS extends DefaultTask {
 
 	@Input
 	public final Property<SigningMethod> signingMethod = project.objects.property(SigningMethod)
@@ -36,6 +38,12 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 	@Input
 	final Property<String> certificateFriendlyName = project.objects.property(String)
+
+	@Input
+	final Provider<Boolean> bitCode = project.objects.property(Boolean)
+
+	final Provider<CommandRunner> commandRunner = project.objects.property(CommandRunner)
+	final Provider<PlistHelper> plistHelper = project.objects.property(PlistHelper)
 
 	private ProvisioningProfileReader reader
 
@@ -64,43 +72,10 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		onlyIf(new Spec<Task>() {
 			@Override
 			boolean isSatisfiedBy(Task task) {
-				return getXcodeExtension().getType() == Type.iOS ||
-						getXcodeExtension().getType() == Type.tvOS
+				return buildType.get() == Type.iOS ||
+						buildType.get() == Type.tvOS
 			}
 		})
-	}
-
-	@Override
-	File getProvisioningFile() {
-		return super.getProvisioningFile()
-	}
-
-	@Input
-	boolean getBitCode() {
-		boolean result = getXcodeExtension().bitcode
-		SigningMethod method = signingMethod.get()
-
-		if (method == SigningMethod.AppStore
-				&& getXcodeExtension().type == Type.tvOS) {
-			assert result: "Invalid configuration for the TvOS target " +
-					"`AppStore` upload requires BitCode enabled."
-		} else if (method != SigningMethod.AppStore) {
-			assert !result: "The BitCode setting (`xcodebuild.bitcode`) should be enabled only " +
-					"for the `AppStore` signing method"
-		}
-
-		return result
-	}
-
-	@Input
-	String getBundleIdentifier() {
-		return super.getBundleIdentifier()
-	}
-
-	@Input
-	@Override
-	String getSignatureFriendlyName() {
-		return super.getSignatureFriendlyName()
 	}
 
 	@Input
@@ -134,17 +109,34 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		packageIt()
 	}
 
+	private boolean validateBitCodeSettings() {
+		Boolean bitCodeValue = bitCode.get()
+		SigningMethod method = signingMethod.get()
+
+		if (method == SigningMethod.AppStore) {
+			if (buildType.get() == Type.tvOS) {
+				assert bitCodeValue: "Invalid configuration for the TvOS target " +
+						"`AppStore` upload requires BitCode enabled."
+			}
+		} else {
+			assert !bitCodeValue: "The BitCode setting (`xcodebuild.bitCode`) should be " +
+					"enabled only for the `AppStore` signing method"
+		}
+
+		return bitCodeValue
+	}
+
 	private void generateExportOptionPlist() {
 		File file = getExportOptionsPlistFile()
 
-		plistHelper.create(file)
+		plistHelper.get().create(file)
 
 		// Signing  method
 		addStringValueForPlist(PLIST_KEY_METHOD,
 				signingMethod.get().value)
 
 		// Provisioning profiles map list
-		plistHelper.addDictForPlist(file,
+		plistHelper.get().addDictForPlist(file,
 				PLIST_KEY_PROVISIONING_PROFILE,
 				getProvisioningMap())
 
@@ -153,9 +145,9 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 				certificateFriendlyName.get())
 
 		// BitCode
-		plistHelper.addValueForPlist(file,
+		plistHelper.get().addValueForPlist(file,
 				PLIST_KEY_COMPILE_BITCODE,
-				getBitCode())
+				validateBitCodeSettings())
 
 		// SigningMethod
 		addStringValueForPlist(PLIST_KEY_SIGNING_STYLE,
@@ -167,20 +159,15 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		assert key != null
 		assert value != null
 
-		plistHelper.addValueForPlist(getExportOptionsPlistFile(),
-				key,
-				value)
+		plistHelper.get()
+				.addValueForPlist(getExportOptionsPlistFile(), key, value)
 	}
 
 	private void packageIt() {
-		Xcodebuild xcodeBuild = new Xcodebuild(project.projectDir,
-				commandRunner,
-				xcode,
-				parameters,
-				getDestinations())
-
-		xcodeBuild.packageIpa(getArchiveFile(),
+		Xcodebuild.packageIpa(commandRunner.get(),
+				getArchiveFile(),
 				getOutputDirectory(),
 				getExportOptionsPlistFile())
 	}
+
 }
