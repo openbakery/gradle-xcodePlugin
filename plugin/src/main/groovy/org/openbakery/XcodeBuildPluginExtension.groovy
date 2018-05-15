@@ -23,7 +23,7 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.util.ConfigureUtil
-import org.openbakery.signing.Signing
+import org.openbakery.extension.Signing
 import org.openbakery.util.PathHelper
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver

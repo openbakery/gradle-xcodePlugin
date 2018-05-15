@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.configuration.ConfigurationFromMap
+import org.openbakery.extension.Signing
 import spock.lang.Specification
 import spock.lang.Unroll
 

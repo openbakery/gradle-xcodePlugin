@@ -5,7 +5,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.signing.Signing
+import org.openbakery.extension.Signing
 import org.openbakery.util.PlistHelper
 import spock.lang.Specification
 

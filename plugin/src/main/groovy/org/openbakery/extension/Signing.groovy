@@ -1,4 +1,4 @@
-package org.openbakery.signing
+package org.openbakery.extension
 
 import org.gradle.api.Project
 import org.gradle.api.Transformer
@@ -11,6 +11,8 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.signing.ProvisioningFile
+import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
 
 import javax.inject.Inject

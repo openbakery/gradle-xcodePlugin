@@ -7,6 +7,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.extension.Signing
 import org.openbakery.util.FileUtil
 import org.openbakery.util.SystemUtil
 import org.openbakery.xcode.Version
