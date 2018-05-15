@@ -88,7 +88,7 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 
 	@TaskAction
 	void generate() {
-		logger.lifecycle("Preparing archiving")
+		logger.debug("Preparing archiving")
 
 		outputFile.get().asFile.text = ""
 

@@ -35,6 +35,9 @@ class Signing {
 	final Provider<List<File>> registeredProvisioningFiles = project.objects.listProperty(File)
 
 	@Internal
+	final Provider<List<ProvisioningFile>> registeredProvisioning = project.objects.listProperty(ProvisioningFile)
+
+	@Internal
 	Object keychainPathInternal
 
 	@Internal

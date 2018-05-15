@@ -1,7 +1,9 @@
 package org.openbakery.packaging
 
 import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import org.gradle.api.Task
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
@@ -10,6 +12,7 @@ import org.openbakery.AbstractXcodeBuildTask
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningFile
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
@@ -25,8 +28,14 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	@Input
 	final Provider<String> scheme = project.objects.property(String)
 
-//	@Input
-//	public final Provider<Type> targetType = project.objects.property(Type)
+	@Input
+	final Provider<Type> buildType = project.objects.property(Type)
+
+	@Input
+	final ListProperty<ProvisioningFile> registeredProvisioningFiles = project.objects.listProperty(ProvisioningFile)
+
+	@Input
+	final Property<String> certificateFriendlyName = project.objects.property(String)
 
 	private ProvisioningProfileReader reader
 
@@ -95,12 +104,10 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 	}
 
 	@Input
+	@CompileStatic(TypeCheckingMode.SKIP)
 	Map<String, String> getProvisioningMap() {
-		setupProvisioningProfileReader()
-
-		HashMap<String, String> map = new HashMap<>()
-		map.put(reader.getApplicationIdentifier(), reader.getName())
-		return map
+		return registeredProvisioningFiles.get()
+				.collectEntries { [it.getApplicationIdentifier(), it.getName()] }
 	}
 
 	@InputDirectory
@@ -127,13 +134,6 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		packageIt()
 	}
 
-	private void setupProvisioningProfileReader() {
-		if (reader == null) {
-			reader = new ProvisioningProfileReader(getProvisioningFile(),
-					commandRunner)
-		}
-	}
-
 	private void generateExportOptionPlist() {
 		File file = getExportOptionsPlistFile()
 
@@ -150,7 +150,7 @@ class PackageTaskIosAndTvOS extends AbstractXcodeBuildTask {
 
 		// Certificate name
 		addStringValueForPlist(PLIST_KEY_SIGNING_CERTIFICATE,
-				getSignatureFriendlyName())
+				certificateFriendlyName.get())
 
 		// BitCode
 		plistHelper.addValueForPlist(file,

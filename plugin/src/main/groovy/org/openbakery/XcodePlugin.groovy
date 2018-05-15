@@ -591,10 +591,14 @@ class XcodePlugin implements Plugin<Project> {
 			it.plistHelperProperty.set(plistHelper)
 			it.plistHelperProperty.set(plistHelper)
 
-			// We use the result of the task to populate the read only value
+			// We use the result of the task to populate the read only values
 			xcodeBuildPluginExtension.signing
 					.registeredProvisioningFiles
 					.set(it.registeredProvisioning)
+
+			xcodeBuildPluginExtension.signing
+					.registeredProvisioning
+					.set(it.registeredProvisioningFiles)
 		}
 		project.task(PROVISIONING_CLEAN_TASK_NAME, type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 	}
@@ -627,8 +631,11 @@ class XcodePlugin implements Plugin<Project> {
 		project.tasks.create(PackageTaskIosAndTvOS.NAME,
 				PackageTaskIosAndTvOS) {
 			it.group = XCODE_GROUP_NAME
-			it.signingMethod.set(xcodeBuildPluginExtension.signing.signingMethod)
+			it.buildType.set(xcodeBuildPluginExtension.type)
+			it.certificateFriendlyName.set(xcodeBuildPluginExtension.signing.certificateFriendlyName)
+			it.registeredProvisioningFiles.set(xcodeBuildPluginExtension.signing.registeredProvisioning)
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
+			it.signingMethod.set(xcodeBuildPluginExtension.signing.signingMethod)
 		}
 	}
 

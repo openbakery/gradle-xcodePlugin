@@ -24,6 +24,8 @@ class ProvisioningInstallTask extends Download {
 	@OutputFiles
 	final ListProperty<File> registeredProvisioning = project.objects.listProperty(File)
 
+	final ListProperty<ProvisioningFile> registeredProvisioningFiles = project.objects.listProperty(ProvisioningFile)
+
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
 	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
 	final Provider<Directory> outputDirectory = project.layout.directoryProperty()
@@ -48,6 +50,7 @@ class ProvisioningInstallTask extends Download {
 		outputDirectory.get().asFile.mkdirs()
 		configureDownload()
 		super.download()
+		deleteFilesOnExit(getOutputFiles())
 		postDownload()
 	}
 
@@ -57,20 +60,52 @@ class ProvisioningInstallTask extends Download {
 		this.acceptAnyCertificate(true)
 	}
 
-	private void postDownload() {
-		final List<File> files = rename()
-		deleteFilesOnExit(files)
-
-		final List<File> libraryFiles = files.each { registeredProvisioning.add(it) }
-				.collect { linkToUserlibraryOfProvisioning(it) }
-
-		deleteFilesOnExit(libraryFiles)
+	void registerProvisioning(ProvisioningFile provisioningFile) {
+		registeredProvisioning.add(provisioningFile.getFile())
+		registeredProvisioningFiles.add(provisioningFile)
 	}
 
-	private List<File> rename() {
+	File registerProvisioningInToUserLibrary(ProvisioningFile provisioningFile) {
+		PROVISIONING_DIR.mkdirs()
+
+		File destinationFile = new File(PROVISIONING_DIR, provisioningFile.getFormattedName())
+		FileUtils.copyFile(provisioningFile.getFile(), destinationFile)
+		return destinationFile
+	}
+
+	private void postDownload() {
+		// For convenience we rename the mobile provisioning file in to a formatted name
+		List<ProvisioningFile> files = rename()
+
+		// Register it
+		files.each(this.&registerProvisioning)
+
+		// Register into the user library
+		List<File> registeredFiles = files.collect(this.&registerProvisioningInToUserLibrary)
+		deleteFilesOnExit(registeredFiles)
+	}
+
+	File fileFromPath(String path) {
+		return new File(outputDirectory.get().asFile, FilenameUtils.getName(path))
+	}
+
+	ProvisioningFile toProvisioningFile(File file) {
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(file,
+				commandRunnerProperty.get(),
+				plistHelperProperty.get())
+
+		return new ProvisioningFile(file,
+				reader.getApplicationIdentifier(),
+				reader.getUUID(),
+				reader.getTeamIdentifierPrefix(),
+				reader.getTeamName(),
+				reader.getName())
+	}
+
+	private List<ProvisioningFile> rename() {
 		return mobileProvisioningList.get()
-				.collect { new File(outputDirectory.get().asFile, FilenameUtils.getName(it)) }
-				.collect { return renameProvisioningFile(it) }
+				.collect(this.&fileFromPath)
+				.collect(this.&toProvisioningFile)
 	}
 
 	private void deleteFilesOnExit(final List<File> files) {
@@ -80,29 +115,5 @@ class ProvisioningInstallTask extends Download {
 				it.delete()
 			}
 		}
-	}
-
-	private File renameProvisioningFile(File file) {
-		assert file.exists(): "Cannot rename a non existing file"
-
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(file,
-				commandRunnerProperty.get(),
-				plistHelperProperty.get())
-
-		String fileName = PROVISIONING_NAME_BASE + reader.getUUID() + "." + FilenameUtils.getExtension(file.getName())
-
-		File result = new File(outputDirectory.get().asFile, fileName)
-		assert file.renameTo(result): "Failed to rename the provisioning file"
-		return result
-	}
-
-	private File linkToUserlibraryOfProvisioning(File file) {
-		if (!PROVISIONING_DIR.exists()) {
-			PROVISIONING_DIR.mkdirs()
-		}
-
-		File destinationFile = new File(PROVISIONING_DIR, file.name)
-		FileUtils.copyFile(file, destinationFile)
-		return destinationFile
 	}
 }
