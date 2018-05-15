@@ -1,33 +1,46 @@
 package org.openbakery.archiving
 
 import groovy.transform.CompileStatic
+import org.gradle.api.DefaultTask
 import org.gradle.api.Task
+import org.gradle.api.Transformer
+import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.specs.Spec
-import org.gradle.api.tasks.*
-import org.openbakery.AbstractXcodeBuildTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 import org.openbakery.CommandRunner
 import org.openbakery.PrepareXcodeArchivingTask
+import org.openbakery.XcodeService
 import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
 import org.openbakery.xcode.Xcodebuild
 
 @CompileStatic
-@CacheableTask
-class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
+class XcodeBuildArchiveTaskIosAndTvOS extends DefaultTask {
+
+	@Input
+	final Provider<String> xcodeVersion = project.objects.property(String)
 
 	@Input
 	final Provider<String> scheme = project.objects.property(String)
 
+	@Input
+	final Provider<Type> buildType = project.objects.property(Type)
+
 	@InputFile
 	final Property<RegularFile> xcConfigFile = newInputFile()
 
-	@OutputFile
-	final Provider<RegularFile> outputArchiveFile = newOutputFile()
+	@OutputDirectory
+	final Provider<Directory> outputArchiveFile = newOutputDirectory()
 
+	final Property<XcodeService> xcodeServiceProperty = project.objects.property(XcodeService)
+	final Property<Xcode> xcode = project.objects.property(Xcode)
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
 
 	public static final String NAME = "archiveXcodeBuild"
@@ -38,41 +51,48 @@ class XcodeBuildArchiveTaskIosAndTvOS extends AbstractXcodeBuildTask {
 		dependsOn(ProvisioningInstallTask.TASK_NAME)
 		dependsOn(PrepareXcodeArchivingTask.NAME)
 
-		this.description = "Use the xcodebuild archiver to create the project archive"
+		this.description = "Use the XcodeBuild archive command line to create the project archive"
 
 		onlyIf(new Spec<Task>() {
 			@Override
 			boolean isSatisfiedBy(Task task) {
-				return getXcodeExtension().getType() == Type.iOS ||
-						getXcodeExtension().getType() == Type.tvOS
+				return buildType.get() == Type.iOS || buildType.get() == Type.tvOS
 			}
 		})
 	}
 
-	@OutputFile
-	File getOutputTextFile() {
-		return PathHelper.resolveArchivingLogFile(project)
-	}
-
-	@OutputDirectory
-	File getOutputDirectory() {
-		File archiveDirectory = PathHelper.resolveArchiveFolder(project)
-		archiveDirectory.mkdirs()
-		return archiveDirectory
-	}
-
 	@TaskAction
-	private void archive() {
-		Xcodebuild xcodeBuild = new Xcodebuild(project.projectDir,
-				commandRunnerProperty.get(),
-				xcode,
-				parameters,
-				getDestinations())
+	void archive() {
+		assert scheme.present: "No target scheme configured"
+		assert outputArchiveFile.present: "No output file folder configured"
+		assert xcConfigFile.present: "No 'xcconfig' file configured"
 
-		commandRunner.setOutputFile(getOutputTextFile())
+		logger.lifecycle("Archive project with configuration: " +
+				"\n\tScheme : ${scheme.get()} " +
+				"\n\tXcode version : ${xcodeVersion.getOrElse("System default")}")
 
-		xcodeBuild.archive(scheme.get(),
+
+		Xcodebuild.archive(commandRunnerProperty.get(),
+				scheme.get(),
 				outputArchiveFile.get().asFile,
-				xcConfigFile.get().asFile)
+				xcConfigFile.get().asFile,
+				getXcodeAppForConfiguration().getOrNull())
+	}
+
+	private Provider<File> getXcodeAppForConfiguration() {
+
+		Provider<File> xcodeApp
+		if (xcodeVersion.present) {
+			xcodeApp = xcodeServiceProperty.map(new Transformer<File, XcodeService>() {
+				@Override
+				File transform(XcodeService xcodeService) {
+					XcodeService.XcodeApp app = xcodeService.getInstallationForVersion(xcodeVersion.get())
+					return app.contentDeveloperFile
+				}
+			})
+		} else {
+			xcodeApp = project.objects.property(File)
+		}
+		return xcodeApp
 	}
 }

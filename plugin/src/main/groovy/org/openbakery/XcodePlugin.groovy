@@ -59,6 +59,7 @@ import org.openbakery.packaging.PackageTaskIosAndTvOS
 import org.openbakery.signing.*
 import org.openbakery.simulators.*
 import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -139,11 +140,12 @@ class XcodePlugin implements Plugin<Project> {
 	private CommandRunner commandRunner
 	private PlistHelper plistHelper
 	private Security securityTool
+	private Xcode xcode
 
 	void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class);
 
-		System.setProperty("java.awt.headless", "true");
+		System.setProperty("java.awt.headless", "true")
 		setupTools(project)
 		configureExtensions(project)
 		configureClean(project)
@@ -171,6 +173,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	void setupTools(Project project) {
 		this.commandRunner = new CommandRunner()
+		this.xcode = new Xcode(commandRunner)
 		this.plistHelper = new PlistHelper(commandRunner)
 		this.securityTool = new Security(commandRunner)
 	}
@@ -500,10 +503,14 @@ class XcodePlugin implements Plugin<Project> {
 		project.getTasks().create(XcodeBuildArchiveTaskIosAndTvOS.NAME,
 				XcodeBuildArchiveTaskIosAndTvOS.class) {
 			it.setGroup(XCODE_GROUP_NAME)
+			it.buildType.set(xcodeBuildPluginExtension.type)
 			it.commandRunnerProperty.set(commandRunner)
 			it.outputArchiveFile.set(xcodeBuildPluginExtension.schemeArchiveFile)
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
+			it.xcode.set(xcode)
+			it.xcodeVersion.set(xcodeBuildPluginExtension.version)
 			it.xcConfigFile.set(xcodeBuildPluginExtension.signing.xcConfigFile)
+			it.xcodeServiceProperty.set(xcodeBuildPluginExtension.xcodeServiceProperty)
 		}
 
 		XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask = project.getTasks().

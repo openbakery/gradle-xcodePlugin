@@ -3,10 +3,11 @@ package org.openbakery.xcode
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
 
+import javax.annotation.Nullable
+
 class Xcodebuild {
 
 	CommandRunner commandRunner
-
 	HashMap<String, String> buildSettings = null
 
 	File projectDirectory
@@ -61,22 +62,27 @@ class Xcodebuild {
 				ARGUMENT_EXPORT_OPTIONS_PLIST, exportOptionsPlist.absolutePath)
 	}
 
-	public void archive(String scheme,
-						File outputPath,
-						File xcConfig) {
-		outputPath.mkdirs()
-
-		println "version : " + xcode.version
-
+	public static void archive(CommandRunner commandRunner,
+							   String scheme,
+							   File outputPath,
+							   File xcConfig,
+							   @Nullable File xcodeApp) {
 		assert scheme != null
-		assert outputPath.isDirectory()
 		assert xcConfig.exists() && !xcConfig.isDirectory()
 
-		commandRunner.run(EXECUTABLE,
-				ACTION_ARCHIVE,
-				ARGUMENT_SCHEME, scheme,
-				ARGUMENT_ARCHIVE_PATH, outputPath.absolutePath,
-				ARGUMENT_XCCONFIG, xcConfig.absolutePath)
+		HashMap<String, String> envMap = new HashMap<>()
+
+		if (xcodeApp != null) {
+			envMap.put(Xcode.ENV_DEVELOPER_DIR, xcodeApp.absolutePath)
+		}
+
+		List<String> args = [EXECUTABLE,
+							 ACTION_ARCHIVE,
+							 ARGUMENT_SCHEME, scheme,
+							 ARGUMENT_ARCHIVE_PATH, outputPath.absolutePath,
+							 ARGUMENT_XCCONFIG, xcConfig.absolutePath]
+
+		commandRunner.run(args, envMap)
 	}
 
 	def execute(OutputAppender outputAppender, Map<String, String> environment) {

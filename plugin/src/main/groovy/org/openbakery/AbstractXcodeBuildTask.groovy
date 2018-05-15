@@ -95,9 +95,9 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 
 	XcodeBuildOutputAppender createXcodeBuildOutputAppender(String name) {
-		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
-		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
-		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start(name, name);
+		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE)
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class)
+		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start(name, name)
 		return new XcodeBuildOutputAppender(progressLogger, output)
 	}
 

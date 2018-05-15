@@ -41,9 +41,6 @@ class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 	XcodeBuildLegacyArchiveTask() {
 		super()
 
-		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME,
-				ProvisioningInstallTask.TASK_NAME)
-
 		this.description = "Use the legacy archiver to create the project archive"
 
 		onlyIf(new Spec<Task>() {
@@ -53,6 +50,9 @@ class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 						getXcodeExtension().getType() == Type.watchOS
 			}
 		})
+
+		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME,
+				ProvisioningInstallTask.TASK_NAME)
 	}
 
 

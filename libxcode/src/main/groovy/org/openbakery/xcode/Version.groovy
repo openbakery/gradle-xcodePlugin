@@ -1,6 +1,6 @@
 package org.openbakery.xcode
 
-class Version implements Comparable<Version> {
+class Version implements Comparable<Version>, Serializable {
 
 	public int major = -1
 	public int minor = -1
@@ -11,7 +11,7 @@ class Version implements Comparable<Version> {
 	public Version() {
 	}
 
-	public  Version(String version) {
+	public Version(String version) {
 		Scanner versionScanner = new Scanner(version);
 		versionScanner.useDelimiter("\\.");
 
@@ -69,13 +69,13 @@ class Version implements Comparable<Version> {
 			builder.append(minor)
 		}
 
-		if (this.maintenance>= 0) {
+		if (this.maintenance >= 0) {
 			builder.append(".")
 			builder.append(maintenance)
 		}
 
 		if (this.suffix != null) {
-			if (builder.length() > 0 ){
+			if (builder.length() > 0) {
 				builder.append(".")
 			}
 			builder.append(suffix)

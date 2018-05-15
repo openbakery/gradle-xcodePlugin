@@ -15,7 +15,10 @@
  */
 package org.openbakery
 
+import org.gradle.api.Task
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
@@ -28,6 +31,14 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 						XcodePlugin.INFOPLIST_MODIFY_TASK_NAME,
 		)
 		this.description = "Builds the Xcode project"
+
+		onlyIf(new Spec<Task>() {
+			@Override
+			boolean isSatisfiedBy(Task task) {
+				return getXcodeExtension().getType() == Type.macOS ||
+						getXcodeExtension().getType() == Type.watchOS
+			}
+		})
 	}
 
 	@TaskAction
