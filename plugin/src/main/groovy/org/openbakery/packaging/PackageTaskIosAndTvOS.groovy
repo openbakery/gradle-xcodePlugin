@@ -11,7 +11,6 @@ import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
-import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningFile
 import org.openbakery.signing.ProvisioningInstallTask
@@ -44,8 +43,6 @@ class PackageTaskIosAndTvOS extends DefaultTask {
 
 	final Provider<CommandRunner> commandRunner = project.objects.property(CommandRunner)
 	final Provider<PlistHelper> plistHelper = project.objects.property(PlistHelper)
-
-	private ProvisioningProfileReader reader
 
 	public static final String DESCRIPTION = "Package the archive with Xcode-build"
 	public static final String NAME = "packageWithXcodeBuild"
