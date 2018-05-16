@@ -18,4 +18,26 @@ class SystemUtil {
 		}
 		return result
 	}
+
+	public static boolean isValidUri(String value) {
+		boolean result = true
+		try {
+			new File(new URI(value))
+		} catch (Exception exception) {
+			result = false
+		}
+
+		return result
+	}
+
+	public static boolean isValidUrl(String value) {
+		boolean result = true
+		try {
+			new File(new URL(value))
+		} catch (Exception exception) {
+			result = false
+		}
+
+		return result
+	}
 }

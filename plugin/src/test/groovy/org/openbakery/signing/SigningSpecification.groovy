@@ -3,6 +3,9 @@ package org.openbakery.signing
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.ExpectedException
+import org.junit.rules.TemporaryFolder
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.extension.Signing
@@ -15,16 +18,21 @@ class SigningSpecification extends Specification {
 	Project project
 	File projectDir
 
+	@Rule
+	final TemporaryFolder testProjectDir = new TemporaryFolder()
+
+	@Rule
+	public ExpectedException exception = ExpectedException.none()
 
 	def setup() {
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		projectDir = testProjectDir.root
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
+
 		signing = new Signing(project)
 	}
-
 
 	def cleanup() {
 		projectDir.delete()
@@ -44,7 +52,7 @@ class SigningSpecification extends Specification {
 
 		then:
 		noExceptionThrown()
-		signing.getMethod() == method
+		signing.signingMethod.get() == method
 
 		where:
 		string        | method
@@ -68,6 +76,27 @@ class SigningSpecification extends Specification {
 		null       | _
 	}
 
+	def "The XcConfig file path can be configured and is by default buildDir dependant"() {
+		when:
+		File file = signing.xcConfigFile.asFile.get()
+
+		then:
+		noExceptionThrown()
+		file.absoluteFile == new File(project.buildDir, "archive/archive.xcconfig")
+
+		when:
+		File altBuildDir = testProjectDir.newFolder("build-dir-alt")
+		assert project.buildDir != altBuildDir
+		project.buildDir = altBuildDir
+
+		and:
+		File file2 = signing.xcConfigFile.asFile.get()
+
+		then:
+		noExceptionThrown()
+		file2.absoluteFile == new File(altBuildDir, "archive/archive.xcconfig")
+	}
+
 	def "entitlements data set via closure using xcodebuild"() {
 
 		when:
@@ -78,7 +107,6 @@ class SigningSpecification extends Specification {
 		then:
 		project.xcodebuild.signing.entitlements instanceof Map<String, Object>
 		project.xcodebuild.signing.entitlements.containsKey("com.apple.security.application-groups")
-
 	}
 
 	def "entitlements data set via closure"() {
@@ -114,6 +142,7 @@ class SigningSpecification extends Specification {
 	def "codesignParameters has identity"() {
 		when:
 		signing.identity = "Me"
+
 		then:
 		signing.codesignParameters.signingIdentity == "Me"
 	}
@@ -150,25 +179,57 @@ class SigningSpecification extends Specification {
 	}
 
 	def "codesignParameters has entitlementsFile"() {
+		setup:
+		File entitlementsFile = testProjectDir.newFile("test.entitlements")
+
 		when:
-		signing.entitlementsFile = new File("entitlements")
+		signing.entitlementsFile = entitlementsFile
+
 		then:
-		signing.codesignParameters.entitlementsFile == new File("entitlements")
+		signing.codesignParameters.entitlementsFile == entitlementsFile
 	}
 
+	def "When defining the certificate the friendlyName should be updated"() {
+		setup:
+		File cert = new File("src/test/Resource/fake_distribution.p12")
+		signing.certificate.set(cert.absoluteFile)
+
+		when: "If not password is defined, should trow an exeption"
+		signing.certificateFriendlyName.get()
+
+		then:
+		thrown IllegalStateException.class
+
+		when: "Defining password"
+		signing.certificatePassword.set("p4ssword")
+
+		and:
+		signing.certificateFriendlyName.get() == "iPhone Distribution: Test Company Name (12345ABCDE)"
+
+		then:
+		noExceptionThrown()
+	}
 
 	def "codesignParameter entitlementsFile as String"() {
 		when:
-		signing.entitlementsFile = "entitlements"
+		signing.entitlementsFile = "entitlements/test.entitlements"
+
 		then:
-		signing.codesignParameters.entitlementsFile instanceof File
-		signing.codesignParameters.entitlementsFile.path.endsWith("entitlements")
+		noExceptionThrown()
+		with(signing.entitlementsFile
+				.get()
+				.asFile) {
+			name == "test.entitlements"
+			parent.endsWith("/entitlements")
+		}
 	}
 
 	def "codesignParameter entitlementsFile as String full path"() {
 		when:
 		signing.entitlementsFile = "file:///entitlements"
+
 		then:
+		noExceptionThrown()
 		signing.codesignParameters.entitlementsFile instanceof File
 		signing.codesignParameters.entitlementsFile.path.endsWith("entitlements")
 	}

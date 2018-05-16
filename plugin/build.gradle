@@ -59,8 +59,17 @@ task sourcesJar(type: Jar) {
 	from project(":libxcode").sourceSets.main.allSource
 	classifier = 'sources'
 }
-
+s
 sourceSets {
+	test {
+		groovy {
+			srcDir file('src/test/groovy')
+		}
+		resources {
+			srcDir file('src/test/Resource')
+		}
+	}
+
 	functionalTest {
 		groovy {
 			srcDir file('src/functionalTest/groovy')

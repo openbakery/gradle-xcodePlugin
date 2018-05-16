@@ -21,17 +21,17 @@ import java.util.regex.Pattern
 
 class Signing {
 
-	final DirectoryProperty signingDestinationRoot = project.layout.directoryProperty()
 	final DirectoryProperty provisioningDestinationRoot = project.layout.directoryProperty()
-	final Property<String> certificatePassword
-	final Property<String> certificateFriendlyName
+	final DirectoryProperty signingDestinationRoot = project.layout.directoryProperty()
+	final ListProperty<String> mobileProvisionList = project.objects.listProperty(String)
 	final Property<Integer> timeout = project.objects.property(Integer)
 	final Property<SigningMethod> signingMethod = project.objects.property(SigningMethod)
+	final Property<String> certificateFriendlyName
+	final Property<String> certificatePassword
 	final RegularFileProperty certificate
 	final RegularFileProperty entitlementsFile
 	final RegularFileProperty keychain = project.layout.fileProperty()
 	final RegularFileProperty keyChainFile = project.layout.fileProperty()
-	final ListProperty<String> mobileProvisionList = project.objects.listProperty(String)
 
 	@Internal
 	final Provider<List<File>> registeredProvisioningFiles = project.objects.listProperty(File)
@@ -64,6 +64,7 @@ class Signing {
 
 	@Inject
 	Signing(Project project) {
+
 		this.project = project
 		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
 		this.provisioningDestinationRoot.set(project.layout.buildDirectory.dir("provision"))
@@ -85,8 +86,9 @@ class Signing {
 		this.timeout.set(3600)
 
 		this.xcConfigFile = project.layout.fileProperty()
-		this.xcConfigFile.set(project.layout.buildDirectory.file(PathHelper.FOLDER_ARCHIVE + "/" + PathHelper.GENERATED_XCARCHIVE_FILE_NAME))
-//		PathHelper.resolveXcConfigFile(project))
+		this.xcConfigFile.set(project.layout.buildDirectory.file(PathHelper.FOLDER_ARCHIVE
+				+ "/"
+				+ PathHelper.GENERATED_XCARCHIVE_FILE_NAME))
 	}
 
 	void setKeychain(Object keychain) {
@@ -132,6 +134,12 @@ class Signing {
 		certificate.set(new File(new URI(uri)))
 	}
 
+	@Deprecated
+	void setEntitlementsFile(String value) {
+		println "new File(value) : " + new File(value)
+		entitlementsFile.set(new File(value))
+	}
+
 	@Override
 	public String toString() {
 		if (this.keychain != null) {
@@ -152,12 +160,15 @@ class Signing {
 	CodesignParameters getCodesignParameters() {
 		CodesignParameters result = new CodesignParameters()
 		result.signingIdentity = getIdentity()
-		result.mobileProvisionFiles = registeredProvisioningFiles.getFiles().asList().clone() as List<File>
-		result.keychain = getKeychain()
-		if (entitlements != null) {
-			result.entitlements = entitlements.clone()
+		if (registeredProvisioningFiles.present) {
+			result.mobileProvisionFiles = new ArrayList<File>(registeredProvisioningFiles.get()
+					.asList()
+					.toArray() as ArrayList<File>)
 		}
-		result.entitlementsFile = getEntitlementsFile()
+		result.keychain = getKeychain().asFile.getOrNull() as File
+		result.signingIdentity = identity
+		result.entitlementsFile = entitlementsFile.asFile.getOrNull()
+
 		return result
 	}
 
