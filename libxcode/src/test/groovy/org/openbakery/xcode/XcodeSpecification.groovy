@@ -229,7 +229,7 @@ class XcodeSpecification extends Specification {
         "5.1.3" | IllegalStateException
         "10.0"  | IllegalStateException
         "7.1.3" | IllegalStateException
-        null    | IllegalArgumentException
+        null    | IllegalStateException
     }
 
     def "Should return a map of environment values containing the developer dir key for valid xcode version"() {

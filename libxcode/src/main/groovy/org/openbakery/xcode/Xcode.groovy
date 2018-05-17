@@ -63,8 +63,6 @@ class Xcode {
 	}
 
 	void setVersionFromString(String version) throws IllegalArgumentException {
-		assert version != null
-
 		Optional<File> result = resolveXcodeInstallOfVersion(version)
 
 		if (result.isPresent()) {
@@ -75,6 +73,9 @@ class Xcode {
 	}
 
 	Optional<File> resolveXcodeInstallOfVersion(String version) {
+		if (version == null)
+			return Optional.empty()
+
 		final Version requiredVersion = new Version(version)
 
 		return Optional.ofNullable(resolveInstalledXcodeVersionsList()
