@@ -140,14 +140,14 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 	}
 
 	private void modifyBundleIdentifier() {
+		// Resolve bundle identifier
+		XcodeBuildPluginExtension xcodeExtension = getXcodeExtension()
 		InfoPlistExtension extension = getInfoPlistExtension()
 
-		// Resolve bundle identifier
 		if (extension.bundleIdentifier != null) {
 			setValueForPlist(KeyBundleIdentifier, extension.bundleIdentifier)
 		} else {
-			XcodeBuildPluginExtension xcodeExtension = getXcodeExtension()
-			xcodeExtension.getBuildTargetConfiguration(xcodeExtension.scheme.get(),
+			xcodeExtension.getBuildTargetConfiguration(xcodeExtension.scheme.getOrNull(),
 					xcodeExtension.configuration)
 					.map { it -> it.bundleIdentifier }
 					.ifPresent { it -> setValueForPlist(KeyBundleIdentifier, it) }

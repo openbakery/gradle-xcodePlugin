@@ -19,14 +19,11 @@ class InfoPlistModifyTaskSpecification extends Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
-
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-
 		projectDir.mkdirs()
-
 
 		project.xcodebuild.infoPlist = "App-Info.plist"
 
@@ -36,8 +33,6 @@ class InfoPlistModifyTaskSpecification extends Specification {
 
 		infoPlist = new File(task.project.projectDir, "App-Info.plist")
 		FileUtils.writeStringToFile(infoPlist, "dummy")
-
-
 	}
 
 	def cleanup() {
@@ -111,7 +106,6 @@ class InfoPlistModifyTaskSpecification extends Specification {
 
 		then:
 		plistHelper.plistCommands[0] == "Add CFBundleURLTypes:0:CFBundleURLName string"
-
 	}
 
 	def "modify command multiple"() {
@@ -146,7 +140,6 @@ class InfoPlistModifyTaskSpecification extends Specification {
 
 		then:
 		plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString") == "1.2.3"
-
 	}
 
 	def "nothing to modify"() {

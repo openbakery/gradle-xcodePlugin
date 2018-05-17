@@ -434,7 +434,6 @@ class XcodeBuildPluginExtension {
 		return result
 	}
 
-
 	void setType(String type) {
 		this.type = Type.typeFromString(type)
 	}

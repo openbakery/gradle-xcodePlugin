@@ -59,7 +59,7 @@ task sourcesJar(type: Jar) {
 	from project(":libxcode").sourceSets.main.allSource
 	classifier = 'sources'
 }
-s
+
 sourceSets {
 	test {
 		groovy {
