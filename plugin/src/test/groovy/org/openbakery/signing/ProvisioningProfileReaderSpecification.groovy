@@ -70,18 +70,18 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	def "read application identifier prefix"() {
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
+
 		then:
 		reader.getApplicationIdentifierPrefix().equals("AAAAAAAAAAA")
 	}
 
-
 	def "read application identifier"() {
 		when:
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(new File("../libtest/src/main/Resource/test.mobileprovision"), new CommandRunner())
+
 		then:
 		reader.getApplicationIdentifier() == "org.openbakery.test.Example"
 	}
-
 
 	def "profile has expired"() {
 		when:
@@ -618,7 +618,6 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		entitlements.getString("com..apple..developer..icloud-services") == "com.example.test"
 	}
 
-
 	def "extract Entitlements set keychain access group with configuration key and replace AppIdentiferPrefix variable"() {
 		given:
 		Map<String, Object> data = [
@@ -635,7 +634,5 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		entitlements.getList("keychain-access-groups").contains("AAAAAAAAAAA.com.example.Test")
 
 	}
-
-
 }
 
