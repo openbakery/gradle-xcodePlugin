@@ -45,6 +45,9 @@ class Signing {
 	@Internal
 	final RegularFileProperty xcConfigFile
 
+	@Deprecated
+	final Property<Map<String, Object>> entitlementsMap
+
 	public static final String KEYCHAIN_NAME_BASE = "gradle-"
 	private static final Pattern PATTERN = ~/^\s{4}friendlyName:\s(?<friendlyName>[^\n]+)/
 
@@ -56,11 +59,8 @@ class Signing {
 	 * internal parameters
 	 */
 	private final Project project
-	private
-	final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
+	private final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
 	CommandRunner commandRunner
-
-	List<File> mobileProvisionFile = new ArrayList<File>()
 
 	@Inject
 	Signing(Project project) {
@@ -80,6 +80,9 @@ class Signing {
 		}))
 
 		this.commandRunner = new CommandRunner()
+
+		// Entitlements support
+		this.entitlementsMap = project.objects.property(Map)
 		this.entitlementsFile = project.layout.fileProperty()
 
 		this.keyChainFile.set(signingDestinationRoot.file(keychainName))
@@ -109,12 +112,12 @@ class Signing {
 		return project.file(keychainPathInternal)
 	}
 
-	void setMobileProvisionURI(List<String> list) {
-		list.each { this.mobileProvisionList.add(it) }
-	}
-
-	void setMobileProvisionURI(String value) {
-		this.mobileProvisionList.add(value)
+	public void entitlements(Map<String, Object> entitlements) {
+		if (!this.entitlementsMap.present) {
+			this.entitlementsMap.set(entitlements)
+		} else {
+			this.entitlementsMap.get() << entitlements
+		}
 	}
 
 	boolean hasEntitlementsFile() {
@@ -125,18 +128,8 @@ class Signing {
 		return this.identity
 	}
 
-	public void entitlements(Map<String, Object> entitlements) {
-		this.entitlements = entitlements
-
-	}
-
-	void setCertificateURI(String uri) {
-		certificate.set(new File(new URI(uri)))
-	}
-
 	@Deprecated
 	void setEntitlementsFile(String value) {
-		println "new File(value) : " + new File(value)
 		entitlementsFile.set(new File(value))
 	}
 
@@ -167,6 +160,7 @@ class Signing {
 		}
 		result.keychain = getKeychain().asFile.getOrNull() as File
 		result.signingIdentity = identity
+		result.entitlements = entitlementsMap.getOrNull()
 		result.entitlementsFile = entitlementsFile.asFile.getOrNull()
 
 		return result

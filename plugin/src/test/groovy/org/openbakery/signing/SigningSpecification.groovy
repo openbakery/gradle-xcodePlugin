@@ -1,11 +1,11 @@
 package org.openbakery.signing
 
-import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.junit.rules.TemporaryFolder
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.extension.Signing
@@ -24,6 +24,8 @@ class SigningSpecification extends Specification {
 	@Rule
 	public ExpectedException exception = ExpectedException.none()
 
+	private Signing signingExtension
+
 	def setup() {
 		projectDir = testProjectDir.root
 
@@ -32,6 +34,10 @@ class SigningSpecification extends Specification {
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		signing = new Signing(project)
+
+		this.signingExtension = project.extensions
+				.findByType(XcodeBuildPluginExtension)
+				.signing
 	}
 
 	def cleanup() {
@@ -100,35 +106,33 @@ class SigningSpecification extends Specification {
 	def "entitlements data set via closure using xcodebuild"() {
 
 		when:
-		project.xcodebuild.signing {
-			entitlements 'com.apple.security.application-groups': ['group.com.example.App']
-		}
+		assert signingExtension != null
+		signingExtension.entitlements 'com.apple.security.application-groups': ['group.com.example.App']
 
 		then:
-		project.xcodebuild.signing.entitlements instanceof Map<String, Object>
-		project.xcodebuild.signing.entitlements.containsKey("com.apple.security.application-groups")
+		signingExtension.entitlementsMap.get() instanceof Map<String, Object>
+		signingExtension.entitlementsMap.get().containsKey("com.apple.security.application-groups")
 	}
 
 	def "entitlements data set via closure"() {
 		when:
-		signing.entitlements('com.apple.security.application-groups': ['group.com.example.App'])
+		assert signingExtension != null
+		signingExtension.entitlements('com.apple.security.application-groups': ['group.com.example.App'])
 
 		then:
-		signing.entitlements instanceof Map<String, Object>
-		signing.entitlements.containsKey("com.apple.security.application-groups")
-		signing.entitlements["com.apple.security.application-groups"] == ['group.com.example.App']
+		signingExtension.entitlementsMap.get() instanceof Map<String, Object>
+		signingExtension.entitlementsMap.get().containsKey("com.apple.security.application-groups")
+		signingExtension.entitlementsMap.get()["com.apple.security.application-groups"] == ['group.com.example.App']
 	}
-
 
 	def "entitlements data set via closure converted to Configuration"() {
 		when:
 		signing.entitlements('com.apple.security.application-groups': ['group.com.example.App'])
 
-		def configuration = new ConfigurationFromMap(signing.entitlements)
+		def configuration = new ConfigurationFromMap(signing.entitlementsMap.get())
 
 		then:
 		configuration.getStringArray("com.apple.security.application-groups") == ['group.com.example.App']
-
 	}
 
 	def "codesignParameters is not null"() {
@@ -147,22 +151,6 @@ class SigningSpecification extends Specification {
 		signing.codesignParameters.signingIdentity == "Me"
 	}
 
-	def "codesignParameters has mobileProvisionFiles"() {
-		when:
-
-		File first = new File(projectDir, "first")
-		FileUtils.write(first, "first")
-		File second = new File(projectDir, "second")
-		FileUtils.write(second, "second")
-
-		signing.addMobileProvisionFile(first)
-		signing.addMobileProvisionFile(second)
-
-		then:
-		signing.codesignParameters.mobileProvisionFiles instanceof List<File>
-		signing.codesignParameters.mobileProvisionFiles == [first, second]
-	}
-
 	def "codesignParameters has keychain"() {
 		when:
 		signing.keychain = new File("my.keychain").absoluteFile
@@ -173,7 +161,8 @@ class SigningSpecification extends Specification {
 
 	def "codesignParameters has entitlements"() {
 		when:
-		signing.entitlements = ['key': 'value']
+		signing.entitlements(['key': 'value'])
+
 		then:
 		signing.codesignParameters.entitlements == ['key': 'value']
 	}
@@ -192,9 +181,10 @@ class SigningSpecification extends Specification {
 	def "When defining the certificate the friendlyName should be updated"() {
 		setup:
 		File cert = new File("src/test/Resource/fake_distribution.p12")
+		assert cert.exists()
 		signing.certificate.set(cert.absoluteFile)
 
-		when: "If not password is defined, should trow an exeption"
+		when: "If not password is defined, should trow an exception"
 		signing.certificateFriendlyName.get()
 
 		then:
