@@ -489,7 +489,7 @@ class XcodeBuildPluginExtension {
 
 	XcodebuildParameters getXcodebuildParameters() {
 		def result = new XcodebuildParameters()
-		result.scheme = this.scheme.get()
+		result.scheme = this.scheme.getOrNull()
 		result.target = this.target
 		result.simulator = this.simulator
 		result.type = this.type
@@ -503,7 +503,7 @@ class XcodeBuildPluginExtension {
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
-		result.bitcode = this.bitcode.get()
+		result.bitcode = this.bitcode.getOrElse(false)
 		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {

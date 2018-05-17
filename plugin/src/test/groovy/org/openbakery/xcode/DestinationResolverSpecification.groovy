@@ -2,12 +2,22 @@ package org.openbakery.xcode
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.ExpectedException
+import org.junit.rules.TemporaryFolder
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.XcodePlugin
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.testdouble.SimulatorControlStub
 import spock.lang.Specification
 
 class DestinationResolverSpecification extends Specification {
+
+	@Rule
+	public ExpectedException exception = ExpectedException.none()
+
+	@Rule
+	final TemporaryFolder testProjectDir = new TemporaryFolder()
 
 	Project project
 	File projectDir
@@ -16,25 +26,20 @@ class DestinationResolverSpecification extends Specification {
 	SimulatorControl simulatorControl
 
 	def setup() {
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
+		project = ProjectBuilder.builder().withProjectDir(testProjectDir.root).build()
+		project.apply plugin: XcodePlugin
 		extension = new XcodeBuildPluginExtension(project)
 		simulatorControl = new SimulatorControlStub("simctl-list-xcode7_1.txt")
 		destinationResolver = new DestinationResolver(simulatorControl)
 	}
 
-
-
 	def "available destinations for OS X"() {
-
 		when:
 		extension.type = Type.macOS
 
 		then:
 		destinationResolver.getDestinations(extension.getXcodebuildParameters()).size() == 1
 	}
-
 
 	def "XcodebuildParameters are created with iOS destination"() {
 		when:
@@ -134,7 +139,6 @@ class DestinationResolverSpecification extends Specification {
 		then:
 		thrown(IllegalStateException)
 	}
-
 
 
 	def "available destinations match simple single"() {

@@ -7,6 +7,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.XcodePlugin
 import org.openbakery.codesign.Security
 import org.openbakery.xcode.Type
 import spock.lang.Specification
@@ -37,7 +38,7 @@ class KeychainCreateTaskSpecification extends Specification {
 	def setup() {
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 
 		mockSecurity = Mock(Security)
 
@@ -71,7 +72,7 @@ class KeychainCreateTaskSpecification extends Specification {
 	def "Mac OS #version - Temporary keychain should be create and certificate URI imported"() {
 		given:
 		System.setProperty("os.version", version)
-		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
+		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
 		keychainCreateTask.create()
