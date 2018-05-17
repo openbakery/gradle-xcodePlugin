@@ -38,7 +38,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		project.xcodebuild.productName = 'Example'
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.type = Type.macOS
-		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
+		project.xcodebuild.signing.keychain.set(project.file("/var/tmp/gradle.keychain"))
 
 		packageTask = project.getTasks().getByPath(PackageLegacyTask.NAME)
 
@@ -83,7 +83,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	}
 
 
-	def "profile has expired" () {
+	def "profile has expired"() {
 		when:
 		new ProvisioningProfileReader(new File("src/test/Resource/expired.mobileprovision"), new CommandRunner())
 
@@ -112,11 +112,11 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReaderIgnoreExpired(provisioningProfile, commandRunner, new PlistHelper(new CommandRunner()))
 
 		commandRunner.runWithResult([
-								"/usr/libexec/PlistBuddy",
-								"-x",
-								provisioningProfile.absolutePath,
-								"-c",
-								"Print Entitlements"]) >> null
+				"/usr/libexec/PlistBuddy",
+				"-x",
+				provisioningProfile.absolutePath,
+				"-c",
+				"Print Entitlements"]) >> null
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
 
@@ -286,25 +286,25 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 	String getEntitlementWithApplicationIdentifier(String applicationIdentifier) {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-						"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-						"<plist version=\"1.0\">\n" +
-						"<dict>\n" +
-						"    <key>keychain-access-groups</key>\n" +
-						"    <array>\n" +
-						"        <string>AAAAAAAAAA.*</string>\n" +
-						"    </array>\n" +
-						"    <key>get-task-allow</key>\n" +
-						"    <false/>\n" +
-						"    <key>application-identifier</key>\n" +
-						"    <string>" + applicationIdentifier + "</string>\n" +
-						"    <key>com.apple.developer.team-identifier</key>\n" +
-						"    <string>AAAAAAAAAA</string>\n" +
-						"    <key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
-						"    <string>ABCDE12345.*</string>\n" +
-						"    <key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
-						"    <string>ABCDE12345.*</string>\n" +
-						"</dict>\n" +
-						"</plist>"
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+				"<plist version=\"1.0\">\n" +
+				"<dict>\n" +
+				"    <key>keychain-access-groups</key>\n" +
+				"    <array>\n" +
+				"        <string>AAAAAAAAAA.*</string>\n" +
+				"    </array>\n" +
+				"    <key>get-task-allow</key>\n" +
+				"    <false/>\n" +
+				"    <key>application-identifier</key>\n" +
+				"    <string>" + applicationIdentifier + "</string>\n" +
+				"    <key>com.apple.developer.team-identifier</key>\n" +
+				"    <string>AAAAAAAAAA</string>\n" +
+				"    <key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
+				"    <string>ABCDE12345.*</string>\n" +
+				"    <key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
+				"    <string>ABCDE12345.*</string>\n" +
+				"</dict>\n" +
+				"</plist>"
 	}
 
 	def "extract Entitlements with wildcard application identifier that does not match"() {
@@ -317,7 +317,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner)
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -338,7 +338,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -352,7 +352,6 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	}
 
 
-
 	def "extract Entitlements with wildcard application identifier that does match"() {
 		given:
 		File mobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
@@ -363,7 +362,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -403,7 +402,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -424,7 +423,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -449,7 +448,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_) >> { arguments -> commandList = arguments[0] }
-		commandList == ["security","cms","-D","-i", mobileprovision.absolutePath, "-o", expectedProvisioningPlist.absolutePath]
+		commandList == ["security", "cms", "-D", "-i", mobileprovision.absolutePath, "-o", expectedProvisioningPlist.absolutePath]
 
 
 	}
@@ -463,9 +462,9 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		when:
 		def list = [
-						appMobileprovision,
-						widgetMobileprovision,
-						wildcardMobileprovision
+				appMobileprovision,
+				widgetMobileprovision,
+				wildcardMobileprovision
 		]
 
 		then:
@@ -484,8 +483,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		when:
 		def list = [
-						appMobileprovision,
-						wildcardMobileprovision
+				appMobileprovision,
+				wildcardMobileprovision
 		]
 
 		then:
@@ -623,7 +622,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	def "extract Entitlements set keychain access group with configuration key and replace AppIdentiferPrefix variable"() {
 		given:
 		Map<String, Object> data = [
-				"keychain-access-groups": [ "\$(AppIdentifierPrefix)com.example.Test" ]
+				"keychain-access-groups": ["\$(AppIdentifierPrefix)com.example.Test"]
 		]
 		File entitlementsFile = setupForEntitlementTest(data)
 
