@@ -107,7 +107,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 		result.task(":" + PrepareXcodeArchivingTask.NAME)
 				.outcome == TaskOutcome.SUCCESS
 
-		and: "The archive xcconfig file should be properly generated and populated from configured values"
+		and: "The archive xcconfig provisioningFile1 should be properly generated and populated from configured values"
 
 		File outputFile = new File(testProjectDir.root, "build/"
 				+ PathHelper.FOLDER_ARCHIVE
@@ -154,7 +154,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 				signing {
 					certificateURI = "${certificate.toURI().toString()}"
 					certificatePassword = "p4ssword"
-					entitlementsFile = project.file("${entitlementsFile.absolutePath}")
+					entitlementsFile = project.provisioningFile1("${entitlementsFile.absolutePath}")
 				}
 			}
 			"""
@@ -170,7 +170,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 		result.task(":" + PrepareXcodeArchivingTask.NAME)
 				.outcome == TaskOutcome.SUCCESS
 
-		and: "The archive xcconfig should contains the path to the entitlements file"
+		and: "The archive xcconfig should contains the path to the entitlements provisioningFile1"
 
 		File outputFile = new File(testProjectDir.root, "build/"
 				+ PathHelper.FOLDER_ARCHIVE

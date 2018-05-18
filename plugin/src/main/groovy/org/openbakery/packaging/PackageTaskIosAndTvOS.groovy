@@ -64,8 +64,6 @@ class PackageTaskIosAndTvOS extends DefaultTask {
 		dependsOn(ProvisioningInstallTask.TASK_NAME)
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
-		finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
-
 		onlyIf(new Spec<Task>() {
 			@Override
 			boolean isSatisfiedBy(Task task) {

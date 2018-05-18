@@ -9,6 +9,7 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.CommandRunner
@@ -24,13 +25,14 @@ class ProvisioningInstallTask extends Download {
 	@OutputFiles
 	final ListProperty<File> registeredProvisioning = project.objects.listProperty(File)
 
+	@OutputDirectory
+	final Provider<Directory> outputDirectory = project.layout.directoryProperty()
+
 	final ListProperty<ProvisioningFile> registeredProvisioningFiles = project.objects.listProperty(ProvisioningFile)
 
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
 	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
-	final Provider<Directory> outputDirectory = project.layout.directoryProperty()
 
-	public static final String PROVISIONING_NAME_BASE = "gradle-"
 	public static final String TASK_NAME = "provisioningInstall"
 	public static final String TASK_DESCRIPTION = "Installs the given provisioning profile"
 
@@ -50,7 +52,6 @@ class ProvisioningInstallTask extends Download {
 		outputDirectory.get().asFile.mkdirs()
 		configureDownload()
 		super.download()
-		deleteFilesOnExit(getOutputFiles())
 		postDownload()
 	}
 
@@ -76,6 +77,7 @@ class ProvisioningInstallTask extends Download {
 	private void postDownload() {
 		// For convenience we rename the mobile provisioning file in to a formatted name
 		List<ProvisioningFile> files = rename()
+		deleteFilesOnExit(files.collect { it.file })
 
 		// Register it
 		files.each(this.&registerProvisioning)
@@ -94,7 +96,11 @@ class ProvisioningInstallTask extends Download {
 				commandRunnerProperty.get(),
 				plistHelperProperty.get())
 
-		return new ProvisioningFile(file,
+		File renamedFile = new File(file.parentFile,
+				ProvisioningFile.formattedName(reader.getUUID(), file))
+		file.renameTo(renamedFile)
+
+		return new ProvisioningFile(renamedFile,
 				reader.getApplicationIdentifier(),
 				reader.getUUID(),
 				reader.getTeamIdentifierPrefix(),

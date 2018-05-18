@@ -101,8 +101,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_IMAGE_TASK_NAME = "hockeykitImage"
 	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykitClean"
 	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
-	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
-	public static final String KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME = "keychainRemove"
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
@@ -461,7 +459,6 @@ class XcodePlugin implements Plugin<Project> {
 		for (XcodeTestRunTask xcodeTestRunTask : project.getTasks().withType(XcodeTestRunTask.class)) {
 			if (xcodeTestRunTask.runOnDevice()) {
 				xcodeTestRunTask.dependsOn(KeychainCreateTask.TASK_NAME, ProvisioningInstallTask.TASK_NAME)
-				xcodeTestRunTask.finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
 			}
 		}
 	}
@@ -553,16 +550,6 @@ class XcodePlugin implements Plugin<Project> {
 			it.keychainTimeout.set(xcodeBuildPluginExtension.signing.timeout)
 			it.security.set(securityTool)
 		}
-
-		project.task(KEYCHAIN_CLEAN_TASK_NAME, type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
-
-		project.tasks.create(KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME,
-				KeychainRemoveFromSearchListTask.class) {
-			it.group = XCODE_GROUP_NAME
-			it.keyChainFile.set(xcodeBuildPluginExtension.signing.keyChainFile)
-			it.outputDirectory.set(xcodeBuildPluginExtension.signing.signingDestinationRoot)
-			it.security.set(securityTool)
-		}
 	}
 
 	private void configureTest(Project project) {
@@ -600,7 +587,6 @@ class XcodePlugin implements Plugin<Project> {
 					.registeredProvisioning
 					.set(it.registeredProvisioningFiles)
 		}
-		project.task(PROVISIONING_CLEAN_TASK_NAME, type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
 	}
 
 	private configurePackage(Project project) {
@@ -615,16 +601,6 @@ class XcodePlugin implements Plugin<Project> {
 				type: ReleaseNotesTask,
 				group: XCODE_GROUP_NAME)
 
-		//ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
-
-		//KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
-
-/*  // disabled clean because of #115
-		packageTask.doLast {
-			provisioningCleanup.clean()
-			keychainCleanupTask.clean()
-		}
-*/
 	}
 
 	private void configureModernPackager(Project project) {

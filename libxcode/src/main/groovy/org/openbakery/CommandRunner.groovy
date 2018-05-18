@@ -38,7 +38,6 @@ class CommandRunner {
 
 	}
 
-
 	void setOutputFile(File outputFile) {
 		if (outputFile.exists()) {
 

@@ -12,12 +12,11 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Type
-import org.openbakery.XcodePlugin
-import org.openbakery.codesign.ProvisioningProfileReader
 
 class PackageLegacyTask extends AbstractDistributeTask {
 
@@ -41,10 +40,6 @@ class PackageLegacyTask extends AbstractDistributeTask {
 		dependsOn(
 				KeychainCreateTask.TASK_NAME,
 				ProvisioningInstallTask.TASK_NAME
-		)
-
-		finalizedBy(
-				XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME
 		)
 
 		onlyIf(new Spec<Task>() {

@@ -6,7 +6,6 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
@@ -21,7 +20,7 @@ import spock.lang.Specification
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-class PackageTaskSpecification extends Specification {
+class PackageLegacyTaskSpecification extends Specification {
 
 
 	Project project
@@ -446,15 +445,6 @@ class PackageTaskSpecification extends Specification {
 		dependsOn.contains(ProvisioningInstallTask.TASK_NAME)
 
 	}
-
-	def "finalized"() {
-		when:
-		def finalized = packageTask.finalizedBy.getDependencies()
-		def keychainRemoveTask = project.getTasks().getByPath(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
-		then:
-		finalized.contains(keychainRemoveTask)
-	}
-
 
 	def "delete CFBundleResourceSpecification"() {
 		given:

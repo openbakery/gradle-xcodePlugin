@@ -247,20 +247,6 @@ class XcodeTestRunTaskSpecification extends Specification {
 		!xcodeTestRunTestTask.getTaskDependencies().getDependencies().contains(project.getTasks().getByName(ProvisioningInstallTask.TASK_NAME))
 	}
 
-	def "when keychain dependency then also has finalized keychain remove"() {
-		when:
-		def bundleDirectory = createTestBundleForDeviceBuild()
-		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
-		xcodeTestRunTestTask.setBundleDirectory(bundleDirectory)
-		project.evaluate()
-
-		def finalized = xcodeTestRunTestTask.finalizedBy.getDependencies()
-		def keychainRemoveTask = project.getTasks().getByPath(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
-		then:
-		finalized.contains(keychainRemoveTask)
-	}
-
-
 	def "has keychain dependency if device run"() {
 		when:
 		def bundleDirectory = createTestBundleForDeviceBuild()

@@ -52,6 +52,10 @@ class ProvisioningFile implements Serializable {
 	}
 
 	String getFormattedName() {
+		return formattedName(uuid, file)
+	}
+
+	public static String formattedName(String uuid, File file) {
 		return PROVISIONING_NAME_BASE + uuid + "." + FilenameUtils.getExtension(file.getName())
 	}
 }

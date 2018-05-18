@@ -59,7 +59,8 @@ class Signing {
 	 * internal parameters
 	 */
 	private final Project project
-	private final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
+	private
+	final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
 	CommandRunner commandRunner
 
 	@Inject
@@ -131,6 +132,17 @@ class Signing {
 	@Deprecated
 	void setEntitlementsFile(String value) {
 		entitlementsFile.set(new File(value))
+	}
+
+	@Deprecated
+	public void setMobileProvisionURI(String value) {
+		this.mobileProvisionList.add(value)
+	}
+
+	@Deprecated
+	public void setMobileProvisionURI(String... values) {
+		println "setMobileProvisionURI : " + values
+		values.each { this.mobileProvisionList.add(it) }
 	}
 
 	@Override

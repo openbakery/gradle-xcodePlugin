@@ -49,10 +49,6 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		setup:
 		project.xcodebuild.signing.mobileProvisionURI = testMobileProvision2.toURI().toString()
 
-		project.extensions.getByType(XcodeBuildPluginExtension)
-			.signing
-			.mobileProvisionList
-
 		String name2 = formatProvisionFileName(testMobileProvision2)
 
 		File downloadedFile2 = new File(tmpDirectory.root, "build/provision/" + name2)
@@ -78,10 +74,6 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		project.buildDir = tmpDirectory.newFolder(alternateBuildFolderName)
 		project.xcodebuild.signing.mobileProvisionURI = testMobileProvision2.toURI().toString()
 
-		project.extensions.getByType(XcodeBuildPluginExtension)
-				.signing
-				.mobileProvisionList
-
 		String name2 = formatProvisionFileName(testMobileProvision2)
 
 		File downloadedFile2 = new File(tmpDirectory.root, "${alternateBuildFolderName}/provision/" + name2)
@@ -101,12 +93,53 @@ class ProvisioningInstallTaskSpecification extends Specification {
 		libraryFile2.exists()
 	}
 
-	def "Should process without error multiple provisioning files"() {
+	def "Should process without error multiple provisioning files by using the deprecated `setMobileProvisionURI` property"() {
 
 		setup:
-		project.xcodebuild.signing.mobileProvisionURI = [testMobileProvision1,
-														 testMobileProvision2]
-				.collect { it.toURI().toString() }
+		project.extensions
+				.findByType(XcodeBuildPluginExtension)
+				.signing
+				.setMobileProvisionURI(testMobileProvision1.toURI().toString(),
+				testMobileProvision2.toURI().toString())
+
+		String name1 = formatProvisionFileName(testMobileProvision1)
+		String name2 = formatProvisionFileName(testMobileProvision2)
+
+		File downloadedFile1 = new File(tmpDirectory.root, "build/provision/" + name1)
+		File libraryFile1 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name1)
+
+		File downloadedFile2 = new File(tmpDirectory.root, "build/provision/" + name2)
+		File libraryFile2 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name2)
+
+		when:
+		subject.download()
+
+		then:
+		noExceptionThrown()
+
+		and:
+		downloadedFile1.text == testMobileProvision1.text
+		downloadedFile1.exists()
+
+		libraryFile1.text == testMobileProvision1.text
+		libraryFile1.exists()
+
+		and:
+		downloadedFile2.text == testMobileProvision2.text
+		downloadedFile2.exists()
+
+		libraryFile2.text == testMobileProvision2.text
+		libraryFile2.exists()
+	}
+
+	def "Should process without error multiple provisioning files by using directly the `mobileProvisionList` property"() {
+
+		setup:
+		project.extensions
+				.findByType(XcodeBuildPluginExtension)
+				.signing
+				.mobileProvisionList.set([testMobileProvision1.toURI().toString(),
+										  testMobileProvision2.toURI().toString()])
 
 		String name1 = formatProvisionFileName(testMobileProvision1)
 		String name2 = formatProvisionFileName(testMobileProvision2)

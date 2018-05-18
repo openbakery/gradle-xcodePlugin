@@ -75,7 +75,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
             	signing {
-            		certificate = project.file("$certificate")  
+            		certificate = project.provisioningFile1("$certificate")  
             	}
 			}            
 			"""
@@ -96,7 +96,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
             	signing {
-            		certificate = project.file("$certificate")
+            		certificate = project.provisioningFile1("$certificate")
 					certificatePassword = "p4ssword"
             	}
 			}            
@@ -118,7 +118,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
             	signing {
-            		certificate = project.file("$certificate")
+            		certificate = project.provisioningFile1("$certificate")
 					certificatePassword = "p4ssword"
             	}
 			}            
@@ -134,21 +134,19 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		then:
 		result.task(":" + KeychainCreateTask.TASK_NAME).outcome == TaskOutcome.SUCCESS
 
-		and: "The temporary certificate file should be deleted automatically"
+		and: "The temporary certificate provisioningFile1 should be deleted automatically"
 		new File(testProjectDir.root, "build/codesign")
 			.listFiles()
 			.toList()
 			.findAll {it.name.endsWith(".p12")}
 			.empty
 
-		and: "The temporary keychain file should be deleted automatically"
+		and: "The temporary keychain provisioningFile1 should be deleted automatically"
 		new File(testProjectDir.root, "build/codesign")
 				.listFiles()
 				.toList()
 				.findAll {it.name.endsWith(".keychain")}
 				.empty
-
-		println result.output
 	}
 
 	private File findResource(String name) {

@@ -1,19 +1,23 @@
 package org.openbakery.signing
 
 import groovy.transform.CompileStatic
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.codesign.Security
 import org.openbakery.extension.Signing
 import org.openbakery.util.FileUtil
 import org.openbakery.util.SystemUtil
 import org.openbakery.xcode.Version
 
 @CompileStatic
-class KeychainCreateTask extends AbstractKeychainTask {
+class KeychainCreateTask extends DefaultTask {
 
 	@InputFile
 	final RegularFileProperty certificateFile = newInputFile()
@@ -23,6 +27,12 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 	@Input
 	final Property<Integer> keychainTimeout = project.objects.property(Integer)
+
+	@OutputFile
+	final RegularFileProperty keyChainFile = newOutputFile()
+
+	final Property<Security> security = project.objects.property(Security)
+	final DirectoryProperty outputDirectory = newOutputDirectory()
 
 	static final String TASK_NAME = "keychainCreate"
 	static final String TASK_DESCRIPTION = "Create a keychain that is used for signing the app"
@@ -60,6 +70,11 @@ class KeychainCreateTask extends AbstractKeychainTask {
 
 	@TaskAction
 	void create() {
+		project.gradle.buildFinished {
+			removeGradleKeychainsFromSearchList()
+			deleteTemporaryKeyChainFile()
+		}
+
 		createTemporaryCertificateFile()
 		createKeyChainAndImportCertificate()
 		addKeyChainToThePartitionList()
@@ -88,13 +103,6 @@ class KeychainCreateTask extends AbstractKeychainTask {
 				.importCertificate(temporaryCertificateFile,
 				certificatePassword.get(),
 				keyChainFile.asFile.get())
-
-		// Delete the temporary keychain on completion
-		project.gradle.buildFinished {
-			if (keyChainFile.asFile.get()) {
-				keyChainFile.asFile.get().delete()
-			}
-		}
 	}
 
 	private void addKeyChainToThePartitionList() {
@@ -102,7 +110,7 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		if (systemVersion.minor >= 9) {
 			List<File> keychainList = getKeychainList()
 			keychainList.add(keyChainFile.asFile.get())
-			setKeychainList(keychainList)
+			populateKeyChain(keychainList)
 		}
 
 		if (systemVersion.minor >= 12) {
@@ -116,6 +124,35 @@ class KeychainCreateTask extends AbstractKeychainTask {
 			security.get()
 					.setTimeout(keychainTimeout.get(),
 					keyChainFile.asFile.get())
+		}
+	}
+
+	List<File> getKeychainList() {
+		return security.get().getKeychainList()
+	}
+
+	void populateKeyChain(List<File> keychainList) {
+		security.get()
+				.setKeychainList(keychainList)
+	}
+
+	private void deleteTemporaryKeyChainFile() {
+		if (keyChainFile.asFile.get()) {
+			keyChainFile.asFile.get().delete()
+
+			logger.info("The temporary keychain file has been deleted")
+		}
+	}
+
+	private void removeGradleKeychainsFromSearchList() {
+		if (keyChainFile.present) {
+			List<File> list = getKeychainList()
+			list.removeIf { File file ->
+				return file.absolutePath == keyChainFile.get().asFile.absolutePath
+			}
+			populateKeyChain(list)
+
+			logger.info("The temporary keychain has been removed from the search list")
 		}
 	}
 }

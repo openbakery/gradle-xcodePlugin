@@ -25,8 +25,6 @@ class XcodeBuildCleanTask extends DefaultTask {
 		super()
 
 		dependsOn(
-						XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME,
-						XcodePlugin.PROVISIONING_CLEAN_TASK_NAME,
 						XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
 						XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
 						XcodePlugin.DEPLOYGATE_CLEAN_TASK_NAME,
