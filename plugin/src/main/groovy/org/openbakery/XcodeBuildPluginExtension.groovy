@@ -109,7 +109,7 @@ class XcodeBuildPluginExtension {
 		configureServices()
 		configurePaths()
 
-		this.signing = project.objects.newInstance(Signing, project)
+		this.signing = project.objects.newInstance(Signing, project, commandRunner)
 		this.variableResolver = new VariableResolver(project)
 
 		this.dstRoot = {

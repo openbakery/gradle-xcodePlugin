@@ -59,14 +59,15 @@ class Signing {
 	 * internal parameters
 	 */
 	private final Project project
-	private
-	final String keychainName = KEYCHAIN_NAME_BASE + System.currentTimeMillis() + ".keychain"
-	CommandRunner commandRunner
+	private final CommandRunner commandRunner
 
 	@Inject
-	Signing(Project project) {
+	Signing(Project project,
+			CommandRunner commandRunner) {
 
+		this.commandRunner = commandRunner
 		this.project = project
+
 		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
 		this.provisioningDestinationRoot.set(project.layout.buildDirectory.dir("provision"))
 
@@ -80,19 +81,19 @@ class Signing {
 			}
 		}))
 
-		this.commandRunner = new CommandRunner()
-
 		// Entitlements support
 		this.entitlementsMap = project.objects.property(Map)
 		this.entitlementsFile = project.layout.fileProperty()
 
-		this.keyChainFile.set(signingDestinationRoot.file(keychainName))
+		this.keyChainFile.set(signingDestinationRoot.file(KEYCHAIN_NAME_BASE
+				+ System.currentTimeMillis()
+				+ ".keychain"))
 		this.timeout.set(3600)
 
 		this.xcConfigFile = project.layout.fileProperty()
-		this.xcConfigFile.set(project.layout.buildDirectory.file(PathHelper.FOLDER_ARCHIVE
-				+ "/"
-				+ PathHelper.GENERATED_XCARCHIVE_FILE_NAME))
+		this.xcConfigFile.set(project.layout
+				.buildDirectory
+				.file(PathHelper.FOLDER_ARCHIVE + "/" + PathHelper.GENERATED_XCARCHIVE_FILE_NAME))
 	}
 
 	void setKeychain(Object keychain) {
@@ -113,7 +114,7 @@ class Signing {
 		return project.file(keychainPathInternal)
 	}
 
-	public void entitlements(Map<String, Object> entitlements) {
+	void entitlements(Map<String, Object> entitlements) {
 		if (!this.entitlementsMap.present) {
 			this.entitlementsMap.set(entitlements)
 		} else {
@@ -135,31 +136,13 @@ class Signing {
 	}
 
 	@Deprecated
-	public void setMobileProvisionURI(String value) {
+	void setMobileProvisionURI(String value) {
 		this.mobileProvisionList.add(value)
 	}
 
 	@Deprecated
-	public void setMobileProvisionURI(String... values) {
-		println "setMobileProvisionURI : " + values
+	void setMobileProvisionURI(String... values) {
 		values.each { this.mobileProvisionList.add(it) }
-	}
-
-	@Override
-	public String toString() {
-		if (this.keychain != null) {
-			return "Signing{" +
-					" identity='" + identity + '\'' +
-					", mobileProvisionURI='" + mobileProvisionList.get() + '\'' +
-					", keychain='" + keychain + '\'' +
-					'}';
-		}
-		return "Signing{" +
-				" identity='" + identity + '\'' +
-				", certificateURI='" + certificate.getOrNull() + '\'' +
-				", certificatePassword='" + certificatePassword.getOrNull() + '\'' +
-				", mobileProvisionURI='" + mobileProvisionList.get() + '\'' +
-				'}';
 	}
 
 	CodesignParameters getCodesignParameters() {
@@ -200,5 +183,22 @@ class Signing {
 											file.absolutePath,
 											"-passin",
 											"pass:" + certificatePassword.get()])
+	}
+
+	@Override
+	public String toString() {
+		if (this.keychain != null) {
+			return "Signing{" +
+					" identity='" + identity + '\'' +
+					", mobileProvisionURI='" + mobileProvisionList.get() + '\'' +
+					", keychain='" + keychain + '\'' +
+					'}';
+		}
+		return "Signing{" +
+				" identity='" + identity + '\'' +
+				", certificateURI='" + certificate.getOrNull() + '\'' +
+				", certificatePassword='" + certificatePassword.getOrNull() + '\'' +
+				", mobileProvisionURI='" + mobileProvisionList.get() + '\'' +
+				'}';
 	}
 }
