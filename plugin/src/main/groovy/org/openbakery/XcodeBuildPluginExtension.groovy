@@ -425,7 +425,7 @@ class XcodeBuildPluginExtension {
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
-		result.bitcode = this.bitcode.getOrElse(false)
+		result.bitcode = this.bitcode.getOrElse(true)
 		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {

@@ -8,26 +8,26 @@ import spock.lang.Specification
 
 class AbstractXcodeBuildTaskSpecification extends Specification {
 
-
 	Project project
 	AbstractXcodeBuildTask xcodeBuildTask
 	File projectDir
-
-
+	XcodeBuildPluginExtension extension
 
 	def setup() {
 
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File('build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
+
+		extension = project.extensions
+				.getByType(XcodeBuildPluginExtension)
 	}
 
 	def cleanup() {
-			FileUtils.deleteDirectory(project.projectDir)
+		FileUtils.deleteDirectory(project.projectDir)
 	}
-
 
 	def "test get identity when is set manually"() {
 		when:
@@ -36,7 +36,6 @@ class AbstractXcodeBuildTaskSpecification extends Specification {
 		then:
 		xcodeBuildTask.getSigningIdentity() == "my identity"
 	}
-
 
 	def "security is initialized"() {
 		expect:
@@ -48,12 +47,12 @@ class AbstractXcodeBuildTaskSpecification extends Specification {
 		given:
 		File keychain = new File(projectDir, "my.keychain")
 		FileUtils.writeStringToFile(keychain, "dummy")
-		project.xcodebuild.signing.keychain = keychain
-		project.xcodebuild.signing.identity = null
+		extension.signing.keychain = keychain
+		extension.signing.identity = null
 
 		when:
 		Security security = Mock(Security)
-		security.getIdentity(project.xcodebuild.signing.getKeychainPathInternal()) >> "my identity from security"
+		security.getIdentity(extension.signing.getKeychainPathInternal()) >> "my identity from security"
 		xcodeBuildTask.security = security
 
 		then:
@@ -65,11 +64,10 @@ class AbstractXcodeBuildTaskSpecification extends Specification {
 
 	def "test get identity null and keychain does not exist should return null"() {
 		when:
-		project.xcodebuild.signing.identity = null
-		project.xcodebuild.signing.keychain = new File("my.keychain")
+		extension.signing.identity = null
+		extension.signing.keychain = new File("my.keychain")
 
 		then:
 		xcodeBuildTask.getSigningIdentity() == null
 	}
-
 }

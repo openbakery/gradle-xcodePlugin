@@ -29,8 +29,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		extension = new XcodeBuildPluginExtension(project)
-		extension.commandRunner = commandRunner
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.infoPlist = "Info.plist";
 
 
@@ -154,7 +153,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 		extension.type = Type.iOS
@@ -176,8 +175,8 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-		extension.commandRunner = new CommandRunner()
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
+
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 
@@ -198,8 +197,8 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/tvOS/Example_tvOS_Swift")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-		extension.commandRunner = new CommandRunner()
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
+
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example_tvOS_Swift.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 
@@ -216,12 +215,11 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	}
 
-	def "application bundle for watchos"() {
-		when:
-
+	def "application bundle for ios"() {
+		setup:
 		File projectDir =  new File("../example/iOS/ExampleWatchkit")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.projectSettings = createProjectSettings()
 		extension.type = Type.iOS
 		extension.target = "ExampleWatchkit WatchKit App"
@@ -230,21 +228,20 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.productType = "app"
 		extension.infoPlist = "../../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit App/Info.plist"
 
-
-		String applicationBundle = extension.getApplicationBundle().absolutePath;
+		when:
+		String applicationBundle = extension.getApplicationBundle().absolutePath
 
 		then:
-		applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleWatchkit.app")
-
+		applicationBundle.endsWith("build/sym/Debug-iphoneos/ExampleWatchkit WatchKit App.app")
 	}
 
 	def "application bundle for watch find parent"() {
 		when:
 		File projectDir =  new File("../example/iOS/ExampleWatchkit")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.projectSettings = createProjectSettings()
-		extension.type = Type.iOS
+		extension.type = Type.watchOS
 		extension.target = "ExampleWatchkit WatchKit App"
 		extension.simulator = false
 
@@ -252,10 +249,8 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		BuildConfiguration parent = extension.getParent(extension.projectSettings["ExampleWatchkit WatchKit App"].buildSettings["Debug"])
 
 		then:
-		parent.bundleIdentifier == "org.openbakery.test.Example"
+		parent.bundleIdentifier == "org.openbakery.test.Example.watchkitapp"
 	}
-
-
 
 	void mockValueFromPlist(String key, String value) {
 		PlistHelperStub plistHelperStub = new PlistHelperStub()
@@ -418,7 +413,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 		extension.type = Type.iOS
@@ -436,7 +431,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/tvOS/Example_tvOS_Swift")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example_tvOS_Swift.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 		extension.type = Type.tvOS
@@ -454,7 +449,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/OSX/ExampleOSX")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleOSX.xcodeproj/project.pbxproj"))
 		extension.projectSettings = xcodeProjectFile.getProjectSettings()
 		extension.type = Type.macOS
@@ -472,7 +467,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 
 		then:
 		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
@@ -483,7 +478,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		setup:
 		File projectDir =  new File(".")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 
 		when:
 		File missingFile = extension.projectFile
@@ -497,56 +492,11 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/iOS")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.projectFile = "Example/Example.xcodeproj"
 
 		then:
 		extension.projectFile.canonicalFile == new File("../example/iOS/Example/Example.xcodeproj").canonicalFile
-	}
-
-
-	def "XcodebuildParameters are created with proper values"() {
-		when:
-		File projectDir =  new File("../example/macOS/ExampleOSX")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-		extension.type = Type.macOS
-		extension.simulator = false
-		extension.target = "ExampleOSX"
-		extension.scheme.set("ExampleScheme")
-
-		extension.workspace = "workspace"
-		extension.configuration = "configuration"
-		extension.additionalParameters = "additionalParameters"
-
-		extension.dstRoot.set(new File(projectDir, "dstRoot"))
-		extension.objRoot.set(new File(projectDir, "objRoot"))
-		extension.symRoot.set(new File(projectDir, "symRoot"))
-		extension.sharedPrecompsDir.set(new File(projectDir, "sharedPrecompsDir"))
-		extension.derivedDataPath.set(new File(projectDir, "derivedDataPath"))
-		extension.arch = ['i386']
-
-
-		def parameters = extension.getXcodebuildParameters()
-
-		then:
-		parameters.type == Type.macOS
-		parameters.simulator == false
-		parameters.target == "ExampleOSX"
-		parameters.scheme == "ExampleScheme"
-		parameters.workspace == "workspace"
-		parameters.configuration == "configuration"
-		parameters.additionalParameters == "additionalParameters"
-		parameters.dstRoot.canonicalPath == new File(projectDir, "dstRoot").canonicalPath
-		parameters.objRoot.canonicalPath == new File(projectDir, "objRoot").canonicalPath
-		parameters.symRoot.canonicalPath == new File(projectDir, "symRoot").canonicalPath
-		parameters.sharedPrecompsDir.canonicalPath == new File(projectDir, "sharedPrecompsDir").canonicalPath
-		parameters.derivedDataPath.canonicalPath == new File(projectDir, "derivedDataPath").canonicalPath
-
-		parameters.arch.size() == 1
-		parameters.arch[0] == "i386"
-
-		parameters.devices ==  Devices.UNIVERSAL
 	}
 
 	def "XcodebuildParameters get workspace from project"() {
@@ -554,7 +504,7 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir =  new File("../example/iOS/SwiftExample")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.type = Type.iOS
 
 		workspaceDirectory = new File(projectDir, "SwiftExample.xcworkspace")
@@ -569,14 +519,14 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 
 	def "bitcode is default false"() {
 		expect:
-		extension.bitcode == false
+		extension.bitcode.get() == false
 	}
 
 	def "xcodeparameter is created with simulator true value"() {
 		when:
 		File projectDir = new File("../example/macOS/ExampleOSX")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.simulator = true
 
 		then:
@@ -587,18 +537,18 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		when:
 		File projectDir = new File("../example/macOS/ExampleOSX")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
-		extension.bitcode = true
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
+		extension.bitcode.set(true)
 
 		then:
-		extension.getXcodebuildParameters().bitcode == true
+		extension.getXcodebuildParameters().bitcode
 	}
 
 	def "xcodebuildParameters is created with the applicationBundle"() {
 		when:
 		File projectDir = new File("../example/macOS/ExampleOSX")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, commandRunner)
 		extension.bundleName = "MyApp"
 
 		then:
