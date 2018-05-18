@@ -24,20 +24,19 @@ class XcodeBuildCleanTask extends DefaultTask {
 	XcodeBuildCleanTask() {
 		super()
 
-		dependsOn(
-						XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
-						XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
-						XcodePlugin.DEPLOYGATE_CLEAN_TASK_NAME,
-		)
+		dependsOn(XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
+				XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
+				XcodePlugin.DEPLOYGATE_CLEAN_TASK_NAME)
+
 		this.description = "Cleans up the generated files from the previous build"
 	}
 
 	@TaskAction
 	def clean() {
-		project.xcodebuild.dstRoot.deleteDir()
-		project.xcodebuild.objRoot.deleteDir()
-		project.xcodebuild.symRoot.deleteDir()
-		project.xcodebuild.sharedPrecompsDir.deleteDir()
+		project.xcodebuild.dstRoot.get().deleteDir()
+		project.xcodebuild.objRoot.get().deleteDir()
+		project.xcodebuild.symRoot.get().deleteDir()
+		project.xcodebuild.sharedPrecompsDir.get().deleteDir()
 	}
 
 }

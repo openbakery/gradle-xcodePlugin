@@ -519,11 +519,11 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extension.configuration = "configuration"
 		extension.additionalParameters = "additionalParameters"
 
-		extension.dstRoot = new File(projectDir, "dstRoot")
-		extension.objRoot = new File(projectDir, "objRoot")
-		extension.symRoot = new File(projectDir, "symRoot")
-		extension.sharedPrecompsDir = new File(projectDir, "sharedPrecompsDir")
-		extension.derivedDataPath = new File(projectDir, "derivedDataPath")
+		extension.dstRoot.set(new File(projectDir, "dstRoot"))
+		extension.objRoot.set(new File(projectDir, "objRoot"))
+		extension.symRoot.set(new File(projectDir, "symRoot"))
+		extension.sharedPrecompsDir.set(new File(projectDir, "sharedPrecompsDir"))
+		extension.derivedDataPath.set(new File(projectDir, "derivedDataPath"))
 		extension.arch = ['i386']
 
 

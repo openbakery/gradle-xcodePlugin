@@ -161,7 +161,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 	def "delete derivedData/Logs/Test before test is executed"() {
 		project.xcodebuild.target = "Test"
 
-		def testDirectory = new File(project.xcodebuild.derivedDataPath, "Logs/Test")
+		def testDirectory = new File(project.xcodebuild.derivedDataPath.asFile.getOrNull(), "Logs/Test")
 		FileUtils.writeStringToFile(new File(testDirectory, "foobar"), "dummy");
 
 		when:

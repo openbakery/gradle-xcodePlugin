@@ -5,7 +5,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.junit.rules.TemporaryFolder
+import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.XcodePlugin
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.extension.Signing
@@ -31,9 +33,9 @@ class SigningSpecification extends Specification {
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File(projectDir, 'build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 
-		signing = new Signing(project)
+		signing = new Signing(project, new CommandRunner())
 
 		this.signingExtension = project.extensions
 				.findByType(XcodeBuildPluginExtension)

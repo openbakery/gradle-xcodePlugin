@@ -38,12 +38,14 @@ class XcodeBuildPluginExtension {
 	final Property<String> scheme = project.objects.property(String)
 	final DirectoryProperty archiveDirectory = project.layout.directoryProperty()
 	final DirectoryProperty schemeArchiveFile = project.layout.directoryProperty()
+	final DirectoryProperty dstRoot = project.layout.directoryProperty()
+	final DirectoryProperty objRoot = project.layout.directoryProperty()
+	final DirectoryProperty symRoot = project.layout.directoryProperty()
+	final DirectoryProperty sharedPrecompsDir = project.layout.directoryProperty()
+	final DirectoryProperty derivedDataPath = project.layout.directoryProperty()
 	final Property<XcodeService> xcodeServiceProperty = project.objects.property(XcodeService)
 
 	final Signing signing
-
-	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
-
 
 	XcodebuildParameters _parameters = new XcodebuildParameters()
 
@@ -54,11 +56,6 @@ class XcodeBuildPluginExtension {
 	Type type = Type.iOS
 
 	String target
-	Object dstRoot
-	Object objRoot
-	Object symRoot
-	Object sharedPrecompsDir
-	Object derivedDataPath
 
 	def additionalParameters = null
 	String bundleNameSuffix = null
@@ -91,6 +88,8 @@ class XcodeBuildPluginExtension {
 	private final Project project
 	private final CommandRunner commandRunner
 
+	private static final Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
+
 	XcodeBuildPluginExtension(Project project,
 							  CommandRunner commandRunner) {
 		this.project = project
@@ -104,25 +103,11 @@ class XcodeBuildPluginExtension {
 		this.signing = project.objects.newInstance(Signing, project, commandRunner)
 		this.variableResolver = new VariableResolver(project)
 
-		this.dstRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
-		}
-
-		this.objRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("obj")
-		}
-
-		this.symRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("sym")
-		}
-
-		this.sharedPrecompsDir = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("shared")
-		}
-
-		this.derivedDataPath = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
-		}
+		this.dstRoot.set(project.layout.buildDirectory.dir("dst"))
+		this.objRoot.set(project.layout.buildDirectory.dir("obj"))
+		this.symRoot.set(project.layout.buildDirectory.dir("sym"))
+		this.sharedPrecompsDir.set(project.layout.buildDirectory.dir("shared"))
+		this.derivedDataPath.set(project.layout.buildDirectory.dir("derivedData"))
 	}
 
 	private void configureServices() {
@@ -162,61 +147,6 @@ class XcodeBuildPluginExtension {
 			return fileList[0]
 		}
 		return null
-	}
-
-	void setDerivedDataPath(File derivedDataPath) {
-		this.derivedDataPath = derivedDataPath
-	}
-
-	void setDstRoot(File dstRoot) {
-		this.dstRoot = dstRoot
-	}
-
-	void setObjRoot(File objRoot) {
-		this.objRoot = objRoot
-	}
-
-	void setSymRoot(File symRoot) {
-		this.symRoot = symRoot
-	}
-
-	void setSharedPrecompsDir(File sharedPrecompsDir) {
-		this.sharedPrecompsDir = sharedPrecompsDir
-	}
-
-	File getDstRoot() {
-		if (dstRoot instanceof File) {
-			return dstRoot
-		}
-		return project.file(dstRoot)
-	}
-
-	File getObjRoot() {
-		if (objRoot instanceof File) {
-			return objRoot
-		}
-		return project.file(objRoot)
-	}
-
-	File getSymRoot() {
-		if (symRoot instanceof File) {
-			return symRoot
-		}
-		return project.file(symRoot)
-	}
-
-	File getSharedPrecompsDir() {
-		if (sharedPrecompsDir instanceof File) {
-			return sharedPrecompsDir
-		}
-		return project.file(sharedPrecompsDir)
-	}
-
-	File getDerivedDataPath() {
-		if (derivedDataPath instanceof File) {
-			return derivedDataPath
-		}
-		return project.file(derivedDataPath)
 	}
 
 	void signing(Closure closure) {
@@ -344,7 +274,7 @@ class XcodeBuildPluginExtension {
 				}
 			}
 		}
-		return new File(getSymRoot(), path)
+		return new File(getSymRoot().asFile.get(), path)
 	}
 
 
@@ -487,11 +417,11 @@ class XcodeBuildPluginExtension {
 		result.type = this.type
 		result.workspace = getWorkspace()
 		result.configuration = this.configuration
-		result.dstRoot = this.getDstRoot()
-		result.objRoot = this.getObjRoot()
-		result.symRoot = this.getSymRoot()
-		result.sharedPrecompsDir = this.getSharedPrecompsDir()
-		result.derivedDataPath = this.getDerivedDataPath()
+		result.dstRoot = this.getDstRoot().asFile.getOrNull()
+		result.objRoot = this.getObjRoot().asFile.getOrNull()
+		result.symRoot = this.getSymRoot().asFile.getOrNull()
+		result.sharedPrecompsDir = this.getSharedPrecompsDir().asFile.getOrNull()
+		result.derivedDataPath = this.derivedDataPath.asFile.getOrNull()
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations

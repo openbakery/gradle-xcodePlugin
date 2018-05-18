@@ -5,6 +5,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.junit.rules.TemporaryFolder
+import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.openbakery.simulators.SimulatorControl
@@ -28,7 +29,7 @@ class DestinationResolverSpecification extends Specification {
 	def setup() {
 		project = ProjectBuilder.builder().withProjectDir(testProjectDir.root).build()
 		project.apply plugin: XcodePlugin
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, new CommandRunner())
 		simulatorControl = new SimulatorControlStub("simctl-list-xcode7_1.txt")
 		destinationResolver = new DestinationResolver(simulatorControl)
 	}
@@ -44,7 +45,7 @@ class DestinationResolverSpecification extends Specification {
 	def "XcodebuildParameters are created with iOS destination"() {
 		when:
 		Project project = ProjectBuilder.builder().build()
-		extension = new XcodeBuildPluginExtension(project)
+		extension = new XcodeBuildPluginExtension(project, new CommandRunner())
 		extension.type = Type.iOS
 		extension.destination = ['iPad 2']
 
@@ -52,12 +53,9 @@ class DestinationResolverSpecification extends Specification {
 		def destinations = destinationResolver.getDestinations(parameters)
 
 		then:
-
 		destinations.size() == 1
 		destinations[0].name == "iPad 2"
-
 	}
-
 
 	def "test configured devices only should add most recent runtime"() {
 		when:
@@ -71,7 +69,6 @@ class DestinationResolverSpecification extends Specification {
 		destinations[0].os == "9.1"
 	}
 
-
 	def "available destinations default xcode 7"() {
 		when:
 		destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
@@ -82,7 +79,6 @@ class DestinationResolverSpecification extends Specification {
 
 	}
 
-
 	def "available destinations default"() {
 		when:
 
@@ -90,7 +86,6 @@ class DestinationResolverSpecification extends Specification {
 
 		then:
 		destinations.size() == 22
-
 	}
 
 	def "available destinations default for 9.1 SDK"() {
@@ -99,7 +94,6 @@ class DestinationResolverSpecification extends Specification {
 		}
 
 		when:
-
 		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
@@ -107,9 +101,7 @@ class DestinationResolverSpecification extends Specification {
 
 	}
 
-
 	def "available destinations match"() {
-
 		extension.destination {
 			platform = 'iOS Simulator'
 			name = 'iPad Air'
@@ -121,9 +113,7 @@ class DestinationResolverSpecification extends Specification {
 
 		then:
 		destinations.size() == 1
-
 	}
-
 
 	def "available destinations not match"() {
 		given:
@@ -152,7 +142,6 @@ class DestinationResolverSpecification extends Specification {
 		destinations.size() == 1
 		destinations[0].name == "iPad Air"
 		destinations[0].os == "9.1"
-
 	}
 
 	def "available destinations match simple multiple"() {
@@ -165,9 +154,7 @@ class DestinationResolverSpecification extends Specification {
 
 		then:
 		destinations.size() == 2
-
 	}
-
 
 	def "set destinations twice"() {
 		given:
@@ -181,7 +168,6 @@ class DestinationResolverSpecification extends Specification {
 		then:
 		destinations.size() == 2
 		destinations[1].name == 'iPhone 4s'
-
 	}
 
 	def "resolves tvOS destination from the name"() {
@@ -209,7 +195,6 @@ class DestinationResolverSpecification extends Specification {
 		destinations[0].name == "Apple TV 1080p"
 	}
 
-
 	def "resolve iPad Pro (12.9 inch)"() {
 		given:
 		simulatorControl = new SimulatorControlStub("simctl-list-xcode8.txt")
@@ -223,8 +208,5 @@ class DestinationResolverSpecification extends Specification {
 		destinations.size() == 1
 		destinations[0].name == 'iPad Pro (12.9 inch)'
 		destinations[0].id == 'C538D7F8-E581-44FF-9B17-5391F84642FB'
-
-
 	}
-
 }

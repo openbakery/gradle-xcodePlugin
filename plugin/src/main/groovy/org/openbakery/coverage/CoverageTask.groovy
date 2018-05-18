@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.xcode.Destination
 
 class CoverageTask extends AbstractXcodeTask {
@@ -48,17 +49,17 @@ class CoverageTask extends AbstractXcodeTask {
 		def zipFilename = version + ".zip"
 		def zip = new File(project.coverage.outputDirectory, zipFilename)
 		def url = 'https://github.com/gcovr/gcovr/archive/' + zipFilename
-		ant.get(src: url, dest: project.coverage.outputDirectory, verbose:true)
-		ant.unzip(src: zip,  dest:project.coverage.outputDirectory)
+		ant.get(src: url, dest: project.coverage.outputDirectory, verbose: true)
+		ant.unzip(src: zip, dest: project.coverage.outputDirectory)
 
 
 		def gcovrCommand = new File(project.coverage.outputDirectory, 'gcovr-' + version + '/scripts/gcovr').absolutePath
 
 		def commandList = [
-						'python',
-						gcovrCommand,
-						'-r',
-						'.'
+				'python',
+				gcovrCommand,
+				'-r',
+				'.'
 		]
 
 		String exclude = project.coverage.exclude
@@ -100,9 +101,13 @@ class CoverageTask extends AbstractXcodeTask {
 		for (Destination destination : project.coverage.testResultDestinations) {
 			possibleDirectories.add("Build/ProfileData/" + destination.id + "/Coverage.profdata")
 		}
-        
+
 		for (String directory : possibleDirectories) {
-			this.profileData = new File(project.xcodebuild.derivedDataPath, directory)
+			this.profileData = new File(project.extensions.findByType(XcodeBuildPluginExtension)
+					.derivedDataPath
+					.asFile
+					.getOrNull(),
+					directory)
 			if (this.profileData.exists()) {
 				return this.profileData
 			}
