@@ -32,14 +32,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class XcodeBuildPluginExtension {
-	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
-	final Property<Boolean> bitcode
-	final Property<String> version
-	final Property<String> scheme
-	final DirectoryProperty archiveDirectory
-	final DirectoryProperty schemeArchiveFile
-	final Property<XcodeService> xcodeServiceProperty
+	final Property<Boolean> bitcode = project.objects.property(Boolean)
+	final Property<String> version = project.objects.property(String)
+	final Property<String> scheme = project.objects.property(String)
+	final DirectoryProperty archiveDirectory = project.layout.directoryProperty()
+	final DirectoryProperty schemeArchiveFile = project.layout.directoryProperty()
+	final Property<XcodeService> xcodeServiceProperty = project.objects.property(XcodeService)
 
 	final Signing signing
 
@@ -78,7 +77,6 @@ class XcodeBuildPluginExtension {
 
 	Devices devices = Devices.UNIVERSAL
 
-	CommandRunner commandRunner
 	VariableResolver variableResolver
 	PlistHelper plistHelper
 
@@ -91,19 +89,14 @@ class XcodeBuildPluginExtension {
 	 * internal parameters
 	 */
 	private final Project project
+	private final CommandRunner commandRunner
 
-	public XcodeBuildPluginExtension(Project project) {
-		commandRunner = new CommandRunner()
-		plistHelper = new PlistHelper(commandRunner)
-
+	XcodeBuildPluginExtension(Project project,
+							  CommandRunner commandRunner) {
 		this.project = project
-		this.bitcode = project.objects.property(Boolean)
-		this.version = project.objects.property(String)
-		this.scheme = project.objects.property(String)
+		this.commandRunner = commandRunner
 
-		this.xcodeServiceProperty = project.objects.property(XcodeService)
-		this.archiveDirectory = project.layout.directoryProperty()
-		this.schemeArchiveFile = project.layout.directoryProperty()
+		plistHelper = new PlistHelper(commandRunner)
 
 		configureServices()
 		configurePaths()

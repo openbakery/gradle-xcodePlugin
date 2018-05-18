@@ -438,7 +438,8 @@ class XcodePlugin implements Plugin<Project> {
 	void configureExtensions(Project project) {
 		this.xcodeBuildPluginExtension = project.extensions.create("xcodebuild",
 				XcodeBuildPluginExtension,
-				project)
+				project,
+				commandRunner)
 
 		this.signingExtension = xcodeBuildPluginExtension.signing
 
@@ -612,7 +613,7 @@ class XcodePlugin implements Plugin<Project> {
 			it.bitCode.set(xcodeBuildPluginExtension.bitcode)
 			it.buildType.set(xcodeBuildPluginExtension.type)
 			it.certificateFriendlyName.set(signingExtension.certificateFriendlyName)
-			it.commandRunner.set(xcodeBuildPluginExtension.commandRunner)
+			it.commandRunner.set(this.commandRunner)
 			it.plistHelper.set(xcodeBuildPluginExtension.plistHelper)
 			it.registeredProvisioningFiles.set(signingExtension.registeredProvisioning)
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
