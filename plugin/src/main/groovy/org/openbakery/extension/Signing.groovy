@@ -26,10 +26,10 @@ class Signing {
 	final ListProperty<String> mobileProvisionList = project.objects.listProperty(String)
 	final Property<Integer> timeout = project.objects.property(Integer)
 	final Property<SigningMethod> signingMethod = project.objects.property(SigningMethod)
-	final Property<String> certificateFriendlyName
-	final Property<String> certificatePassword
-	final RegularFileProperty certificate
-	final RegularFileProperty entitlementsFile
+	final Property<String> certificateFriendlyName = project.objects.property(String)
+	final Property<String> certificatePassword = project.objects.property(String)
+	final RegularFileProperty certificate = project.layout.fileProperty()
+	final RegularFileProperty entitlementsFile = project.layout.fileProperty()
 	final RegularFileProperty keychain = project.layout.fileProperty()
 	final RegularFileProperty keyChainFile = project.layout.fileProperty()
 
@@ -40,20 +40,19 @@ class Signing {
 	final Provider<List<ProvisioningFile>> registeredProvisioning = project.objects.listProperty(ProvisioningFile)
 
 	@Internal
-	Object keychainPathInternal
-
-	@Internal
-	final RegularFileProperty xcConfigFile
+	final RegularFileProperty xcConfigFile = project.layout.fileProperty()
 
 	@Deprecated
-	final Property<Map<String, Object>> entitlementsMap
+	final Property<Map<String, Object>> entitlementsMap = project.objects.property(Map)
+
+	@Internal
+	Object keychainPathInternal
+
+	String identity
+	String plugin
 
 	public static final String KEYCHAIN_NAME_BASE = "gradle-"
 	private static final Pattern PATTERN = ~/^\s{4}friendlyName:\s(?<friendlyName>[^\n]+)/
-
-	String identity
-
-	String plugin
 
 	/**
 	 * internal parameters
@@ -70,10 +69,6 @@ class Signing {
 
 		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
 		this.provisioningDestinationRoot.set(project.layout.buildDirectory.dir("provision"))
-
-		this.certificate = project.layout.fileProperty()
-		this.certificatePassword = project.objects.property(String)
-		this.certificateFriendlyName = project.objects.property(String)
 		this.certificateFriendlyName.set(certificate.map(new Transformer<String, RegularFile>() {
 			@Override
 			String transform(RegularFile regularFile) {
@@ -81,16 +76,11 @@ class Signing {
 			}
 		}))
 
-		// Entitlements support
-		this.entitlementsMap = project.objects.property(Map)
-		this.entitlementsFile = project.layout.fileProperty()
-
 		this.keyChainFile.set(signingDestinationRoot.file(KEYCHAIN_NAME_BASE
 				+ System.currentTimeMillis()
 				+ ".keychain"))
 		this.timeout.set(3600)
 
-		this.xcConfigFile = project.layout.fileProperty()
 		this.xcConfigFile.set(project.layout
 				.buildDirectory
 				.file(PathHelper.FOLDER_ARCHIVE + "/" + PathHelper.GENERATED_XCARCHIVE_FILE_NAME))
