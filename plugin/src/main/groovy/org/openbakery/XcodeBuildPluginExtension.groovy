@@ -43,7 +43,6 @@ class XcodeBuildPluginExtension {
 
 	final Signing signing
 
-
 	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
 
 

@@ -47,6 +47,7 @@ import org.openbakery.crashlytics.CrashlyticsUploadTask
 import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
+import org.openbakery.extension.Signing
 import org.openbakery.hockeyapp.HockeyAppCleanTask
 import org.openbakery.hockeyapp.HockeyAppPluginExtension
 import org.openbakery.hockeyapp.HockeyAppUploadTask
@@ -102,7 +103,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykitClean"
 	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
-	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
@@ -132,6 +132,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
 
+	private Signing signingExtension
 	private XcodeBuildPluginExtension xcodeBuildPluginExtension
 	private InfoPlistExtension infoPlistExtension
 
@@ -435,13 +436,14 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
-
 	void configureExtensions(Project project) {
-		xcodeBuildPluginExtension = project.extensions.create("xcodebuild",
+		this.xcodeBuildPluginExtension = project.extensions.create("xcodebuild",
 				XcodeBuildPluginExtension,
 				project)
 
-		infoPlistExtension = project.extensions.create("infoplist",
+		this.signingExtension = xcodeBuildPluginExtension.signing
+
+		this.infoPlistExtension = project.extensions.create("infoplist",
 				InfoPlistExtension,
 				project)
 
@@ -488,13 +490,13 @@ class XcodePlugin implements Plugin<Project> {
 				PrepareXcodeArchivingTask.class) {
 			it.group = XCODE_GROUP_NAME
 
-			it.certificateFriendlyName.set(xcodeBuildPluginExtension.signing.certificateFriendlyName)
+			it.certificateFriendlyName.set(signingExtension.certificateFriendlyName)
 			it.commandRunnerProperty.set(commandRunner)
 			it.configurationBundleIdentifier.set(infoPlistExtension.configurationBundleIdentifier)
-			it.entitlementsFile.set(xcodeBuildPluginExtension.signing.entitlementsFile)
-			it.outputFile.set(xcodeBuildPluginExtension.signing.xcConfigFile)
+			it.entitlementsFile.set(signingExtension.entitlementsFile)
+			it.outputFile.set(signingExtension.xcConfigFile)
 			it.plistHelperProperty.set(plistHelper)
-			it.registeredProvisioningFiles.set(xcodeBuildPluginExtension.signing.registeredProvisioningFiles)
+			it.registeredProvisioningFiles.set(signingExtension.registeredProvisioningFiles)
 		}
 
 		project.getTasks().create(XcodeBuildArchiveTaskIosAndTvOS.NAME,
@@ -506,7 +508,7 @@ class XcodePlugin implements Plugin<Project> {
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
 			it.xcode.set(xcode)
 			it.xcodeVersion.set(xcodeBuildPluginExtension.version)
-			it.xcConfigFile.set(xcodeBuildPluginExtension.signing.xcConfigFile)
+			it.xcConfigFile.set(signingExtension.xcConfigFile)
 			it.xcodeServiceProperty.set(xcodeBuildPluginExtension.xcodeServiceProperty)
 		}
 
@@ -543,11 +545,11 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureKeychain(Project project) {
 		project.tasks.create(KeychainCreateTask.TASK_NAME, KeychainCreateTask.class) {
 			it.group = XCODE_GROUP_NAME
-			it.certificateFile.set(xcodeBuildPluginExtension.signing.certificate)
-			it.certificatePassword.set(xcodeBuildPluginExtension.signing.certificatePassword)
-			it.outputDirectory.set(xcodeBuildPluginExtension.signing.signingDestinationRoot)
-			it.keyChainFile.set(xcodeBuildPluginExtension.signing.keyChainFile)
-			it.keychainTimeout.set(xcodeBuildPluginExtension.signing.timeout)
+			it.certificateFile.set(signingExtension.certificate)
+			it.certificatePassword.set(signingExtension.certificatePassword)
+			it.outputDirectory.set(signingExtension.signingDestinationRoot)
+			it.keyChainFile.set(signingExtension.keyChainFile)
+			it.keychainTimeout.set(signingExtension.timeout)
 			it.security.set(securityTool)
 		}
 	}
@@ -573,17 +575,17 @@ class XcodePlugin implements Plugin<Project> {
 			it.group = XCODE_GROUP_NAME
 
 			it.commandRunnerProperty.set(commandRunner)
-			it.mobileProvisioningList.set(xcodeBuildPluginExtension.signing.mobileProvisionList)
-			it.outputDirectory.set(xcodeBuildPluginExtension.signing.provisioningDestinationRoot)
+			it.mobileProvisioningList.set(signingExtension.mobileProvisionList)
+			it.outputDirectory.set(signingExtension.provisioningDestinationRoot)
 			it.plistHelperProperty.set(plistHelper)
 			it.plistHelperProperty.set(plistHelper)
 
 			// We use the result of the task to populate the read only values
-			xcodeBuildPluginExtension.signing
+			signingExtension
 					.registeredProvisioningFiles
 					.set(it.registeredProvisioning)
 
-			xcodeBuildPluginExtension.signing
+			signingExtension
 					.registeredProvisioning
 					.set(it.registeredProvisioningFiles)
 		}
@@ -610,12 +612,12 @@ class XcodePlugin implements Plugin<Project> {
 
 			it.bitCode.set(xcodeBuildPluginExtension.bitcode)
 			it.buildType.set(xcodeBuildPluginExtension.type)
-			it.certificateFriendlyName.set(xcodeBuildPluginExtension.signing.certificateFriendlyName)
+			it.certificateFriendlyName.set(signingExtension.certificateFriendlyName)
 			it.commandRunner.set(xcodeBuildPluginExtension.commandRunner)
 			it.plistHelper.set(xcodeBuildPluginExtension.plistHelper)
-			it.registeredProvisioningFiles.set(xcodeBuildPluginExtension.signing.registeredProvisioning)
+			it.registeredProvisioningFiles.set(signingExtension.registeredProvisioning)
 			it.scheme.set(xcodeBuildPluginExtension.scheme)
-			it.signingMethod.set(xcodeBuildPluginExtension.signing.signingMethod)
+			it.signingMethod.set(signingExtension.signingMethod)
 		}
 	}
 
