@@ -16,8 +16,6 @@ import org.openbakery.signing.SigningMethod
 import org.openbakery.util.PathHelper
 
 import javax.inject.Inject
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class Signing {
 
@@ -29,6 +27,7 @@ class Signing {
 	final Property<String> certificateFriendlyName = project.objects.property(String)
 	final Property<String> certificatePassword = project.objects.property(String)
 	final RegularFileProperty certificate = project.layout.fileProperty()
+	final Property<String> certificateURI = project.objects.property(String)
 	final RegularFileProperty entitlementsFile = project.layout.fileProperty()
 	final RegularFileProperty keychain = project.layout.fileProperty()
 	final RegularFileProperty keyChainFile = project.layout.fileProperty()
@@ -52,7 +51,6 @@ class Signing {
 	String plugin
 
 	public static final String KEYCHAIN_NAME_BASE = "gradle-"
-	private static final Pattern PATTERN = ~/^\s{4}friendlyName:\s(?<friendlyName>[^\n]+)/
 
 	/**
 	 * internal parameters
@@ -125,6 +123,10 @@ class Signing {
 		entitlementsFile.set(new File(value))
 	}
 
+	void addMobileProvisionFile(File file) {
+		this.mobileProvisionList.add(file.toURI().toString())
+	}
+
 	@Deprecated
 	void setMobileProvisionURI(String value) {
 		this.mobileProvisionList.add(value)
@@ -132,7 +134,7 @@ class Signing {
 
 	@Deprecated
 	void setMobileProvisionURI(String... values) {
-		values.each { this.mobileProvisionList.add(it) }
+		this.mobileProvisionList.get().addAll(values.toList())
 	}
 
 	CodesignParameters getCodesignParameters() {
@@ -149,30 +151,6 @@ class Signing {
 		result.entitlementsFile = entitlementsFile.asFile.getOrNull()
 
 		return result
-	}
-
-	String getSignatureFriendlyName(File file) {
-		return Optional.ofNullable(getKeyContent(file)
-				.split(System.getProperty("line.separator"))
-				.find { PATTERN.matcher(it).matches() })
-				.map { PATTERN.matcher(it) }
-				.filter { Matcher it -> it.matches() }
-				.map { Matcher it ->
-			return it.group("friendlyName")
-		}
-		.orElseThrow {
-			new IllegalArgumentException("Failed to resolve the code signing identity from the certificate ")
-		}
-	}
-
-	private String getKeyContent(File file) {
-		return commandRunner.runWithResult(["openssl",
-											"pkcs12",
-											"-nokeys",
-											"-in",
-											file.absolutePath,
-											"-passin",
-											"pass:" + certificatePassword.get()])
 	}
 
 	@Override

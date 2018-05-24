@@ -154,7 +154,7 @@ class PrepareXcodeArchivingFunctionalTest extends Specification {
 				signing {
 					certificateURI = "${certificate.toURI().toString()}"
 					certificatePassword = "p4ssword"
-					entitlementsFile = project.provisioningFile1("${entitlementsFile.absolutePath}")
+					entitlementsFile = "${entitlementsFile.absolutePath}"
 				}
 			}
 			"""

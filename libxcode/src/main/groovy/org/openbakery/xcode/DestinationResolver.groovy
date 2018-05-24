@@ -36,10 +36,8 @@ class DestinationResolver {
 		def runtime = simulatorControl.getMostRecentRuntime(parameters.type)
 
 
-
 		if (isSimulatorFor(parameters)) {
 			// filter only on simulator builds
-
 			logger.debug("is a simulator build")
 			if (parameters.configuredDestinations != null) {
 

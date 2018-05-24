@@ -70,6 +70,10 @@ class ProvisioningInstallTask extends Download {
 		PROVISIONING_DIR.mkdirs()
 
 		File destinationFile = new File(PROVISIONING_DIR, provisioningFile.getFormattedName())
+		if (destinationFile.exists()) {
+			destinationFile.delete()
+		}
+
 		FileUtils.copyFile(provisioningFile.getFile(), destinationFile)
 		return destinationFile
 	}

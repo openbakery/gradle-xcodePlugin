@@ -30,4 +30,8 @@ class FileUtil {
 		File file = new File(toDirectory, FilenameUtils.getName(address))
 		return file
 	}
+
+	static boolean isLocalFile(String uri) {
+		return new File(new URI(uri)).exists()
+	}
 }

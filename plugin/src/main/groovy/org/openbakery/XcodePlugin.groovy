@@ -525,7 +525,11 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CREATE_TASK_NAME, type: SimulatorsCreateTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CLEAN_TASK_NAME, type: SimulatorsCleanTask, group: SIMULATORS_LIST_TASK_NAME)
-		project.task(SIMULATORS_START_TASK_NAME, type: SimulatorStartTask, group: SIMULATORS_LIST_TASK_NAME)
+
+		project.tasks.create(SIMULATORS_START_TASK_NAME, SimulatorStartTask) {
+			it.group = SIMULATORS_LIST_TASK_NAME
+		}
+
 		project.task(SIMULATORS_RUN_APP_TASK_NAME, type: SimulatorRunAppTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_INSTALL_APP_TASK_NAME, type: SimulatorInstallAppTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_KILL_TASK_NAME, type: SimulatorKillTask, group: SIMULATORS_LIST_TASK_NAME)
@@ -545,12 +549,17 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureKeychain(Project project) {
 		project.tasks.create(KeychainCreateTask.TASK_NAME, KeychainCreateTask.class) {
 			it.group = XCODE_GROUP_NAME
+
 			it.certificateFile.set(signingExtension.certificate)
+			it.certificateUri.set(signingExtension.certificateURI)
 			it.certificatePassword.set(signingExtension.certificatePassword)
 			it.outputDirectory.set(signingExtension.signingDestinationRoot)
 			it.keyChainFile.set(signingExtension.keyChainFile)
 			it.keychainTimeout.set(signingExtension.timeout)
 			it.security.set(securityTool)
+			it.commandRunnerProperty.set(commandRunner)
+
+			signingExtension.certificateFriendlyName.set(it.certificateFriendlyName)
 		}
 	}
 

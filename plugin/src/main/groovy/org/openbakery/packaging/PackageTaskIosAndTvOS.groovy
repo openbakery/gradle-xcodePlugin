@@ -99,7 +99,11 @@ class PackageTaskIosAndTvOS extends DefaultTask {
 
 	@TaskAction
 	private void packageArchive() {
+		logger.info("Packaging the archive")
+
+		assert signingMethod.present : "Cannot package, the signing method is not defined"
 		assert getArchiveFile().exists() && getArchiveFile().isDirectory()
+
 		generateExportOptionPlist()
 		packageIt()
 	}

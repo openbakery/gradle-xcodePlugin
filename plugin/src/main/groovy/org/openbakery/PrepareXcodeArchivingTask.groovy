@@ -27,10 +27,12 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
 	final Property<File> provisioningForConfiguration = project.objects.property(File)
 	final Property<PlistHelper> plistHelperProperty = project.objects.property(PlistHelper)
-	final Property<ProvisioningProfileReader> provisioningReader = project.objects.property(ProvisioningProfileReader)
 	final Property<String> certificateFriendlyName = project.objects.property(String)
 	final Property<String> configurationBundleIdentifier = project.objects.property(String)
 	final Property<String> entitlementsFilePath = project.objects.property(String)
+
+	@Internal
+	final Property<ProvisioningProfileReader> provisioningReader = project.objects.property(ProvisioningProfileReader)
 
 	public static final String DESCRIPTION = "Prepare the archive configuration file"
 	public static final String NAME = "prepareArchiving"
@@ -45,10 +47,10 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 	PrepareXcodeArchivingTask() {
 		super()
 
+		dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
+		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		dependsOn(KeychainCreateTask.TASK_NAME)
 		dependsOn(ProvisioningInstallTask.TASK_NAME)
-		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
-		dependsOn(XcodePlugin.INFOPLIST_MODIFY_TASK_NAME)
 
 		this.description = DESCRIPTION
 
@@ -63,7 +65,7 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 			@Override
 			File transform(String bundleIdentifier) {
 				return ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
-						registeredProvisioningFiles.get().asList() as List<File>,
+						registeredProvisioningFiles.getOrNull() as List<File>,
 						commandRunnerProperty.get(),
 						plistHelperProperty.get())
 			}
@@ -80,7 +82,6 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 		this.onlyIf {
 			return certificateFriendlyName.present &&
 					configurationBundleIdentifier.present &&
-					provisioningForConfiguration.present &&
 					outputFile.present &&
 					provisioningForConfiguration.present
 		}
@@ -88,7 +89,7 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 
 	@TaskAction
 	void generate() {
-		logger.debug("Preparing archiving")
+		logger.info("Preparing archiving")
 
 		outputFile.get().asFile.text = ""
 
@@ -112,5 +113,4 @@ class PrepareXcodeArchivingTask extends DefaultTask {
 				.asFile
 				.append(System.getProperty("line.separator") + key + " = " + value)
 	}
-
 }

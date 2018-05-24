@@ -69,7 +69,10 @@ class ProvisioningProfileReader {
 		checkExpired()
 	}
 
-	static File getProvisionFileForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, PlistHelper plistHelper) {
+	static File getProvisionFileForIdentifier(String bundleIdentifier,
+											  List<File> mobileProvisionFiles,
+											  CommandRunner commandRunner,
+											  PlistHelper plistHelper) {
 		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : mobileProvisionFiles) {
@@ -99,8 +102,8 @@ class ProvisioningProfileReader {
 			}
 		}
 
-		logger.info("No provisioning profile found for bundle identifier {}", bundleIdentifier)
-		logger.info("Available bundle identifier are {}" + provisionFileMap.keySet())
+		logger.warn("No provisioning profile found for bundle identifier {}", bundleIdentifier)
+		logger.warn("Available bundle identifier are {}" + provisionFileMap.keySet())
 
 		return null
 	}

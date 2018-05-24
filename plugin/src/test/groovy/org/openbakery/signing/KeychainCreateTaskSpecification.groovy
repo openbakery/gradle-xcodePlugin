@@ -75,7 +75,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.create()
+		keychainCreateTask.download()
 
 		then: "The `setPartitionList` method should be call only for OS version > 10.12"
 		1 * mockSecurity.createKeychain(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
@@ -105,7 +105,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.create()
+		keychainCreateTask.download()
 
 		then: "The `setPartitionList` method should be call only for OS version > 10.12"
 		1 * mockSecurity.createKeychain(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
@@ -136,7 +136,7 @@ class KeychainCreateTaskSpecification extends Specification {
 			xcodeBuildPluginExtension.signing.timeout.set(timeout)
 
 		when:
-		keychainCreateTask.create()
+		keychainCreateTask.download()
 
 		then:
 		count * mockSecurity.setTimeout(timeout,
@@ -154,7 +154,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.create()
+		keychainCreateTask.download()
 
 		then:
 		File file = xcodeBuildPluginExtension.signing
