@@ -7,7 +7,6 @@ import org.gradle.api.Task
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.*
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
@@ -64,12 +63,9 @@ class PackageTaskIosAndTvOS extends DefaultTask {
 		dependsOn(ProvisioningInstallTask.TASK_NAME)
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 
-		onlyIf(new Spec<Task>() {
-			@Override
-			boolean isSatisfiedBy(Task task) {
-				return buildType.get() == Type.iOS ||
-						buildType.get() == Type.tvOS
-			}
+		onlyIf({ Task task ->
+			return buildType.get() == Type.iOS ||
+					buildType.get() == Type.tvOS
 		})
 	}
 
@@ -101,7 +97,7 @@ class PackageTaskIosAndTvOS extends DefaultTask {
 	private void packageArchive() {
 		logger.info("Packaging the archive")
 
-		assert signingMethod.present : "Cannot package, the signing method is not defined"
+		assert signingMethod.present: "Cannot package, the signing method is not defined"
 		assert getArchiveFile().exists() && getArchiveFile().isDirectory()
 
 		generateExportOptionPlist()
