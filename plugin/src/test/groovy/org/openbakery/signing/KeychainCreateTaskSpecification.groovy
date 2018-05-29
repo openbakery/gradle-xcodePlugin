@@ -20,8 +20,9 @@ class KeychainCreateTaskSpecification extends Specification {
 	@Rule
 	final TemporaryFolder tmpDirectory = new TemporaryFolder()
 
+	KeychainCreateTask subject
+
 	Project project
-	KeychainCreateTask keychainCreateTask
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 	File keychainDestinationFile
@@ -33,7 +34,9 @@ class KeychainCreateTaskSpecification extends Specification {
 	Security mockSecurity
 
 	final static String CERTIFICATE_PASSWORD = "password"
-	final static String FAKE_CERT_CONTENT = "Mocked certificate content"
+	final static String FAKE_CERT_CONTENT = "Bag Attributes\n" +
+			"    localKeyID: FE 93 19 AC CC D7 C1 AC 82 97 02 C2 35 97 B6 CE 37 33 CB 4F\n" +
+			"    friendlyName: iPhone Distribution: Test Company Name (12345ABCDE)"
 
 	def setup() {
 		project = ProjectBuilder.builder().build()
@@ -42,8 +45,9 @@ class KeychainCreateTaskSpecification extends Specification {
 
 		mockSecurity = Mock(Security)
 
-		keychainCreateTask = project.tasks.findByName('keychainCreate') as KeychainCreateTask
-		keychainCreateTask.security.set(new Security(commandRunner))
+		subject = project.tasks.findByName('keychainCreate') as KeychainCreateTask
+		subject.security.set(new Security(commandRunner))
+		subject.commandRunnerProperty.set(commandRunner)
 
 		xcodeBuildPluginExtension = project.extensions.getByType(XcodeBuildPluginExtension)
 		folder = xcodeBuildPluginExtension.signing
@@ -64,8 +68,10 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificatePassword = CERTIFICATE_PASSWORD
 		project.xcodebuild.signing.timeout = null
 
-		keychainCreateTask.security.set(mockSecurity)
+		subject.security.set(mockSecurity)
 		mockSecurity.getKeychainList() >> []
+
+		commandRunner.runWithResult(_) >> FAKE_CERT_CONTENT
 	}
 
 	@Unroll
@@ -75,7 +81,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.download()
+		subject.download()
 
 		then: "The `setPartitionList` method should be call only for OS version > 10.12"
 		1 * mockSecurity.createKeychain(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
@@ -105,7 +111,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.download()
+		subject.download()
 
 		then: "The `setPartitionList` method should be call only for OS version > 10.12"
 		1 * mockSecurity.createKeychain(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
@@ -131,12 +137,13 @@ class KeychainCreateTaskSpecification extends Specification {
 	@Unroll
 	def "The keychain timeout should be called"() {
 		given:
-		xcodeBuildPluginExtension.signing.certificate = certificateFile
+		project.xcodebuild.signing.certificate = certificateFile
+
 		if (timeout)
 			xcodeBuildPluginExtension.signing.timeout.set(timeout)
 
 		when:
-		keychainCreateTask.download()
+		subject.download()
 
 		then:
 		count * mockSecurity.setTimeout(timeout,
@@ -154,7 +161,7 @@ class KeychainCreateTaskSpecification extends Specification {
 		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.download()
+		subject.download()
 
 		then:
 		File file = xcodeBuildPluginExtension.signing

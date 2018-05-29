@@ -47,10 +47,10 @@ class Xcodebuild {
 		}
 	}
 
-	public static void packageIpa(CommandRunner commandRunner,
-								  File archivePath,
-								  File exportPath,
-								  File exportOptionsPlist) {
+	static void packageIpa(CommandRunner commandRunner,
+						   File archivePath,
+						   File exportPath,
+						   File exportOptionsPlist) {
 
 		assert archivePath != null && archivePath.exists()
 		assert exportPath != null && exportPath.exists()
@@ -63,11 +63,11 @@ class Xcodebuild {
 				ARGUMENT_EXPORT_OPTIONS_PLIST, exportOptionsPlist.absolutePath)
 	}
 
-	public static void archive(CommandRunner commandRunner,
-							   String scheme,
-							   File outputPath,
-							   File xcConfig,
-							   @Nullable File xcodeApp) {
+	static void archive(CommandRunner commandRunner,
+						String scheme,
+						File outputPath,
+						File xcConfig,
+						@Nullable File xcodeApp) {
 		assert scheme != null
 		assert xcConfig.exists() && !xcConfig.isDirectory()
 

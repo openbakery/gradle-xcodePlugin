@@ -1,9 +1,7 @@
 package org.openbakery.extension
 
 import org.gradle.api.Project
-import org.gradle.api.Transformer
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -64,15 +62,8 @@ class Signing {
 
 		this.commandRunner = commandRunner
 		this.project = project
-
 		this.signingDestinationRoot.set(project.layout.buildDirectory.dir("codesign"))
 		this.provisioningDestinationRoot.set(project.layout.buildDirectory.dir("provision"))
-		this.certificateFriendlyName.set(certificate.map(new Transformer<String, RegularFile>() {
-			@Override
-			String transform(RegularFile regularFile) {
-				return getSignatureFriendlyName(regularFile.asFile)
-			}
-		}))
 
 		this.keyChainFile.set(signingDestinationRoot.file(KEYCHAIN_NAME_BASE
 				+ System.currentTimeMillis()

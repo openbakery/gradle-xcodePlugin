@@ -164,5 +164,4 @@ class PackageTaskIosAndTvOS extends DefaultTask {
 				getOutputDirectory(),
 				getExportOptionsPlistFile())
 	}
-
 }

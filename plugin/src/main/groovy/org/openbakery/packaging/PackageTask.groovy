@@ -1,8 +1,8 @@
 package org.openbakery.packaging
 
-import org.openbakery.AbstractXcodeBuildTask
+import org.gradle.api.DefaultTask
 
-class PackageTask extends AbstractXcodeBuildTask {
+class PackageTask extends DefaultTask {
 
 	public static final String NAME = "package"
 

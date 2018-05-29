@@ -8,6 +8,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.openbakery.CommandRunner
+import org.openbakery.CommandRunnerException
 import org.openbakery.codesign.Security
 import org.openbakery.util.FileUtil
 import org.openbakery.util.SystemUtil
@@ -211,13 +212,21 @@ class KeychainCreateTask extends Download {
 	}
 
 	private String getKeyContent(File file) {
-		return commandRunnerProperty.get()
-				.runWithResult(["openssl",
-								"pkcs12",
-								"-nokeys",
-								"-in",
-								file.absolutePath,
-								"-passin",
-								"pass:" + certificatePassword.get()])
+		String result
+		try {
+			result = commandRunnerProperty.get()
+					.runWithResult(["openssl",
+									"pkcs12",
+									"-nokeys",
+									"-in",
+									file.absolutePath,
+									"-passin",
+									"pass:" + certificatePassword.get()])
+		} catch (CommandRunnerException exception) {
+			logger.warn(exception.toString())
+			result = null
+		}
+
+		return result
 	}
 }
