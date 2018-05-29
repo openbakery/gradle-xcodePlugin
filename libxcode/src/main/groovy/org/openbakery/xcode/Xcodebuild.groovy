@@ -3,10 +3,11 @@ package org.openbakery.xcode
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
 
+import javax.annotation.Nullable
+
 class Xcodebuild {
 
 	CommandRunner commandRunner
-
 	HashMap<String, String> buildSettings = null
 
 	File projectDirectory
@@ -15,7 +16,14 @@ class Xcodebuild {
 	XcodebuildParameters parameters
 	List<Destination> destinations
 
-
+	public static final String EXECUTABLE = "xcodebuild"
+	public static final String ACTION_ARCHIVE = "archive"
+	public static final String ACTION_EXPORT_ARCHIVE = "-exportArchive"
+	public static final String ARGUMENT_SCHEME = "-scheme"
+	public static final String ARGUMENT_ARCHIVE_PATH = "-archivePath"
+	public static final String ARGUMENT_EXPORT_PATH = "-exportPath"
+	public static final String ARGUMENT_EXPORT_OPTIONS_PLIST = "-exportOptionsPlist"
+	public static final String ARGUMENT_XCCONFIG = "-xcconfig"
 
 	public Xcodebuild(File projectDirectory, CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, List<Destination> destinations) {
 		this.projectDirectory = projectDirectory
@@ -37,6 +45,45 @@ class Xcodebuild {
 		if (parameters.scheme == null && parameters.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
 		}
+	}
+
+	static void packageIpa(CommandRunner commandRunner,
+						   File archivePath,
+						   File exportPath,
+						   File exportOptionsPlist) {
+
+		assert archivePath != null && archivePath.exists()
+		assert exportPath != null && exportPath.exists()
+		assert exportOptionsPlist != null && exportOptionsPlist.exists()
+
+		commandRunner.run(EXECUTABLE,
+				ACTION_EXPORT_ARCHIVE,
+				ARGUMENT_ARCHIVE_PATH, archivePath.absolutePath,
+				ARGUMENT_EXPORT_PATH, exportPath.absolutePath,
+				ARGUMENT_EXPORT_OPTIONS_PLIST, exportOptionsPlist.absolutePath)
+	}
+
+	static void archive(CommandRunner commandRunner,
+						String scheme,
+						File outputPath,
+						File xcConfig,
+						@Nullable File xcodeApp) {
+		assert scheme != null
+		assert xcConfig.exists() && !xcConfig.isDirectory()
+
+		HashMap<String, String> envMap = new HashMap<>()
+
+		if (xcodeApp != null) {
+			envMap.put(Xcode.ENV_DEVELOPER_DIR, xcodeApp.absolutePath)
+		}
+
+		List<String> args = [EXECUTABLE,
+							 ACTION_ARCHIVE,
+							 ARGUMENT_SCHEME, scheme,
+							 ARGUMENT_ARCHIVE_PATH, outputPath.absolutePath,
+							 ARGUMENT_XCCONFIG, xcConfig.absolutePath]
+
+		commandRunner.run(args, envMap)
 	}
 
 	def execute(OutputAppender outputAppender, Map<String, String> environment) {
@@ -283,51 +330,51 @@ class Xcodebuild {
 
 
 	String getToolchainDirectory() {
-			String buildSetting = getBuildSetting("TOOLCHAIN_DIR")
-			if (buildSetting != null) {
-				return buildSetting
-			}
-			return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+		String buildSetting = getBuildSetting("TOOLCHAIN_DIR")
+		if (buildSetting != null) {
+			return buildSetting
 		}
+		return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+	}
 
 	String getPlatformDirectory() {
 		return getBuildSetting("PLATFORM_DIR")
 	}
 
-		String loadBuildSettings() {
-			def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
+	String loadBuildSettings() {
+		def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
 
-			if (parameters.scheme != null && parameters.workspace != null) {
-				commandList.add("-scheme");
-				commandList.add(parameters.scheme)
-				commandList.add("-workspace")
-				commandList.add(parameters.workspace)
-			}
-
-			return commandRunner.runWithResult(this.projectDirectory.absolutePath, commandList)
+		if (parameters.scheme != null && parameters.workspace != null) {
+			commandList.add("-scheme");
+			commandList.add(parameters.scheme)
+			commandList.add("-workspace")
+			commandList.add(parameters.workspace)
 		}
 
-		private String getBuildSetting(String key) {
-			if (buildSettings == null) {
-				buildSettings = new HashMap<>()
-				String[] buildSettingsData = loadBuildSettings().split("\n")
-				for (line in buildSettingsData) {
-					int index = line.indexOf("=")
-					if (index > 0) {
-						String settingsKey = line.substring(0, index).trim()
-						String settingsValue = line.substring(index + 1, line.length()).trim()
-						buildSettings.put(settingsKey, settingsValue)
-					}
+		return commandRunner.runWithResult(this.projectDirectory.absolutePath, commandList)
+	}
+
+	private String getBuildSetting(String key) {
+		if (buildSettings == null) {
+			buildSettings = new HashMap<>()
+			String[] buildSettingsData = loadBuildSettings().split("\n")
+			for (line in buildSettingsData) {
+				int index = line.indexOf("=")
+				if (index > 0) {
+					String settingsKey = line.substring(0, index).trim()
+					String settingsValue = line.substring(index + 1, line.length()).trim()
+					buildSettings.put(settingsKey, settingsValue)
 				}
 			}
-			return buildSettings.get(key)
 		}
+		return buildSettings.get(key)
+	}
 
 	@Override
 	public String toString() {
 		return "Xcodebuild{" +
-						"xcodePath='" + xcodePath + '\'' +
-						parameters +
-						'}'
+				"xcodePath='" + xcodePath + '\'' +
+				parameters +
+				'}'
 	}
 }

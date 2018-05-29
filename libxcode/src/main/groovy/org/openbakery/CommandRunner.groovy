@@ -38,7 +38,6 @@ class CommandRunner {
 
 	}
 
-
 	void setOutputFile(File outputFile) {
 		if (outputFile.exists()) {
 
@@ -172,20 +171,35 @@ class CommandRunner {
 	}
 
 	String runWithResult(String... commandList) {
-		return runWithResult(Arrays.asList(commandList));
+		return runWithResult(Arrays.asList(commandList))
+	}
+
+	String runWithResult(Map<String, String> environmentValues,
+						 String... commandList) {
+		return runWithResult(defaultBaseDirectory,
+				commandList.toList(),
+				environmentValues,
+				null)
 	}
 
 	String runWithResult(List<String> commandList) {
 		return runWithResult(defaultBaseDirectory, commandList)
 	}
 
-	String runWithResult(String directory, List<String> commandList) {
-		return runWithResult(directory, commandList, null, null)
+	String runWithResult(String directory,
+						 List<String> commandList) {
+		return runWithResult(directory,
+				commandList,
+				null,
+				null)
 	}
 
-	String runWithResult(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
+	String runWithResult(String directory,
+						 List<String> commandList,
+						 Map<String, String> environment,
+						 OutputAppender outputAppender) {
 		commandOutputBuffer = new ArrayList<>();
-		run(directory, commandList, environment, outputAppender);
+		run(directory, commandList, environment, outputAppender)
 		String result = commandOutputBuffer.join("\n")
 		commandOutputBuffer = null;
 		return result

@@ -2,224 +2,249 @@ package org.openbakery.xcode
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
-import org.openbakery.xcode.Version
-import org.openbakery.xcode.Xcode
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class XcodeSpecification extends Specification {
 
-	Xcode xcode
+    Xcode xcode
 
-	CommandRunner commandRunner = Mock(CommandRunner)
+    CommandRunner commandRunner = Mock(CommandRunner)
 
-	File xcode7_1_1
-	File xcode6_1
-	File xcode6_0
-	File xcode5_1
+    static File xcode7_1_1 = new File(File.createTempDir(), "Xcode7.1.1.app")
+    static File xcode6_1 = new File(File.createTempDir(), "Xcode6-1.app")
+    static File xcode6_0 = new File(File.createTempDir(), "Xcode6.app")
+    static File xcode5_1 = new File(File.createTempDir(), "Xcode5.app")
 
-	def setup() {
+    def setup() {
+        xcode = Spy(Xcode, constructorArgs: [commandRunner])
 
-		xcode = new Xcode(commandRunner)
+        new File(xcode7_1_1, "Contents/Developer/usr/bin").mkdirs()
+        new File(xcode6_1, "Contents/Developer/usr/bin").mkdirs()
+        new File(xcode6_0, "Contents/Developer/usr/bin").mkdirs()
+        new File(xcode5_1, "Contents/Developer/usr/bin").mkdirs()
 
-		xcode7_1_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode7.1.1.app")
-		xcode6_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode6-1.app")
-		xcode6_0 = new File(System.getProperty("java.io.tmpdir"), "Xcode6.app")
-		xcode5_1 = new File(System.getProperty("java.io.tmpdir"), "Xcode5.app")
-		new File(xcode7_1_1, "Contents/Developer/usr/bin").mkdirs()
-		new File(xcode6_1, "Contents/Developer/usr/bin").mkdirs()
-		new File(xcode6_0, "Contents/Developer/usr/bin").mkdirs()
-		new File(xcode5_1, "Contents/Developer/usr/bin").mkdirs()
+        new File(xcode7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+        new File(xcode6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+        new File(xcode6_0, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+        new File(xcode5_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+    }
 
-		new File(xcode7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
-		new File(xcode6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
-		new File(xcode6_0, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
-		new File(xcode5_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
+    def cleanup() {
+        FileUtils.deleteDirectory(xcode7_1_1)
+        FileUtils.deleteDirectory(xcode6_1)
+        FileUtils.deleteDirectory(xcode6_0)
+        FileUtils.deleteDirectory(xcode5_1)
+    }
 
+    def "test default xcode path"() {
+        given:
+        useDefaultXcode()
 
-	}
+        expect:
+        xcode.getPath().equals("/Applications/Xcode.app")
+    }
 
-	def cleanup() {
-		FileUtils.deleteDirectory(xcode7_1_1)
-		FileUtils.deleteDirectory(xcode6_1)
-		FileUtils.deleteDirectory(xcode6_0)
-		FileUtils.deleteDirectory(xcode5_1)
-	}
+    def useXcode(String version) {
+        mockInstalledXcodeVersions()
 
-	def "test default xcode path"() {
-		given:
-		useDefaultXcode()
+        xcode = new Xcode(commandRunner, version)
+    }
 
-		expect:
-		xcode.getPath().equals("/Applications/Xcode.app")
+    def mockInstalledXcodeVersions() {
+        commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
+        commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.0\nBuild version 6A000")
+        commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+        commandRunner.runWithResult(xcode7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
+        commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n" + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath + "\n" + xcode7_1_1.absolutePath
+    }
 
-	}
+    def useDefaultXcode() {
+        commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
+    }
 
+    @Unroll
+    def "xcodebuild of Xcode 5 is used"() {
+        given:
+        useXcode("5B1008")
 
-	def useXcode(String version) {
-		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 5.1.1\nBuild version 5B1008")
-		commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.0\nBuild version 6A000")
-		commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
-		commandRunner.runWithResult(xcode7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath + "\n" +  xcode7_1_1.absolutePath
+        expect:
+        xcode.getXcodebuild()
+                .endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
 
-		xcode = new Xcode(commandRunner, version)
-	}
+        where:
+        version  | _
+        "5B1008" | _
+        "5.1"    | _
+        "5.1.1"  | _
+    }
 
+    def "xcodeVersion Simple not found"() {
+        when:
+        useXcode("5.1.2")
 
-	def useDefaultXcode() {
-		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
-	}
+        then:
+        thrown(IllegalStateException)
+    }
 
-	def "xcodebuild of Xcode 5 is used"() {
-		given:
-		useXcode("5B1008")
+    def "xcodeVersion select last"() {
+        commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode6_1.absolutePath + "\n" + xcode6_0.absolutePath + "\n" + xcode5_1.absolutePath
+        commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+        commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
+        commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
 
-		expect:
-		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
+        when:
+        xcode = new Xcode(commandRunner, '5B1008')
 
-	def "xcodebuild of Xcode 5 simple version number"() {
-		given:
-		useXcode("5.1")
-
-		expect:
-		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
-
-
-	def "xcode Version Simple 1"() {
-
-		given:
-		useXcode("5.1.1")
-
-		expect:
-		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
-
-	def "xcodeVersion Simple not found"() {
-		when:
-		useXcode("5.1.2")
-
-		then:
-		thrown(IllegalStateException)
-	}
+        then:
+        xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
+    }
 
 
-	def "xcodeVersion select last"() {
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcode6_1.absolutePath + "\n"  + xcode6_0.absolutePath + "\n" + xcode5_1.absolutePath
-		commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 6.0\nBuild version 6A000"
-		commandRunner.runWithResult(xcode5_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
+    def "xcodeVersion select not found"() {
+        useXcode("5B1008")
 
-		when:
-		xcode = new Xcode(commandRunner, '5B1008')
+        when:
+        xcode = new Xcode(commandRunner, '5B1009')
 
-		then:
-		xcode.getXcodebuild().endsWith("Xcode5.app/Contents/Developer/usr/bin/xcodebuild")
-	}
+        then:
+        thrown(IllegalStateException)
+    }
 
+    def "version is not null"() {
+        given:
+        commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.3.1\nBuild version 7D1014")
 
-	def "xcodeVersion select not found"() {
-		useXcode("5B1008")
-
-		when:
-		xcode = new Xcode(commandRunner, '5B1009')
-
-		then:
-		thrown(IllegalStateException)
-	}
-
-	def "version is not null"() {
-		given:
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.3.1\nBuild version 7D1014")
-
-		expect:
-		xcode.getVersion() != null
-		xcode.getVersion().major == 7
-		xcode.getVersion().minor == 3
-		xcode.getVersion().maintenance == 1
-	}
+        expect:
+        xcode.getVersion() != null
+        xcode.getVersion().major == 7
+        xcode.getVersion().minor == 3
+        xcode.getVersion().maintenance == 1
+    }
 
 
-	def "altool default path"() {
-		given:
-		useDefaultXcode()
+    def "altool default path"() {
+        given:
+        useDefaultXcode()
 
-		expect:
-		xcode.getAltool() == '/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool'
-	}
+        expect:
+        xcode.getAltool() == '/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool'
+    }
 
-	def "altool with xcode 7.1.1"() {
-		given:
-		useXcode("7.1")
+    def "altool with xcode 7.1.1"() {
+        given:
+        useXcode("7.1")
 
-		expect:
-		xcode.getAltool().contains('Xcode7.1.1.app')
-		xcode.getAltool().endsWith('Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool')
-	}
+        expect:
+        xcode.getAltool().contains('Xcode7.1.1.app')
+        xcode.getAltool().endsWith('Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool')
+    }
 
-	def "xcrun default path"() {
-		given:
-		useDefaultXcode()
+    def "xcrun default path"() {
+        given:
+        useDefaultXcode()
 
-		expect:
-		xcode.getXcrun() == '/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun'
-	}
-
-
-	def "xcrun with xcode 7.1.1"() {
-		given:
-		useXcode("7.1")
-
-		expect:
-		xcode.getXcrun().endsWith('Xcode7.1.1.app/Contents/Developer/usr/bin/xcrun')
-	}
+        expect:
+        xcode.getXcrun() == '/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun'
+    }
 
 
+    def "xcrun with xcode 7.1.1"() {
+        given:
+        useXcode("7.1")
 
-	def "set xcode version"() {
-		useXcode("7.1")
+        expect:
+        xcode.getXcrun().endsWith('Xcode7.1.1.app/Contents/Developer/usr/bin/xcrun')
+    }
 
+    def "set xcode version"() {
+        setup:
+        useXcode(version)
 
-		expect:
-		xcode.version instanceof Version
-		xcode.version.major == 7
-		xcode.version.minor == 1
-		xcode.version.maintenance == 1
-	}
+        expect:
+        xcode.version instanceof Version
+        xcode.version.major == major
+        xcode.version.minor == minor
+        xcode.version.maintenance == maintenance
 
-	def "set xcode version with xcode 6"() {
-		useXcode("6.4")
+        where:
+        version | major | minor | maintenance
+        "5.1.1" | 5     | 1     | 1
+        "6.0"   | 6     | 0     | -1
+        "6.4"   | 6     | 4     | -1
+        "7.1.1" | 7     | 1     | 1
+    }
 
-		expect:
-		xcode.version instanceof Version
-		xcode.version.major == 6
-		xcode.version.minor == 4
-		xcode.version.maintenance == -1
-	}
+    def "get xcode version"() {
+        given:
+        commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 
-	def "get xcode version"() {
-		given:
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+        when:
+        Version version = xcode.version
 
-		when:
-		Version version = xcode.version
-
-		then:
-		version instanceof Version
-		version.major == 6
-		version.minor == 4
-		version.maintenance == -1
-	}
-
-
-	def "simctl default path"() {
-		given:
-		useDefaultXcode()
-
-		expect:
-		xcode.getSimctl() == '/Applications/Xcode.app/Contents/Developer/usr/bin/simctl'
-	}
+        then:
+        version instanceof Version
+        version.major == 6
+        version.minor == 4
+        version.maintenance == -1
+    }
 
 
+    def "simctl default path"() {
+        given:
+        useDefaultXcode()
+
+        expect:
+        xcode.getSimctl() == '/Applications/Xcode.app/Contents/Developer/usr/bin/simctl'
+    }
+
+    def "Should be able to resolve a Xcode version by string without exception when valid"() {
+        when:
+        mockInstalledXcodeVersions()
+        xcode.setVersionFromString(version)
+
+        then:
+        1 * xcode.selectXcode(new File(file, Xcode.XCODE_CONTENT_XCODE_BUILD))
+        xcode.version.toString() == (version + "." + buildVersion)
+        noExceptionThrown()
+
+        where:
+        version | buildVersion | file
+        "5.1.1" | "5B1008"     | xcode5_1
+        "6.0"   | "6A000"      | xcode6_0
+        "7.1.1" | "7B1005"     | xcode7_1_1
+    }
+
+    def "Should raise an exception when resolving a invalid Xcode instance by version string"() {
+        when:
+        mockInstalledXcodeVersions()
+        xcode.setVersionFromString(version)
+
+        then:
+        thrown(exception)
+        0 * xcode.selectXcode(_)
+
+        where:
+        version | exception
+        "5.1.3" | IllegalStateException
+        "10.0"  | IllegalStateException
+        "7.1.3" | IllegalStateException
+        null    | IllegalStateException
+    }
+
+    def "Should return a map of environment values containing the developer dir key for valid xcode version"() {
+        when:
+        mockInstalledXcodeVersions()
+        Map<String, String> envValues = xcode.getXcodeSelectEnvValue(version)
+
+        then:
+        noExceptionThrown()
+        envValues.get(Xcode.ENV_DEVELOPER_DIR) == new File(file, Xcode.XCODE_CONTENT_DEVELOPER).absolutePath
+
+        where:
+        version | file
+        "5.1.1" | xcode5_1
+        "6.0"   | xcode6_0
+        "7.1.1" | xcode7_1_1
+    }
 }

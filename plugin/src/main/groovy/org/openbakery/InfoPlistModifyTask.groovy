@@ -15,24 +15,24 @@
  */
 package org.openbakery
 
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskAction
-
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
 	File infoPlist
 	Boolean modfied = false
 
+	public final Provider<String> configurationBundleIdentifier = project.objects.property(String)
+
+	public static final String KeyBundleIdentifier = "CFBundleIdentifier"
+
 	public InfoPlistModifyTask() {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 	}
 
-
-
-
 	@TaskAction
 	def prepare() {
-
 		if (!project.infoplist.hasValuesToModify()) {
 			logger.debug("Nothing to modify")
 			return;
@@ -48,15 +48,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		logger.debug("Try to updating {}", infoPlist)
 
-		if (project.infoplist.bundleIdentifier != null) {
-			setValueForPlist("CFBundleIdentifier", project.infoplist.bundleIdentifier)
-		}
-
-		// add suffix to bundleIdentifier
-		if (project.infoplist.bundleIdentifierSuffix != null) {
-			def bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier")
-			setValueForPlist("CFBundleIdentifier", bundleIdentifier + project.infoplist.bundleIdentifierSuffix)
-		}
+		modifyBundleIdentifier()
 
 		// Modify bundle bundleName
 		if (project.infoplist.bundleName != null) {
@@ -80,7 +72,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		modifyShortVersion(infoPlist)
 
 
-		for(String command in project.infoplist.commands) {
+		for (String command in project.infoplist.commands) {
 			setValueForPlist(command)
 		}
 
@@ -89,6 +81,8 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 		} else {
 			logger.debug("Nothing was modified!")
 		}
+
+		configurationBundleIdentifier.set(getBundleIdentifier())
 	}
 
 	private void modifyVersion(File infoPlist) {
@@ -143,17 +137,34 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 		logger.debug("Modify CFBundleShortVersionString to {}", shortVersionString)
 		setValueForPlist("CFBundleShortVersionString", shortVersionString)
-
 	}
 
+	private void modifyBundleIdentifier() {
+		// Resolve bundle identifier
+		XcodeBuildPluginExtension xcodeExtension = getXcodeExtension()
+		InfoPlistExtension extension = getInfoPlistExtension()
+
+		if (extension.bundleIdentifier != null) {
+			setValueForPlist(KeyBundleIdentifier, extension.bundleIdentifier)
+		} else {
+			xcodeExtension.getBuildTargetConfiguration(xcodeExtension.scheme.getOrNull(),
+					xcodeExtension.configuration)
+					.map { it -> it.bundleIdentifier }
+					.ifPresent { it -> setValueForPlist(KeyBundleIdentifier, it) }
+		}
+
+		// Add suffix to bundleIdentifier if defined
+		if (extension.bundleIdentifierSuffix != null) {
+			String bundleIdentifier = plistHelper.getValueFromPlist(infoPlist, KeyBundleIdentifier)
+			setValueForPlist(KeyBundleIdentifier, bundleIdentifier + extension.bundleIdentifierSuffix)
+		}
+	}
 
 	void setValueForPlist(String key, String value) {
 		modfied = true
 		logger.lifecycle("Set {} to {}", key, value)
 		plistHelper.setValueForPlist(infoPlist, key, value)
-
 	}
-
 
 	void setValueForPlist(String command) {
 		modfied = true

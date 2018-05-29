@@ -4,6 +4,7 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Type
 import spock.lang.Specification
@@ -12,7 +13,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 	Project project
 
-	XcodeBuildArchiveTask xcodeBuildArchiveTask;
+	XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask;
 
 	File projectDir
 	File buildOutputDirectory
@@ -32,7 +33,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 		project.xcodebuild.signing.identity = "my identity"
 
-		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
+		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodeBuildLegacyArchiveTask.NAME)
 		xcodeBuildArchiveTask.commandRunner = commandRunner
 		xcodeBuildArchiveTask.parameters.type = Type.macOS
 

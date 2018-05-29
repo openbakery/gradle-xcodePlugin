@@ -3,6 +3,7 @@ package org.openbakery
 import org.apache.tools.ant.util.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.packaging.PackageLegacyTask
 import spock.lang.Specification
 
 class AbstractDistributeTaskSpecification extends Specification {
@@ -23,7 +24,7 @@ class AbstractDistributeTaskSpecification extends Specification {
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		distributeTask = project.tasks.findByName(XcodePlugin.PACKAGE_TASK_NAME);
+		distributeTask = project.tasks.findByName(PackageLegacyTask.NAME)
 
 
 		//XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleWatchkit.xcodeproj/project.pbxproj"));

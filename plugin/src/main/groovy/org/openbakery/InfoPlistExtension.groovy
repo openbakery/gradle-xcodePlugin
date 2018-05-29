@@ -15,21 +15,28 @@
  */
 package org.openbakery
 
+import org.gradle.api.Project
+import org.gradle.api.provider.Property
+
 class InfoPlistExtension {
-	def String bundleIdentifier = null
-	def String bundleIdentifierSuffix = null
-	def String bundleName = null
-	def String bundleDisplayName = null
-	def String bundleDisplayNameSuffix = null
-	def String version = null
-	def String versionSuffix = null
-	def String versionPrefix = null
-	def String shortVersionString = null
-	def String shortVersionStringSuffix = null
-	def String shortVersionStringPrefix = null
-	def List<String> commands = null
+	String bundleIdentifier = null
+	String bundleIdentifierSuffix = null
+	String bundleName = null
+	String bundleDisplayName = null
+	String bundleDisplayNameSuffix = null
+	String version = null
+	String versionSuffix = null
+	String versionPrefix = null
+	String shortVersionString = null
+	String shortVersionStringSuffix = null
+	String shortVersionStringPrefix = null
+	List<String> commands = null
 
+	final Property<String> configurationBundleIdentifier
 
+	InfoPlistExtension(Project project) {
+		this.configurationBundleIdentifier = project.objects.property(String)
+	}
 
 	void setCommands(Object commands) {
 		if (commands instanceof List) {
@@ -42,16 +49,16 @@ class InfoPlistExtension {
 
 	boolean hasValuesToModify() {
 		return bundleIdentifier != null ||
-						bundleIdentifierSuffix != null ||
-						bundleName != null ||
-						bundleDisplayName != null ||
-						bundleDisplayNameSuffix != null ||
-						version != null ||
-						versionSuffix != null ||
-						versionPrefix != null ||
-						shortVersionString != null ||
-						shortVersionStringSuffix != null ||
-						shortVersionStringPrefix != null ||
-						commands != null;
+				bundleIdentifierSuffix != null ||
+				bundleName != null ||
+				bundleDisplayName != null ||
+				bundleDisplayNameSuffix != null ||
+				version != null ||
+				versionSuffix != null ||
+				versionPrefix != null ||
+				shortVersionString != null ||
+				shortVersionStringSuffix != null ||
+				shortVersionStringPrefix != null ||
+				commands != null;
 	}
 }

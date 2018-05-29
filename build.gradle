@@ -2,7 +2,7 @@ allprojects {
 	apply plugin: 'java-gradle-plugin'
 	apply plugin: 'groovy'
 
-	def versionNumber = "0.2.8-SNAPSHOT"
+	def versionNumber = "0.16.0.a603076-SNAPSHOT"
 
 	if (project.hasProperty("versionNumber")) {
 		versionNumber = project.versionNumber
@@ -54,6 +54,27 @@ allprojects {
 		resolutionStrategy.dependencySubstitution {
 			substitute module('ch.qos.logback:logback-classic') with module('org.slf4j:slf4j-api:1.7.+')
 		}
+	}
+
+	// Write the plugin's classpath to a file to share with the tests
+	task createClasspathManifest {
+		def outputDir = file("$buildDir/$name")
+
+		inputs.files sourceSets.main.runtimeClasspath
+		outputs.dir outputDir
+
+		doLast {
+			outputDir.mkdirs()
+			file("$outputDir/plugin-classpath.txt").text = project.files(project.rootProject.subprojects
+					.collect { it.sourceSets.main.runtimeClasspath }
+					.toList())
+					.files
+					.join("\n")
+		}
+	}
+
+	dependencies {
+		testRuntime files(createClasspathManifest)
 	}
 }
 

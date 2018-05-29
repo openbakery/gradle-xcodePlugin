@@ -1,15 +1,14 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
-import org.openbakery.packaging.PackageTask
+import org.openbakery.util.PathHelper
 
 import java.util.regex.Pattern
-
 /**
  * User: rene
  * Date: 11/11/14
  */
-class AbstractDistributeTask extends AbstractXcodeTask {
+class AbstractDistributeTask extends AbstractXcodeBuildTask {
 
 	private File archiveDirectory;
 
@@ -89,7 +88,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 	}
 
 	File getBundle(String extension) {
-		File packageDirectory = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
+		File packageDirectory = PathHelper.resolvePackageFolder(project)
 
 		if (!packageDirectory.exists()) {
 			throw new IllegalStateException("package does not exist: " + packageDirectory)
@@ -132,7 +131,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		if (archiveDirectory != null) {
 			return archiveDirectory;
 		}
-		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
+		File archiveDirectory = PathHelper.resolveArchiveFolder(project)
 		if (!archiveDirectory.exists()) {
 			throw new IllegalStateException("Archive does not exist: " + archiveDirectory)
 		}

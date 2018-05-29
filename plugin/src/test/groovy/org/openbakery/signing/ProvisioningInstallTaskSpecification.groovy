@@ -1,130 +1,173 @@
 package org.openbakery.signing
 
-import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.openbakery.CommandRunner
-import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
+import org.openbakery.codesign.ProvisioningProfileReader
 import spock.lang.Specification
-
 
 class ProvisioningInstallTaskSpecification extends Specification {
 
-	Project project
-	ProvisioningInstallTask provisioningInstallTask;
+	@Rule
+	final TemporaryFolder tmpDirectory = new TemporaryFolder()
 
+	File testMobileProvision1
+	File testMobileProvision2
+	Project project
+	ProvisioningInstallTask subject
 	CommandRunner commandRunner = Mock(CommandRunner)
 
-	File provisionLibraryPath
-	File projectDir
-
-
 	def setup() {
+		project = ProjectBuilder.builder().withProjectDir(tmpDirectory.root).build()
+		project.apply plugin: XcodePlugin
 
-		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		subject = project.tasks.findByName(ProvisioningInstallTask.TASK_NAME) as ProvisioningInstallTask
 
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.buildDir = new File(projectDir, 'build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		testMobileProvision1 = new File("../libtest/src/main/Resource/test.mobileprovision")
+		testMobileProvision2 = new File("src/test/Resource/test1.mobileprovision")
 
-		project.xcodebuild.simulator = false
-
-		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
-
-		provisioningInstallTask.commandRunner = commandRunner
-
-		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
-
+		assert subject != null
+		assert testMobileProvision1.exists()
+		assert testMobileProvision2.exists()
 	}
 
-	def cleanup() {
-		FileUtils.deleteDirectory(projectDir)
-	}
+	private String formatProvisionFileName(File file) {
+		assert file.exists()
 
-
-	def "single ProvisioningProfile"() {
-
-		File testMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
-
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
+		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(file, commandRunner)
 		String uuid = provisioningProfileIdReader.getUUID()
-		String name =  "gradle-" + uuid + ".mobileprovision";
+		String name = "gradle-" + uuid + ".mobileprovision"
 
-		File source = new File(projectDir, "build/provision/" + name)
-		File destination = new File(provisionLibraryPath, name)
-
-		File sourceFile = new File(projectDir, "build/provision/" + name)
-
-		when:
-		provisioningInstallTask.install()
-
-		then:
-		sourceFile.exists()
-		1 * commandRunner.run(["/bin/ln", "-s", source.absolutePath , destination.absolutePath])
-
+		return name
 	}
 
-	def "multiple ProvisioningProfiles"() {
+	def "Should process without error a single provisioning file"() {
+		setup:
+		project.xcodebuild.signing.mobileProvisionURI = testMobileProvision2.toURI().toString()
 
-		File firstMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		File secondMobileprovision = new File("src/test/Resource/test1.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionURI = [firstMobileprovision.toURI().toString(), secondMobileprovision.toURI().toString() ]
+		String name2 = formatProvisionFileName(testMobileProvision2)
 
-		String firstName = "gradle-" + new ProvisioningProfileReader(firstMobileprovision, new CommandRunner()).getUUID() + ".mobileprovision";
-		String secondName = "gradle-" + new ProvisioningProfileReader(secondMobileprovision, new CommandRunner()).getUUID() + ".mobileprovision";
-
-		File firstSource = new File(projectDir, "build/provision/" + firstName)
-		File firstDestination = new File(provisionLibraryPath, firstName)
-
-		File secondSource = new File(projectDir, "build/provision/" + secondName)
-		File secondDestination = new File(provisionLibraryPath, secondName)
-
-		File firstFile = new File(projectDir, "build/provision/" + firstName)
-		File secondFile = new File(projectDir, "build/provision/" + secondName)
+		File downloadedFile2 = new File(tmpDirectory.root, "build/provision/" + name2)
+		File libraryFile2 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name2)
 
 		when:
-			provisioningInstallTask.install()
-
+		subject.download()
 
 		then:
-		firstFile.exists()
-		secondFile.exists()
-		1 * commandRunner.run(["/bin/ln", "-s", firstSource.absolutePath, firstDestination.absolutePath])
-		1 * commandRunner.run(["/bin/ln", "-s", secondSource.absolutePath, secondDestination.absolutePath])
+		noExceptionThrown()
+
+		and:
+		downloadedFile2.text == testMobileProvision2.text
+		downloadedFile2.exists()
+
+		libraryFile2.text == testMobileProvision2.text
+		libraryFile2.exists()
 	}
 
+	def "Should process without error a change of build folder"() {
+		setup:
+		String alternateBuildFolderName = "alternativeBuildFolder"
+		project.buildDir = tmpDirectory.newFolder(alternateBuildFolderName)
+		project.xcodebuild.signing.mobileProvisionURI = testMobileProvision2.toURI().toString()
 
-	def "mobileProvisionFile has mobileprovision extension"() {
-		given:
-		File testMobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
-		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
+		String name2 = formatProvisionFileName(testMobileProvision2)
 
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
-		String uuid = provisioningProfileIdReader.getUUID()
+		File downloadedFile2 = new File(tmpDirectory.root, "${alternateBuildFolderName}/provision/" + name2)
+		File libraryFile2 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name2)
 
 		when:
-		provisioningInstallTask.install()
+		subject.download()
 
 		then:
-		project.xcodebuild.signing.mobileProvisionFile.size == 1
-		project.xcodebuild.signing.mobileProvisionFile[0].toString().endsWith(uuid + ".mobileprovision")
+		noExceptionThrown()
+
+		and:
+		downloadedFile2.text == testMobileProvision2.text
+		downloadedFile2.exists()
+
+		libraryFile2.text == testMobileProvision2.text
+		libraryFile2.exists()
 	}
 
-	def "has provisionprofile extension"() {
-		given:
-		File testMobileprovision = new File("../plugin/src/test/Resource/test-wildcard-mac.provisionprofile")
-		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
+	def "Should process without error multiple provisioning files by using the deprecated `setMobileProvisionURI` property"() {
 
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
-		String uuid = provisioningProfileIdReader.getUUID()
+		setup:
+		project.extensions
+				.findByType(XcodeBuildPluginExtension)
+				.signing
+				.setMobileProvisionURI(testMobileProvision1.toURI().toString(),
+				testMobileProvision2.toURI().toString())
+
+		String name1 = formatProvisionFileName(testMobileProvision1)
+		String name2 = formatProvisionFileName(testMobileProvision2)
+
+		File downloadedFile1 = new File(tmpDirectory.root, "build/provision/" + name1)
+		File libraryFile1 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name1)
+
+		File downloadedFile2 = new File(tmpDirectory.root, "build/provision/" + name2)
+		File libraryFile2 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name2)
 
 		when:
-		provisioningInstallTask.install()
+		subject.download()
 
 		then:
-		project.xcodebuild.signing.mobileProvisionFile.size == 1
-		project.xcodebuild.signing.mobileProvisionFile[0].toString().endsWith(uuid + ".provisionprofile")
+		noExceptionThrown()
+
+		and:
+		downloadedFile1.text == testMobileProvision1.text
+		downloadedFile1.exists()
+
+		libraryFile1.text == testMobileProvision1.text
+		libraryFile1.exists()
+
+		and:
+		downloadedFile2.text == testMobileProvision2.text
+		downloadedFile2.exists()
+
+		libraryFile2.text == testMobileProvision2.text
+		libraryFile2.exists()
+	}
+
+	def "Should process without error multiple provisioning files by using directly the `mobileProvisionList` property"() {
+
+		setup:
+		project.extensions
+				.findByType(XcodeBuildPluginExtension)
+				.signing
+				.mobileProvisionList.set([testMobileProvision1.toURI().toString(),
+										  testMobileProvision2.toURI().toString()])
+
+		String name1 = formatProvisionFileName(testMobileProvision1)
+		String name2 = formatProvisionFileName(testMobileProvision2)
+
+		File downloadedFile1 = new File(tmpDirectory.root, "build/provision/" + name1)
+		File libraryFile1 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name1)
+
+		File downloadedFile2 = new File(tmpDirectory.root, "build/provision/" + name2)
+		File libraryFile2 = new File(ProvisioningInstallTask.PROVISIONING_DIR, name2)
+
+		when:
+		subject.download()
+
+		then:
+		noExceptionThrown()
+
+		and:
+		downloadedFile1.text == testMobileProvision1.text
+		downloadedFile1.exists()
+
+		libraryFile1.text == testMobileProvision1.text
+		libraryFile1.exists()
+
+		and:
+		downloadedFile2.text == testMobileProvision2.text
+		downloadedFile2.exists()
+
+		libraryFile2.text == testMobileProvision2.text
+		libraryFile2.exists()
 	}
 }

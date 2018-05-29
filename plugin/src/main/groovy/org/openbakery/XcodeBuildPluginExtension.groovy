@@ -18,8 +18,12 @@ package org.openbakery
 import org.apache.commons.io.filefilter.SuffixFileFilter
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
+import org.gradle.api.Transformer
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
 import org.gradle.util.ConfigureUtil
-import org.openbakery.signing.Signing
+import org.openbakery.extension.Signing
 import org.openbakery.util.PathHelper
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.VariableResolver
@@ -27,62 +31,37 @@ import org.openbakery.xcode.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/*
-
-^
-should be migrated to this -> and renamed to Device
-
-enum Devices {
-	PHONE(1<<0),
-	PAD(1<<1),
-	WATCH(1<<2),
-	TV(1<<3)
-
-	private final int value;
-
-	Devices(int value) {
-		this.value = value
-	}
-
-	public int getValue() {
-		return value
-	}
-
-	public boolean is(Devices device) {
-		return (this.value & device.value) > 0
-	}
-
-}
- */
-
-
 class XcodeBuildPluginExtension {
-	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
+	final Property<Boolean> bitcode = project.objects.property(Boolean)
+	final Property<String> version = project.objects.property(String)
+	final Property<String> scheme = project.objects.property(String)
+	final DirectoryProperty archiveDirectory = project.layout.directoryProperty()
+	final DirectoryProperty schemeArchiveFile = project.layout.directoryProperty()
+	final DirectoryProperty dstRoot = project.layout.directoryProperty()
+	final DirectoryProperty objRoot = project.layout.directoryProperty()
+	final DirectoryProperty symRoot = project.layout.directoryProperty()
+	final DirectoryProperty sharedPrecompsDir = project.layout.directoryProperty()
+	final DirectoryProperty derivedDataPath = project.layout.directoryProperty()
+	final Property<XcodeService> xcodeServiceProperty = project.objects.property(XcodeService)
 
-	private static Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
-
+	final Signing signing
 
 	XcodebuildParameters _parameters = new XcodebuildParameters()
 
 	String infoPlist = null
-	String scheme = null
+
 	String configuration = 'Debug'
 	boolean simulator = true
 	Type type = Type.iOS
 
-	String target = null
-	Object dstRoot
-	Object objRoot
-	Object symRoot
-	Object sharedPrecompsDir
-	Object derivedDataPath
-	Signing signing = null
+	String target
+
 	def additionalParameters = null
 	String bundleNameSuffix = null
 	List<String> arch = null
 	String workspace = null
-	String xcodeVersion = null
+
 	Map<String, String> environment = null
 	String productName = null
 	String bundleName = null
@@ -90,14 +69,11 @@ class XcodeBuildPluginExtension {
 	String ipaFileName = null
 	File projectFile
 
-	Boolean bitcode = false
-
 	boolean useXcodebuildArchive = false
 
 
 	Devices devices = Devices.UNIVERSAL
 
-	CommandRunner commandRunner
 	VariableResolver variableResolver
 	PlistHelper plistHelper
 
@@ -110,34 +86,56 @@ class XcodeBuildPluginExtension {
 	 * internal parameters
 	 */
 	private final Project project
+	private final CommandRunner commandRunner
 
-	public XcodeBuildPluginExtension(Project project) {
-		this.project = project;
-		this.signing = new Signing(project)
-		this.variableResolver = new VariableResolver(project)
-		commandRunner = new CommandRunner()
+	private static final Logger logger = LoggerFactory.getLogger(XcodeBuildPluginExtension.class)
+
+	XcodeBuildPluginExtension(Project project,
+							  CommandRunner commandRunner) {
+		this.project = project
+		this.commandRunner = commandRunner
+
 		plistHelper = new PlistHelper(commandRunner)
 
-		this.dstRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("dst")
-		}
+		configureServices()
+		configurePaths()
 
-		this.objRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("obj")
-		}
+		this.signing = project.objects.newInstance(Signing, project, commandRunner)
+		this.variableResolver = new VariableResolver(project)
 
-		this.symRoot = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("sym")
-		}
+		this.dstRoot.set(project.layout.buildDirectory.dir("dst"))
+		this.objRoot.set(project.layout.buildDirectory.dir("obj"))
+		this.symRoot.set(project.layout.buildDirectory.dir("sym"))
+		this.sharedPrecompsDir.set(project.layout.buildDirectory.dir("shared"))
+		this.derivedDataPath.set(project.layout.buildDirectory.dir("derivedData"))
+	}
 
-		this.sharedPrecompsDir = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("shared")
-		}
+	private void configureServices() {
+		XcodeService service = project.objects.newInstance(XcodeService,
+				project)
+		service.commandRunnerProperty.set(commandRunner)
+		this.xcodeServiceProperty.set(service)
+	}
 
-		this.derivedDataPath = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
-		}
+	private void configurePaths() {
+		this.archiveDirectory.set(project.layout
+				.buildDirectory
+				.dir(PathHelper.FOLDER_ARCHIVE))
 
+		this.schemeArchiveFile.set(scheme.map(new Transformer<Directory, String>() {
+			@Override
+			Directory transform(String scheme) {
+				return archiveDirectory.get()
+						.dir(scheme + PathHelper.EXTENSION_XCARCHIVE)
+			}
+		}))
+	}
+
+	Optional<BuildConfiguration> getBuildTargetConfiguration(String schemeName,
+															 String configuration) {
+		return Optional.ofNullable(projectSettings.get(schemeName, null))
+				.map { it -> it.buildSettings }
+				.map { bs -> (BuildConfiguration) bs.get(configuration) }
 	}
 
 	String getWorkspace() {
@@ -149,61 +147,6 @@ class XcodeBuildPluginExtension {
 			return fileList[0]
 		}
 		return null
-	}
-
-	void setDerivedDataPath(File derivedDataPath) {
-		this.derivedDataPath = derivedDataPath
-	}
-
-	void setDstRoot(File dstRoot) {
-		this.dstRoot = dstRoot
-	}
-
-	void setObjRoot(File objRoot) {
-		this.objRoot = objRoot
-	}
-
-	void setSymRoot(File symRoot) {
-		this.symRoot = symRoot
-	}
-
-	void setSharedPrecompsDir(File sharedPrecompsDir) {
-		this.sharedPrecompsDir = sharedPrecompsDir
-	}
-
-	File getDstRoot() {
-		if (dstRoot instanceof File) {
-			return dstRoot
-		}
-		return project.file(dstRoot)
-	}
-
-	File getObjRoot() {
-		if (objRoot instanceof File) {
-			return objRoot
-		}
-		return project.file(objRoot)
-	}
-
-	File getSymRoot() {
-		if (symRoot instanceof File) {
-			return symRoot
-		}
-		return project.file(symRoot)
-	}
-
-	File getSharedPrecompsDir() {
-		if (sharedPrecompsDir instanceof File) {
-			return sharedPrecompsDir
-		}
-		return project.file(sharedPrecompsDir)
-	}
-
-	File getDerivedDataPath() {
-		if (derivedDataPath instanceof File) {
-			return derivedDataPath
-		}
-		return project.file(derivedDataPath)
 	}
 
 	void signing(Closure closure) {
@@ -277,14 +220,6 @@ class XcodeBuildPluginExtension {
 	}
 
 
-	void setVersion(String version) {
-		this.xcodeVersion = version
-		// check if the version is valid. On creation of the Xcodebuild class an exception is thrown if the version is not valid
-		xcode = null
-		//getXcode()
-	}
-
-
 	String getValueFromInfoPlist(key) {
 		if (infoPlist != null) {
 			File infoPlistFile = new File(project.projectDir, infoPlist)
@@ -339,7 +274,7 @@ class XcodeBuildPluginExtension {
 				}
 			}
 		}
-		return new File(getSymRoot(), path)
+		return new File(getSymRoot().asFile.get(), path)
 	}
 
 
@@ -421,11 +356,13 @@ class XcodeBuildPluginExtension {
 		return result
 	}
 
-
 	void setType(String type) {
 		this.type = Type.typeFromString(type)
 	}
 
+	Type getType() {
+		return type
+	}
 
 	boolean getSimulator() {
 		if (type == Type.macOS) {
@@ -465,7 +402,7 @@ class XcodeBuildPluginExtension {
 	// should be remove in the future, so that every task has its own xcode object
 	Xcode getXcode() {
 		if (xcode == null) {
-			xcode = new Xcode(commandRunner, xcodeVersion)
+			xcode = new Xcode(commandRunner, version.get())
 		}
 		logger.debug("using xcode {}", xcode)
 		return xcode
@@ -474,21 +411,21 @@ class XcodeBuildPluginExtension {
 
 	XcodebuildParameters getXcodebuildParameters() {
 		def result = new XcodebuildParameters()
-		result.scheme = this.scheme
+		result.scheme = this.scheme.getOrNull()
 		result.target = this.target
 		result.simulator = this.simulator
 		result.type = this.type
 		result.workspace = getWorkspace()
 		result.configuration = this.configuration
-		result.dstRoot = this.getDstRoot()
-		result.objRoot = this.getObjRoot()
-		result.symRoot = this.getSymRoot()
-		result.sharedPrecompsDir = this.getSharedPrecompsDir()
-		result.derivedDataPath = this.getDerivedDataPath()
+		result.dstRoot = this.getDstRoot().asFile.getOrNull()
+		result.objRoot = this.getObjRoot().asFile.getOrNull()
+		result.symRoot = this.getSymRoot().asFile.getOrNull()
+		result.sharedPrecompsDir = this.getSharedPrecompsDir().asFile.getOrNull()
+		result.derivedDataPath = this.derivedDataPath.asFile.getOrNull()
 		result.additionalParameters = this.additionalParameters
 		result.devices = this.devices
 		result.configuredDestinations = this.destinations
-		result.bitcode = this.bitcode
+		result.bitcode = this.bitcode.getOrElse(true)
 		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {

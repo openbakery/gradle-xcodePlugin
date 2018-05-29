@@ -13,34 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery
+package org.openbakery.archiving
 
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
+import org.gradle.api.Task
+import org.gradle.api.specs.Spec
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.AbstractXcodeBuildTask
+import org.openbakery.BuildConfiguration
+import org.openbakery.CommandRunnerException
+import org.openbakery.XcodeBuildPluginExtension
+import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
-import org.openbakery.xcode.Type
+import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.util.PathHelper
 import org.openbakery.xcode.Extension
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 import static groovy.io.FileType.FILES
 
-class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
+class XcodeBuildLegacyArchiveTask extends AbstractXcodeBuildTask {
 
-	public static final String ARCHIVE_FOLDER = "archive"
+	public static final String NAME = "archiveLegacy"
 
-	XcodeBuildArchiveTask() {
+	XcodeBuildLegacyArchiveTask() {
 		super()
 
-		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME)
-		// when creating an xcarchive for iOS then the provisioning profile is need for the team id so that the entitlements is setup properly
-		dependsOn(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
-		this.description = "Prepare the app bundle that it can be archive"
+		this.description = "Use the legacy archiver to create the project archive"
+
+		onlyIf(new Spec<Task>() {
+			@Override
+			boolean isSatisfiedBy(Task task) {
+				return getXcodeExtension().getType() == Type.macOS ||
+						getXcodeExtension().getType() == Type.watchOS
+			}
+		})
+
+		dependsOn(XcodePlugin.XCODE_BUILD_TASK_NAME,
+				ProvisioningInstallTask.TASK_NAME)
 	}
 
 
 	def getOutputDirectory() {
-		def archiveDirectory = new File(project.getBuildDir(), ARCHIVE_FOLDER)
+		def archiveDirectory = PathHelper.resolveArchiveFolder(project)
 		archiveDirectory.mkdirs()
 		return archiveDirectory
 	}
@@ -305,8 +322,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			return
 		}
 
-		String applicationIdentifier = "UNKNOWN00ID"; // if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
-		File provisioningProfile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
+		String applicationIdentifier = "UNKNOWN00ID";
+
+		// if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
+		File provisioningProfile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier,
+				project.extensions.getByType(XcodeBuildPluginExtension).signing.registeredProvisioningFiles.getFiles().asList(),
+				this.commandRunner,
+				this.plistHelper)
 		if (provisioningProfile != null && provisioningProfile.exists()) {
 			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, commandRunner)
 			applicationIdentifier = reader.getApplicationIdentifierPrefix()
@@ -353,6 +375,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def archive() {
+		println "archive"
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 		if (parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)) {
 			logger.debug("Create zip archive")
@@ -441,7 +464,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	}
 
-    // TODO: Define a `exportOptionsPlist` to avoid that kind of issue
+	// TODO: Define a `exportOptionsPlist` to avoid that kind of issue
 	def removeUnneededDylibsFromBundle(File bundle) {
 		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
@@ -512,8 +535,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 	File getArchiveDirectory() {
-
-		def archiveDirectoryName = XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" + project.xcodebuild.bundleName
+		def archiveDirectoryName = PathHelper.FOLDER_ARCHIVE + "/" + project.xcodebuild.bundleName
 
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveDirectoryName += project.xcodebuild.bundleNameSuffix

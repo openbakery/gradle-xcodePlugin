@@ -5,6 +5,8 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
+import org.openbakery.signing.ProvisioningInstallTask
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
@@ -23,7 +25,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 	Project project
 
-	XcodeBuildArchiveTask xcodeBuildArchiveTask
+	XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask
 
 	File projectDir
 	File buildOutputDirectory
@@ -33,7 +35,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	PlistHelperStub plistHelper = new PlistHelperStub()
 
 	def setup() {
-
 		String tmpName =  "gradle-xcodebuild-" + RandomStringUtils.randomAlphanumeric(5)
 		projectDir = new File(System.getProperty("java.io.tmpdir"), tmpName)
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -48,7 +49,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		project.xcodebuild.signing.identity = "my identity"
 
 
-		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodePlugin.ARCHIVE_TASK_NAME)
+		xcodeBuildArchiveTask = project.getTasks().getByPath(XcodeBuildLegacyArchiveTask.NAME)
 		xcodeBuildArchiveTask.plistHelper = plistHelper
 		xcodeBuildArchiveTask.commandRunner = commandRunner
 		xcodeBuildArchiveTask.xcode.commandRunner = commandRunner
@@ -159,7 +160,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		dependsOn.size() == 2
 
 		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
-		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		dependsOn.contains(ProvisioningInstallTask.TASK_NAME)
 
 	}
 

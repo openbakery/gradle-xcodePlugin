@@ -25,13 +25,18 @@ import org.gradle.api.tasks.testing.Test
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
-import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
+import org.openbakery.appstore.AppstoreValidateTask
+import org.openbakery.archiving.XcodeBuildArchiveTask
+import org.openbakery.archiving.XcodeBuildArchiveTaskIosAndTvOS
+import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
+import org.openbakery.carthage.CarthageBootStrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
+import org.openbakery.codesign.Security
 import org.openbakery.configuration.XcodeConfigTask
 import org.openbakery.coverage.CoverageCleanTask
 import org.openbakery.coverage.CoveragePluginExtension
@@ -42,31 +47,20 @@ import org.openbakery.crashlytics.CrashlyticsUploadTask
 import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
+import org.openbakery.extension.Signing
 import org.openbakery.hockeyapp.HockeyAppCleanTask
 import org.openbakery.hockeyapp.HockeyAppPluginExtension
 import org.openbakery.hockeyapp.HockeyAppUploadTask
-import org.openbakery.hockeykit.HockeyKitArchiveTask
-import org.openbakery.hockeykit.HockeyKitCleanTask
-import org.openbakery.hockeykit.HockeyKitImageTask
-import org.openbakery.hockeykit.HockeyKitManifestTask
-import org.openbakery.hockeykit.HockeyKitPluginExtension
-import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
+import org.openbakery.hockeykit.*
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
-import org.openbakery.packaging.ReleaseNotesTask
-import org.openbakery.signing.KeychainCleanupTask
-import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.packaging.PackageLegacyTask
 import org.openbakery.packaging.PackageTask
-import org.openbakery.signing.KeychainRemoveFromSearchListTask
-import org.openbakery.signing.ProvisioningCleanupTask
-import org.openbakery.signing.ProvisioningInstallTask
-import org.openbakery.simulators.SimulatorKillTask
-import org.openbakery.simulators.SimulatorsCleanTask
-import org.openbakery.simulators.SimulatorsCreateTask
-import org.openbakery.simulators.SimulatorsListTask
-import org.openbakery.simulators.SimulatorStartTask
-import org.openbakery.simulators.SimulatorRunAppTask
-import org.openbakery.simulators.SimulatorInstallAppTask
+import org.openbakery.packaging.PackageTaskIosAndTvOS
+import org.openbakery.signing.*
+import org.openbakery.simulators.*
+import org.openbakery.util.PlistHelper
+import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -90,8 +84,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
 	public static final String XCODE_BUILD_FOR_TEST_TASK_NAME = "xcodebuildForTest"
-	public static final String XCODE_TEST_RUN_TASK_NAME =  "xcodetestrun"
-	public static final String ARCHIVE_TASK_NAME = "archive"
+	public static final String XCODE_TEST_RUN_TASK_NAME = "xcodetestrun"
 	public static final String SIMULATORS_LIST_TASK_NAME = "simulatorsList"
 	public static final String SIMULATORS_CREATE_TASK_NAME = "simulatorsCreate"
 	public static final String SIMULATORS_CLEAN_TASK_NAME = "simulatorsClean"
@@ -108,13 +101,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String HOCKEYKIT_IMAGE_TASK_NAME = "hockeykitImage"
 	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykitClean"
 	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
-	public static final String KEYCHAIN_CREATE_TASK_NAME = "keychainCreate"
-	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
-	public static final String KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME = "keychainRemove"
 	public static final String INFOPLIST_MODIFY_TASK_NAME = 'infoplistModify'
-	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
-	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
-	public static final String PACKAGE_TASK_NAME = 'package'
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
@@ -129,6 +116,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
+	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
 
@@ -143,13 +131,20 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
 
+	private Signing signingExtension
+	private XcodeBuildPluginExtension xcodeBuildPluginExtension
+	private InfoPlistExtension infoPlistExtension
 
+	private CommandRunner commandRunner
+	private PlistHelper plistHelper
+	private Security securityTool
+	private Xcode xcode
 
 	void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class);
 
-		System.setProperty("java.awt.headless", "true");
-
+		System.setProperty("java.awt.headless", "true")
+		setupTools(project)
 		configureExtensions(project)
 		configureClean(project)
 		configureBuild(project)
@@ -174,6 +169,12 @@ class XcodePlugin implements Plugin<Project> {
 		configureProperties(project)
 	}
 
+	void setupTools(Project project) {
+		this.commandRunner = new CommandRunner()
+		this.xcode = new Xcode(commandRunner)
+		this.plistHelper = new PlistHelper(commandRunner)
+		this.securityTool = new Security(commandRunner)
+	}
 
 	void configureProperties(Project project) {
 
@@ -434,10 +435,18 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
-
 	void configureExtensions(Project project) {
-		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
-		project.extensions.create("infoplist", InfoPlistExtension)
+		this.xcodeBuildPluginExtension = project.extensions.create("xcodebuild",
+				XcodeBuildPluginExtension,
+				project,
+				commandRunner)
+
+		this.signingExtension = xcodeBuildPluginExtension.signing
+
+		this.infoPlistExtension = project.extensions.create("infoplist",
+				InfoPlistExtension,
+				project)
+
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("appstore", AppstorePluginExtension, project)
 		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
@@ -451,8 +460,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureTestRunDependencies(Project project) {
 		for (XcodeTestRunTask xcodeTestRunTask : project.getTasks().withType(XcodeTestRunTask.class)) {
 			if (xcodeTestRunTask.runOnDevice()) {
-				xcodeTestRunTask.dependsOn(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME, XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
-				xcodeTestRunTask.finalizedBy(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
+				xcodeTestRunTask.dependsOn(KeychainCreateTask.TASK_NAME, ProvisioningInstallTask.TASK_NAME)
 			}
 		}
 	}
@@ -476,17 +484,52 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureArchive(Project project) {
-		XcodeBuildArchiveTask xcodeBuildArchiveTask = project.getTasks().create(ARCHIVE_TASK_NAME, XcodeBuildArchiveTask.class);
-		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME);
 
-		//xcodeBuildArchiveTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME));
+		project.getTasks()
+				.create(PrepareXcodeArchivingTask.NAME,
+				PrepareXcodeArchivingTask.class) {
+			it.group = XCODE_GROUP_NAME
+
+			it.certificateFriendlyName.set(signingExtension.certificateFriendlyName)
+			it.commandRunnerProperty.set(commandRunner)
+			it.configurationBundleIdentifier.set(infoPlistExtension.configurationBundleIdentifier)
+			it.entitlementsFile.set(signingExtension.entitlementsFile)
+			it.outputFile.set(signingExtension.xcConfigFile)
+			it.plistHelperProperty.set(plistHelper)
+			it.registeredProvisioningFiles.set(signingExtension.registeredProvisioningFiles)
+		}
+
+		project.getTasks().create(XcodeBuildArchiveTaskIosAndTvOS.NAME,
+				XcodeBuildArchiveTaskIosAndTvOS.class) {
+			it.setGroup(XCODE_GROUP_NAME)
+			it.buildType.set(xcodeBuildPluginExtension.type)
+			it.commandRunnerProperty.set(commandRunner)
+			it.outputArchiveFile.set(xcodeBuildPluginExtension.schemeArchiveFile)
+			it.scheme.set(xcodeBuildPluginExtension.scheme)
+			it.xcode.set(xcode)
+			it.xcodeVersion.set(xcodeBuildPluginExtension.version)
+			it.xcConfigFile.set(signingExtension.xcConfigFile)
+			it.xcodeServiceProperty.set(xcodeBuildPluginExtension.xcodeServiceProperty)
+		}
+
+		XcodeBuildLegacyArchiveTask xcodeBuildArchiveTask = project.getTasks().
+				create(XcodeBuildLegacyArchiveTask.NAME, XcodeBuildLegacyArchiveTask.class)
+		xcodeBuildArchiveTask.setGroup(XCODE_GROUP_NAME)
+
+		XcodeBuildArchiveTask task = project.tasks.create(XcodeBuildArchiveTask.NAME,
+				XcodeBuildArchiveTask.class)
+		task.setGroup(XCODE_GROUP_NAME)
 	}
 
 	private void configureSimulatorTasks(Project project) {
 		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CREATE_TASK_NAME, type: SimulatorsCreateTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CLEAN_TASK_NAME, type: SimulatorsCleanTask, group: SIMULATORS_LIST_TASK_NAME)
-		project.task(SIMULATORS_START_TASK_NAME, type: SimulatorStartTask, group: SIMULATORS_LIST_TASK_NAME)
+
+		project.tasks.create(SIMULATORS_START_TASK_NAME, SimulatorStartTask) {
+			it.group = SIMULATORS_LIST_TASK_NAME
+		}
+
 		project.task(SIMULATORS_RUN_APP_TASK_NAME, type: SimulatorRunAppTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_INSTALL_APP_TASK_NAME, type: SimulatorInstallAppTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_KILL_TASK_NAME, type: SimulatorKillTask, group: SIMULATORS_LIST_TASK_NAME)
@@ -504,9 +547,20 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureKeychain(Project project) {
-		project.task(KEYCHAIN_CREATE_TASK_NAME, type: KeychainCreateTask, group: XCODE_GROUP_NAME)
-		project.task(KEYCHAIN_CLEAN_TASK_NAME, type: KeychainCleanupTask, group: XCODE_GROUP_NAME)
-		project.task(KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME, type: KeychainRemoveFromSearchListTask, group: XCODE_GROUP_NAME)
+		project.tasks.create(KeychainCreateTask.TASK_NAME, KeychainCreateTask.class) {
+			it.group = XCODE_GROUP_NAME
+
+			it.certificateFile.set(signingExtension.certificate)
+			it.certificateUri.set(signingExtension.certificateURI)
+			it.certificatePassword.set(signingExtension.certificatePassword)
+			it.outputDirectory.set(signingExtension.signingDestinationRoot)
+			it.keyChainFile.set(signingExtension.keyChainFile)
+			it.keychainTimeout.set(signingExtension.timeout)
+			it.security.set(securityTool)
+			it.commandRunnerProperty.set(commandRunner)
+
+			signingExtension.certificateFriendlyName.set(it.certificateFriendlyName)
+		}
 	}
 
 	private void configureTest(Project project) {
@@ -517,33 +571,74 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configureInfoPlist(Project project) {
-		project.task(INFOPLIST_MODIFY_TASK_NAME, type: InfoPlistModifyTask, group: XCODE_GROUP_NAME)
+		project.tasks.create(INFOPLIST_MODIFY_TASK_NAME,
+				InfoPlistModifyTask) {
+			it.group = XCODE_GROUP_NAME
+			infoPlistExtension.configurationBundleIdentifier.set(it.configurationBundleIdentifier)
+		}
 	}
 
 	private configureProvisioning(Project project) {
-		project.task(PROVISIONING_INSTALL_TASK_NAME, type: ProvisioningInstallTask, group: XCODE_GROUP_NAME)
-		project.task(PROVISIONING_CLEAN_TASK_NAME, type: ProvisioningCleanupTask, group: XCODE_GROUP_NAME)
+		project.tasks.create(ProvisioningInstallTask.TASK_NAME,
+				ProvisioningInstallTask) {
+			it.group = XCODE_GROUP_NAME
+
+			it.commandRunnerProperty.set(commandRunner)
+			it.mobileProvisioningList.set(signingExtension.mobileProvisionList)
+			it.outputDirectory.set(signingExtension.provisioningDestinationRoot)
+			it.plistHelperProperty.set(plistHelper)
+			it.plistHelperProperty.set(plistHelper)
+
+			// We use the result of the task to populate the read only values
+			signingExtension
+					.registeredProvisioningFiles
+					.set(it.registeredProvisioning)
+
+			signingExtension
+					.registeredProvisioning
+					.set(it.registeredProvisioningFiles)
+		}
 	}
 
 	private configurePackage(Project project) {
-		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
+		configureModernPackager(project)
+		configureLegacyPackager(project)
 
+		project.task(PackageTask.NAME,
+				type: PackageTask.class,
+				group: XCODE_GROUP_NAME)
 
-		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME, type: ReleaseNotesTask, group: XCODE_GROUP_NAME)
+		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME,
+				type: ReleaseNotesTask,
+				group: XCODE_GROUP_NAME)
 
-		//ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
+	}
 
-		//KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
+	private void configureModernPackager(Project project) {
+		project.tasks.create(PackageTaskIosAndTvOS.NAME,
+				PackageTaskIosAndTvOS) {
+			it.group = XCODE_GROUP_NAME
 
-/*  // disabled clean because of #115
-		packageTask.doLast {
-			provisioningCleanup.clean()
-			keychainCleanupTask.clean()
+			it.bitCode.set(xcodeBuildPluginExtension.bitcode)
+			it.buildType.set(xcodeBuildPluginExtension.type)
+			it.certificateFriendlyName.set(signingExtension.certificateFriendlyName)
+			it.commandRunner.set(this.commandRunner)
+			it.plistHelper.set(xcodeBuildPluginExtension.plistHelper)
+			it.registeredProvisioningFiles.set(signingExtension.registeredProvisioning)
+			it.scheme.set(xcodeBuildPluginExtension.scheme)
+			it.signingMethod.set(signingExtension.signingMethod)
 		}
-*/
+	}
+
+	private void configureLegacyPackager(Project project) {
+		PackageLegacyTask packageTask = project.task(PackageLegacyTask.NAME,
+				type: PackageLegacyTask,
+				group: XCODE_GROUP_NAME)
+
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		packageTask.shouldRunAfter(xcodeBuildTask)
 	}
+
 
 	private configureAppstore(Project project) {
 		project.task(APPSTORE_UPLOAD_TASK_NAME, type: AppstoreUploadTask, group: APPSTORE_GROUP_NAME)
@@ -597,16 +692,16 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageUpdateTask carthageUpdateTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME)
-		CarthageCleanTask carthageCleanTask = project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME)
+		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
+		addDependencyToBuild(project, bootStrapTask)
 
-		if (carthageUpdateTask.hasCartFile()) {
-			addDependencyToBuild(project, carthageUpdateTask)
-			project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME).dependsOn(carthageCleanTask);
-		}
+		project.getTasks()
+				.getByName(BasePlugin.CLEAN_TASK_NAME)
+				.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
 	}
 
 	private void configureOCLint(Project project) {
@@ -614,7 +709,7 @@ class XcodePlugin implements Plugin<Project> {
 
 		Task ocLintTask = project.getTasks().create(OCLINT_TASK_NAME);
 		ocLintTask.group = ANALYTICS_GROUP_NAME
-		ocLintTask.description = "Runs: " +  BasePlugin.CLEAN_TASK_NAME + " " + XCODE_BUILD_TASK_NAME + " " + OCLINT_REPORT_TASK_NAME
+		ocLintTask.description = "Runs: " + BasePlugin.CLEAN_TASK_NAME + " " + XCODE_BUILD_TASK_NAME + " " + OCLINT_REPORT_TASK_NAME
 		ocLintTask.dependsOn(project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME))
 
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)

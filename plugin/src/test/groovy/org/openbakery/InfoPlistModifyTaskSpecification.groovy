@@ -5,8 +5,9 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
 import spock.lang.Specification
+import spock.lang.Unroll
 
-class InfoPlistModifyTaskSpecification extends Specification{
+class InfoPlistModifyTaskSpecification extends Specification {
 
 
 	Project project
@@ -18,14 +19,11 @@ class InfoPlistModifyTaskSpecification extends Specification{
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
-
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-
 		projectDir.mkdirs()
-
 
 		project.xcodebuild.infoPlist = "App-Info.plist"
 
@@ -35,14 +33,57 @@ class InfoPlistModifyTaskSpecification extends Specification{
 
 		infoPlist = new File(task.project.projectDir, "App-Info.plist")
 		FileUtils.writeStringToFile(infoPlist, "dummy")
-
-
 	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
+	def "add suffix"() {
+		given:
+		project.infoplist.bundleIdentifier = 'org.openbakery.test.Example'
+		project.infoplist.bundleIdentifierSuffix = '.suffix'
+
+		when:
+		task.prepare()
+
+		then:
+		plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier") == 'org.openbakery.test.Example.suffix'
+	}
+
+	@Unroll
+	def "add suffix `#bundleId` suffix : `#suffix`"() {
+		given:
+		BuildConfiguration bcRelease = new BuildConfiguration("Target")
+		bcRelease.bundleIdentifier = bundleId
+
+		BuildTargetConfiguration btc = new BuildTargetConfiguration()
+		btc.buildSettings[configuration] = bcRelease
+
+		HashMap<String, BuildTargetConfiguration> projectSettings = new HashMap<>()
+		projectSettings.put(scheme, btc)
+
+		def extension = project.extensions.getByType(XcodeBuildPluginExtension)
+		extension.projectSettings = projectSettings
+		extension.scheme.set(scheme)
+		extension.configuration = configuration
+
+		project.infoplist.bundleIdentifierSuffix = suffix
+
+		when:
+		task.prepare()
+
+		then:
+		noExceptionThrown()
+		plistHelper.getValueFromPlist(infoPlist, "CFBundleIdentifier") == expectedResult
+
+		where:
+		configuration | scheme | suffix    | bundleId       | expectedResult
+		"Release"     | "Test" | ".suffix" | "he.llo.world" | "he.llo.world.suffix"
+		"Release"     | "Test" | ""        | "he.llo.world" | "he.llo.world"
+		"Release"     | "Test" | null      | "he.llo.world" | null
+		"Debug"       | "Test" | null      | "he.llo.world" | null
+	}
 
 	def "modify BundleIdentifier"() {
 		given:
@@ -65,11 +106,10 @@ class InfoPlistModifyTaskSpecification extends Specification{
 
 		then:
 		plistHelper.plistCommands[0] == "Add CFBundleURLTypes:0:CFBundleURLName string"
-
 	}
 
 	def "modify command multiple"() {
-		project.infoplist.commands = ["Add CFBundleURLTypes:0:CFBundleURLName string", "Add CFBundleURLTypes:0:CFBundleURLSchemes array" ]
+		project.infoplist.commands = ["Add CFBundleURLTypes:0:CFBundleURLName string", "Add CFBundleURLTypes:0:CFBundleURLSchemes array"]
 
 		when:
 		task.prepare()
@@ -100,7 +140,6 @@ class InfoPlistModifyTaskSpecification extends Specification{
 
 		then:
 		plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString") == "1.2.3"
-
 	}
 
 	def "nothing to modify"() {

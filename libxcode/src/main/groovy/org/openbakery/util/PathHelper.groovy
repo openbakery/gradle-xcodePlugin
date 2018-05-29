@@ -1,6 +1,7 @@
 package org.openbakery.util
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Project
 import org.openbakery.xcode.Type
 
 @CompileStatic
@@ -9,6 +10,10 @@ class PathHelper {
 	public static final String APPLE_TV_SIMULATOR = "appletvsimulator"
 	public static final String IPHONE_SIMULATOR = "iphonesimulator"
 	public static final String IPHONE_OS = "iphoneos"
+	public static final String FOLDER_ARCHIVE = "archive"
+	public static final String FOLDER_PACKAGE = "package"
+	public static final String GENERATED_XCARCHIVE_FILE_NAME = "archive.xcconfig"
+	public static final String EXTENSION_XCARCHIVE = ".xcarchive"
 
 	static File resolvePath(Type type,
 							boolean simulator,
@@ -69,5 +74,26 @@ class PathHelper {
 									   String destination) {
 		return new File(symRoot,
 				"${configuration}-${destination}")
+	}
+
+	static File resolveArchiveFolder(Project project) {
+		return new File(project.getBuildDir(), FOLDER_ARCHIVE)
+	}
+
+	static File resolveArchiveFile(Project project,
+								   String scheme) {
+		return new File(resolveArchiveFolder(project), scheme + EXTENSION_XCARCHIVE)
+	}
+
+	static File resolveArchivingLogFile(Project project) {
+		return new File(resolveArchiveFolder(project), "xcodebuild-archive-output.txt")
+	}
+
+	static File resolveXcConfigFile(Project project) {
+		return new File(resolveArchiveFolder(project), GENERATED_XCARCHIVE_FILE_NAME)
+	}
+
+	static File resolvePackageFolder(Project project) {
+		return new File(project.getBuildDir(), FOLDER_PACKAGE)
 	}
 }

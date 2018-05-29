@@ -1,6 +1,5 @@
 package org.openbakery.codesign
 
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
@@ -9,7 +8,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import java.security.cert.CertificateException
-import java.text.ParseException
 
 class Security {
 	private static Logger logger = LoggerFactory.getLogger(Security.class)
@@ -60,6 +58,7 @@ class Security {
 		for (File keychain in keychainList) {
 			commandList.add(keychain.absolutePath)
 		}
+
 		commandRunner.run(commandList)
 	}
 

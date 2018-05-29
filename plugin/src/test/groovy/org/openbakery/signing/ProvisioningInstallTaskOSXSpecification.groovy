@@ -6,7 +6,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.xcode.Type
-import org.openbakery.XcodePlugin
 import spock.lang.Specification
 
 class ProvisioningInstallTaskOSXSpecification extends Specification {
@@ -30,9 +29,10 @@ class ProvisioningInstallTaskOSXSpecification extends Specification {
 
 		project.xcodebuild.type = Type.macOS
 
-		provisioningInstallTask = project.getTasks().getByPath(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		provisioningInstallTask = project.getTasks()
+				.getByPath(ProvisioningInstallTask.TASK_NAME)
 
-		provisioningInstallTask.commandRunner = commandRunner
+		provisioningInstallTask.commandRunnerProperty.set(commandRunner)
 
 		provisionLibraryPath = new File(System.getProperty("user.home") + "/Library/MobileDevice/Provisioning Profiles/");
 
@@ -49,21 +49,21 @@ class ProvisioningInstallTaskOSXSpecification extends Specification {
 		File testMobileprovision = new File("src/test/Resource/test-wildcard-mac.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
-		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
-		String uuid = provisioningProfileIdReader.getUUID()
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(testMobileprovision, commandRunner)
+		String uuid = reader.getUUID()
 		String name = "gradle-" + uuid + ".provisionprofile";
 
 		File source = new File(projectDir, "build/provision/" + name)
 		File destination = new File(provisionLibraryPath, name)
 
 		when:
-		provisioningInstallTask.install()
+		provisioningInstallTask.download()
 
 		File sourceFile = new File(projectDir, "build/provision/" + name)
 
 		then:
 		sourceFile.exists()
-		1 * commandRunner.run(["/bin/ln", "-s", source.absolutePath , destination.absolutePath])
+		1 * commandRunner.run(["/bin/ln", "-s", source.absolutePath, destination.absolutePath])
 	}
 
 	def "multiple ProvisioningProfiles"() {
@@ -85,7 +85,7 @@ class ProvisioningInstallTaskOSXSpecification extends Specification {
 		File secondDestination = new File(provisionLibraryPath, secondName)
 
 		when:
-		provisioningInstallTask.install()
+		provisioningInstallTask.download()
 
 		then:
 		firstFile.exists()

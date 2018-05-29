@@ -3,6 +3,7 @@ package org.openbakery.oclint
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.util.SystemUtil
 
 class OCLintTask extends AbstractXcodeTask {
 
@@ -37,7 +38,7 @@ class OCLintTask extends AbstractXcodeTask {
 
 
 	def getDownloadURL() {
-		if (getOSVersion().minor >= 12) {
+		if (SystemUtil.getOsVersion().minor >= 12) {
 			return "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-17.0.0.tar.gz"
 		}
 		return "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-16.7.0.tar.gz"

@@ -69,7 +69,10 @@ class ProvisioningProfileReader {
 		checkExpired()
 	}
 
-	static File getProvisionFileForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, PlistHelper plistHelper) {
+	static File getProvisionFileForIdentifier(String bundleIdentifier,
+											  List<File> mobileProvisionFiles,
+											  CommandRunner commandRunner,
+											  PlistHelper plistHelper) {
 		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : mobileProvisionFiles) {
@@ -99,8 +102,8 @@ class ProvisioningProfileReader {
 			}
 		}
 
-		logger.info("No provisioning profile found for bundle identifier {}",  bundleIdentifier)
-		logger.info("Available bundle identifier are {}" + provisionFileMap.keySet())
+		logger.warn("No provisioning profile found for bundle identifier {}", bundleIdentifier)
+		logger.warn("Available bundle identifier are {}" + provisionFileMap.keySet())
 
 		return null
 	}
@@ -142,7 +145,7 @@ class ProvisioningProfileReader {
 		Date expireDate = config.getProperty("ExpirationDate")
 		if (expireDate.before(new Date())) {
 			DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.getDefault())
-			throw new IllegalArgumentException("The Provisioning Profile has expired on " + formatter.format(expireDate) )
+			throw new IllegalArgumentException("The Provisioning Profile has expired on " + formatter.format(expireDate))
 		}
 	}
 
@@ -159,6 +162,14 @@ class ProvisioningProfileReader {
 		return config.getString("TeamIdentifier")
 	}
 
+	String getTeamName() {
+		return config.getString("TeamName")
+	}
+
+	String getName() {
+		return config.getString("Name")
+	}
+
 	File getPlistFromProvisioningProfile() {
 		if (provisioningPlist == null) {
 			// unpack provisioning profile to plain plist
@@ -170,12 +181,12 @@ class ProvisioningProfileReader {
 
 			try {
 				commandRunner.run(["security",
-													 "cms",
-													 "-D",
-													 "-i",
-													 provisioningProfile.getCanonicalPath(),
-													 "-o",
-													 provisioningPlist.absolutePath
+								   "cms",
+								   "-D",
+								   "-i",
+								   provisioningProfile.getCanonicalPath(),
+								   "-o",
+								   provisioningPlist.absolutePath
 				])
 			} catch (CommandRunnerException ex) {
 				if (!provisioningPlist.exists()) {
@@ -204,15 +215,16 @@ class ProvisioningProfileReader {
 	}
 
 	/* xcent is the archive entitlements */
+
 	void extractEntitlements(File entitlementFile, String bundleIdentifier, List<String> keychainAccessGroups, Configuration configuration) {
 		logger.info("extractEntitlements for " + bundleIdentifier)
 		File plistFromProvisioningProfile = getPlistFromProvisioningProfile()
 		String entitlements = commandRunner.runWithResult([
-						"/usr/libexec/PlistBuddy",
-						"-x",
-						plistFromProvisioningProfile.absolutePath,
-						"-c",
-						"Print Entitlements"])
+				"/usr/libexec/PlistBuddy",
+				"-x",
+				plistFromProvisioningProfile.absolutePath,
+				"-c",
+				"Print Entitlements"])
 
 		if (StringUtils.isEmpty(entitlements)) {
 			logger.debug("No entitlements found in {}", plistFromProvisioningProfile)
@@ -228,7 +240,7 @@ class ProvisioningProfileReader {
 		String bundleIdentifierPrefix = ""
 		if (applicationIdentifier != null) {
 			String[] tokens = applicationIdentifier.split("\\.")
-			for (int i=1; i<tokens.length; i++) {
+			for (int i = 1; i < tokens.length; i++) {
 				if (tokens[i] == "*") {
 					break
 				}
@@ -269,14 +281,13 @@ class ProvisioningProfileReader {
 			plistHelper.deleteValueFromPlist(entitlementFile, "keychain-access-groups")
 		}
 
-
 		// copy the missing values that are in configuration (xcent or signing.entitlments) to the entitlements for signing
 		enumerateMissingEntitlements(entitlementFile, configuration) { key, value, action ->
 
 			if (value instanceof String) {
 				value = this.replaceVariables(value)
 			} else if (value instanceof List) {
-				value = this.replaceValuesInList((List)value)
+				value = this.replaceValuesInList((List) value)
 			}
 
 
@@ -308,7 +319,7 @@ class ProvisioningProfileReader {
 		def result = []
 		for (Object item : list) {
 			if (item instanceof String) {
-				result << replaceVariables((String)item)
+				result << replaceVariables((String) item)
 			} else {
 				result << item
 			}
@@ -330,7 +341,7 @@ class ProvisioningProfileReader {
 		}
 
 		Configuration entitlements = new ConfigurationFromPlist(entitlementFile)
-		Set<String>replaceKeys = configuration.getReplaceEntitlementsKeys()
+		Set<String> replaceKeys = configuration.getReplaceEntitlementsKeys()
 
 		for (String key in configuration.getKeys()) {
 			Object value = configuration.get(key) //plistHelper.getValueFromPlist(xcent, key)
@@ -366,7 +377,7 @@ class ProvisioningProfileReader {
 
 		} else {
 			if (currentValue.toString().endsWith('*')) {
-				plistHelper.setValueForPlist(entitlementFile, value, prefix + "."  + bundleIdentifier)
+				plistHelper.setValueForPlist(entitlementFile, value, prefix + "." + bundleIdentifier)
 			}
 		}
 	}

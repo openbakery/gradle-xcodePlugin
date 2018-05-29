@@ -7,25 +7,20 @@ import org.openbakery.codesign.Codesign
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
-/**
- * Created by rene on 27.03.17.
- */
 class SimulatorInstallAppTaskSpecification extends Specification {
-
 
 	SimulatorInstallAppTask task
 	Project project
 	File projectDir
 
 	def setup() {
-
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 
 		task = project.tasks.findByName(XcodePlugin.SIMULATORS_INSTALL_APP_TASK_NAME)
-
 	}
+
 	def "create"() {
 		expect:
 		task instanceof SimulatorInstallAppTask
@@ -34,7 +29,8 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 
 	def "depends on"() {
 		when:
-		def dependsOn  = task.getDependsOn()
+		def dependsOn = task.getDependsOn()
+
 		then:
 		dependsOn.size() == 2
 		dependsOn.contains(XcodePlugin.XCODE_BUILD_TASK_NAME)
@@ -53,7 +49,9 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		task.run()
 
 		then:
-		1* simulatorControl.simctl(["install", "booted", project.xcodebuild.applicationBundle.absolutePath])
+		1 * simulatorControl.simctl(["install",
+									 "booted",
+									 project.xcodebuild.applicationBundle.absolutePath])
 	}
 
 	def "codesign is not null"() {
@@ -77,8 +75,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		Codesign codesign = Mock(Codesign)
 		task.codesign = codesign
 
-		SimulatorControl simulatorControl = Mock(SimulatorControl)
-		task.simulatorControl = simulatorControl
+		task.simulatorControl = Mock(SimulatorControl)
 
 		project.xcodebuild.bundleName = "MyApp"
 
@@ -88,7 +85,4 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		then:
 		1 * codesign.sign(project.xcodebuild.applicationBundle)
 	}
-
-
-
 }

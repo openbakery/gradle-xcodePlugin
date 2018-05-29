@@ -6,25 +6,25 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.appledoc.AppledocCleanTask
-import org.openbakery.test.ApplicationDummy
-import org.openbakery.xcode.Extension
-import org.openbakery.xcode.Type
-import org.openbakery.XcodeBuildArchiveTask
-import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
+import org.openbakery.signing.KeychainCreateTask
+import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.test.ApplicationDummy
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.util.PathHelper
+import org.openbakery.xcode.Extension
+import org.openbakery.xcode.Type
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-class PackageTaskSpecification extends Specification {
+class PackageLegacyTaskSpecification extends Specification {
 
 
 	Project project
-	PackageTask packageTask
+	PackageLegacyTask packageTask
 
 	ApplicationDummy applicationDummy
 	CommandRunner commandRunner = Mock(CommandRunner)
@@ -56,7 +56,7 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.signing.keychain = "/var/tmp/gradle.keychain"
 
 
-		packageTask = project.getTasks().getByPath(XcodePlugin.PACKAGE_TASK_NAME)
+		packageTask = project.getTasks().getByPath(PackageLegacyTask.NAME)
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
@@ -86,9 +86,9 @@ class PackageTaskSpecification extends Specification {
 	}
 
 	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean withFramework = false, boolean adHoc = true, boolean bitcode = false) {
-		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
+		outputPath = PathHelper.resolvePackageFolder(project)
 
-		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
+		archiveDirectory = new File(PathHelper.resolveArchiveFolder(project), "Example.xcarchive")
 
 		File payloadDirectory = new File(outputPath, "Payload")
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
@@ -211,7 +211,7 @@ class PackageTaskSpecification extends Specification {
 	def "swift Framework xcode 6"() {
 		given:
 		mockXcodeVersion()
-		project.xcodebuild.version = 6
+		project.xcodebuild.version.set("6")
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true, false, false)
 
@@ -229,7 +229,7 @@ class PackageTaskSpecification extends Specification {
 	def "SwiftSupport should be added for Appstore IPA"() {
 		given:
 		mockXcodeVersion()
-		project.xcodebuild.version = 7
+		project.xcodebuild.version.set("7")
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true, false, false)
 
@@ -247,7 +247,7 @@ class PackageTaskSpecification extends Specification {
 	def "SwiftSupport should not be added for AdHoc IPA"() {
 		given:
 		mockXcodeVersion()
-		project.xcodebuild.version = 7
+		project.xcodebuild.version.set("7")
 		FileUtils.deleteDirectory(project.projectDir)
 		mockExampleApp(false, true)
 
@@ -441,19 +441,10 @@ class PackageTaskSpecification extends Specification {
 		when:
 		def dependsOn = packageTask.getDependsOn()
 		then:
-		dependsOn.contains(XcodePlugin.KEYCHAIN_CREATE_TASK_NAME)
-		dependsOn.contains(XcodePlugin.PROVISIONING_INSTALL_TASK_NAME)
+		dependsOn.contains(KeychainCreateTask.TASK_NAME)
+		dependsOn.contains(ProvisioningInstallTask.TASK_NAME)
 
 	}
-
-	def "finalized"() {
-		when:
-		def finalized = packageTask.finalizedBy.getDependencies()
-		def keychainRemoveTask = project.getTasks().getByPath(XcodePlugin.KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME)
-		then:
-		finalized.contains(keychainRemoveTask)
-	}
-
 
 	def "delete CFBundleResourceSpecification"() {
 		given:

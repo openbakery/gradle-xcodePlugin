@@ -9,6 +9,9 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
+import org.openbakery.archiving.XcodeBuildArchiveTask
+import org.openbakery.archiving.XcodeBuildArchiveTaskIosAndTvOS
+import org.openbakery.archiving.XcodeBuildLegacyArchiveTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
@@ -46,7 +49,9 @@ class XcodePluginSpecification extends Specification {
 
 	def "contain task archive"() {
 		expect:
-		project.tasks.findByName('archive') instanceof XcodeBuildArchiveTask
+		project.tasks.findByName(XcodeBuildArchiveTask.NAME) instanceof XcodeBuildArchiveTask
+		project.tasks.findByName(XcodeBuildLegacyArchiveTask.NAME) instanceof XcodeBuildLegacyArchiveTask
+		project.tasks.findByName(XcodeBuildArchiveTaskIosAndTvOS.NAME) instanceof XcodeBuildArchiveTaskIosAndTvOS
 	}
 
 
@@ -286,7 +291,7 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
 	}
 
-	def "xcodebuild has carthage dependency"() {
+	def "xcodebuild has carthage bootstrap dependency"() {
 		when:
 		File projectDir = new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
@@ -298,13 +303,18 @@ class XcodePluginSpecification extends Specification {
 
 		then:
 
-		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_UPDATE_TASK_NAME))
+		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME))
 	}
 
 
 	def "has carthage clean task"() {
 		expect:
 		project.tasks.findByName('carthageClean') instanceof CarthageCleanTask
+	}
+
+	def "has carthage update task"() {
+		expect:
+		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
 	}
 
 	def "clean has carthage clean dependency"() {

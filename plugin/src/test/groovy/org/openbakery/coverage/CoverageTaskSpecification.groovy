@@ -36,7 +36,7 @@ class CoverageTaskSpecification extends Specification {
 	def cleanup() {
 
 		FileUtils.deleteDirectory(project.projectDir)
-		FileUtils.deleteDirectory(project.xcodebuild.derivedDataPath)
+		FileUtils.deleteDirectory(project.xcodebuild.derivedDataPath.asFile.getOrNull())
 
 	}
 
@@ -116,7 +116,7 @@ class CoverageTaskSpecification extends Specification {
 		coverageTask.binary = createFile("MyApp")
 		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
 
-		File profData = new File(project.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/MyApp/Coverage.profdata")
+		File profData = new File(project.xcodebuild.derivedDataPath.asFile.getOrNull(), "Build/Intermediates/CodeCoverage/MyApp/Coverage.profdata")
 		FileUtils.writeStringToFile(profData, "Dummy")
 
 		when:
@@ -135,7 +135,7 @@ class CoverageTaskSpecification extends Specification {
 		destination.setId("MyAppID")
 		project.coverage.setTestResultDestinations([destination])
 
-		File profData = new File(project.xcodebuild.derivedDataPath, "Build/ProfileData/MyAppID/Coverage.profdata")
+		File profData = new File(project.xcodebuild.derivedDataPath.asFile.getOrNull(), "Build/ProfileData/MyAppID/Coverage.profdata")
 		FileUtils.writeStringToFile(profData, "Dummy")
 
 		when:
@@ -172,7 +172,7 @@ class CoverageTaskSpecification extends Specification {
 		coverageTask = localProject.getTasks().getByPath('coverage')
 		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
 
-		File profData = new File(localProject.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/ExampleWatchkit/Coverage.profdata")
+		File profData = new File(localProject.xcodebuild.derivedDataPath.asFile.getOrNull(), "Build/Intermediates/CodeCoverage/ExampleWatchkit/Coverage.profdata")
 		FileUtils.writeStringToFile(profData, "Dummy")
 
 		when:
@@ -328,7 +328,7 @@ class CoverageTaskSpecification extends Specification {
 		coverageTask.binary = createFile("MyApp")
 		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
 
-		File profData = new File(project.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/Coverage.profdata")
+		File profData = new File(project.xcodebuild.derivedDataPath.asFile.getOrNull(), "Build/Intermediates/CodeCoverage/Coverage.profdata")
 		FileUtils.writeStringToFile(profData, "Dummy")
 
 		when:

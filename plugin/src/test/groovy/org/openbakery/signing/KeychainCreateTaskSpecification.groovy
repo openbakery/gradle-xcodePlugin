@@ -3,172 +3,173 @@ package org.openbakery.signing
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.openbakery.CommandRunner
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.Security
 import org.openbakery.xcode.Type
-import org.openbakery.xcode.Version
 import spock.lang.Specification
+import spock.lang.Unroll
+
+import static org.openbakery.signing.KeychainCreateTask.KEYCHAIN_DEFAULT_PASSWORD
 
 class KeychainCreateTaskSpecification extends Specification {
 
+	@Rule
+	final TemporaryFolder tmpDirectory = new TemporaryFolder()
+
+	KeychainCreateTask subject
+
 	Project project
-	KeychainCreateTask keychainCreateTask
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 	File keychainDestinationFile
 	File certificateFile
 
-	File tmpDirectory
 	File loginKeychain
+	File folder
+	XcodeBuildPluginExtension xcodeBuildPluginExtension
+	Security mockSecurity
+
+	final static String CERTIFICATE_PASSWORD = "password"
+	final static String FAKE_CERT_CONTENT = "Bag Attributes\n" +
+			"    localKeyID: FE 93 19 AC CC D7 C1 AC 82 97 02 C2 35 97 B6 CE 37 33 CB 4F\n" +
+			"    friendlyName: iPhone Distribution: Test Company Name (12345ABCDE)"
 
 	def setup() {
-		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild')
-
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile
-		project.apply plugin: org.openbakery.XcodePlugin
+		project.apply plugin: XcodePlugin
 
-		keychainCreateTask = project.tasks.findByName('keychainCreate')
-		keychainCreateTask.commandRunner = commandRunner
-		keychainCreateTask.security.commandRunner = commandRunner
+		mockSecurity = Mock(Security)
 
+		subject = project.tasks.findByName('keychainCreate') as KeychainCreateTask
+		subject.security.set(new Security(commandRunner))
+		subject.commandRunnerProperty.set(commandRunner)
 
-		certificateFile = File.createTempFile("test", ".cert")
-		keychainDestinationFile = new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName())
+		xcodeBuildPluginExtension = project.extensions.getByType(XcodeBuildPluginExtension)
+		folder = xcodeBuildPluginExtension.signing
+				.signingDestinationRoot
+				.get()
+				.asFile
 
-		loginKeychain = new File(tmpDirectory, "login.keychain")
+		certificateFile = tmpDirectory.newFile("test.cert")
+		certificateFile.text = FAKE_CERT_CONTENT
+
+		keychainDestinationFile = new File(folder,
+				certificateFile.getName())
+
+		loginKeychain = tmpDirectory.newFile("login.keychain")
 		FileUtils.writeStringToFile(loginKeychain, "dummy")
 
 		project.xcodebuild.type = Type.macOS
-		project.xcodebuild.signing.certificateURI = certificateFile.toURL()
-		project.xcodebuild.signing.certificatePassword = "password"
+		project.xcodebuild.signing.certificatePassword = CERTIFICATE_PASSWORD
 		project.xcodebuild.signing.timeout = null
 
+		subject.security.set(mockSecurity)
+		mockSecurity.getKeychainList() >> []
 
+		commandRunner.runWithResult(_) >> FAKE_CERT_CONTENT
 	}
 
-	def cleanup() {
-		certificateFile.delete()
-		new File(project.xcodebuild.signing.signingDestinationRoot, certificateFile.getName()).delete()
-		project.xcodebuild.signing.keychainPathInternal.delete()
-		FileUtils.deleteDirectory(tmpDirectory)
-	}
-
-
-	def "OSVersion"() {
-		System.setProperty("os.version", "10.9.0");
-
-		when:
-		Version version = keychainCreateTask.getOSVersion()
-
-		then:
-		version != null;
-		version.major == 10
-		version.minor == 9
-		version.maintenance == 0
-	}
-
-
-	def "create with OS X 10.8"() {
+	@Unroll
+	def "Mac OS #version - Temporary keychain should be create and certificate URI imported"() {
 		given:
-		System.setProperty("os.version", "10.8.0")
-
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
+		System.setProperty("os.version", version)
+		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.create()
+		subject.download()
 
-		then:
-		1 * security.createKeychain(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
-		0 * security.setKeychainList([project.xcodebuild.signing.keychainPathInternal])
+		then: "The `setPartitionList` method should be call only for OS version > 10.12"
+		1 * mockSecurity.createKeychain(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
+				KEYCHAIN_DEFAULT_PASSWORD)
+
+		1 * mockSecurity.importCertificate(keychainDestinationFile,
+				CERTIFICATE_PASSWORD,
+				xcodeBuildPluginExtension.signing.keyChainFile.asFile.get())
+
+		count * mockSecurity.setPartitionList(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
+				KEYCHAIN_DEFAULT_PASSWORD)
+
+		where:
+		version   | count
+		"10.8.0"  | 0
+		"10.9.0"  | 0
+		"10.11.0" | 0
+		"10.12.0" | 1
+		"11.12.0" | 1
+		"11.12"   | 1
 	}
 
-
-	def mockListKeychains() {
-		String result = "    \""+ loginKeychain.absolutePath + "\"";
-		commandRunner.runWithResult( ["security", "list-keychains"]) >> result
-	}
-
-	def "create with OS X 10.9 adds keychain to list"() {
+	@Unroll
+	def "Mac OS #version - Temporary keychain should be create and certificate File imported"() {
 		given:
-		System.setProperty("os.version", "10.9.0")
-
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
+		System.setProperty("os.version", version)
+		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.create()
+		subject.download()
 
-		then:
-		1 * security.createKeychain(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
-		1 * security.setKeychainList([project.xcodebuild.signing.keychainPathInternal])
+		then: "The `setPartitionList` method should be call only for OS version > 10.12"
+		1 * mockSecurity.createKeychain(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
+				KEYCHAIN_DEFAULT_PASSWORD)
+
+		1 * mockSecurity.importCertificate(keychainDestinationFile,
+				CERTIFICATE_PASSWORD,
+				xcodeBuildPluginExtension.signing.keyChainFile.asFile.get())
+
+		count * mockSecurity.setPartitionList(xcodeBuildPluginExtension.signing.keyChainFile.asFile.get(),
+				KEYCHAIN_DEFAULT_PASSWORD)
+
+		where:
+		version   | count
+		"10.8.0"  | 0
+		"10.9.0"  | 0
+		"10.11.0" | 0
+		"10.12.0" | 1
+		"11.12.0" | 1
+		"11.12"   | 1
 	}
 
-
-	def "cleanup first"() {
+	@Unroll
+	def "The keychain timeout should be called"() {
 		given:
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
-		File toBeDeleted = new File(project.xcodebuild.signing.signingDestinationRoot, "my.keychain")
-		FileUtils.writeStringToFile(toBeDeleted, "dummy")
-		mockListKeychains()
+		project.xcodebuild.signing.certificate = certificateFile
+
+		if (timeout)
+			xcodeBuildPluginExtension.signing.timeout.set(timeout)
 
 		when:
-		keychainCreateTask.create()
+		subject.download()
 
 		then:
-		!toBeDeleted.exists()
+		count * mockSecurity.setTimeout(timeout,
+				xcodeBuildPluginExtension.signing.keyChainFile.asFile.get())
 
+		where:
+		timeout | count
+		100     | 1
+		400     | 1
+		null    | 0
 	}
 
-
-	def "depends on"() {
-		when:
-		def dependsOn = keychainCreateTask.getDependsOn()
-		then:
-		!dependsOn.contains(XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME)
-	}
-
-
-	def "create with macOS 10.12.0 set-key-partition-list"() {
+	def "The temporary keychain file should be present post run"() {
 		given:
-		System.setProperty("os.version", "10.12.0")
-
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
+		project.xcodebuild.signing.certificate = certificateFile
 
 		when:
-		keychainCreateTask.create()
+		subject.download()
 
 		then:
-		1 * security.createKeychain(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
-		1 * security.setPartitionList(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
+		File file = xcodeBuildPluginExtension.signing
+				.signingDestinationRoot
+				.file(certificateFile.name)
+				.get()
+				.asFile
+		file.exists()
+		file.text == FAKE_CERT_CONTENT
 	}
-
-
-	def "create with macOS 10.11.0 NOT set-key-partition-list"() {
-		given:
-		System.setProperty("os.version", "10.11.0")
-
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
-		when:
-		keychainCreateTask.create()
-
-		then:
-		1 * security.createKeychain(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
-		0 * security.setPartitionList(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-	}
-
 }
