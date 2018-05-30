@@ -57,7 +57,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	@Input
 	String getCarthagePlatformName() {
-		switch (project.extensions.findByType(XcodeBuildPluginExtension).type.get()) {
+		switch (project.extensions.findByType(XcodeBuildPluginExtension).type) {
 			case Type.iOS: return CARTHAGE_PLATFORM_IOS
 			case Type.tvOS: return CARTHAGE_PLATFORM_TVOS
 			case Type.macOS: return CARTHAGE_PLATFORM_MACOS

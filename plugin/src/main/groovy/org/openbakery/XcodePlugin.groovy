@@ -696,8 +696,9 @@ class XcodePlugin implements Plugin<Project> {
 
 		project.tasks.create(CARTHAGE_BOOTSTRAP_TASK_NAME, CarthageBootStrapTask.class) {
 			it.group = CARTHAGE_GROUP_NAME
+			it.requiredXcodeVersion.set(xcodeBuildPluginExtension.version)
 			it.commandRunnerProperty.set(commandRunner)
-			it.platform.set(xcodeBuildPluginExtension.type)
+			it.platform.set(xcodeBuildPluginExtension.targetType)
 		}
 	}
 

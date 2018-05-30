@@ -1,70 +1,57 @@
 package org.openbakery.carthage
 
-import groovy.util.logging.Slf4j
+import groovy.util.logging.Log4j
 import org.openbakery.CommandRunner
-import org.openbakery.CommandRunnerException
 import org.openbakery.output.OutputAppender
 
 import javax.inject.Inject
 
-@Slf4j
+@Log4j
 class CarthageBootstrapRunnable implements Runnable {
 
-	static final String ACTION_BOOTSTRAP = "bootstrap"
-	static final String ARG_PLATFORM = "--platform"
-	static final String ARG_CACHE_BUILDS = "--cache-builds"
-	static final String CARTHAGE_USR_BIN_PATH = "/usr/local/bin/carthage"
 
+
+	final CommandRunner commandRunner
+	final String carthageCommand
 	final File projectDir
+	final Map<String, String> environmentValues
 	final OutputAppender outputAppender
 	final String platform
 	final String source
-	final CommandRunner commandRunner
 
 	@Inject
 	CarthageBootstrapRunnable(File projectDir,
+							  String carthageCommand,
 							  String source,
 							  String platform,
-							  CommandRunner commandRunner) {
-		println "platform : " + platform
-		assert false
+							  CommandRunner commandRunner,
+							  Map<String, String> environmentValues) {
+		this.carthageCommand = carthageCommand
 		this.projectDir = projectDir
 		this.source = source
 		this.platform = platform
 		this.outputAppender = outputAppender
 		this.commandRunner = commandRunner
+		this.environmentValues = environmentValues
 	}
 
 	@Override
 	void run() {
-		commandRunner.run([getCarthageCommand(),
+		log.debug("Carthage bootstrap source : " + source)
+		commandRunner.run([carthageCommand,
 						   ACTION_BOOTSTRAP,
+						   ARG_CACHE_BUILDS,
+						   "--new-resolver",
 						   "--color", "always",
 						   "--project-directory", "${projectDir.absolutePath}",
-						   ARG_CACHE_BUILDS,
 						   ARG_PLATFORM, platform,
 						   source],
+				environmentValues,
 				new OutputAppender() {
 					@Override
 					void append(String output) {
 						log.debug(output)
 					}
 				})
-	}
-
-	String getCarthageCommand() {
-		try {
-			return commandRunner.runWithResult("which", "carthage")
-		} catch (CommandRunnerException exception) {
-			// ignore, because try again with full path below
-		}
-
-		try {
-			commandRunner.runWithResult("ls", CARTHAGE_USR_BIN_PATH)
-			return CARTHAGE_USR_BIN_PATH
-		} catch (CommandRunnerException exception) {
-			// ignore, because blow an exception is thrown
-		}
-		throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
 	}
 }
