@@ -23,7 +23,7 @@ import org.openbakery.output.OutputAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class CommandRunner {
+class CommandRunner implements Serializable{
 
 	private static Logger logger = LoggerFactory.getLogger(CommandRunner.class)
 

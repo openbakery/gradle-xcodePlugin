@@ -692,7 +692,13 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
-		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
+//		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
+
+		project.tasks.create(CARTHAGE_BOOTSTRAP_TASK_NAME, CarthageBootStrapTask.class) {
+			it.group = CARTHAGE_GROUP_NAME
+			it.commandRunnerProperty.set(commandRunner)
+			it.platform.set(xcodeBuildPluginExtension.type)
+		}
 	}
 
 	private configureCarthageDependencies(Project project) {
