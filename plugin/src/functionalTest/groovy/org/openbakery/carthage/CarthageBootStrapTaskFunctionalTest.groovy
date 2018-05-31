@@ -82,7 +82,8 @@ class CarthageBootStrapTaskFunctionalTest extends Specification {
         """
 
 		when:
-		BuildResult result = gradleRunner.build()
+		BuildResult result = gradleRunner
+				.build()
 
 		then:
 		result.task(":" + CarthageBootStrapTask.NAME)
@@ -90,6 +91,18 @@ class CarthageBootStrapTaskFunctionalTest extends Specification {
 
 		and: "The resolved framework should be existing only for iOS (default target)"
 		carthageFolder.exists()
+		new File(carthageFolder, "Build/iOS/Reachability.framework").exists()
+		!new File(carthageFolder, "Build/tvOS/Reachability.framework").exists()
+
+		when: "Force reset and build with cache enabled"
+		assert carthageFolder.deleteDir()
+		result = gradleRunner.withArguments('--build-cache', CarthageBootStrapTask.NAME)
+				.build()
+
+		then: "Should resolve the carthage dependencies from cache"
+		result.task(":" + CarthageBootStrapTask.NAME)
+				.outcome == TaskOutcome.FROM_CACHE
+
 		new File(carthageFolder, "Build/iOS/Reachability.framework").exists()
 		!new File(carthageFolder, "Build/tvOS/Reachability.framework").exists()
 	}
