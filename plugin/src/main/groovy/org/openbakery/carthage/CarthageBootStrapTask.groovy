@@ -34,6 +34,8 @@ class CarthageBootStrapTask extends DefaultTask {
 	@OutputDirectory
 	Property<File> outputDirectory = project.objects.property(File)
 
+	public static final String NAME = "carthageBootstrap"
+
 	final Property<Type> platform = project.objects.property(Type)
 	final Property<Xcode> xcodeProperty = project.objects.property(Xcode)
 	final Property<CommandRunner> commandRunnerProperty = project.objects.property(CommandRunner)
@@ -85,15 +87,13 @@ class CarthageBootStrapTask extends DefaultTask {
 		}
 	}
 
-	public void setXcode(Xcode xcode) {
+	void setXcode(Xcode xcode) {
 		this.xcode = xcode
 	}
 
 	@TaskAction
 	void update() {
 		logger.warn('Bootstrap Carthage for platform ' + carthagePlatformName)
-		println "getCarthageCommand : " + getCarthageCommand()
-
 		project.exec(new Action<ExecSpec>() {
 			@Override
 			void execute(ExecSpec execSpec) {
