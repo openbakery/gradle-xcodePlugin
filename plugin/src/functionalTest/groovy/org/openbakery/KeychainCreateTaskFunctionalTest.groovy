@@ -75,7 +75,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
             	signing {
-            		certificate = project.provisioningFile1("$certificate")  
+            		certificateURI = "$certificate.absolutePath"  
             	}
 			}            
 			"""
@@ -84,6 +84,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		BuildResult result = GradleRunner.create()
 				.withProjectDir(testProjectDir.root)
 				.withArguments(KeychainCreateTask.TASK_NAME)
+				.withDebug(true)
 				.withPluginClasspath(pluginClasspath)
 				.build()
 
@@ -96,7 +97,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
             	signing {
-            		certificate = project.provisioningFile1("$certificate")
+            		certificateURI = "${certificate.toURI().toString()}"
 					certificatePassword = "p4ssword"
             	}
 			}            
@@ -107,6 +108,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 				.withProjectDir(testProjectDir.root)
 				.withArguments(KeychainCreateTask.TASK_NAME)
 				.withPluginClasspath(pluginClasspath)
+				.withDebug(true)
 				.build()
 
 		then:
@@ -118,7 +120,7 @@ class KeychainCreateTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
             	signing {
-            		certificate = project.provisioningFile1("$certificate")
+            		certificateURI = "${certificate.toURI().toString()}"
 					certificatePassword = "p4ssword"
             	}
 			}            

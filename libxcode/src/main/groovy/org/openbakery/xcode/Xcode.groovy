@@ -58,7 +58,7 @@ class Xcode {
 		if (file.exists()) {
 			result.put(ENV_DEVELOPER_DIR, file.absolutePath)
 		}
-		println file.absolutePath
+
 		return result
 	}
 

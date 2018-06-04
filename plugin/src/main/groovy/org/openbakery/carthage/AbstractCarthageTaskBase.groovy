@@ -1,10 +1,14 @@
 package org.openbakery.carthage
 
+import groovy.transform.CompileStatic
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.CommandRunnerException
+import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.xcode.Type
 
+@CompileStatic
 abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	static final String ACTION_BOOTSTRAP = "bootstrap"
@@ -31,7 +35,6 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	@InputFile
 	@Optional
-	@PathSensitive(PathSensitivity.RELATIVE)
 	Provider<File> getCartFile() {
 		// Cf https://github.com/gradle/gradle/issues/2016
 		File file = project.rootProject.file(CARTHAGE_FILE)
@@ -43,7 +46,6 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	@InputFile
 	@Optional
-	@PathSensitive(PathSensitivity.RELATIVE)
 	Provider<File> getCartResolvedFile() {
 		// Cf https://github.com/gradle/gradle/issues/2016
 		File file = project.rootProject.file(CARTHAGE_FILE_RESOLVED)
@@ -55,7 +57,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	@Input
 	String getCarthagePlatformName() {
-		switch (project.xcodebuild.type) {
+		switch (project.extensions.findByType(XcodeBuildPluginExtension).type) {
 			case Type.iOS: return CARTHAGE_PLATFORM_IOS
 			case Type.tvOS: return CARTHAGE_PLATFORM_TVOS
 			case Type.macOS: return CARTHAGE_PLATFORM_MACOS
@@ -65,6 +67,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	}
 
 	@OutputDirectory
+	@PathSensitive(PathSensitivity.NAME_ONLY)
 	Provider<File> getOutputDirectory() {
 		return project.provider {
 			project.rootProject.file("Carthage/Build/" + getCarthagePlatformName())
@@ -74,14 +77,14 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	String getCarthageCommand() {
 		try {
 			return commandRunner.runWithResult("which", "carthage")
-		} catch (CommandRunnerException) {
+		} catch (CommandRunnerException exception) {
 			// ignore, because try again with full path below
 		}
 
 		try {
 			commandRunner.runWithResult("ls", CARTHAGE_USR_BIN_PATH)
 			return CARTHAGE_USR_BIN_PATH
-		} catch (CommandRunnerException) {
+		} catch (CommandRunnerException exception) {
 			// ignore, because blow an exception is thrown
 		}
 		throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")

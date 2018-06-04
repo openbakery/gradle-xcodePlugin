@@ -30,7 +30,9 @@ class ProvisioningInstallTaskFunctionalTest extends Specification {
 		provisioningFile1 = findResource("test1.mobileprovision")
 		assert provisioningFile1.exists()
 
-		def pluginClasspathResource = getClass().classLoader.findResource("plugin-classpath.txt")
+		def pluginClasspathResource = getClass().classLoader
+				.findResource("plugin-classpath.txt")
+
 		if (pluginClasspathResource == null) {
 			throw new IllegalStateException("Did not find plugin classpath resource, run `testClasses` build task.")
 		}
@@ -70,7 +72,7 @@ class ProvisioningInstallTaskFunctionalTest extends Specification {
 		buildFile << """
 			xcodebuild {
 				signing {
-					mobileProvisionURI = []
+					mobileProvisionList = []
 				}
 			}
 		"""

@@ -35,6 +35,7 @@ class XcodeBuildPluginExtension {
 
 	final Property<Boolean> bitcode = project.objects.property(Boolean)
 	final Property<String> version = project.objects.property(String)
+	final Property<Type> targetType = project.objects.property(Type)
 	final Property<String> scheme = project.objects.property(String)
 	final DirectoryProperty archiveDirectory = project.layout.directoryProperty()
 	final DirectoryProperty schemeArchiveFile = project.layout.directoryProperty()
@@ -108,6 +109,8 @@ class XcodeBuildPluginExtension {
 		this.symRoot.set(project.layout.buildDirectory.dir("sym"))
 		this.sharedPrecompsDir.set(project.layout.buildDirectory.dir("shared"))
 		this.derivedDataPath.set(project.layout.buildDirectory.dir("derivedData"))
+
+		this.targetType.set(Type.iOS)
 	}
 
 	private void configureServices() {
@@ -358,6 +361,7 @@ class XcodeBuildPluginExtension {
 
 	void setType(String type) {
 		this.type = Type.typeFromString(type)
+		this.targetType.set(this.type)
 	}
 
 	Type getType() {

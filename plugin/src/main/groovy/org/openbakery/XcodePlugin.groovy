@@ -116,7 +116,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String OCLINT_TASK_NAME = 'oclint'
 	public static final String OCLINT_REPORT_TASK_NAME = 'oclintReport'
 	public static final String CPD_TASK_NAME = 'cpd'
-	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
 
@@ -522,7 +521,7 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private void configureSimulatorTasks(Project project) {
-		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_LIST_TASK_NAME, type: SimulatorsListTask.class, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CREATE_TASK_NAME, type: SimulatorsCreateTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_CLEAN_TASK_NAME, type: SimulatorsCleanTask, group: SIMULATORS_LIST_TASK_NAME)
 
@@ -692,11 +691,17 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
-		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
+
+		project.tasks.create(CarthageBootStrapTask.NAME, CarthageBootStrapTask.class) {
+			it.group = CARTHAGE_GROUP_NAME
+			it.requiredXcodeVersion.set(xcodeBuildPluginExtension.version)
+			it.commandRunnerProperty.set(commandRunner)
+			it.platform.set(xcodeBuildPluginExtension.targetType)
+		}
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
+		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CarthageBootStrapTask.NAME) as CarthageBootStrapTask
 		addDependencyToBuild(project, bootStrapTask)
 
 		project.getTasks()
