@@ -387,6 +387,8 @@ class SimulatorControl {
 				pairing.get(iOSVersionString).each { phone, watch ->
 					SimulatorDevice phoneDevice = getDevice(iOSRuntime, phone)
 					SimulatorDevice watchDevice = getDevice(watchOSRuntime, watch)
+					logger.debug("pair phone: {}", phoneDevice)
+					logger.debug("with watch: {}", watchDevice)
 					simctl("pair", phoneDevice.identifier, watchDevice.identifier)
 				}
 			}
