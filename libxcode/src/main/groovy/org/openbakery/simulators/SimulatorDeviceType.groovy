@@ -56,7 +56,7 @@ class SimulatorDeviceType {
 			return true
 		}
 
-		if (shortIdentifier.startsWith("Apple-TV-1080p") && simulatorRuntime.shortIdentifier.startsWith("tvOS")) {
+		if (shortIdentifier.startsWith("Apple-TV") && simulatorRuntime.shortIdentifier.startsWith("tvOS")) {
 			return true
 		}
 

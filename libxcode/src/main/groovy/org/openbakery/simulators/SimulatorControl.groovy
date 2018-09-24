@@ -220,11 +220,11 @@ class SimulatorControl {
 
 	SimulatorRuntime getRuntime(Destination destination) {
 		for (SimulatorRuntime runtime in getRuntimes()) {
-			if (runtime.type == Type.iOS && runtime.version.equals(new Version(destination.os))) {
-				return runtime;
+			if (runtime.type == Type.iOS && runtime.version == new Version(destination.os)) {
+				return runtime
 			}
 		}
-		return null;
+		return null
 	}
 
 	SimulatorDevice getDevice(Destination destination) {
@@ -327,26 +327,70 @@ class SimulatorControl {
 	void pair() {
 		parse() // read the created ids again
 
-		List<SimulatorRuntime> watchRuntimes = getRuntimes("watchOS")
-		List<SimulatorRuntime> iOS9Runtimes = getRuntimes("iOS 9")
+		def versionPairing = [
+			"9.0" : "watchOS 2.0",
+			"10.0" : "watchOS 3.0",
+			"11.0" : "watchOS 4.0",
+			"11.1" : "watchOS 4.1",
+			"12.0" : "watchOS 5.0"
+		]
 
+		def pairing = [
+			"9.0": [
+				"iPhone 6": "Apple Watch - 38mm",
+				"iPhone 6 Plus": "Apple Watch - 42mm"
+			],
+			"10.0": [
+				"iPhone 6s": "Apple Watch - 38mm",
+				"iPhone 6s Plus": "Apple Watch - 42mm",
+				"iPhone 7": "Apple Watch Series 2 - 38mm",
+				"iPhone 7 Plus": "Apple Watch Series 2 - 42mm"
+			],
+			"11.0": [
+				"iPhone 6s": "Apple Watch - 38mm",
+				"iPhone 6s Plus": "Apple Watch - 42mm",
+				"iPhone 7": "Apple Watch Series 2 - 38mm",
+				"iPhone 7 Plus": "Apple Watch Series 2 - 42mm",
+			],
+			"11.1": [
+			    "iPhone 7": "Apple Watch Series 2 - 38mm",
+			    "iPhone 7 Plus": "Apple Watch Series 2 - 42mm",
+			    "iPhone 8": "Apple Watch Series 3 - 38mm",
+			    "iPhone 8 Plus": "Apple Watch Series 3 - 42mm"
 
-		for (SimulatorRuntime iOS9Runtime in iOS9Runtimes) {
-			for (SimulatorRuntime watchRuntime in watchRuntimes) {
+			],
+			"12.0": [
+				"iPhone 7" : "Apple Watch Series 2 - 38mm",
+				"iPhone 7 Plus" : "Apple Watch Series 2 - 42mm",
+				"iPhone X" : "Apple Watch Series 3 - 38mm",
+				"iPhone XS" : "Apple Watch Series 4 - 40mm",
+				"iPhone XS Max" : "Apple Watch Series 4 - 44mm"
+			]
 
-				SimulatorDevice iPhone6 = getDevice(iOS9Runtime, "iPhone 6")
-				SimulatorDevice watch38 = getDevice(watchRuntime, "Apple Watch - 38mm")
-				simctl("pair", iPhone6.identifier, watch38.identifier)
+		]
 
+		getRuntimes(Type.iOS).each { iOSRuntime ->
+			def iOSVersionString = iOSRuntime.version.toString()
+			def watchOS = versionPairing[iOSVersionString]
+			if (watchOS == null) {
+				logger.debug("no watchOS pairing found")
+				return
+			}
 
-				SimulatorDevice iPhone6Plus = getDevice(iOS9Runtime, "iPhone 6 Plus")
-				SimulatorDevice watch42 = getDevice(watchRuntime, "Apple Watch - 42mm")
-				simctl("pair", iPhone6Plus.identifier, watch42.identifier)
+			def watchOSRuntimes = getRuntimes(watchOS)
+			if (watchOSRuntimes == null) {
+				logger.debug("no watchOSRuntimes found")
+				return
+			}
 
-
+			watchOSRuntimes.each { watchOSRuntime ->
+				pairing.get(iOSVersionString).each { phone, watch ->
+					SimulatorDevice phoneDevice = getDevice(iOSRuntime, phone)
+					SimulatorDevice watchDevice = getDevice(watchOSRuntime, watch)
+					simctl("pair", phoneDevice.identifier, watchDevice.identifier)
+				}
 			}
 		}
-
 	}
 
 
