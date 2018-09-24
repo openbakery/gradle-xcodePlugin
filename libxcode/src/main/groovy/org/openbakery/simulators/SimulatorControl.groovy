@@ -389,7 +389,11 @@ class SimulatorControl {
 					SimulatorDevice watchDevice = getDevice(watchOSRuntime, watch)
 					logger.debug("pair phone: {}", phoneDevice)
 					logger.debug("with watch: {}", watchDevice)
-					simctl("pair", phoneDevice.identifier, watchDevice.identifier)
+					try {
+						simctl("pair", phoneDevice.identifier, watchDevice.identifier)
+					} catch (CommandRunnerException ex) {
+						println "Unable to pair watch '" + watchDevice.name + "' with phone '" + phoneDevice.name + "'"
+					}
 				}
 			}
 		}
