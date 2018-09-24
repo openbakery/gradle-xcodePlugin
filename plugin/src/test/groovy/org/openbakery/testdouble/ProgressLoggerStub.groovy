@@ -8,6 +8,7 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	def progress = []
 
+
 	@Override
 	String getDescription() {
 		return null
@@ -15,7 +16,7 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	@Override
 	ProgressLogger setDescription(String s) {
-
+		return null
 	}
 
 	@Override
@@ -25,7 +26,7 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	@Override
 	ProgressLogger setShortDescription(String s) {
-
+		return null
 	}
 
 	@Override
@@ -35,7 +36,7 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	@Override
 	ProgressLogger setLoggingHeader(String s) {
-
+		return null
 	}
 
 	@Override
@@ -44,29 +45,22 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	ProgressLogger start(String s, String s1, int i) {
-		return null
-	}
-
-	@Override
 	void started() {
+
 	}
 
 	@Override
 	void started(String s) {
+
 	}
 
 	@Override
-	void started(String s, int i) {
-	}
-
-	@Override
-	void progress(String status) {
+	void progress(@javax.annotation.Nullable String status) {
 		progress << status
 	}
 
 	@Override
-	void progress(@Nullable String s, boolean b) {
+	void progress(@javax.annotation.Nullable String status, boolean b) {
 		progress << status
 	}
 
