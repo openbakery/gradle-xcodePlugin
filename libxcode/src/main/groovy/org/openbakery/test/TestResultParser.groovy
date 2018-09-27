@@ -24,12 +24,35 @@ public class TestResultParser {
 	File testSummariesDirectory
 	List<Destination> destinations
 
+	List<File> testSummariesFiles
+
 	def testResults = new HashMap<Destination, ArrayList<TestClass>>()
 
 	public TestResultParser(File testSummariesDirectory, List<Destination> destinations) {
 		this.testSummariesDirectory = testSummariesDirectory
 		this.destinations = destinations
+
+		testSummariesFiles = new ArrayList<>();
+
+		def testSummaries = testSummariesDirectory.list(
+						[accept: { d, f -> f ==~ /.*TestSummaries.plist/ }] as FilenameFilter
+		)
+		if (testSummaries != null) {
+			testSummaries.toList().each {
+				File summary = new File(testSummariesDirectory, it)
+				testSummariesFiles.add(summary)
+			}
+		}
+
 	}
+
+
+	public TestResultParser(File manifest) {
+		//this.manifest = manifest
+		//this.testSummariesDirectory = testSummariesDirectory
+		//this.destinations = destinations
+	}
+
 
 	public void parseAndStore(File outputDirectory) {
 		parse()
@@ -37,17 +60,8 @@ public class TestResultParser {
 	}
 
 	private void parse() {
-
-		def testSummariesArray = testSummariesDirectory.list(
-						[accept: { d, f -> f ==~ /.*TestSummaries.plist/ }] as FilenameFilter
-		)
-
-		if (testSummariesArray == null) {
-			return
-		}
-
-		testSummariesArray.toList().each {
-			def testResult = new XMLPropertyListConfiguration(new File(testSummariesDirectory, it))
+		testSummariesFiles.toList().each {
+			def testResult = new XMLPropertyListConfiguration(it)
 			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
 
 			Destination destination = findDestinationForIdentifier(destinations, identifier)

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>9</integer>
+	<key>logs</key>
+	<dict>
+		<key>4CF09F5C-91C5-490C-8E31-524F67DE7B1A</key>
+		<dict>
+			<key>auxiliaryLogUniqueIdentifier</key>
+			<string>43DE77FC-B037-44CD-8255-7AA2CFE5FE5B</string>
+			<key>className</key>
+			<string>IDESchemeActionsInvocationRecord</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>com.apple.dt.unit.cocoaUnitTest</string>
+			<key>fileName</key>
+			<string>Test-OBFoundation-2018.09.26_11-24-09-+0200.xcresult</string>
+			<key>highLevelStatus</key>
+			<string>T</string>
+			<key>schemeIdentifier-containerName</key>
+			<string>OBFoundation project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>OBFoundation</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Test OBFoundation</string>
+			<key>timeStartedRecording</key>
+			<real>559646649.37566996</real>
+			<key>timeStoppedRecording</key>
+			<real>0.0</real>
+			<key>title</key>
+			<string>Test OBFoundation</string>
+			<key>uniqueIdentifier</key>
+			<string>4CF09F5C-91C5-490C-8E31-524F67DE7B1A</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

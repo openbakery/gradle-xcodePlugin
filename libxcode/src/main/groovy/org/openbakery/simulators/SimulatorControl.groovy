@@ -390,6 +390,7 @@ class SimulatorControl {
 					logger.debug("pair phone: {}", phoneDevice)
 					logger.debug("with watch: {}", watchDevice)
 					try {
+						logger.info("Pair {} with {}", phoneDevice.name, watchDevice.name)
 						simctl("pair", phoneDevice.identifier, watchDevice.identifier)
 					} catch (CommandRunnerException ex) {
 						println "Unable to pair watch '" + watchDevice.name + "' with phone '" + phoneDevice.name + "'"

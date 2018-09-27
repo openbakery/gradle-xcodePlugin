@@ -1,0 +1,1368 @@
+Testing started on 'iPhone 7'
+2018-09-26 08:48:53.163 xcodebuild[3486:67789]  IDETestOperationsObserverDebug: Writing diagnostic log for test session to:
+/Users/rene/workspace/openbakery/frameworks/OBFoundation/build/derivedData/Logs/Test/Test-OBFoundation-2018.09.26_08-48-24-+0200.xcresult/1_Test/Diagnostics/OBFoundationTests-89E1A573-1CE9-4DAF-B8E9-27564600D61B/OBFoundationTests-F27C7C1E-C0C8-4CCB-BF13-8FB9D6F87284/Session-OBFoundationTests-2018-09-26_084853-kGJvvZ.log
+2018-09-26 08:48:53.163 xcodebuild[3486:67761] [MT] IDETestOperationsObserverDebug: (2C9EE930-3AE6-437E-A983-6553DAF318D2) Beginning test session OBFoundationTests-2C9EE930-3AE6-437E-A983-6553DAF318D2 at 2018-09-26 08:48:53.163 with Xcode 10A255 on target <DVTiPhoneSimulator: 0x7f87d6ced3c0> {
+		SimDevice: iPhone 7 (AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9, iOS 12.0, Shutdown)
+} (12.0 (16A366))
+2018-09-26 08:49:09.567543+0200 Demo[3999:70755] libMobileGestalt MobileGestalt.c:890: MGIsDeviceOneOfType is not supported on this platform.
+2018-09-26 08:49:09.653951+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:09.655345+0200 Demo[3999:70755] create file logger
+Test Suite 'All tests' started at 2018-09-26 08:49:10.670
+Test Suite 'OBFoundationTests.xctest' started at 2018-09-26 08:49:10.670
+Test Suite 'AlertDialogHandlerTest' started at 2018-09-26 08:49:10.671
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_dialog_builder]' started.
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_dialog_builder]' passed (0.009 seconds).
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_dialog_builder_is_new_instance]' started.
+[DEBUG] - [2018-09-26 08:49:10.679] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.681810+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.679] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_dialog_builder_is_new_instance]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_error_message_dialog]' started.
+[DEBUG] - [2018-09-26 08:49:10.682] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.688629+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.682] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:10.682] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.688914+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:10.682] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:10.686] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.689184+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.686] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:10.687] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:10.689447+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.687] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_error_message_dialog]' passed (0.006 seconds).
+[DEBUG] - [2018-09-26 08:49:10.689] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:10.690027+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.689] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_init_with_coder]' started.
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_init_with_coder]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_instance]' started.
+Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_instance]' passed (0.001 seconds).
+Test Suite 'AlertDialogHandlerTest' passed at 2018-09-26 08:49:10.694.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.020 (0.023) seconds
+Test Suite 'AsynchronousOperationTest' started at 2018-09-26 08:49:10.695
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_after_start_state_is_executing]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_after_start_state_is_executing]' passed (0.007 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_cancel_do_not_set_finished_if_operation_was_not_started]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_cancel_do_not_set_finished_if_operation_was_not_started]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_if_canceled_before_start_state_remains_canceled]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_if_canceled_before_start_state_remains_canceled]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_if_canceled_state_is_canceled]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_if_canceled_state_is_canceled]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_initial_state_is_ready]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_initial_state_is_ready]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_instance]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_is_asynchronous]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_is_asynchronous]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_is_operation]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_is_operation]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_set_state_to_finished_if_a_cancel_operation_is_started]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_set_state_to_finished_if_a_cancel_operation_is_started]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_state_change_has_kvo_notification]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_state_change_has_kvo_notification]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_state_finished_if_async_complete]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_state_finished_if_async_complete]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_state_not_finished_if_async_complete_returns_false]' started.
+Test Case '-[OBFoundationTests.AsynchronousOperationTest test_state_not_finished_if_async_complete_returns_false]' passed (0.001 seconds).
+Test Suite 'AsynchronousOperationTest' passed at 2018-09-26 08:49:10.720.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.019 (0.025) seconds
+Test Suite 'BadgeViewTest' started at 2018-09-26 08:49:10.721
+Test Case '-[OBFoundationTests.BadgeViewTest testBackgroundColor]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testBackgroundColor]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewIsHiddenWhenNoValueIsSet]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewIsHiddenWhenNoValueIsSet]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewIsNotHidden]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewIsNotHidden]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewIsUIView]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewIsUIView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewTextColor]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testBadgeViewTextColor]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testFont]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testFont]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testHasValueFromLabelValue]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testHasValueFromLabelValue]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testHasValueLabel]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testHasValueLabel]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testHasValueLabelValue]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testHasValueLabelValue]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testInstance]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testInstance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testSetFont]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testSetFont]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testTextColor]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testTextColor]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testValueLabelFont]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testValueLabelFont]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testValueLabelLayout]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testValueLabelLayout]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.BadgeViewTest testValueLabelWasAddedAsSubview]' started.
+Test Case '-[OBFoundationTests.BadgeViewTest testValueLabelWasAddedAsSubview]' passed (0.003 seconds).
+Test Suite 'BadgeViewTest' passed at 2018-09-26 08:49:10.752.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.023 (0.031) seconds
+Test Suite 'BasicTableModelTest' started at 2018-09-26 08:49:10.753
+Test Case '-[OBFoundationTests.BasicTableModelTest test_is_equal]' started.
+Test Case '-[OBFoundationTests.BasicTableModelTest test_is_equal]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BasicTableModelTest test_is_not_equal]' started.
+Test Case '-[OBFoundationTests.BasicTableModelTest test_is_not_equal]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BasicTableModelTest test_is_selectable]' started.
+Test Case '-[OBFoundationTests.BasicTableModelTest test_is_selectable]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BasicTableModelTest test_model_has_title]' started.
+Test Case '-[OBFoundationTests.BasicTableModelTest test_model_has_title]' passed (0.001 seconds).
+Test Suite 'BasicTableModelTest' passed at 2018-09-26 08:49:10.757.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.003 (0.005) seconds
+Test Suite 'BasicTableViewCellTest' started at 2018-09-26 08:49:10.758
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_has_checkmark_when_selected]' started.
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_has_checkmark_when_selected]' passed (0.027 seconds).
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_has_none_when_deselected]' started.
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_has_none_when_deselected]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_is_SelectableTableViewCell]' started.
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_is_SelectableTableViewCell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_is_TableViewCell]' started.
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_cell_is_TableViewCell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_set_model_with_image_sets_cell_image]' started.
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_set_model_with_image_sets_cell_image]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_set_model_with_title_sets_cell_title]' started.
+Test Case '-[OBFoundationTests.BasicTableViewCellTest test_set_model_with_title_sets_cell_title]' passed (0.001 seconds).
+Test Suite 'BasicTableViewCellTest' passed at 2018-09-26 08:49:10.796.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.034 (0.038) seconds
+Test Suite 'ButtonTableViewCellTest' started at 2018-09-26 08:49:10.796
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_as_layout]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_as_layout]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_has_title]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_has_title]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_highlight_text_color_is_lighter_tint_color]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_highlight_text_color_is_lighter_tint_color]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_pressed_calls_closure]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_pressed_calls_closure]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_text_color_is_tint_color]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_text_color_is_tint_color]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_was_added_as_subview]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_button_was_added_as_subview]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_cell_is_TableViewCell]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_cell_is_TableViewCell]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_remove_action_on_reuse_of_the_cell]' started.
+Test Case '-[OBFoundationTests.ButtonTableViewCellTest test_remove_action_on_reuse_of_the_cell]' passed (0.002 seconds).
+Test Suite 'ButtonTableViewCellTest' passed at 2018-09-26 08:49:10.816.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.015 (0.020) seconds
+Test Suite 'CGPointArithmeticExtensionTest' started at 2018-09-26 08:49:10.817
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_add]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_add]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_add_2]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_add_2]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_180]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_180]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_180_2]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_180_2]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_360]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_360]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_2]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_2]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_counterclockwise]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_counterclockwise]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_with_size]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_with_size]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_with_size_2]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_with_size_2]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_with_size_3]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_rotate_90_with_size_3]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_subtract]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_subtract]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_subtract_2]' started.
+Test Case '-[OBFoundationTests.CGPointArithmeticExtensionTest test_subtract_2]' passed (0.001 seconds).
+Test Suite 'CGPointArithmeticExtensionTest' passed at 2018-09-26 08:49:10.836.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.011 (0.019) seconds
+Test Suite 'CGRectCreateExtensionTest' started at 2018-09-26 08:49:10.836
+Test Case '-[OBFoundationTests.CGRectCreateExtensionTest test_create]' started.
+Test Case '-[OBFoundationTests.CGRectCreateExtensionTest test_create]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGRectCreateExtensionTest test_create_1]' started.
+Test Case '-[OBFoundationTests.CGRectCreateExtensionTest test_create_1]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CGRectCreateExtensionTest test_create_2]' started.
+Test Case '-[OBFoundationTests.CGRectCreateExtensionTest test_create_2]' passed (0.001 seconds).
+Test Suite 'CGRectCreateExtensionTest' passed at 2018-09-26 08:49:10.841.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.005) seconds
+Test Suite 'CameraViewTest' started at 2018-09-26 08:49:10.842
+Test Case '-[OBFoundationTests.CameraViewTest test_color_authorisation_is_granted_sets_background_color]' started.
+[DEBUG] - [2018-09-26 08:49:10.865] CameraView:127 stop the session
+2018-09-26 08:49:10.865129+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.865] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_color_authorisation_is_granted_sets_background_color]' passed (0.026 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_color_is_black_if_status_is_denied]' started.
+[DEBUG] - [2018-09-26 08:49:10.870] CameraView:127 stop the session
+2018-09-26 08:49:10.869825+0200 Demo[3999:70792] [DEBUG] - [2018-09-26 08:49:10.870] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_color_is_black_if_status_is_denied]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_color_is_black_if_status_is_restricted]' started.
+[DEBUG] - [2018-09-26 08:49:10.871] CameraView:127 stop the session
+2018-09-26 08:49:10.871405+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.871] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_color_is_black_if_status_is_restricted]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_has_GLKView]' started.
+[DEBUG] - [2018-09-26 08:49:10.873] CameraView:127 stop the session
+2018-09-26 08:49:10.872944+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:10.873] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_has_GLKView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_has_no_torch]' started.
+[DEBUG] - [2018-09-26 08:49:10.880] CameraView:152 initialize the session
+2018-09-26 08:49:10.880407+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.880] CameraView:152 initialize the session
+[ERROR] - [2018-09-26 08:49:10.896] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+2018-09-26 08:49:10.896681+0200 Demo[3999:70808] [ERROR] - [2018-09-26 08:49:10.896] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+[DEBUG] - [2018-09-26 08:49:10.911] CameraView:171 initialize done
+2018-09-26 08:49:10.911477+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.911] CameraView:171 initialize done
+[DEBUG] - [2018-09-26 08:49:10.912] CameraView:127 stop the session
+2018-09-26 08:49:10.911792+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:10.912] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_has_no_torch]' passed (0.039 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_has_torch]' started.
+[DEBUG] - [2018-09-26 08:49:10.914] CameraView:152 initialize the session
+2018-09-26 08:49:10.913908+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.914] CameraView:152 initialize the session
+[ERROR] - [2018-09-26 08:49:10.914] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+2018-09-26 08:49:10.914442+0200 Demo[3999:70762] [ERROR] - [2018-09-26 08:49:10.914] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+Test Case '-[OBFoundationTests.CameraViewTest test_has_torch]' passed (0.002 seconds).
+[DEBUG] - [2018-09-26 08:49:10.914] CameraView:171 initialize done
+2018-09-26 08:49:10.914714+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.914] CameraView:171 initialize done
+[DEBUG] - [2018-09-26 08:49:10.914] CameraView:127 stop the session
+2018-09-26 08:49:10.914974+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.914] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_instance]' started.
+[DEBUG] - [2018-09-26 08:49:10.916] CameraView:127 stop the session
+2018-09-26 08:49:10.916299+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.916] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_is_UIView]' started.
+[DEBUG] - [2018-09-26 08:49:10.918] CameraView:127 stop the session
+2018-09-26 08:49:10.918177+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.918] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_is_UIView]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_start_and_stop_the_session]' started.
+[DEBUG] - [2018-09-26 08:49:10.920] CameraView:127 stop the session
+2018-09-26 08:49:10.920652+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.920] CameraView:127 stop the session
+[DEBUG] - [2018-09-26 08:49:10.923] CameraView:127 stop the session
+2018-09-26 08:49:10.923558+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.923] CameraView:127 stop the session
+[DEBUG] - [2018-09-26 08:49:10.924] CameraView:127 stop the session
+2018-09-26 08:49:10.923806+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:10.924] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_start_and_stop_the_session]' passed (0.006 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_toggle_torch]' started.
+[DEBUG] - [2018-09-26 08:49:10.926] CameraView:152 initialize the session
+2018-09-26 08:49:10.926075+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:10.926] CameraView:152 initialize the session
+[ERROR] - [2018-09-26 08:49:10.926] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+2018-09-26 08:49:10.926462+0200 Demo[3999:70765] [ERROR] - [2018-09-26 08:49:10.926] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+[DEBUG] - [2018-09-26 08:49:10.926] CameraView:171 initialize done
+2018-09-26 08:49:10.926704+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:10.926] CameraView:171 initialize done
+[DEBUG] - [2018-09-26 08:49:10.927] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_toggle_torch]' passed (0.002 seconds).
+2018-09-26 08:49:10.926939+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:10.927] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_toggle_torch_off_not_support]' started.
+[DEBUG] - [2018-09-26 08:49:10.928] CameraView:152 initialize the session
+2018-09-26 08:49:10.928733+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:10.928] CameraView:152 initialize the session
+[ERROR] - [2018-09-26 08:49:10.929] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+2018-09-26 08:49:10.928981+0200 Demo[3999:70761] [ERROR] - [2018-09-26 08:49:10.929] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+[DEBUG] - [2018-09-26 08:49:10.929] CameraView:171 initialize done
+2018-09-26 08:49:10.929197+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:10.929] CameraView:171 initialize done
+Test Case '-[OBFoundationTests.CameraViewTest test_toggle_torch_off_not_support]' passed (0.002 seconds).
+[DEBUG] - [2018-09-26 08:49:10.929] CameraView:127 stop the session
+2018-09-26 08:49:10.929429+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.929] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_toggle_torch_on_not_support]' started.
+[DEBUG] - [2018-09-26 08:49:10.931] CameraView:152 initialize the session
+2018-09-26 08:49:10.930912+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.931] CameraView:152 initialize the session
+[ERROR] - [2018-09-26 08:49:10.931] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+2018-09-26 08:49:10.931195+0200 Demo[3999:70765] [ERROR] - [2018-09-26 08:49:10.931] CameraView:146 Cannot create AVCaptureDeviceInput: Cannot use Unknown Device
+[DEBUG] - [2018-09-26 08:49:10.931] CameraView:171 initialize done
+2018-09-26 08:49:10.931422+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.931] CameraView:171 initialize done
+Test Case '-[OBFoundationTests.CameraViewTest test_toggle_torch_on_not_support]' passed (0.002 seconds).
+[DEBUG] - [2018-09-26 08:49:10.931] CameraView:127 stop the session
+2018-09-26 08:49:10.931643+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:10.931] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_landscapeLeft]' started.
+[DEBUG] - [2018-09-26 08:49:10.933] CameraView:257 transform: 4
+2018-09-26 08:49:10.933251+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:10.933] CameraView:257 transform: 4
+[DEBUG] - [2018-09-26 08:49:10.935] CameraView:127 stop the session
+2018-09-26 08:49:10.935036+0200 Demo[3999:70792] [DEBUG] - [2018-09-26 08:49:10.935] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_landscapeLeft]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_landscapeRight]' started.
+[DEBUG] - [2018-09-26 08:49:10.936] CameraView:257 transform: 3
+2018-09-26 08:49:10.936583+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.936] CameraView:257 transform: 3
+[DEBUG] - [2018-09-26 08:49:10.937] CameraView:127 stop the session
+2018-09-26 08:49:10.936926+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.937] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_landscapeRight]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_portrait]' started.
+[DEBUG] - [2018-09-26 08:49:10.939] CameraView:257 transform: 1
+2018-09-26 08:49:10.939794+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.939] CameraView:257 transform: 1
+[DEBUG] - [2018-09-26 08:49:10.940] CameraView:127 stop the session
+2018-09-26 08:49:10.940252+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.940] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_portrait]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_upsideDown]' started.
+[DEBUG] - [2018-09-26 08:49:10.942] CameraView:257 transform: 2
+2018-09-26 08:49:10.942361+0200 Demo[3999:70792] [DEBUG] - [2018-09-26 08:49:10.942] CameraView:257 transform: 2
+[DEBUG] - [2018-09-26 08:49:10.942] CameraView:127 stop the session
+2018-09-26 08:49:10.942616+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.942] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_transform_for_upsideDown]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_videoView_has_transform]' started.
+[DEBUG] - [2018-09-26 08:49:10.944] CameraView:257 transform: 1
+2018-09-26 08:49:10.943883+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:10.944] CameraView:257 transform: 1
+[DEBUG] - [2018-09-26 08:49:10.944] CameraView:248 transform: CGAffineTransform(a: 1.0, b: 0.0, c: 0.0, d: 1.0, tx: 0.0, ty: 0.0)
+2018-09-26 08:49:10.944078+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.944] CameraView:248 transform: CGAffineTransform(a: 1.0, b: 0.0, c: 0.0, d: 1.0, tx: 0.0, ty: 0.0)
+2018-09-26 08:49:10.944230+0200 Demo[3999:70755] Failed to bind EAGLDrawable: <CAEAGLLayer: 0x6000023f06e0> to GL_RENDERBUFFER 2
+2018-09-26 08:49:10.944326+0200 Demo[3999:70755] Failed to make complete framebuffer object 8cd6
+[DEBUG] - [2018-09-26 08:49:10.945] CameraView:127 stop the session
+2018-09-26 08:49:10.944806+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.945] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_videoView_has_transform]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_videoView_occupies_all_space]' started.
+[DEBUG] - [2018-09-26 08:49:10.947] CameraView:127 stop the session
+2018-09-26 08:49:10.947023+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.947] CameraView:127 stop the session
+[DEBUG] - [2018-09-26 08:49:10.947] CameraView:127 stop the session
+2018-09-26 08:49:10.947263+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:10.947] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_videoView_occupies_all_space]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.CameraViewTest test_VideoView_was_added_as_subview]' started.
+[DEBUG] - [2018-09-26 08:49:10.950] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.CameraViewTest test_VideoView_was_added_as_subview]' passed (0.002 seconds).
+2018-09-26 08:49:10.950186+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:10.950] CameraView:127 stop the session
+Test Suite 'CameraViewTest' passed at 2018-09-26 08:49:10.951.
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.101 (0.109) seconds
+Test Suite 'ConstraintAlignMatcherTest' started at 2018-09-26 08:49:10.951
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_matcher]' started.
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_matcher]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_matcher_reverser]' started.
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_matcher_reverser]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_matcher_with_gap]' started.
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_matcher_with_gap]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_should_not_pass_for_child_views]' started.
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isAligned_should_not_pass_for_child_views]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isPinned_matcher]' started.
+Test Case '-[OBFoundationTests.ConstraintAlignMatcherTest test_isPinned_matcher]' passed (0.001 seconds).
+Test Suite 'ConstraintAlignMatcherTest' passed at 2018-09-26 08:49:10.956.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.003 (0.005) seconds
+Test Suite 'ConstraintMatcherTest' started at 2018-09-26 08:49:10.957
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher]' started.
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher_with_default_priority]' started.
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher_with_default_priority]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher_with_matcher]' started.
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher_with_matcher]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher_with_priority]' started.
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_height_matcher_with_priority]' passed (0.000 seconds).
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_width_matcher]' started.
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_width_matcher]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_width_matcher_with_default_priority]' started.
+Test Case '-[OBFoundationTests.ConstraintMatcherTest test_width_matcher_with_default_priority]' passed (0.001 seconds).
+Test Suite 'ConstraintMatcherTest' passed at 2018-09-26 08:49:10.962.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.003 (0.006) seconds
+Test Suite 'OBFoundationTests.CoreServiceTest' started at 2018-09-26 08:49:10.963
+Test Case '-[OBFoundationTests.CoreServiceTest test_device_info]' started.
+Test Case '-[OBFoundationTests.CoreServiceTest test_device_info]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.CoreServiceTest test_device_info_is_phone]' started.
+Test Case '-[OBFoundationTests.CoreServiceTest test_device_info_is_phone]' passed (0.000 seconds).
+Test Suite 'OBFoundationTests.CoreServiceTest' passed at 2018-09-26 08:49:10.965.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'DateBuilderTest' started at 2018-09-26 08:49:10.965
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day]' started.
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day_1_feb_1970]' started.
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day_1_feb_1970]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day_1_jan_1971]' started.
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day_1_jan_1971]' passed (0.000 seconds).
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day_2_jan_1970]' started.
+Test Case '-[OBFoundationTests.DateBuilderTest test_create_with_year_month_day_2_jan_1970]' passed (0.000 seconds).
+Test Suite 'DateBuilderTest' passed at 2018-09-26 08:49:10.970.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.004 (0.005) seconds
+Test Suite 'DateExtensionTest' started at 2018-09-26 08:49:10.971
+Test Case '-[OBFoundationTests.DateExtensionTest test_begin_of_day]' started.
+Test Case '-[OBFoundationTests.DateExtensionTest test_begin_of_day]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DateExtensionTest test_same_day]' started.
+Test Case '-[OBFoundationTests.DateExtensionTest test_same_day]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DateExtensionTest test_same_day_with_current_date]' started.
+Test Case '-[OBFoundationTests.DateExtensionTest test_same_day_with_current_date]' passed (0.001 seconds).
+Test Suite 'DateExtensionTest' passed at 2018-09-26 08:49:10.975.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+Test Suite 'DialogBuilderFakeTest' started at 2018-09-26 08:49:10.975
+Test Case '-[OBFoundationTests.DialogBuilderFakeTest test_add_text_field]' started.
+[DEBUG] - [2018-09-26 08:49:10.976] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.976303+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:10.976] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderFakeTest test_add_text_field]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderFakeTest test_add_text_field_adds_to_list]' started.
+[DEBUG] - [2018-09-26 08:49:10.981] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.981336+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.981] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderFakeTest test_add_text_field_adds_to_list]' passed (0.003 seconds).
+Test Suite 'DialogBuilderFakeTest' passed at 2018-09-26 08:49:10.984.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.007 (0.008) seconds
+Test Suite 'OBFoundationTests.DialogBuilderTest' started at 2018-09-26 08:49:10.984
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_action]' started.
+[DEBUG] - [2018-09-26 08:49:10.985] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.985347+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:10.985] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_action]' passed (0.006 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_action_is_normal]' started.
+[DEBUG] - [2018-09-26 08:49:10.992] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.992123+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:10.992] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_action_is_normal]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_cancel_action]' started.
+[DEBUG] - [2018-09-26 08:49:10.994] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.994675+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.994] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:10.995] ResourceKit:118 localized "BUTTON_TITLE_CANCEL": Cancel
+2018-09-26 08:49:10.994919+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:10.995] ResourceKit:118 localized "BUTTON_TITLE_CANCEL": Cancel
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_cancel_action]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_cancel_action_with_title]' started.
+[DEBUG] - [2018-09-26 08:49:10.997] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.996812+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:10.997] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_cancel_action_with_title]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_destructive_action]' started.
+[DEBUG] - [2018-09-26 08:49:10.998] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:10.998660+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:10.998] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_destructive_action]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_ok_action]' started.
+[DEBUG] - [2018-09-26 08:49:11.000] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.000645+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.000] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.001] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.000899+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.001] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_ok_action]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_text_field]' started.
+[DEBUG] - [2018-09-26 08:49:11.002] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.002248+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.002] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.003] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.002715+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.003] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_add_text_field]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_default_style_is_action_sheet_on_iphone]' started.
+[DEBUG] - [2018-09-26 08:49:11.006] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.006068+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.006] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.006] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.006628+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.006] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_default_style_is_action_sheet_on_iphone]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_has_message]' started.
+[DEBUG] - [2018-09-26 08:49:11.008] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.007807+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:11.008] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.008] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.008391+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.008] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_has_message]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_has_title]' started.
+[DEBUG] - [2018-09-26 08:49:11.009] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.009630+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.009] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.010] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.010126+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.010] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_has_title]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_instance]' started.
+[DEBUG] - [2018-09-26 08:49:11.011] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.011211+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.011] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilderTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_ok_action_as_default_action_it_nothing_else_was_added]' started.
+[DEBUG] - [2018-09-26 08:49:11.012] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.012472+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.012] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.013] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.013021+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.013] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_ok_action_as_default_action_it_nothing_else_was_added]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_show]' started.
+[DEBUG] - [2018-09-26 08:49:11.014] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.014599+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.014] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.015] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.015290+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.015] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_show]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_show_as_popover_using_alertView_style]' started.
+[DEBUG] - [2018-09-26 08:49:11.017] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.016785+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.017] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.017] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.017388+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.017] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_show_as_popover_using_alertView_style]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_style_is_alert_when_message_is_present]' started.
+[DEBUG] - [2018-09-26 08:49:11.019] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.018951+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.019] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.019] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.019537+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.019] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_style_is_alert_when_message_is_present]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.DialogBuilderTest test_style_is_alert_when_title_is_present]' started.
+[DEBUG] - [2018-09-26 08:49:11.021] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.020885+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.021] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.021] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.021510+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.021] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.DialogBuilderTest test_style_is_alert_when_title_is_present]' passed (0.002 seconds).
+Test Suite 'OBFoundationTests.DialogBuilderTest' passed at 2018-09-26 08:49:11.022.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.032 (0.038) seconds
+Test Suite 'OBFoundationTests.DialogBuilder_PopOver_Test' started at 2018-09-26 08:49:11.023
+Test Case '-[OBFoundationTests.DialogBuilder_PopOver_Test test_show_as_popover_using_barButtonItem_sets_the_popoverPresentationController_barButtonItem]' started.
+[DEBUG] - [2018-09-26 08:49:11.025] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.025157+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.025] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilder_PopOver_Test test_show_as_popover_using_barButtonItem_sets_the_popoverPresentationController_barButtonItem]' passed (0.008 seconds).
+Test Case '-[OBFoundationTests.DialogBuilder_PopOver_Test test_show_as_popover_using_view_sets_the_popoverPresentationController_sourceView]' started.
+[DEBUG] - [2018-09-26 08:49:11.032] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.032665+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.032] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.DialogBuilder_PopOver_Test test_show_as_popover_using_view_sets_the_popoverPresentationController_sourceView]' passed (0.003 seconds).
+Test Suite 'OBFoundationTests.DialogBuilder_PopOver_Test' passed at 2018-09-26 08:49:11.035.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.011 (0.012) seconds
+Test Suite 'DocumentActivityItemTest' started at 2018-09-26 08:49:11.036
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_data_identifier]' started.
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_data_identifier]' passed (0.014 seconds).
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_has_subject]' started.
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_has_subject]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_has_subject_2]' started.
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_has_subject_2]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_instance]' started.
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_instance_is_UIActivityItemProvider]' started.
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_instance_is_UIActivityItemProvider]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_item_data]' started.
+Test Case '-[OBFoundationTests.DocumentActivityItemTest test_item_data]' passed (0.001 seconds).
+Test Suite 'DocumentActivityItemTest' passed at 2018-09-26 08:49:11.059.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.020 (0.023) seconds
+Test Suite 'FileManagerDirectoryExtensionTest' started at 2018-09-26 08:49:11.059
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_exists]' started.
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_exists]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_is_empty]' started.
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_is_empty]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_is_empty_after_deleting_child]' started.
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_is_empty_after_deleting_child]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_is_not_empty]' started.
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_is_not_empty]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_not_exists]' started.
+Test Case '-[OBFoundationTests.FileManagerDirectoryExtensionTest test_directory_not_exists]' passed (0.001 seconds).
+Test Suite 'FileManagerDirectoryExtensionTest' passed at 2018-09-26 08:49:11.068.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.006 (0.009) seconds
+Test Suite 'FilenameUtilsTest' started at 2018-09-26 08:49:11.069
+Test Case '-[OBFoundationTests.FilenameUtilsTest testFileNameFromExtension]' started.
+Test Case '-[OBFoundationTests.FilenameUtilsTest testFileNameFromExtension]' passed (0.001 seconds).
+Test Suite 'FilenameUtilsTest' passed at 2018-09-26 08:49:11.070.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'GeometryTest' started at 2018-09-26 08:49:11.071
+Test Case '-[OBFoundationTests.GeometryTest test_point_average_x]' started.
+Test Case '-[OBFoundationTests.GeometryTest test_point_average_x]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.GeometryTest test_point_average_y]' started.
+Test Case '-[OBFoundationTests.GeometryTest test_point_average_y]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.GeometryTest test_quadrilateral_average]' started.
+Test Case '-[OBFoundationTests.GeometryTest test_quadrilateral_average]' passed (0.001 seconds).
+Test Suite 'GeometryTest' passed at 2018-09-26 08:49:11.075.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+Test Suite 'JSONCoderTest' started at 2018-09-26 08:49:11.075
+Test Case '-[OBFoundationTests.JSONCoderTest test_empty_jsonString]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_empty_jsonString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_array]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_array]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_encodeable]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_encodeable]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_encodeable_array]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_encodeable_array]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_int]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_int]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_int_array]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_int_array]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_point]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_point]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_string]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_encode_string]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONCoderTest test_instance]' started.
+Test Case '-[OBFoundationTests.JSONCoderTest test_instance]' passed (0.001 seconds).
+Test Suite 'JSONCoderTest' passed at 2018-09-26 08:49:11.087.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.008 (0.012) seconds
+Test Suite 'JSONDecoderTest' started at 2018-09-26 08:49:11.087
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_array]' started.
+[ERROR] - [2018-09-26 08:49:11.089] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.089383+0200 Demo[3999:70761] [ERROR] - [2018-09-26 08:49:11.089] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_array]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_boolean]' started.
+[ERROR] - [2018-09-26 08:49:11.091] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.090867+0200 Demo[3999:70761] [ERROR] - [2018-09-26 08:49:11.091] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_boolean]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_boolean_value_false]' started.
+[ERROR] - [2018-09-26 08:49:11.092] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.091983+0200 Demo[3999:70765] [ERROR] - [2018-09-26 08:49:11.092] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_boolean_value_false]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_encodeable]' started.
+[ERROR] - [2018-09-26 08:49:11.093] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.093332+0200 Demo[3999:70808] [ERROR] - [2018-09-26 08:49:11.093] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_encodeable]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_encodeable_array]' started.
+[ERROR] - [2018-09-26 08:49:11.095] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.094851+0200 Demo[3999:70808] [ERROR] - [2018-09-26 08:49:11.095] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_encodeable_array]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_int_array]' started.
+[ERROR] - [2018-09-26 08:49:11.096] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.096147+0200 Demo[3999:70794] [ERROR] - [2018-09-26 08:49:11.096] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_int_array]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_point]' started.
+[ERROR] - [2018-09-26 08:49:11.097] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.097330+0200 Demo[3999:70765] [ERROR] - [2018-09-26 08:49:11.097] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_point]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_string]' started.
+[ERROR] - [2018-09-26 08:49:11.098] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.JSONDecoderTest test_decode_string]' passed (0.001 seconds).
+2018-09-26 08:49:11.098608+0200 Demo[3999:70794] [ERROR] - [2018-09-26 08:49:11.098] JSONDecoder:25 cannot decode string
+Test Suite 'JSONDecoderTest' passed at 2018-09-26 08:49:11.099.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.008 (0.012) seconds
+Test Suite 'LogFormatterTest' started at 2018-09-26 08:49:11.100
+Test Case '-[OBFoundationTests.LogFormatterTest test_date_formatter_has_pattern]' started.
+Test Case '-[OBFoundationTests.LogFormatterTest test_date_formatter_has_pattern]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogFormatterTest test_debug_message]' started.
+Test Case '-[OBFoundationTests.LogFormatterTest test_debug_message]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogFormatterTest test_has_date_formatter]' started.
+Test Case '-[OBFoundationTests.LogFormatterTest test_has_date_formatter]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogFormatterTest test_instance]' started.
+Test Case '-[OBFoundationTests.LogFormatterTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogFormatterTest test_message_contains_date]' started.
+Test Case '-[OBFoundationTests.LogFormatterTest test_message_contains_date]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogFormatterTest test_verbose_message]' started.
+Test Case '-[OBFoundationTests.LogFormatterTest test_verbose_message]' passed (0.002 seconds).
+Test Suite 'LogFormatterTest' passed at 2018-09-26 08:49:11.109.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.006 (0.009) seconds
+Test Suite 'LogTest' started at 2018-09-26 08:49:11.110
+Test Case '-[OBFoundationTests.LogTest test_activate_and_deactivate_logging]' started.
+2018-09-26 08:49:11.110765+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.110986+0200 Demo[3999:70755] create file logger
+2018-09-26 08:49:11.111203+0200 Demo[3999:70755] set log level: 0
+2018-09-26 08:49:11.111677+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+Test Case '-[OBFoundationTests.LogTest test_activate_and_deactivate_logging]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.LogTest test_activate_logging]' started.
+2018-09-26 08:49:11.116410+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.116545+0200 Demo[3999:70755] create file logger
+2018-09-26 08:49:11.116831+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+Test Case '-[OBFoundationTests.LogTest test_activate_logging]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogTest test_configure_debug]' started.
+2018-09-26 08:49:11.118309+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.118488+0200 Demo[3999:70755] create file logger
+2018-09-26 08:49:11.118760+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+Test Case '-[OBFoundationTests.LogTest test_configure_debug]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogTest test_configure_verbose]' started.
+2018-09-26 08:49:11.119945+0200 Demo[3999:70763] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-10-684.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-10-684.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-10-684.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-10-684.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-10-684.log, NSUnderlyingError=0x600002d084b0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.120430+0200 Demo[3999:70755] set log level: 5
+2018-09-26 08:49:11.120584+0200 Demo[3999:70755] create file logger
+2018-09-26 08:49:11.120966+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+Test Case '-[OBFoundationTests.LogTest test_configure_verbose]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.LogTest test_default_log_directory_is_created_exists]' started.
+2018-09-26 08:49:11.124754+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.124908+0200 Demo[3999:70755] create file logger
+[DEBUG] - [2018-09-26 08:49:11.125] LogTest:89 log something to that the log file is created
+2018-09-26 08:49:11.125570+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.125] LogTest:89 log something to that the log file is created
+2018-09-26 08:49:11.128366+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+2018-09-26 08:49:11.129584+0200 Demo[3999:70763] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-126.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-126.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.log, NSUnderlyingError=0x600002d08cc0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.129717+0200 Demo[3999:70761] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-126.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-126.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.log, NSUnderlyingError=0x600002d0dfe0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.129687+0200 Demo[3999:70814] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-126.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-126.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-126.log, NSUnderlyingError=0x600002df7600 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Case '-[OBFoundationTests.LogTest test_default_log_directory_is_created_exists]' passed (0.006 seconds).
+Test Case '-[OBFoundationTests.LogTest test_default_log_directory_is_created_exists_at_custom_path]' started.
+2018-09-26 08:49:11.133985+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.134136+0200 Demo[3999:70755] create file logger
+[DEBUG] - [2018-09-26 08:49:11.134] LogTest:101 log something to that the log file is created
+2018-09-26 08:49:11.134639+0200 Demo[3999:70814] [DEBUG] - [2018-09-26 08:49:11.134] LogTest:101 log something to that the log file is created
+2018-09-26 08:49:11.136787+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+Test Case '-[OBFoundationTests.LogTest test_default_log_directory_is_created_exists_at_custom_path]' passed (0.005 seconds).
+2018-09-26 08:49:11.137958+0200 Demo[3999:70763] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-135.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-135.log” couldn’t be moved to “MyPath” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-135.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUnderlyingError=0x600002d06040 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Case '-[OBFoundationTests.LogTest test_default_log_directory_name]' started.
+2018-09-26 08:49:11.139666+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+2018-09-26 08:49:11.140941+0200 Demo[3999:70763] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-135.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-135.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUnderlyingError=0x600002d0e460 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.141033+0200 Demo[3999:70762] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-135.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-135.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Container2018-09-26 08:49:11.141006+0200 Demo[3999:70809] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-135.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-135.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUnderlyingError=0x600002d08570 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+s/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-135.log, NSUnderlyingError=0x600002d06190 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Case '-[OBFoundationTests.LogTest test_default_log_directory_name]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.LogTest test_has_formatter]' started.
+2018-09-26 08:49:11.143477+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+Test Case '-[OBFoundationTests.LogTest test_has_formatter]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.LogTest test_has_log]' started.
+2018-09-26 08:49:11.144974+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.145164+0200 Demo[3999:70755] create file logger
+[DEBUG] - [2018-09-26 08:49:11.145] LogTest:120 log something to that the log file is created
+2018-09-26 08:49:11.145614+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:11.145] LogTest:120 log something to that the log file is created
+2018-09-26 08:49:11.184369+0200 Demo[3999:70819] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+2018-09-26 08:49:11.229876+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+Test Case '-[OBFoundationTests.LogTest test_has_log]' passed (0.087 seconds).
+2018-09-26 08:49:11.231339+0200 Demo[3999:70809] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-146.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-146.log” couldn’t be moved to “MyPath” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-146.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCATest Case '-[OBFoundationTests.LogTest test_has_no_log]' started.
+9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUnderlyingError=0x600002df7660 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.231337+0200 Demo[3999:70816] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-146.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-146.log” couldn’t be moved to “MyPath” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-146.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUnderlyingError=0x600002d08420 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.232709+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+2018-09-26 08:49:11.233078+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+2018-09-26 08:49:11.234236+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+Test Case '-[OBFoundationTests.LogTest test_has_no_log]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.LogTest test_instance]' started.
+2018-09-26 08:49:11.235900+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs
+Test Case '-[OBFoundationTests.LogTest test_instance]' passed (0.002 seconds).
+2018-09-26 08:49:11.237416+0200 Demo[3999:70816] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-146.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-146.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUnderlyingError=0x600002d08db0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Case '-[OBFoundationTests.LogTest test_log_directory_name]' started.
+2018-09-26 08:49:11.237456+0200 Demo[3999:70762] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-146.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-146.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUnderlyingError=0x600002df4b70 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.237533+0200 Demo[3999:70792] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-146.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-146.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-146.log, NSUnderlyingError=0x600002d06100 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.242085+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+Test Case '-[OBFoundationTests.LogTest test_log_directory_name]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.LogTest test_LogFiles]' started.
+2018-09-26 08:49:11.243527+0200 Demo[3999:70755] set log level: 4
+2018-09-26 08:49:11.243666+0200 Demo[3999:70755] create file logger
+[DEBUG] - [2018-09-26 08:49:11.245] LogTest:0 test
+2018-09-26 08:49:11.245658+0200 Demo[3999:70814] [DEBUG] - [2018-09-26 08:49:11.245] LogTest:0 test
+[DEBUG] - [2018-09-26 08:49:11.248] LogTest:0 test
+2018-09-26 08:49:11.248427+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.248] LogTest:0 test
+2018-09-26 08:49:11.265704+0200 Demo[3999:70761] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-246.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-246.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-246.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Container2018-09-26 08:49:11.265704+0200 Demo[3999:70763] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-246.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-246.log” couldn’t be moved to “Logs” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-246.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUnderlyingError=0x600002d05ef0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+s/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUnderlyingError=0x600002d0d830 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+[DEBUG] - [2018-09-26 08:49:11.268] LogTest:0 test
+2018-09-26 08:49:11.268465+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.268] LogTest:0 test
+2018-09-26 08:49:11.268866+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+2018-09-26 08:49:11.269607+0200 Demo[3999:70755] logFiles as: /Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath
+Test Case '-[OBFoundationTests.LogTest test_LogFiles]' passed (0.028 seconds).
+2018-09-26 08:49:11.271419+0200 Demo[3999:70816] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-246.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-246.log” couldn’t be moved to “MyPath” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUnderlyingError=0x600002d0f2a0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.271423+0200 Demo[3999:70794] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-246.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-246.log” couldn’t be moved to “MyPath” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BTest Suite 'LogTest' passed at 2018-09-26 08:49:11.272.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.151 (0.162) seconds
+DF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUnderlyingError=0x600002d06520 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2018-09-26 08:49:11.271457+0200 Demo[3999:70822] DDLogFileInfo: Error renaming file (org.openbakery.Demo 2018-09-26--06-49-11-246.log): Error Domain=NSCocoaErrorDomain Code=4 "“org.openbakery.Demo 2018-09-26--06-49-11-246.log” couldn’t be moved to “MyPath” because either the former doesn’t exist, or the folder containing the latter doesn’t exist." UserInfo={NSSourceFilePathErrorKey=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUserStringVariant=(
+    Move
+), NSDestinationFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.archived.log, NSFilePath=/Users/rene/Library/Developer/CoreSimulator/Devices/AF41A790-CA6C-4A5B-BDF7-8AECEDB9FCA9/data/Containers/Data/Application/D372E519-84FF-40AE-B4BB-0FD8A687C5D9/Documents/Logs/MyPath/org.openbakery.Demo 2018-09-26--06-49-11-246.log, NSUnderlyingError=0x600002d06490 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Suite 'MailShareServiceTest' started at 2018-09-26 08:49:11.275
+Test Case '-[OBFoundationTests.MailShareServiceTest test_can_send_mail]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_can_send_mail]' passed (0.242 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_has_dialogBuilderCreator]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_has_dialogBuilderCreator]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_instance]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_instance]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_mail_has_proper_recipient]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_mail_has_proper_recipient]' passed (0.045 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_mail_has_proper_subject]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_mail_has_proper_subject]' passed (0.026 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_creates_and_holds_composer_instance]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_creates_and_holds_composer_instance]' passed (0.017 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_has_attachment]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_has_attachment]' passed (0.011 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_has_mail_composer]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_has_mail_composer]' passed (0.016 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_has_mail_delegate]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_has_mail_delegate]' passed (0.013 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_success_calls_completion]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_success_calls_completion]' passed (0.021 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_success_resets_compose_and_completion]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_success_resets_compose_and_completion]' passed (0.026 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_was_presented]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_document_was_presented]' passed (0.013 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_documents_has_attachments]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_documents_has_attachments]' passed (0.015 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_has_delegate]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_has_delegate]' passed (0.015 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_mail_has_proper_message]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_mail_has_proper_message]' passed (0.012 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_mail_has_proper_subject]' started.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_mail_has_proper_subject]' passed (0.010 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_was_presented]' started.
+2018-09-26 08:49:11.777122+0200 Demo[3999:70755] [Application] -[UIApplication beginIgnoringInteractionEvents] overflow. Ignoring.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_was_presented]' passed (0.012 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_with_data_has_proper_data]' started.
+2018-09-26 08:49:11.791778+0200 Demo[3999:70755] [Application] -[UIApplication beginIgnoringInteractionEvents] overflow. Ignoring.
+/Users/rene/workspace/openbakery/frameworks/OBFoundation/OBFoundationTests/Source/Share/MailShareServiceTest.swift:251: error: -[OBFoundationTests.MailShareServiceTest test_send_message_with_data_has_proper_data] : failed - GOT: "application/vnd.elo.ecd", EXPECTED: equal to application/octet-stream
+Test Case '-[OBFoundationTests.MailShareServiceTest test_send_message_with_data_has_proper_data]' failed (0.017 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_for_sord]' started.
+[DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.797312+0200 Demo[3999:70808] [DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_for_sord]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_has_ok_button]' started.
+[DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+2018-09-26 08:49:11.799369+0200 Demo[3999:70816] [DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+[DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+2018-09-26 08:49:11.799633+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_has_ok_button]' passed (0.002 seconds).
+XCTes[DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+tOutputBarrier2018-09-26 08:49:11.799878+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:11.797] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+[DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.802217+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_has_proper_message]' started.
+[DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+2018-09-26 08:49:11.802475+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+[DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+2018-09-26 08:49:11.802729+0200 Demo[3999:70763] [DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+[DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.802985+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+[DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.804039+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:11.799] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+[DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.804293+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_has_proper_message]' passed (0.002 seconds).
+[DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+2018-09-26 08:49:11.804545+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+[DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_has_proper_title]' started.
+2018-09-26 08:49:11.804798+0200 Demo[3999:70819] [DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+[DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.807053+0200 Demo[3999:70816] [DEBUG] - [2018-09-26 08:49:11.804] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+[DEBUG] - [2018-09-26 08:49:11.808] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.808673+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.808] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.MailShareServiceTest test_show_message_when_not_able_so_send_mail_has_proper_title]' passed (0.004 seconds).
+[DEBUG] - [2018-09-26 08:49:11.809] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+2018-09-26 08:49:11.808960+0200 Demo[3999:70792] [DEBUG] - [2018-09-26 08:49:11.809] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+[DEBUG] - [2018-09-26 08:49:11.809] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+2018-09-26 08:49:11.809181+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.809] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_MESSAGE": No e-mail account has been configured on this device.
+Test Suite 'MailShareServiceTest' failed at 2018-09-26 08:49:11.809.
+	 Executed 22 tests, with 1 failure (0 unexpected) in 0.523 (0.534) seconds
+[DEBUG] - [2018-09-26 08:49:11.809] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.809372+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.809] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Suite 'NotificationServiceFakeTest' started at 2018-09-26 08:49:11.812
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_has_observer]' started.
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_has_observer]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_has_observer_with_block]' started.
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_has_observer_with_block]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_remove_observer]' started.
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_remove_observer]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_remove_observer_using_token]' started.
+Test Case '-[OBFoundationTests.NotificationServiceFakeTest test_remove_observer_using_token]' passed (0.001 seconds).
+Test Suite 'NotificationServiceFakeTest' passed at 2018-09-26 08:49:11.821.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.007 (0.009) seconds
+Test Suite 'NotificationServiceTest' started at 2018-09-26 08:49:11.822
+Test Case '-[OBFoundationTests.NotificationServiceTest test_add_observer]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_add_observer]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_add_observer_using_block]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_add_observer_using_block]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_add_observer_using_block_stores_token]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_add_observer_using_block_stores_token]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_instance]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_all_observers]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_all_observers]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_all_observers_on_deinit]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_all_observers_on_deinit]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_observer]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_observer]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_observer_with_block]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_observer_with_block]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_observer_with_block_removes_from_notificationCenter]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_remove_observer_with_block_removes_from_notificationCenter]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_on_main_thread]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_on_main_thread]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_on_main_thread_with_object]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_on_main_thread_with_object]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_with_object]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_with_object]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_with_userInfo]' started.
+Test Case '-[OBFoundationTests.NotificationServiceTest test_run_post_notification_with_userInfo]' passed (0.002 seconds).
+Test Suite 'NotificationServiceTest' passed at 2018-09-26 08:49:11.842.
+	 Executed 14 tests, with 0 failures (0 unexpected) in 0.014 (0.021) seconds
+Test Suite 'PathTest' started at 2018-09-26 08:49:11.843
+Test Case '-[OBFoundationTests.PathTest test_caches_path]' started.
+Test Case '-[OBFoundationTests.PathTest test_caches_path]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PathTest test_documentPath]' started.
+Test Case '-[OBFoundationTests.PathTest test_documentPath]' passed (0.001 seconds).
+Test Suite 'PathTest' passed at 2018-09-26 08:49:11.845.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'PinLayoutTest' started at 2018-09-26 08:49:11.845
+Test Case '-[OBFoundationTests.PinLayoutTest test_align_views_to_left]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_align_views_to_left]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_align_views_to_top]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_align_views_to_top]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_align_views_to_trailing_with_gap]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_align_views_to_trailing_with_gap]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_bottom_with_saveGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_bottom_with_saveGuide]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_leading_with_readableGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_leading_with_readableGuide]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_leading_with_saveGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_leading_with_saveGuide]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_leading_with_saveGuide_and_gap]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_leading_with_saveGuide_and_gap]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_top_with_saveGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_top_with_saveGuide]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_trailing_with_readableGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_trailing_with_readableGuide]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_trailing_with_saveGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pin_trailing_with_saveGuide]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_pinView_to_bottom_with_relation]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_pinView_to_bottom_with_relation]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_constraints_and_finish_resets_recorded_constraints]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_constraints_and_finish_resets_recorded_constraints]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_constraints_and_start_a_second_time_returns_only_the_new]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_constraints_and_start_a_second_time_returns_only_the_new]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_constraints_records_pin_constraints]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_constraints_records_pin_constraints]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_equal_constraint]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_equal_constraint]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_equalWidthAndHeight_constraint]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_equalWidthAndHeight_constraint]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_pin_with_safeGuide_constraint]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_pin_with_safeGuide_constraint]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_pinWithGuide_constraint]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_pinWithGuide_constraint]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_setHeight_constraint]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_record_setHeight_constraint]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_remove_height_constraint_should_remove_it]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_remove_height_constraint_should_remove_it]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest test_remove_pin_constraints_should_remove_it]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest test_remove_pin_constraints_should_remove_it]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testCenterView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testCenterView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testCenterViewWithTwoViews]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testCenterViewWithTwoViews]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testFindConstraint]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testFindConstraint]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testHeight]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testHeight]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testHorizontalCenterTwoView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testHorizontalCenterTwoView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testHorizontalCenterView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testHorizontalCenterView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testMinHeight]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testMinHeight]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testMinWidth]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testMinWidth]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeBaseLineBottom]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeBaseLineBottom]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeBaseLineTop]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeBaseLineTop]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeBottom]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeBottom]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeLeft]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeLeft]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeRight]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeRight]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeTop]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeTop]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeTopWithToView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinEdgeTopWithToView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinToAllEdges]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinToAllEdges]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testPinViewToGuide]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testPinViewToGuide]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testSetWidthAndHeightEqualOfView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testSetWidthAndHeightEqualOfView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testTwoViewWithSameHeight]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testTwoViewWithSameHeight]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testTwoViewWithSameHeightWithPriority]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testTwoViewWithSameHeightWithPriority]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testTwoViewWithSameWidth]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testTwoViewWithSameWidth]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testVerticalCenterTwoView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testVerticalCenterTwoView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testVerticalCenterView]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testVerticalCenterView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameHeight]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameHeight]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameHeightWithPriority]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameHeightWithPriority]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameWidth]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameWidth]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameWidthWithPriority]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testViewsHaveSameWidthWithPriority]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.PinLayoutTest testWidth]' started.
+Test Case '-[OBFoundationTests.PinLayoutTest testWidth]' passed (0.001 seconds).
+Test Suite 'PinLayoutTest' passed at 2018-09-26 08:49:11.907.
+	 Executed 49 tests, with 0 failures (0 unexpected) in 0.043 (0.062) seconds
+Test Suite 'PinLayout_iOS10_Test' started at 2018-09-26 08:49:11.908
+Test Case '-[OBFoundationTests.PinLayout_iOS10_Test test_iOS10_safeGuide_Top_pins_using_topLayoutGuide]' started.
+Test Case '-[OBFoundationTests.PinLayout_iOS10_Test test_iOS10_safeGuide_Top_pins_using_topLayoutGuide]' passed (0.002 seconds).
+Test Suite 'PinLayout_iOS10_Test' passed at 2018-09-26 08:49:11.912.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+Test Suite 'QRCodeScanViewTest' started at 2018-09-26 08:49:11.912
+Test Case '-[OBFoundationTests.QRCodeScanViewTest test_has_barcode_detector]' started.
+[DEBUG] - [2018-09-26 08:49:11.920] CameraView:127 stop the session
+2018-09-26 08:49:11.920609+0200 Demo[3999:70814] [DEBUG] - [2018-09-26 08:49:11.920] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.QRCodeScanViewTest test_has_barcode_detector]' passed (0.008 seconds).
+Test Case '-[OBFoundationTests.QRCodeScanViewTest test_instance]' started.
+[DEBUG] - [2018-09-26 08:49:11.923] CameraView:127 stop the session
+2018-09-26 08:49:11.922960+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:11.923] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.QRCodeScanViewTest test_instance]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.QRCodeScanViewTest test_text_detected_calls_closure]' started.
+[DEBUG] - [2018-09-26 08:49:11.928] QRCodeScanView:44 Message: 123
+2018-09-26 08:49:11.928303+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.928] QRCodeScanView:44 Message: 123
+[DEBUG] - [2018-09-26 08:49:11.928] CameraView:127 stop the session
+Test Case '-[OBFoundationTests.QRCodeScanViewTest test_text_detected_calls_closure]' passed (0.005 seconds).
+2018-09-26 08:49:11.928543+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.928] CameraView:127 stop the session
+Test Suite 'QRCodeScanViewTest' passed at 2018-09-26 08:49:11.929.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.015 (0.017) seconds
+Test Suite 'QuadrilateralTest' started at 2018-09-26 08:49:11.929
+Test Case '-[OBFoundationTests.QuadrilateralTest test_create_new_with_edge_offset_for_topLeft]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_create_new_with_edge_offset_for_topLeft]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_create_new_with_edge_offset_for_topRight]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_create_new_with_edge_offset_for_topRight]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_decode]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_decode]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_decode_encode]' started.
+[ERROR] - [2018-09-26 08:49:11.933] JSONDecoder:25 cannot decode string
+2018-09-26 08:49:11.933557+0200 Demo[3999:70814] [ERROR] - [2018-09-26 08:49:11.933] JSONDecoder:25 cannot decode string
+Test Case '-[OBFoundationTests.QuadrilateralTest test_decode_encode]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_edge_is_bottomLeft]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_edge_is_bottomLeft]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_edge_is_not_found]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_edge_is_not_found]' passed (0.000 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_edge_is_topLeft]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_edge_is_topLeft]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_equal]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_equal]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_not_equal]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_not_equal]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_offset_x]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_offset_x]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_offset_y]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_offset_y]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_rotate]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_rotate]' passed (0.000 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_rotate_90clockwise]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_rotate_90clockwise]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.QuadrilateralTest test_scale]' started.
+Test Case '-[OBFoundationTests.QuadrilateralTest test_scale]' passed (0.001 seconds).
+Test Suite 'QuadrilateralTest' passed at 2018-09-26 08:49:11.944.
+	 Executed 14 tests, with 0 failures (0 unexpected) in 0.009 (0.014) seconds
+Test Suite 'ResourceKitTest' started at 2018-09-26 08:49:11.944
+Test Case '-[OBFoundationTests.ResourceKitTest test_icon]' started.
+[DEBUG] - [2018-09-26 08:49:11.945] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.945208+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.945] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_icon]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ResourceKitTest test_icon_with_size]' started.
+[DEBUG] - [2018-09-26 08:49:11.946] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.946488+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.946] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_icon_with_size]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ResourceKitTest test_image]' started.
+[DEBUG] - [2018-09-26 08:49:11.948] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.947690+0200 Demo[3999:70792] [DEBUG] - [2018-09-26 08:49:11.948] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_image]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ResourceKitTest test_image_with_size]' started.
+[DEBUG] - [2018-09-26 08:49:11.949] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.948851+0200 Demo[3999:70816] [DEBUG] -Test Case '-[OBFoundationTests.ResourceKitTest test_image_with_size]' passed (0.001 seconds).
+ [2018-09-26 08:49:11.949] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_instance]' started.
+[DEBUG] - [2018-09-26 08:49:11.952] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.951906+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:11.952] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ResourceKitTest test_localized_string]' started.
+[DEBUG] - [2018-09-26 08:49:11.953] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_localized_string]' passed (0.001 seconds).
+2018-09-26 08:49:11.952891+0200 Demo[3999:70816] [DEBUG] - [2018-09-26 08:49:11.953] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.953] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+2018-09-26 08:49:11.953134+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:11.953] ResourceKit:118 localized "BUTTON_TITLE_OK": Ok
+Test Case '-[OBFoundationTests.ResourceKitTest test_localized_string_from_bundle]' started.
+[DEBUG] - [2018-09-26 08:49:11.954] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.953793+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:11.954] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.954] ResourceKit:17 bundle with identifier
+Test Case '-[OB2018-09-26 08:49:11.953993+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:11.954] ResourceKit:17 bundle with identifier
+FoundationTests.ResourceKitTest test_localized_string_from_bundle]' passed (0.001 seconds).
+[DEBUG] - [2018-09-26 08:49:11.954] ResourceKit:118 localized "KEY_DONE": Fertig
+2018-09-26 08:49:11.956808+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:11.954] ResourceKit:118 localized "KEY_DONE": Fertig
+Test Case '-[OBFoundationTests.ResourceKitTest test_localized_string_from_bundle_and_table]' started.
+[DEBUG] - [2018-09-26 08:49:11.957] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.957540+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:11.957] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.ResourceKitTest test_localized_string_from_bundle_and_table]' passed (0.001 seconds).
+[DEBUG] - [2018-09-26 08:49:11.957] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:11.957812+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:11.957] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:11.957] ResourceKit:118 localized "KEY_DONE": Fertig
+Test Suite 'ResourceKitTest' passed at 2018-09-26 08:49:11.958.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.006 (0.014) seconds
+2018-09-26 08:49:11.958041+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:11.957] ResourceKit:118 localized "KEY_DONE": Fertig
+Test Suite 'ShareSheetServiceTest' started at 2018-09-26 08:49:11.958
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_instance]' started.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_opened_UIActivityViewController_as_source_set_on_the_iPad]' started.
+2018-09-26 08:49:12.281517+0200 Demo[3999:70755] [Application] -[UIApplication beginIgnoringInteractionEvents] overflow. Ignoring.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_opened_UIActivityViewController_as_source_set_on_the_iPad]' passed (0.324 seconds).
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_share_document_activity_contains_document_url]' started.
+2018-09-26 08:49:12.293862+0200 Demo[3999:70755] [Application] -[UIApplication beginIgnoringInteractionEvents] overflow. Ignoring.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_share_document_activity_contains_document_url]' passed (0.010 seconds).
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_share_documents]' started.
+2018-09-26 08:49:12.303322+0200 Demo[3999:70755] [Application] -[UIApplication beginIgnoringInteractionEvents] overflow. Ignoring.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_share_documents]' passed (0.009 seconds).
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_shareDocument_has_source_barButtonItem_for_set_for_iPad]' started.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_shareDocument_has_source_barButtonItem_for_set_for_iPad]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_shareDocument_has_source_view_for_set_for_iPad]' started.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_shareDocument_has_source_view_for_set_for_iPad]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_shareDocument_opens_UIActivityViewController]' started.
+Test Case '-[OBFoundationTests.ShareSheetServiceTest test_shareDocument_opens_UIActivityViewController]' passed (0.007 seconds).
+Test Suite 'ShareSheetServiceTest' passed at 2018-09-26 08:49:12.314.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.351 (0.355) seconds
+Test Suite 'StringDisclosureTableViewCellTest' started at 2018-09-26 08:49:12.314
+Test Case '-[OBFoundationTests.StringDisclosureTableViewCellTest test_has_disclosure]' started.
+Test Case '-[OBFoundationTests.StringDisclosureTableViewCellTest test_has_disclosure]' passed (0.008 seconds).
+Test Case '-[OBFoundationTests.StringDisclosureTableViewCellTest test_value]' started.
+Test Case '-[OBFoundationTests.StringDisclosureTableViewCellTest test_value]' passed (0.001 seconds).
+Test Suite 'StringDisclosureTableViewCellTest' passed at 2018-09-26 08:49:12.325.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.009 (0.010) seconds
+Test Suite 'SwitchTableViewCellTest' started at 2018-09-26 08:49:12.325
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_initial_switch_state_is_false]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_initial_switch_state_is_false]' passed (0.008 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_initial_switch_state_is_true]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_initial_switch_state_is_true]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_onChange_registered_at_model]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_onChange_registered_at_model]' passed (0.006 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_remove_action_on_reuse_of_the_cell]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_remove_action_on_reuse_of_the_cell]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_send_valueChanged_event_calls_closure_with_switch_state]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_send_valueChanged_event_calls_closure_with_switch_state]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_send_valueChanged_event_to_switch_should_call_closure]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_send_valueChanged_event_to_switch_should_call_closure]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_switch_changed_updates_model]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_switch_changed_updates_model]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_switch_was_added_as_subview]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_switch_was_added_as_subview]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_switchControl_layout]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_switchControl_layout]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_tileLabel_was_added_as_subview]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_tileLabel_was_added_as_subview]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_titleLabel_layout]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_titleLabel_layout]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_value]' started.
+Test Case '-[OBFoundationTests.SwitchTableViewCellTest test_value]' passed (0.004 seconds).
+Test Suite 'SwitchTableViewCellTest' passed at 2018-09-26 08:49:12.386.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.055 (0.061) seconds
+Test Suite 'TableViewControllerTest' started at 2018-09-26 08:49:12.386
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_model_to_sections]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_model_to_sections]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_model_without_section_creates_default_section]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_model_without_section_creates_default_section]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_one_item_and_select_it_calles_didSelect_model_delegate]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_one_item_and_select_it_calles_didSelect_model_delegate]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_one_model_returns_1_for_number_of_rows]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_one_model_returns_1_for_number_of_rows]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_one_model_returns_2_for_number_of_rows]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_one_model_returns_2_for_number_of_rows]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_section]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_section]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_to_section_section_when_visible_insert_the_model_at_the_end]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_to_section_section_when_visible_insert_the_model_at_the_end]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two_and_remove_both_add_new]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two_and_remove_both_add_new]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two_and_remove_first]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two_and_remove_first]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two_and_remove_last]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_two_and_remove_last]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_when_visible_insert_the_model_at_the_end]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_add_when_visible_insert_the_model_at_the_end]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_as_deleteable_model]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_as_deleteable_model]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_both_models_are_selected]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_both_models_are_selected]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_calls_delegate_when_cell_is_displayed]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_calls_delegate_when_cell_is_displayed]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_can_edit_row]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_can_edit_row]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_delete_cell_calls_delegate_delete]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_delete_cell_calls_delegate_delete]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_first_model_is_selected]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_first_model_is_selected]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_get_default_cell_if_nothing_else_is_definded]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_get_default_cell_if_nothing_else_is_definded]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_get_proper_cell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_get_proper_cell]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_has_tableView]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_has_tableView]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_instance]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_instance]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_model_was_set_at_the_cell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_model_was_set_at_the_cell]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_number_of_rows_is_0_if_no_model_was_added]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_number_of_rows_is_0_if_no_model_was_added]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_numberOfSections_is_1]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_numberOfSections_is_1]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_register_cell_does_register_cell_class]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_register_cell_does_register_cell_class]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_register_cell_sets_identifier_to_UITableViewCell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_register_cell_sets_identifier_to_UITableViewCell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_reload_model_reloads_cell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_reload_model_reloads_cell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_reload_second_model_reloads_second_cell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_reload_second_model_reloads_second_cell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_reload_two_models_reloads_two_cells]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_reload_two_models_reloads_two_cells]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_section_header_text_is_added]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_section_header_text_is_added]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_row]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_row]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_row_at_section]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_row_at_section]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_row_reloads_cell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_row_reloads_cell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_second_row_reloads_cell]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_model_for_second_row_reloads_cell]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_models_at_second_section]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_set_models_at_second_section]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one_and_add_another_one]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one_and_add_another_one]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one_and_add_another_one_at_front]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one_and_add_another_one_at_front]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one_and_add_another_one_before_and_after]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_setModels_add_one_and_add_another_one_before_and_after]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_tableView_dataSource_was_set]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_tableView_dataSource_was_set]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.TableViewControllerTest test_tableView_delegate_was_set]' started.
+Test Case '-[OBFoundationTests.TableViewControllerTest test_tableView_delegate_was_set]' passed (0.001 seconds).
+Test Suite 'TableViewControllerTest' passed at 2018-09-26 08:49:12.466.
+	 Executed 42 tests, with 0 failures (0 unexpected) in 0.063 (0.080) seconds
+Test Suite 'UIColorBrightnessTest' started at 2018-09-26 08:49:12.467
+Test Case '-[OBFoundationTests.UIColorBrightnessTest testCreateDarker]' started.
+Test Case '-[OBFoundationTests.UIColorBrightnessTest testCreateDarker]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorBrightnessTest testCreateLighter]' started.
+Test Case '-[OBFoundationTests.UIColorBrightnessTest testCreateLighter]' passed (0.001 seconds).
+Test Suite 'UIColorBrightnessTest' passed at 2018-09-26 08:49:12.468.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'UIColorStringTest' started at 2018-09-26 08:49:12.469
+Test Case '-[OBFoundationTests.UIColorStringTest test_color_to_hexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest test_color_to_hexString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlackColor_FromHexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlackColor_FromHexString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlueColor_FromHexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlueColor_FromHexString]' passed (0.000 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlueColor_FromString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlueColor_FromString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlueColor_with_alpha_FromString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateBlueColor_with_alpha_FromString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateColorWithError_FromString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateColorWithError_FromString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateGrayColor_with_alpha_FromString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateGrayColor_with_alpha_FromString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateGreenColor_FromHexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateGreenColor_FromHexString]' passed (0.000 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateGreenColor_FromString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateGreenColor_FromString]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateRedColor_FromHexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateRedColor_FromHexString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateRedColor_FromString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateRedColor_FromString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateStringErrorReturnsWhite_FromHexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateStringErrorReturnsWhite_FromHexString]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateWhiteColor_FromHexString]' started.
+Test Case '-[OBFoundationTests.UIColorStringTest testCreateWhiteColor_FromHexString]' passed (0.000 seconds).
+Test Suite 'UIColorStringTest' passed at 2018-09-26 08:49:12.484.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.009 (0.016) seconds
+Test Suite 'UIImageResizeExtensionTest' started at 2018-09-26 08:49:12.485
+Test Case '-[OBFoundationTests.UIImageResizeExtensionTest test_resize]' started.
+Test Case '-[OBFoundationTests.UIImageResizeExtensionTest test_resize]' passed (0.017 seconds).
+Test Suite 'UIImageResizeExtensionTest' passed at 2018-09-26 08:49:12.503.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.017 (0.018) seconds
+Test Suite 'UINavigationControllerTransitionExtensionTest' started at 2018-09-26 08:49:12.503
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_pop_fade_has_fade_animation]' started.
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_pop_fade_has_fade_animation]' passed (0.005 seconds).
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_pop_fade_pops_the_view_controller]' started.
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_pop_fade_pops_the_view_controller]' passed (0.004 seconds).
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_push_fade_adds_viewController_as_child]' started.
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_push_fade_adds_viewController_as_child]' passed (0.003 seconds).
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_push_fade_has_fade_animation]' started.
+Test Case '-[OBFoundationTests.UINavigationControllerTransitionExtensionTest test_push_fade_has_fade_animation]' passed (0.003 seconds).
+Test Suite 'UINavigationControllerTransitionExtensionTest' passed at 2018-09-26 08:49:12.519.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.014 (0.016) seconds
+Test Suite 'URLFileExtensionTest' started at 2018-09-26 08:49:12.520
+Test Case '-[OBFoundationTests.URLFileExtensionTest test_file_does_not_exist]' started.
+Test Case '-[OBFoundationTests.URLFileExtensionTest test_file_does_not_exist]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.URLFileExtensionTest test_file_exists]' started.
+Test Case '-[OBFoundationTests.URLFileExtensionTest test_file_exists]' passed (0.001 seconds).
+Test Suite 'URLFileExtensionTest' passed at 2018-09-26 08:49:12.522.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'VersionTest' started at 2018-09-26 08:49:12.522
+Test Case '-[OBFoundationTests.VersionTest test_appBundleVersion]' started.
+Test Case '-[OBFoundationTests.VersionTest test_appBundleVersion]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.VersionTest test_appShortBundleVersion]' started.
+Test Case '-[OBFoundationTests.VersionTest test_appShortBundleVersion]' passed (0.002 seconds).
+Test Case '-[OBFoundationTests.VersionTest test_equal]' started.
+Test Case '-[OBFoundationTests.VersionTest test_equal]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.VersionTest test_init]' started.
+Test Case '-[OBFoundationTests.VersionTest test_init]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.VersionTest test_init_with_string]' started.
+Test Case '-[OBFoundationTests.VersionTest test_init_with_string]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.VersionTest test_os_version]' started.
+Test Case '-[OBFoundationTests.VersionTest test_os_version]' passed (0.001 seconds).
+Test Case '-[OBFoundationTests.VersionTest test_toString]' started.
+Test Case '-[OBFoundationTests.VersionTest test_toString]' passed (0.001 seconds).
+Test Suite 'VersionTest' passed at 2018-09-26 08:49:12.533.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.007 (0.011) seconds
+Test Suite 'WebViewControllerTest' started at 2018-09-26 08:49:12.534
+Test Case '-[OBFoundationTests.WebViewControllerTest test_inset_top_is_zero]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest test_inset_top_is_zero]' passed (0.179 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest test_skip_loading_request_when_already_loading]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest test_skip_loading_request_when_already_loading]' passed (0.011 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testActivityView]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testActivityView]' passed (0.026 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testActivityView_isBusyWhenLoading]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testActivityView_isBusyWhenLoading]' passed (0.021 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testActivityViewIsGray]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testActivityViewIsGray]' passed (0.022 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testHasErrorShouldHideLoadingIndicator]' started.
+[DEBUG] - [2018-09-26 08:49:12.803] WebViewController:162 didFailNavigation with error: Error Domain=error Code=1 "(null)"
+2018-09-26 08:49:12.803547+0200 Demo[3999:70761] [DEBUG] - [2018-09-26 08:49:12.803] WebViewController:162 didFailNavigation with error: Error Domain=error Code=1 "(null)"
+Test Case '-[OBFoundationTests.WebViewControllerTest testHasErrorShouldHideLoadingIndicator]' passed (0.010 seconds).
+[DEBUG] - [2018-09-26 08:49:12.803] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:12.803806+0200 Demo[3999:70765] [DEBUG] - [2018-09-26 08:49:12.803] ResourceKit:17 bundle with identifier
+[DEBUG] - [2018-09-26 08:49:12.803] ResourceKit:118 localized "ALERT_ERROR_TITLE": Error
+2018-09-26 08:49:12.804039+0200 Demo[3999:70819] [DEBUG] - [2018-09-26 08:49:12.803] ResourceKit:118 localized "ALERT_ERROR_TITLE": Error
+Test Case '-[OBFoundationTests.WebViewControllerTest testHasWKWebView]' started.
+[DEBUG] - [2018-09-26 08:49:12.803] ResourceKit:118 localized "WEBVIEW_LOAD_SITE_ERROR": Error while loading the page
+2018-09-26 08:49:12.804235+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:12.803] ResourceKit:118 localized "WEBVIEW_LOAD_SITE_ERROR": Error while loading the page
+Test Case '-[OBFoundationTests.WebViewControllerTest testHasWKWebView]' passed (0.014 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testInstance]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testInstance]' passed (0.020 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testInstanceWithCoder]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testInstanceWithCoder]' passed (0.025 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testLoadURL]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testLoadURL]' passed (0.008 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testLoadWithFileURL]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testLoadWithFileURL]' passed (0.013 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testLoadWithFileURL_isNotBusyWhenFinished]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testLoadWithFileURL_isNotBusyWhenFinished]' passed (0.011 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testOpenMailLink_OpensMailForm]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testOpenMailLink_OpensMailForm]' passed (0.009 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testOpenMailLink_OpensMailForm_AtNavigationAction]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testOpenMailLink_OpensMailForm_AtNavigationAction]' passed (0.009 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testOpenWebLink]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testOpenWebLink]' passed (0.012 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testShowError]' started.
+[DEBUG] - [2018-09-26 08:49:12.942] WebViewController:162 didFailNavigation with error: Error Domain=error Code=1 "(null)"
+2018-09-26 08:49:12.942187+0200 Demo[3999:70762] [DEBUG] - [2018-09-26 08:49:12.942] WebViewController:162 didFailNavigation with error: Error Domain=error Code=1 "(null)"
+[DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:12.942491+0200 Demo[3999:70819] [DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.WebViewControllerTest testShowError]' passed (0.014 seconds).
+[DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:118 localized "ALERT_ERROR_TITLE": Error
+2018-09-26 08:49:12.942834+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:118 localized "ALERT_ERROR_TITLE": Error
+[DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:118 localized "WEBVIEW_LOAD_SITE_ERROR": Error while loading the page
+Test Case '-[OBFoundationTests.WebViewControllerTest testTranslatesAutoresizingMaskIntoConstraints]' started.
+2018-09-26 08:49:12.943108+0200 Demo[3999:70809] [DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:118 localized "WEBVIEW_LOAD_SITE_ERROR": Error while loading the page
+[DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+2018-09-26 08:49:12.943516+0200 Demo[3999:70819] [DEBUG] - [2018-09-26 08:49:12.942] ResourceKit:118 localized "MAIL_ACCOUNT_MISSING_TITLE": Error
+Test Case '-[OBFoundationTests.WebViewControllerTest testTranslatesAutoresizingMaskIntoConstraints]' passed (0.012 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testURLRequestFailed]' started.
+[DEBUG] - [2018-09-26 08:49:12.965] WebViewController:162 didFailNavigation with error: Error Domain=Test Code=1 "(null)"
+2018-09-26 08:49:12.965367+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:12.965] WebViewController:162 didFailNavigation with error: Error Domain=Test Code=1 "(null)"
+[DEBUG] - [2018-09-26 08:49:12.965] ResourceKit:17 bundle with identifier
+2018-09-26 08:49:12.965704+0200 Demo[3999:70794] [DEBUG] - [2018-09-26 08:49:12.965] ResourceKit:17 bundle with identifier
+Test Case '-[OBFoundationTests.WebViewControllerTest testURLRequestFailed]' passed (0.010 seconds).
+[DEBUG] - [2018-09-26 08:49:12.965] ResourceKit:118 localized "ALERT_ERROR_TITLE": Error
+2018-09-26 08:49:12.965979+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:12.965] ResourceKit:118 localized "ALERT_ERROR_TITLE": Error
+[DEBUG] - [2018-09-26 08:49:12.965] ResourceKit:118 localized "WEBVIEW_LOAD_SITE_ERROR": Error while loading the page
+Test Case '-[OBFoundationTests.WebViewControllerTest testURLRequestFinished]' started.
+2018-09-26 08:49:12.966237+0200 Demo[3999:70822] [DEBUG] - [2018-09-26 08:49:12.965] ResourceKit:118 localized "WEBVIEW_LOAD_SITE_ERROR": Error while loading the page
+Test Case '-[OBFoundationTests.WebViewControllerTest testURLRequestFinished]' passed (0.011 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewHasProperLayout]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewHasProperLayout]' passed (0.023 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewInsets]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewInsets]' passed (0.019 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewLayoutWithInsets]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewLayoutWithInsets]' passed (0.026 seconds).
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewWasAddedAsSubView]' started.
+Test Case '-[OBFoundationTests.WebViewControllerTest testWebViewWasAddedAsSubView]' passed (0.017 seconds).
+Test Suite 'WebViewControllerTest' passed at 2018-09-26 08:49:13.064.
+	 Executed 23 tests, with 0 failures (0 unexpected) in 0.520 (0.530) seconds
+Test Suite 'OBFoundationTests.xctest' failed at 2018-09-26 08:49:13.064.
+	 Executed 408 tests, with 1 failure (0 unexpected) in 2.163 (2.394) seconds
+Test Suite 'OBTest.framework' started at 2018-09-26 08:49:13.067
+Test Suite 'OBTest.BaseTestCase' started at 2018-09-26 08:49:13.067
+Test Suite 'OBTest.BaseTestCase' passed at 2018-09-26 08:49:13.067.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'OBTest.framework' passed at 2018-09-26 08:49:13.068.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'All tests' failed at 2018-09-26 08:49:13.068.
+	 Executed 408 tests, with 1 failure (0 unexpected) in 2.163 (2.399) seconds
+
+
+Test session results and logs:
+	/Users/rene/workspace/openbakery/frameworks/OBFoundation/build/derivedData/Logs/Test/Test-OBFoundation-2018.09.26_08-48-24-+0200.xcresult
+
+2018-09-26 08:49:26.326 xcodebuild[3486:67761] [MT] IDETestOperationsObserverDebug: 33.183 elapsed -- Testing started completed.
+2018-09-26 08:49:26.326 xcodebuild[3486:67761] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2018-09-26 08:49:26.326 xcodebuild[3486:67761] [MT] IDETestOperationsObserverDebug: 33.183 sec, +33.183 sec -- end
+Generating coverage data...
+Generated coverage report: /Users/rene/workspace/openbakery/frameworks/OBFoundation/build/derivedData/Logs/Test/Test-OBFoundation-2018.09.26_08-48-24-+0200.xcresult/1_Test/action.xccovreport
+Failing tests:
+	MailShareServiceTest.test_send_message_with_data_has_proper_data()
+[1m[31m** TEST FAILED **
+
+[0m
