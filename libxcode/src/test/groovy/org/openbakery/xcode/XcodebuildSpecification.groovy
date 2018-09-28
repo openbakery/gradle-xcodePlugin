@@ -97,8 +97,8 @@ class XcodebuildSpecification extends Specification {
 
 	def addDerivedDataPathParameters(def command) {
 		command << "-derivedDataPath" << new File("build/derivedData").absolutePath
-
 	}
+
 	def addDefaultDirectoriesParameters(def command) {
 		command << "DSTROOT=" + new File("build/dst").absolutePath
 		command << "OBJROOT=" + new File("build/obj").absolutePath

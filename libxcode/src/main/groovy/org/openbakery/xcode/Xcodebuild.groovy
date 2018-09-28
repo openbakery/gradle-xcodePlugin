@@ -62,6 +62,7 @@ class Xcodebuild {
 		addBuildPath(commandList)
 		addCoverageSettings(commandList)
 
+		Log.debug("xcode.version.major: " + xcode.version.major)
 		if (xcode.version.major > 9) {
 			commandList << "-disable-concurrent-destination-testing"
 		}
