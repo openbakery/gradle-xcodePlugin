@@ -18,10 +18,9 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Success")
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations())
 	}
-
 
 	List<Destination> getDestinations() {
 		SimulatorControlFake simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt")
@@ -41,15 +40,12 @@ class TestResultParserSpecification extends Specification {
 		FileUtils.deleteDirectory(outputDirectory)
 	}
 
-
 	def "parse with no result"() {
 		when:
 		testResultParser.store(outputDirectory)
 		then:
 		true // no exception should be raised
 	}
-
-
 
 	def "parse success result"() {
 		when:
@@ -60,7 +56,6 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.numberErrors(result) == 0
 	}
 
-
 	def "parse failure result"() {
 		when:
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed.txt"))
@@ -70,7 +65,6 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.numberErrors(result) == 2
 	}
 
-
 	def "parse failure result with partial suite"() {
 		when:
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
@@ -79,7 +73,6 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.numberSuccess(result) == 0
 		testResultParser.numberErrors(result) == 2
 	}
-
 
 	def "parse success result xcode 6.1"() {
 		when:
@@ -107,6 +100,18 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.numberErrors(result) == 0
 	}
 
+	def "parse legacy test summary has result"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Legacy/Success")
+		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults != null
+		testResultParser.testResults.size() > 0
+	}
 
 	def "parse test summary has result"() {
 		when:
@@ -126,7 +131,6 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.testResults.keySet()[0].name == "iPad 2"
 	}
 
-
 	def "parse test summary and verify number test results"() {
 		when:
 		testResultParser.parse()
@@ -138,10 +142,9 @@ class TestResultParserSpecification extends Specification {
 
 	}
 
-
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Failure")
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
 		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
 
 		when:
@@ -155,16 +158,14 @@ class TestResultParserSpecification extends Specification {
 
 	}
 
-
 	HashMap<Destination, ArrayList<TestClass>> getMergedResult() {
 
 		testResultParser.parse()
 
-		def resultFromOutput = testResultParser.parseResult(new File("../plugin/src/test/Resource/TestLogs/Success/xcodebuild-output.txt"))
+		def resultFromOutput = testResultParser.parseResult(new File("../plugin/src/test/Resource/TestLogs/Legacy/Success/xcodebuild-output.txt"))
 		testResultParser.mergeResult(testResultParser.testResults, resultFromOutput)
 		return testResultParser.testResults
 	}
-
 
 	def "test merged results"() {
 		when:
