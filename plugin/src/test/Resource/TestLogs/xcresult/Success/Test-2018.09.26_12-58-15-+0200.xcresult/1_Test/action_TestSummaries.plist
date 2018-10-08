@@ -3,7 +3,95 @@
 <plist version="1.0">
 <dict>
 	<key>FormatVersion</key>
-	<string>1.1</string>
+	<string>1.2</string>
+	<key>RunDestination</key>
+	<dict>
+		<key>LocalComputer</key>
+		<dict>
+			<key>BusSpeedInMHz</key>
+			<integer>1600</integer>
+			<key>CPUCount</key>
+			<integer>2</integer>
+			<key>CPUKind</key>
+			<string>Quad-Core Intel Xeon</string>
+			<key>CPUSpeedInMHz</key>
+			<integer>2800</integer>
+			<key>Identifier</key>
+			<string>922D1B3F-2F9C-5429-8330-B1689194858B</string>
+			<key>IsConcreteDevice</key>
+			<true/>
+			<key>LogicalCPUCoresPerPackage</key>
+			<integer>4</integer>
+			<key>ModelCode</key>
+			<string>MacPro3,1</string>
+			<key>ModelName</key>
+			<string>Mac Pro</string>
+			<key>ModelUTI</key>
+			<string>com.apple.macpro</string>
+			<key>Name</key>
+			<string>My Mac</string>
+			<key>NativeArchitecture</key>
+			<string>x86_64</string>
+			<key>OperatingSystemVersion</key>
+			<string>10.11.6</string>
+			<key>OperatingSystemVersionWithBuildNumber</key>
+			<string>10.11.6 (15G31)</string>
+			<key>PhysicalCPUCoresPerPackage</key>
+			<integer>4</integer>
+			<key>Platform</key>
+			<dict>
+				<key>Identifier</key>
+				<string>com.apple.platform.macosx</string>
+				<key>Name</key>
+				<string>OS X</string>
+			</dict>
+			<key>RAMSizeInMegabytes</key>
+			<integer>10240</integer>
+		</dict>
+		<key>Name</key>
+		<string>iPad 2</string>
+		<key>TargetArchitecture</key>
+		<string>i386</string>
+		<key>TargetDevice</key>
+		<dict>
+			<key>Identifier</key>
+			<string>83384347-6976-4E70-A54F-1CFECD1E02B1</string>
+			<key>IsConcreteDevice</key>
+			<true/>
+			<key>ModelCode</key>
+			<string>iPad2,1</string>
+			<key>ModelName</key>
+			<string>iPad 2</string>
+			<key>ModelUTI</key>
+			<string>com.apple.ipad-2-black</string>
+			<key>Name</key>
+			<string>iPad 2</string>
+			<key>NativeArchitecture</key>
+			<string>i386</string>
+			<key>OperatingSystemVersion</key>
+			<string>9.3</string>
+			<key>OperatingSystemVersionWithBuildNumber</key>
+			<string>9.3 (13E230)</string>
+			<key>Platform</key>
+			<dict>
+				<key>Identifier</key>
+				<string>com.apple.platform.iphonesimulator</string>
+				<key>Name</key>
+				<string>iOS Simulator</string>
+			</dict>
+		</dict>
+		<key>TargetSDK</key>
+		<dict>
+			<key>Identifier</key>
+			<string>iphonesimulator9.3</string>
+			<key>IsInternal</key>
+			<false/>
+			<key>Name</key>
+			<string>Simulator - iOS 9.3</string>
+			<key>OperatingSystemVersion</key>
+			<string>9.3</string>
+		</dict>
+	</dict>
 	<key>TestableSummaries</key>
 	<array>
 		<dict>
@@ -36,7 +124,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>72950ECA-F69C-450D-92A9-6A6EE7F35564</string>
+											<string>3577926F-9A49-4302-915F-76AEB93DA2D6</string>
 										</dict>
 									</array>
 									<key>TestIdentifier</key>
@@ -59,7 +147,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>93B120FC-8C56-4CB6-8DDA-D48A222DCA19</string>
+											<string>FA5CDFC1-DBC6-486F-BBEB-6F85BB3A733D</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -71,7 +159,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>B782CFD2-EC73-4D35-9EDC-5A8C4FABF4E1</string>
+											<string>B73D04E9-636F-415A-8B32-343464D1270B</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -83,7 +171,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>B17824B9-BA7D-406D-A60A-3560A3CC20F5</string>
+											<string>9464D9DA-53C9-4A2C-A3DA-5FEB8643B743</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -95,7 +183,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>7CDE1110-51F4-4A0D-9408-58AD854A2F1F</string>
+											<string>B34ACD77-17BC-46B0-9953-72237C023E5C</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -107,7 +195,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>05E18D5D-5533-4051-899B-5BE02768CB52</string>
+											<string>8901C0EF-C730-4449-A272-2470D748E3C2</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -119,7 +207,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>67AB9F8E-D897-45A5-88F8-196C96BD1071</string>
+											<string>28C61F61-0285-4359-B875-8F4EBD354129</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -131,7 +219,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>51CC866A-C486-4CB1-9874-27B92907C031</string>
+											<string>DC9A8002-60D2-4DB4-8160-841949B4A70E</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -143,7 +231,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>9E5C5A23-A706-4AFD-BD9F-6461E0C838FC</string>
+											<string>441BCF1C-45CD-44AF-9A86-61D60495EBE5</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -155,7 +243,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>780EFA7F-1C02-4A77-A38F-FC9760D7E12D</string>
+											<string>373533A4-5E97-4844-A251-60806EFEE52E</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -167,7 +255,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>8AA3C1BD-02D2-456D-86A6-152EF5D2A2A6</string>
+											<string>FA0D24CE-3853-472E-8235-88365554DC78</string>
 										</dict>
 									</array>
 									<key>TestIdentifier</key>
@@ -190,7 +278,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>3AE5773C-46BF-4746-AC00-DB609CCDAC92</string>
+											<string>39D4920C-D4E9-4A77-9276-6EA1C06EBEFE</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -202,7 +290,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>100A511E-AA7B-467B-8757-1285E4BC3863</string>
+											<string>05E2F221-6B84-429D-B601-B9E490E620DE</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -214,7 +302,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>C0798C10-10CD-4ECE-A011-0187F6095702</string>
+											<string>D4B11157-F670-4640-ADF8-78FD53C0A896</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -226,22 +314,9 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>7300A5A5-67C4-4F03-BD6D-A476B10BD684</string>
+											<string>043E6D9D-5C7D-4413-8887-04129EC3275F</string>
 										</dict>
 										<dict>
-											<key>FailureSummaries</key>
-											<array>
-												<dict>
-													<key>FileName</key>
-													<string>/Users/rene/workspace/openbakery/OBTableViewController/Test/Source/OBTableViewControllerTest.m</string>
-													<key>LineNumber</key>
-													<integer>318</integer>
-													<key>Message</key>
-													<string>Expected &lt;2&gt;, but was &lt;1&gt;</string>
-													<key>PerformanceFailure</key>
-													<false/>
-												</dict>
-											</array>
 											<key>TestIdentifier</key>
 											<string>OBTableViewControllerTest/testCallConfigureCellBlock_ShouldOnlyCalledOnceIfCellExists</string>
 											<key>TestName</key>
@@ -249,9 +324,9 @@
 											<key>TestObjectClass</key>
 											<string>IDESchemeActionTestSummary</string>
 											<key>TestStatus</key>
-											<string>Failure</string>
+											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>16E5F975-8067-476C-9E36-E5D612A0D70E</string>
+											<string>8AE4CEFB-062F-4EC9-9B65-93C106950B65</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -263,7 +338,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>255F3D53-1DEB-457F-AAF9-2FC129D00DBE</string>
+											<string>B64313BD-C519-4367-86F5-D566BE1DC1C9</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -275,7 +350,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>8E4C5A2D-B86E-4597-AB60-455CAD261CB1</string>
+											<string>E8B6DBCE-55BD-41BB-B68A-F0C05673182E</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -287,7 +362,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>EF61B196-5420-4952-AA7E-773D18ACCA5C</string>
+											<string>520BC74A-4A85-4BAE-8D3C-2F174F886BFB</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -299,7 +374,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>2E9C848E-E16B-4FF5-B7D4-E97029F096CA</string>
+											<string>605412E3-D485-435A-8AA1-F73ADF5D9B8D</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -311,7 +386,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>D5C5D11A-7188-4E6B-B314-E18068652C55</string>
+											<string>4CADDF25-9A86-4568-AEF9-6CB9063BE8CB</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -323,7 +398,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>9540B355-DDE0-41E6-AD54-7700D1D3AD11</string>
+											<string>3883011E-263E-4D5A-85F2-EC92C3B974FC</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -335,7 +410,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>5B792433-3AB5-43B5-8553-72210D8546F0</string>
+											<string>42913B62-6418-4E86-9528-2C191FC782C0</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -347,7 +422,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>D206D57F-7672-46D9-B78F-934D33F3B6F5</string>
+											<string>174E58CF-71A6-40AA-A515-094C3CDF192F</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -359,7 +434,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>C165BB5F-1C54-48D2-9F9D-7AB58191181C</string>
+											<string>32369304-F406-4531-AE4F-CA4B1AD136CC</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -371,7 +446,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>57E1AB40-E77E-4179-AA6B-63B06E4EEFF5</string>
+											<string>71F1A4A8-7532-489F-AB8C-AEC372CD87A9</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -383,7 +458,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>EDB56703-09CC-4F94-8E9A-5078975034F2</string>
+											<string>8C5510BF-F3D1-4BA5-8CB3-2A8BB1355152</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -395,7 +470,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>7691C047-03BD-48FC-9BA1-1072944A07A6</string>
+											<string>797E6124-77C4-4776-8363-E79E12817B1D</string>
 										</dict>
 									</array>
 									<key>TestIdentifier</key>
@@ -418,7 +493,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>4F9566F0-0B00-44D8-A838-F4E5680FC164</string>
+											<string>C9D17059-8E7E-4698-9401-AED7BF9FA5F7</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -430,7 +505,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>B35C8F9A-844B-46C5-8DBE-7587C0275266</string>
+											<string>28AAA27C-7D35-4614-8F70-0E15BE88C1DE</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -442,7 +517,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>56CF8BB0-CAD8-40E5-A9BC-D94CB62FF2C1</string>
+											<string>01B3E449-CFAD-4A1B-BEF9-FFEB3214B209</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -454,7 +529,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>695521B4-5893-4BA7-A203-94036D47A6FB</string>
+											<string>1972AE33-0FCC-4AD4-9481-5CD75D2D87E7</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -466,7 +541,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>AB642A98-EF3E-44A8-AF51-12136F7F0709</string>
+											<string>A810BE7C-A47C-41B8-9F28-69127652ED49</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -478,7 +553,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>B79BF77F-6115-482B-9C11-2C5AF6E55190</string>
+											<string>C2D246B2-89DC-47E2-88FF-DA4F0BB50257</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -490,7 +565,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>67C2C269-2D80-4C34-B61D-F3C3F11A233F</string>
+											<string>19F93133-2D1B-45E7-9C51-BA75C4813F74</string>
 										</dict>
 										<dict>
 											<key>TestIdentifier</key>
@@ -502,7 +577,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>9C79E731-BEA3-4213-99CB-3EF9C5B56E55</string>
+											<string>BFC03E53-B88A-49F4-990E-E6CF6904B052</string>
 										</dict>
 									</array>
 									<key>TestIdentifier</key>
@@ -525,7 +600,7 @@
 											<key>TestStatus</key>
 											<string>Success</string>
 											<key>TestSummaryGUID</key>
-											<string>C0C779B1-0D55-466D-9B8C-619F063BBF97</string>
+											<string>971743B3-A92A-48C5-9FCE-FFC25255A340</string>
 										</dict>
 									</array>
 									<key>TestIdentifier</key>
