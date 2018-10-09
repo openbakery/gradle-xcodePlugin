@@ -85,12 +85,13 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		List<String> result = []
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(xcrunfile)
 		for (def item : config.getRoot().getChildren()) {
-			if (item.getChildrenCount("TestHostPath") > 0) {
-				List testHostPath = item.getChildren("TestHostPath")
-				if (testHostPath.size() > 0) {
-					String value = testHostPath[0].value - "__TESTROOT__/"
-					result << value
-					//result << new File(xcrunfile.parentFile, value)
+			if (item.getChildrenCount("DependentProductPaths") > 0) {
+				List dependencies = item.getChildren("DependentProductPaths")
+				if (dependencies.size() > 0) {
+					for (def dependency in dependencies[0].value) {
+						String value = dependency - "__TESTROOT__/"
+						result << value
+					}
 				}
 			}
 		}

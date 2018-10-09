@@ -261,4 +261,31 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		new File(testBundle, "Test-iphonesimulator/Example.app").exists()
 		new File(testBundle, "Example_iphonesimulator.xctestrun").exists()
 	}
+
+	def "has app with dependecies in test bundle"() {
+		given:
+		project.xcodebuild.target = 'myscheme'
+		project.xcodebuild.productName = 'Example'
+		xcodeBuildForTestTask.parameters.simulator = true
+		xcodeBuildForTestTask.parameters.type = Type.iOS
+
+		File symDirectory = new File(project.getBuildDir(), "sym")
+		File sym = TestHelper.createDummyApp(new File(symDirectory, "Test-iphonesimulator"), "Example")
+		File extension = new File(symDirectory, "Test-iphonesimulator//ExampleTodayWidget.appex")
+		extension.mkdirs()
+		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
+		FileUtils.copyFile(xctestrun, new File(symDirectory, "Example_iphonesimulator.xctestrun"))
+
+		xcodeBuildForTestTask.parameters.symRoot = sym
+
+		when:
+		xcodeBuildForTestTask.buildForTest()
+
+		File testBundle = new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle")
+
+		then:
+		testBundle.exists()
+		new File(testBundle, "Test-iphonesimulator/ExampleTodayWidget.appex").exists()
+		new File(testBundle, "Example_iphonesimulator.xctestrun").exists()
+	}
 }
