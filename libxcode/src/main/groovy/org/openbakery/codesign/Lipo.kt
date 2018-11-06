@@ -30,4 +30,15 @@ class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		return listOf("armv7", "arm64")
 	}
 
+	fun removeArch(binaryName: String, arch: String) {
+		commandRunner.run(
+			xcode.lipo,
+			binaryName,
+			"-remove",
+			arch,
+			"-output",
+			binaryName
+		)
+	}
+
 }

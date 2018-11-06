@@ -5,7 +5,7 @@ import org.openbakery.xcode.Xcode
 import org.openbakery.xcode.XcodeFake
 import spock.lang.Specification
 
-class LipoSpecification extends Specification {
+class LipoArchSpecification extends Specification {
 
 	Lipo lipo
 	CommandRunner commandRunner = Mock(CommandRunner)
@@ -17,6 +17,7 @@ class LipoSpecification extends Specification {
 
 	def tearDown() {
 		lipo = null
+		commandRunner = null
 	}
 
 	def "lipo instance is present"() {
