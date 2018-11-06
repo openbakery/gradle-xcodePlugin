@@ -19,6 +19,15 @@ class LipoRemoveArchSpecification extends Specification {
 		commandRunner = null
 	}
 
+	def mockInfo(String binary, String archs) {
+		def commandList = ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
+						   "-info",
+						   binary]
+		String result = "Architectures in the fat file: Dummy are: " + archs
+		commandRunner.runWithResult(commandList) >> result
+	}
+
+
 	def "remove arch execute proper command"() {
 		def commandList
 
@@ -57,6 +66,70 @@ class LipoRemoveArchSpecification extends Specification {
 			"-output",
 			"second.dylib"
 		]
+	}
+
+
+	def "remove unsupported archs from binary"() {
+		def commandList
+
+		given:
+		mockInfo("my.dylib", "armv7 arm64 arm64e")
+
+		when:
+		lipo.removeUnsupportedArchs("my.dylib", ["armv7","arm64"])
+
+		then:
+		1 * commandRunner.run([
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
+			"my.dylib",
+			"-remove",
+			"arm64e",
+			"-output",
+			"my.dylib"
+		])
+
+	}
+
+	def "remove two unsupported archs from binary"() {
+		def commandList
+
+		given:
+		mockInfo("my.dylib", "armv7 arm64 arm64e")
+
+		when:
+		lipo.removeUnsupportedArchs("my.dylib", ["arm64"])
+
+		then:
+		1 * commandRunner.run([
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
+			"my.dylib",
+			"-remove",
+			"arm64e",
+			"-output",
+			"my.dylib"
+		])
+		1 * commandRunner.run([
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
+			"my.dylib",
+			"-remove",
+			"armv7",
+			"-output",
+			"my.dylib"
+		])
+	}
+
+	def "remove no unsupported archs from binary"() {
+		def commandList
+
+		given:
+		mockInfo("my.dylib", "armv7 arm64 arm64e")
+
+		when:
+		lipo.removeUnsupportedArchs("my.dylib", ["armv7", "arm64", "arm64e"])
+
+		then:
+		0 * commandRunner.run(_)
+
 	}
 
 }

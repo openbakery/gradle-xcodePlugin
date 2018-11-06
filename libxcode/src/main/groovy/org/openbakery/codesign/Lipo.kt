@@ -41,4 +41,16 @@ class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		)
 	}
 
+	fun removeUnsupportedArchs(binaryName: String, supportedArchs: List<String>) {
+
+		val archs = getArchs(binaryName).toMutableList()
+		archs.removeAll(supportedArchs)
+
+		archs.iterator().forEach {
+			removeArch(binaryName, it)
+		}
+
+
+	}
+
 }

@@ -83,14 +83,18 @@ class LipoArchSpecification extends Specification {
 		]
 	}
 
-	def "get archs executes lipo and process the result properly"() {
 
+	def mockInfo(String binary, String archs) {
 		def commandList = ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
 						   "-info",
-						   "Dummy"]
-		String result = "Architectures in the fat file: Dummy are: armv7 arm64"
+						   binary]
+		String result = "Architectures in the fat file: Dummy are: " + archs
 		commandRunner.runWithResult(commandList) >> result
+	}
 
+	def "get archs executes lipo and process the result properly"() {
+		given:
+		mockInfo("Dummy", "armv7 arm64")
 
 		when:
 		def archs = lipo.getArchs("Dummy")
@@ -102,13 +106,13 @@ class LipoArchSpecification extends Specification {
 
 	}
 
+
+
+
 	def "get archs executes lipo and process the result properly with arm64e"() {
 
-		def commandList = ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
-						   "-info",
-						   "Dummy"]
-		String result = "Architectures in the fat file: Dummy are: armv7 arm64 arm64e"
-		commandRunner.runWithResult(commandList) >> result
+		given:
+		mockInfo("Dummy", "armv7 arm64 arm64e")
 
 
 		when:
@@ -118,6 +122,6 @@ class LipoArchSpecification extends Specification {
 		archs.contains("arm64")
 		archs.contains("armv7")
 		archs.contains("arm64e")
-
 	}
+
 }
