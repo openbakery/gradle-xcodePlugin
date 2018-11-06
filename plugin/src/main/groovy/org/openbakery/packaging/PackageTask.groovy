@@ -7,6 +7,7 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
+import org.openbakery.assemble.AppPackage
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
@@ -160,23 +161,10 @@ class PackageTask extends AbstractDistributeTask {
 	}
 
 
-	def addSwiftSupport(File payloadPath,  String applicationBundleName) {
-		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
-		if (!frameworksPath.exists()) {
-			return null
-		}
-
-		File swiftLibArchive = new File(getArchiveDirectory(), "SwiftSupport")
-
-		if (swiftLibArchive.exists()) {
-			copy(swiftLibArchive, payloadPath.getParentFile())
-			return new File(payloadPath.getParentFile(), "SwiftSupport")
-		}
-		return null
-	}
-
 
 	private void createZipPackage(File packagePath, String extension, boolean includeSupportFolders) {
+		AppPackage appPackage = new AppPackage(getArchiveDirectory())
+
 		File packageBundle = new File(outputPath, getIpaFileName() + "." + extension)
 		if (!packageBundle.parentFile.exists()) {
 			packageBundle.parentFile.mkdirs()
@@ -186,7 +174,7 @@ class PackageTask extends AbstractDistributeTask {
 		filesToZip << packagePath
 
 		if (includeSupportFolders) {
-			File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
+			File swiftSupportPath = appPackage.addSwiftSupport(packagePath, applicationBundleName)
 			if (swiftSupportPath != null) {
 				filesToZip << swiftSupportPath
 			}
