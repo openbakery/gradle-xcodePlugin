@@ -41,6 +41,10 @@ class ZipArchive(archiveFile: File, baseDirectory: File, commandRunner: CommandR
 	fun create() {
 		logger.debug("create zip: {}", archiveFile)
 
+		if (!archiveFile.parentFile.exists()) {
+			archiveFile.parentFile.mkdirs()
+		}
+
 		var command = mutableListOf<String>(
 			"/usr/bin/zip",
 			"--symlinks",
