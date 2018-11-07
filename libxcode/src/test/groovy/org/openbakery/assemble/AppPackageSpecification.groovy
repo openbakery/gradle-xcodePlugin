@@ -1,14 +1,15 @@
 package org.openbakery.assemble
 
+import org.openbakery.CommandRunner
 import spock.lang.Specification
 
 class AppPackageSpecification extends Specification {
 
 	AppPackage appPackage
-	//CommandRunner commandRunner = Mock(CommandRunner)
+	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
-		appPackage = new AppPackage(new File("Dummy"))
+		appPackage = new AppPackage(new File("Dummy"), commandRunner)
 	}
 
 	def tearDown() {

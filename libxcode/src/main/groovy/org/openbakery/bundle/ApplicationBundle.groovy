@@ -23,8 +23,24 @@ public class ApplicationBundle {
 			addWatchToAppBundle(bundles)
 		}
 		bundles.add(applicationPath)
-		return bundles;
+		return bundles
 	}
+
+	String getBundleName() {
+		return applicationPath.getName()
+	}
+
+	File getPayloadDirectory() {
+		if (applicationPath.parentFile.getName().toLowerCase() == "payload") {
+			return applicationPath.parentFile
+		}
+		return applicationPath
+	}
+
+	File getBaseDirectory() {
+		return getPayloadDirectory().parentFile
+	}
+
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
 		File plugins

@@ -6,6 +6,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
+import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.assemble.AppPackage
 import org.openbakery.bundle.ApplicationBundle
@@ -125,20 +126,20 @@ class PackageTask extends AbstractDistributeTask {
 			}
 		}
 
-		File appBundle = appBundles.last()
+		//File appBundle = appBundles.last()
 		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 
-			ProvisioningProfileType profileType = getProvisioningProfileType(appBundle)
+			ProvisioningProfileType profileType = getProvisioningProfileType(applicationBundle)
 			boolean includeSupportFolders = profileType == ProvisioningProfileType.AppStore
-			createIpa(applicationFolder, includeSupportFolders)
+			createIpa(applicationBundle, includeSupportFolders)
 		} else {
-			createPackage(appBundle)
+			createPackage(applicationBundle)
 		}
 
 	}
 
-	ProvisioningProfileType getProvisioningProfileType(File appBundle) {
-		File provisionFile = getProvisionFileForBundle(appBundle)
+	ProvisioningProfileType getProvisioningProfileType(ApplicationBundle applicationBundle) {
+		File provisionFile = getProvisionFileForBundle(applicationBundle.applicationPath)
 		if (provisionFile == null) {
 			return null
 		}
@@ -162,35 +163,6 @@ class PackageTask extends AbstractDistributeTask {
 
 
 
-	private void createZipPackage(File packagePath, String extension, boolean includeSupportFolders) {
-		AppPackage appPackage = new AppPackage(getArchiveDirectory())
-
-		File packageBundle = new File(outputPath, getIpaFileName() + "." + extension)
-		if (!packageBundle.parentFile.exists()) {
-			packageBundle.parentFile.mkdirs()
-		}
-
-		List<File> filesToZip = []
-		filesToZip << packagePath
-
-		if (includeSupportFolders) {
-			File swiftSupportPath = appPackage.addSwiftSupport(packagePath, applicationBundleName)
-			if (swiftSupportPath != null) {
-				filesToZip << swiftSupportPath
-			}
-
-			enumerateExtensionSupportFolders(packagePath.getParentFile()) { File supportFolder ->
-				filesToZip << supportFolder
-			}
-		}
-
-		File bcSymbolMapsPath = new File(packagePath.getParentFile(), "BCSymbolMaps")
-		if (bcSymbolMapsPath.exists()) {
-			filesToZip << bcSymbolMapsPath
-		}
-
-		createZip(packageBundle, packagePath.getParentFile(), packagePath, *filesToZip)
-	}
 
 	private void enumerateExtensionSupportFolders(File parentFolder, Closure closure) {
 		def folderNames = ["MessagesApplicationExtensionSupport", "WatchKitSupport2"]
@@ -203,13 +175,16 @@ class PackageTask extends AbstractDistributeTask {
 		}
 	}
 
-	private void createIpa(File payloadPath, boolean includeSupportFolders) {
-		createZipPackage(payloadPath, "ipa", includeSupportFolders)
+	private void createIpa(ApplicationBundle applicationBundle, boolean includeSupportFolders) {
+		AppPackage appPackage = new AppPackage(getArchiveDirectory(), new CommandRunner())
+		File ipaFile = new File(outputPath, getIpaFileName() + ".ipa")
+		appPackage.createPackage(ipaFile, applicationBundle, includeSupportFolders)
 	}
 
-	private void createPackage(File packagePath) {
-
-		createZipPackage(packagePath, "zip", false)
+	private void createPackage(ApplicationBundle applicationBundle) {
+		AppPackage appPackage = new AppPackage(getArchiveDirectory(), new CommandRunner())
+		File zipFile = new File(outputPath, getIpaFileName() + ".zip")
+		appPackage.createPackage(zipFile, applicationBundle, false)
 	}
 
 
