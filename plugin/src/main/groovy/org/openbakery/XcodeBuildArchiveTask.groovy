@@ -296,9 +296,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		String applicationIdentifier = "UNKNOWN00ID"; // if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
-		File provisioningProfile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
-		if (provisioningProfile != null && provisioningProfile.exists()) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, commandRunner)
+		ProvisioningProfileReader reader = ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
+		if (reader != null) {
 			applicationIdentifier = reader.getApplicationIdentifierPrefix()
 		}
 

@@ -211,11 +211,10 @@ class Codesign {
 
 
 
-		File provisionFile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
-		if (provisionFile == null) {
+		ProvisioningProfileReader reader = ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
+		if (reader == null) {
 			return null
 		}
-		ProvisioningProfileReader reader = createProvisioningProfileReader(bundleIdentifier, provisionFile)
 
 		// set keychain access group
 		List<String> keychainAccessGroup = []
@@ -225,7 +224,7 @@ class Codesign {
 			keychainAccessGroup = getKeychainAccessGroupFromEntitlements(configuration, applicationPrefix)
 		}
 
-		String basename = FilenameUtils.getBaseName(provisionFile.path)
+		String basename = FilenameUtils.getBaseName(reader.provisioningProfile.path)
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"))
 		File extractedEntitlementsFile = new File(tmpDir, "entitlements_" + basename + ".plist")
 		reader.extractEntitlements(extractedEntitlementsFile, bundleIdentifier, keychainAccessGroup, configuration)

@@ -2,23 +2,62 @@ package org.openbakery.assemble
 
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.codesign.CodesignParameters
+import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.util.FileHelper
+import org.openbakery.util.PlistHelper
 import org.openbakery.util.ZipArchive
+import org.openbakery.xcode.Type
 import org.slf4j.LoggerFactory
 import java.io.File
 
-class AppPackage(archive: File, commandRunner: CommandRunner) {
+class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignParameters: CodesignParameters, commandRunner: CommandRunner, plistHelper: PlistHelper) {
 
 	companion object {
 		val logger = LoggerFactory.getLogger("AppPackage")!!
 	}
 
-	var archive: File = archive
-	var commandRunner: CommandRunner = commandRunner
-	var fileHelper: FileHelper = FileHelper(commandRunner)
+	private val archive: File = archive
+	private val commandRunner: CommandRunner = commandRunner
+	private val plistHelper: PlistHelper = plistHelper
+	private val fileHelper: FileHelper = FileHelper(commandRunner)
+	private val codesignParameters: CodesignParameters = codesignParameters
+	private val applicationBundle: ApplicationBundle = applicationBundle
 
 
-	fun createPackage(zipFile: File, applicationBundle: ApplicationBundle, includeSupportFolders: Boolean) {
+
+	private val provisioningProfileReader by lazy {
+		var bundleIdentifier = applicationBundle.application.getBundleIdentifier()
+		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	this.commandRunner, plistHelper)
+	}
+
+
+	fun getProvisioningProfile() : File? {
+		return provisioningProfileReader?.provisioningProfile
+	}
+
+
+
+
+
+	fun createPackage(outputPath: File, name: String) {
+
+		var includeSupportFolders = false
+		var extension = "zip"
+
+		if (applicationBundle.type == Type.iOS) {
+			var profileType = getProvisioningProfileType()
+			includeSupportFolders = profileType == ProvisioningProfileType.AppStore
+			extension = "ipa"
+		}
+
+		val packagePath = File(outputPath, "$name.$extension")
+		createPackage(packagePath, includeSupportFolders)
+	}
+
+
+	private fun createPackage(zipFile: File, includeSupportFolders: Boolean) {
 		logger.debug("create package with {}", zipFile)
 		if (!zipFile.parentFile.exists()) {
 			zipFile.parentFile.mkdirs()
@@ -30,7 +69,7 @@ class AppPackage(archive: File, commandRunner: CommandRunner) {
 		zipArchive.add(applicationBundle.payloadDirectory)
 
 		if (includeSupportFolders) {
-			var swiftSupportFolder = addSwiftSupport(applicationBundle)
+			var swiftSupportFolder = addSwiftSupport()
 			if (swiftSupportFolder != null) {
 				zipArchive.add(swiftSupportFolder)
 			}
@@ -56,7 +95,7 @@ class AppPackage(archive: File, commandRunner: CommandRunner) {
 	}
 
 
-	fun addSwiftSupport(applicationBundle: ApplicationBundle): File? {
+	fun addSwiftSupport(): File? {
 
 		val frameworksPath = File(applicationBundle.applicationPath, "Frameworks")
 		if (!frameworksPath.exists()) {
@@ -70,6 +109,11 @@ class AppPackage(archive: File, commandRunner: CommandRunner) {
 			return File( applicationBundle.baseDirectory, "SwiftSupport")
 		}
 		return null
+	}
+
+
+	fun getProvisioningProfileType(): ProvisioningProfileType? {
+		return provisioningProfileReader?.profileType
 	}
 
 

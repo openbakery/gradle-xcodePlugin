@@ -497,18 +497,21 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File widgetMobileprovision = new File("src/test/Resource/test1.mobileprovision")
 		File wildcardMobileprovision = new File("src/test/Resource/test-wildcard.mobileprovision")
 
-		when:
 		def list = [
 						appMobileprovision,
 						widgetMobileprovision,
 						wildcardMobileprovision
 		]
 
-		then:
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example", list, commandRunner, plistHelper) == appMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.ExampleWidget", list, commandRunner, plistHelper) == widgetMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.Test", list, commandRunner, plistHelper) == wildcardMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.Test", list, commandRunner, plistHelper) == wildcardMobileprovision
+		expect:
+		ProvisioningProfileReader.getReaderForIdentifier(identifier, list, commandRunner, plistHelper).provisioningProfile == filename
+
+		where:
+		identifier                          | filename
+		"org.openbakery.test.Example"       | new File("../libtest/src/main/Resource/test.mobileprovision")
+		"org.openbakery.test.ExampleWidget" | new File("src/test/Resource/test1.mobileprovision")
+		"org.openbakery.Test"               | new File("src/test/Resource/test-wildcard.mobileprovision")
+		"org.Test"                          | new File("src/test/Resource/test-wildcard.mobileprovision")
 
 	}
 
@@ -518,16 +521,19 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File appMobileprovision = new File("src/test/Resource/openbakery.mobileprovision")
 		File wildcardMobileprovision = new File("src/test/Resource/openbakery-wildcard.mobileprovision")
 
-		when:
 		def list = [
 						appMobileprovision,
 						wildcardMobileprovision
 		]
 
-		then:
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example", list, commandRunner, plistHelper) == appMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example.widget", list, commandRunner, plistHelper) == wildcardMobileprovision
-		ProvisioningProfileReader.getProvisionFileForIdentifier("org.openbakery.test.Example.extension", list, commandRunner, plistHelper) == wildcardMobileprovision
+		expect:
+		ProvisioningProfileReader.getReaderForIdentifier(identifier, list, commandRunner, plistHelper).provisioningProfile == filename
+
+		where:
+		identifier                              | filename
+		"org.openbakery.test.Example"           | new File("src/test/Resource/openbakery.mobileprovision")
+		"org.openbakery.test.Example.widget"    | new File("src/test/Resource/openbakery-wildcard.mobileprovision")
+		"org.openbakery.test.Example.extension" | new File("src/test/Resource/openbakery-wildcard.mobileprovision")
 
 	}
 

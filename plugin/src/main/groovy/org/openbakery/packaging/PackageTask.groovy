@@ -9,6 +9,7 @@ import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.assemble.AppPackage
+import org.openbakery.bundle.Application
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
@@ -110,6 +111,9 @@ class PackageTask extends AbstractDistributeTask {
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
 		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
 
+		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), codesignParameters, commandRunner, plistHelper)
+
+
 		for (File bundle : appBundles) {
 
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
@@ -126,30 +130,21 @@ class PackageTask extends AbstractDistributeTask {
 			}
 		}
 
-		//File appBundle = appBundles.last()
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 
-			ProvisioningProfileType profileType = getProvisioningProfileType(applicationBundle)
-			boolean includeSupportFolders = profileType == ProvisioningProfileType.AppStore
-			createIpa(applicationBundle, includeSupportFolders)
+
+		appPackage.createPackage(outputPath, getIpaFileName())
+		/*
+		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
+			createIpa(applicationBundle)
 		} else {
 			createPackage(applicationBundle)
 		}
+		*/
 
 	}
 
-	ProvisioningProfileType getProvisioningProfileType(ApplicationBundle applicationBundle) {
-		File provisionFile = getProvisionFileForBundle(applicationBundle.applicationPath)
-		if (provisionFile == null) {
-			return null
-		}
 
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
-		return reader.getProfileType()
-	}
-
-
-    def removeUnneededDylibsFromBundle(File bundle) {
+	def removeUnneededDylibsFromBundle(File bundle) {
 		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
 			libswiftRemoteMirror.delete()
@@ -158,7 +153,7 @@ class PackageTask extends AbstractDistributeTask {
 
 	File getProvisionFileForBundle(File bundle) {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
-		return ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
+		return ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper).provisioningProfile
 	}
 
 
@@ -173,18 +168,6 @@ class PackageTask extends AbstractDistributeTask {
 				closure(supportFolder)
 			}
 		}
-	}
-
-	private void createIpa(ApplicationBundle applicationBundle, boolean includeSupportFolders) {
-		AppPackage appPackage = new AppPackage(getArchiveDirectory(), new CommandRunner())
-		File ipaFile = new File(outputPath, getIpaFileName() + ".ipa")
-		appPackage.createPackage(ipaFile, applicationBundle, includeSupportFolders)
-	}
-
-	private void createPackage(ApplicationBundle applicationBundle) {
-		AppPackage appPackage = new AppPackage(getArchiveDirectory(), new CommandRunner())
-		File zipFile = new File(outputPath, getIpaFileName() + ".zip")
-		appPackage.createPackage(zipFile, applicationBundle, false)
 	}
 
 

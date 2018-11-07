@@ -49,7 +49,7 @@ class ProvisioningProfileReader {
 	XMLPropertyListConfiguration config
 
 
-	private File provisioningProfile
+	File provisioningProfile
 	private File provisioningPlist
 
 
@@ -73,12 +73,15 @@ class ProvisioningProfileReader {
 		checkExpired()
 	}
 
-	static File getProvisionFileForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, PlistHelper plistHelper) {
+
+	static ProvisioningProfileReader getReaderForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, PlistHelper plistHelper) {
 		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : mobileProvisionFiles) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, commandRunner, plistHelper)
-			provisionFileMap.put(reader.getApplicationIdentifier(), mobileProvisionFile)
+			if (mobileProvisionFile.exists()) {
+				ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, commandRunner, plistHelper)
+				provisionFileMap.put(reader.getApplicationIdentifier(), reader)
+			}
 		}
 
 		logger.debug("provisionFileMap: {}", provisionFileMap)

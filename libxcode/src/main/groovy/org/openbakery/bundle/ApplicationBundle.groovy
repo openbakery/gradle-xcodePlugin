@@ -41,12 +41,16 @@ public class ApplicationBundle {
 		return getPayloadDirectory().parentFile
 	}
 
+	Application getApplication() {
+		return new Application(applicationPath, type)
+	}
+
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
 		File plugins
 		if (isDeviceBuildOf(Type.iOS)) {
 			plugins = new File(appBundle, "PlugIns")
-		}	else if (this.type == Type.macOS) {
+		} else if (this.type == Type.macOS) {
 			plugins = new File(appBundle, "Contents/PlugIns")
 		} else {
 			return
@@ -59,7 +63,7 @@ public class ApplicationBundle {
 					if (pluginBundle.name.endsWith(".framework")) {
 						// Frameworks have to be signed with this path
 						bundles.add(new File(pluginBundle, "/Versions/Current"))
-					}	else if (pluginBundle.name.endsWith(".appex")) {
+					} else if (pluginBundle.name.endsWith(".appex")) {
 
 						for (File appexBundle : pluginBundle.listFiles()) {
 							if (appexBundle.isDirectory() && appexBundle.name.endsWith(".app")) {
@@ -104,7 +108,7 @@ public class ApplicationBundle {
 			case Type.iOS:
 			case Type.watchOS:
 				return new File(applicationPath, "Frameworks")
-            default:
+			default:
 				return null
 		}
 	}
@@ -139,22 +143,25 @@ public class ApplicationBundle {
 		return new ApplicationBundle(watchAppBundle, Type.watchOS, simulator)
 	}
 
-    ArrayList<File> getAppExtensionBundles() {
-        File pluginsDirectory
-        File appBundle = this.applicationPath
+	ArrayList<File> getAppExtensionBundles() {
+		File pluginsDirectory
+		File appBundle = this.applicationPath
 
-        if (this.type == Type.iOS || this.type == Type.watchOS) {
-            pluginsDirectory = new File(appBundle, "PlugIns")
-        }	else if (this.type == Type.macOS) {
-            pluginsDirectory = new File(appBundle, "Contents/PlugIns")
-        } else {
-            return []
-        }
+		if (this.type == Type.iOS || this.type == Type.watchOS) {
+			pluginsDirectory = new File(appBundle, "PlugIns")
+		} else if (this.type == Type.macOS) {
+			pluginsDirectory = new File(appBundle, "Contents/PlugIns")
+		} else {
+			return []
+		}
 
-        if (pluginsDirectory.exists()) {
-            return pluginsDirectory.listFiles().findAll { it.isDirectory() && it.name.endsWith(".appex") }
-        }
+		if (pluginsDirectory.exists()) {
+			return pluginsDirectory.listFiles().findAll { it.isDirectory() && it.name.endsWith(".appex") }
+		}
 
-        return []
-    }
+		return []
+	}
+
+
+
 }
