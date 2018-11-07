@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Xcodebuild
@@ -364,7 +365,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
 			def baseDirectory = parameters.applicationBundle.parentFile
 
-			createZip(zipFile, baseDirectory, parameters.applicationBundle)
+			def zipArchive = new ZipArchive(zipFile, baseDirectory, commandRunner)
+			zipArchive.add(parameters.applicationBundle)
+			zipArchive.create()
 			return
 		}
 

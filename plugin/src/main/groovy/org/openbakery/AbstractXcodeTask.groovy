@@ -121,52 +121,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
-	def createZip(File fileToZip) {
-		File zipFile = new File(fileToZip.parentFile, FilenameUtils.getBaseName(fileToZip.getName()) + ".zip")
-		createZip(zipFile, zipFile.parentFile, fileToZip);
-	}
-
-	def createZip(File zipFile, File fileToZip) {
-		createZip(zipFile, fileToZip.parentFile, fileToZip)
-	}
-
-	def createZip(File zipFile, File baseDirectory, File... filesToZip) {
-		// we want to preserve the permissions, so use the zip command line tool
-		// maybe this can be replaced by Apache Commons Compress
-
-
-		if (!zipFile.parentFile.exists()) {
-			zipFile.parentFile.mkdirs()
-		}
-
-		logger.debug("create zip file: {}: {} ", zipFile.absolutePath, zipFile.parentFile.exists())
-		logger.debug("baseDirectory: {} ", baseDirectory)
-
-		for (File file : filesToZip) {
-			logger.debug("create of: {}: {}", file, file.exists() )
-		}
-
-		def arguments = []
-		arguments << '--symlinks';
-		arguments << '--verbose';
-		arguments << '--recurse-paths';
-		arguments << zipFile.absolutePath;
-		for (File file : filesToZip) {
-			arguments << file.getName()
-		}
-
-		logger.debug("arguments: {}", arguments)
-
-		ant.exec(failonerror: 'true',
-						executable: '/usr/bin/zip',
-						dir: baseDirectory) {
-
-			for (def argument : arguments) {
-				arg(value: argument)
-			}
-		}
-	}
-
 	/**
 	 * formats the date as ISO 8601 date
 	 * @param date

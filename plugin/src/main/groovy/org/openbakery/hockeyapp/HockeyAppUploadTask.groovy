@@ -36,7 +36,9 @@ import org.apache.http.util.EntityUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
+import org.openbakery.CommandRunner
 import org.openbakery.http.HttpUpload
+import org.openbakery.util.ZipArchive
 
 import java.util.regex.Pattern
 
@@ -65,7 +67,9 @@ class HockeyAppUploadTask extends AbstractDistributeTask {
 		File dSymBundle = getDSymBundle();
 
 		dSYMFile = getDestinationFile(project.hockeyapp.outputDirectory, ".app.dSYM.zip")
-		createZip(dSYMFile, dSymBundle.parentFile, dSymBundle);
+		def zipArchive = new ZipArchive(dSYMFile, dSymBundle.parentFile, new CommandRunner())
+		zipArchive.add(dSymBundle)
+		zipArchive.create()
 	}
 
 
