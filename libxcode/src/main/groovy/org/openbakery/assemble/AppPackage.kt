@@ -2,6 +2,8 @@ package org.openbakery.assemble
 
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.bundle.Bundle
+import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.codesign.ProvisioningProfileType
@@ -9,6 +11,7 @@ import org.openbakery.util.FileHelper
 import org.openbakery.util.PlistHelper
 import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -21,7 +24,7 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	private val archive: File = archive
 	private val commandRunner: CommandRunner = commandRunner
 	private val plistHelper: PlistHelper = plistHelper
-	private val fileHelper: FileHelper = FileHelper(commandRunner)
+	private val fileHelper: FileHelper = FileHelper(CommandRunner())
 	private val codesignParameters: CodesignParameters = codesignParameters
 	private val applicationBundle: ApplicationBundle = applicationBundle
 
@@ -36,9 +39,6 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	fun getProvisioningProfile() : File? {
 		return provisioningProfileReader?.provisioningProfile
 	}
-
-
-
 
 
 	fun createPackage(outputPath: File, name: String) {
@@ -117,4 +117,55 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	}
 
 
+
+		fun prepareBundles(applicationBundle: ApplicationBundle) {
+
+		for (bundle in applicationBundle.bundles) {
+
+			if (applicationBundle.type == Type.iOS) {
+				removeUnneededDylibsFromBundle(bundle)
+				embedProvisioningProfileToBundle(bundle)
+			}
+
+		}
+
+	}
+
+	fun codesign(applicationBundle: ApplicationBundle, xcode: Xcode) {
+		logger.debug("codesign: {}", applicationBundle)
+		val codesign = Codesign(xcode, codesignParameters, commandRunner, plistHelper)
+		for (bundle in applicationBundle.bundles) {
+			codesign.sign(bundle)
+		}
+	}
+
+
+	fun removeUnneededDylibsFromBundle(bundle: Bundle) {
+		val libswiftRemoteMirror = File(bundle.path, "libswiftRemoteMirror.dylib")
+		if (libswiftRemoteMirror.exists()) {
+			libswiftRemoteMirror.delete()
+		}
+	}
+
+	private fun embedProvisioningProfileToBundle(bundle: Bundle) {
+		//val mobileProvisionFile = getProvisioningProfile()
+	}
+
+
+	/* // migrate this to kotline
+		private void embedProvisioningProfileToBundle(File bundle) {
+		File mobileProvisionFile = getProvisionFileForBundle(bundle)
+		if (mobileProvisionFile != null) {
+			File embeddedProvisionFile
+
+			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
+			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
+
+			logger.info("provision profile - {}", embeddedProvisionFile)
+
+			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
+		}
+	}
+
+	 */
 }

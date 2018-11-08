@@ -11,6 +11,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.assemble.AppPackage
 import org.openbakery.bundle.Application
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.codesign.ProvisioningProfileType
@@ -24,7 +25,7 @@ class PackageTask extends AbstractDistributeTask {
 	File outputPath
 
 
-	private List<File> appBundles
+	private List<Bundle> appBundles
 
 	String applicationBundleName
 	StyledTextOutput output
@@ -100,56 +101,40 @@ class PackageTask extends AbstractDistributeTask {
 		def signSettingsAvailable = true
 		if (project.xcodebuild.signing.mobileProvisionFile == null) {
 			logger.warn('No mobile provision file provided.')
-			signSettingsAvailable = false;
+			signSettingsAvailable = false
 		} else if (!project.xcodebuild.signing.keychainPathInternal.exists()) {
 			logger.warn('No certificate or keychain found.')
-			signSettingsAvailable = false;
+			signSettingsAvailable = false
 		}
 
 		codesignParameters.mergeMissing(project.xcodebuild.signing.codesignParameters)
 		codesignParameters.type = project.xcodebuild.type
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
-		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
 
 		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), codesignParameters, commandRunner, plistHelper)
 
+		appPackage.addSwiftSupport()
 
-		for (File bundle : appBundles) {
-
+		// Todo move the lines below to the AppPackager class to preapreBundle
+		// the embedProvisioningProfileToBundle is not mirgrated yet
+		//appPackage.prepareBundles(applicationBundle)
+		for (Bundle bundle : appBundles) {
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-				removeUnneededDylibsFromBundle(bundle)
+				appPackage.removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
 			}
-
-			if (signSettingsAvailable) {
-				logger.info("Codesign app: {}", bundle)
-				codesign.sign(bundle)
-			} else {
-				String message = "Bundle not signed: " + bundle
-				output.withStyle(StyledTextOutput.Style.Failure).println(message)
-			}
 		}
 
-
+		if (signSettingsAvailable) {
+			appPackage.codesign(applicationBundle, xcode)
+		} else {
+			String message = "Bundle not signed: " + applicationBundle
+			output.withStyle(StyledTextOutput.Style.Failure).println(message)
+		}
 
 		appPackage.createPackage(outputPath, getIpaFileName())
-		/*
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-			createIpa(applicationBundle)
-		} else {
-			createPackage(applicationBundle)
-		}
-		*/
-
 	}
 
-
-	def removeUnneededDylibsFromBundle(File bundle) {
-		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
-		if (libswiftRemoteMirror.exists()) {
-			libswiftRemoteMirror.delete()
-		}
-	}
 
 	File getProvisionFileForBundle(File bundle) {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
@@ -185,9 +170,8 @@ class PackageTask extends AbstractDistributeTask {
 		return bundleIdentifier
 	}
 
-
-	private void embedProvisioningProfileToBundle(File bundle) {
-		File mobileProvisionFile = getProvisionFileForBundle(bundle)
+	private void embedProvisioningProfileToBundle(Bundle bundle) {
+		File mobileProvisionFile = getProvisionFileForBundle(bundle.path)
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 
@@ -205,8 +189,8 @@ class PackageTask extends AbstractDistributeTask {
 		if (destination.exists()) {
 			FileUtils.deleteDirectory(destination);
 		}
-		destination.mkdirs();
-		return destination;
+		destination.mkdirs()
+		return destination
 	}
 
 	private File createApplicationFolder() throws IOException {
@@ -231,11 +215,11 @@ class PackageTask extends AbstractDistributeTask {
 		return getAppContentPath(appBundles.last())
 	}
 
-	private String getAppContentPath(File bundle) {
+	private String getAppContentPath(Bundle bundle) {
 		if (project.xcodebuild.type == Type.iOS) {
-			return bundle.absolutePath + "/"
+			return bundle.path.absolutePath + "/"
 		}
-		return bundle.absolutePath + "/Contents/"
+		return bundle.path.absolutePath + "/Contents/"
 	}
 
 	def getIpaFileName() {

@@ -1,6 +1,7 @@
 package org.openbakery.simulators
 
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.bundle.Bundle
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 
@@ -12,8 +13,8 @@ class SimulatorRunAppTask extends AbstractSimulatorTask {
     dependsOn(XcodePlugin.SIMULATORS_INSTALL_APP_TASK_NAME)
   }
 
-  private File getInfoPlistFile(List<File> appBundles) {
-    return new File(getAppContentPath(appBundles.last()) + "Info.plist")
+  private File getInfoPlistFile(List<Bundle> appBundles) {
+    return new File(getAppContentPath(appBundles.last().path) + "Info.plist")
   }
 
   private String getAppContentPath(File bundle) {

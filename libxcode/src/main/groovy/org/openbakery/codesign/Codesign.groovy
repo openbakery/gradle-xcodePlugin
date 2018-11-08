@@ -3,6 +3,7 @@ package org.openbakery.codesign
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.openbakery.CommandRunner
+import org.openbakery.bundle.Bundle
 import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
@@ -29,19 +30,19 @@ class Codesign {
 	}
 
 
-	void sign(File bundle) {
+	void sign(Bundle bundle) {
 		logger.debug("Codesign with Identity: {}", codesignParameters.signingIdentity)
 
-		codeSignFrameworks(bundle)
+		codeSignFrameworks(bundle.path)
 
 		logger.debug("Codesign {}", bundle)
 
 		File entitlements = null
 		if (codesignParameters.signingIdentity != null) {
-			entitlements = prepareEntitlementsForSigning(bundle)
+			entitlements = prepareEntitlementsForSigning(bundle.path)
 		}
 
-		performCodesign(bundle, entitlements)
+		performCodesign(bundle.path, entitlements)
 	}
 
 	private File prepareEntitlementsForSigning(File bundle) {

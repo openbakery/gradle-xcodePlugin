@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Security
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.xcode.DestinationResolver
@@ -134,7 +135,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
-	List<File> getAppBundles(File appPath) {
+	List<Bundle> getAppBundles(File appPath) {
 		ApplicationBundle applicationBundle = new ApplicationBundle(new File(appPath,project.xcodebuild.applicationBundle.name), project.xcodebuild.type, project.xcodebuild.simulator)
 		return applicationBundle.getBundles()
 	}

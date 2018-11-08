@@ -3,6 +3,7 @@ package org.openbakery.simulators
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.xcode.Type
 import spock.lang.Specification
@@ -86,7 +87,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		task.run()
 
 		then:
-		1 * codesign.sign(project.xcodebuild.applicationBundle)
+		1 * codesign.sign(new Bundle(project.xcodebuild.applicationBundle))
 	}
 
 

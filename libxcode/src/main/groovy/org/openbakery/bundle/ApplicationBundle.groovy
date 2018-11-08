@@ -2,27 +2,27 @@ package org.openbakery.bundle
 
 import org.openbakery.xcode.Type
 
-public class ApplicationBundle {
+class ApplicationBundle {
 
 	File applicationPath
 	Type type
 	boolean simulator
 
-	public ApplicationBundle(File applicationPath, Type type, boolean simulator) {
+	ApplicationBundle(File applicationPath, Type type, boolean simulator) {
 		this.applicationPath = applicationPath
 		this.type = type
 		this.simulator = simulator
 	}
 
-	List<File> getBundles() {
-		ArrayList<File> bundles = new ArrayList<File>();
+	List<Bundle> getBundles() {
+		ArrayList<Bundle> bundles = new ArrayList<Bundle>()
 
 		addPluginsToAppBundle(applicationPath, bundles)
 
 		if (isDeviceBuildOf(Type.iOS)) {
 			addWatchToAppBundle(bundles)
 		}
-		bundles.add(applicationPath)
+		bundles.add(new Bundle(applicationPath))
 		return bundles
 	}
 
@@ -46,7 +46,7 @@ public class ApplicationBundle {
 	}
 
 
-	private void addPluginsToAppBundle(File appBundle, ArrayList<File> bundles) {
+	private void addPluginsToAppBundle(File appBundle, ArrayList<Bundle> bundles) {
 		File plugins
 		if (isDeviceBuildOf(Type.iOS)) {
 			plugins = new File(appBundle, "PlugIns")
@@ -62,34 +62,35 @@ public class ApplicationBundle {
 
 					if (pluginBundle.name.endsWith(".framework")) {
 						// Frameworks have to be signed with this path
-						bundles.add(new File(pluginBundle, "/Versions/Current"))
+						File path = new File(pluginBundle, "/Versions/Current")
+						bundles.add(new Bundle(path))
 					} else if (pluginBundle.name.endsWith(".appex")) {
 
 						for (File appexBundle : pluginBundle.listFiles()) {
 							if (appexBundle.isDirectory() && appexBundle.name.endsWith(".app")) {
-								bundles.add(appexBundle)
+								bundles.add(new Bundle(appexBundle))
 							}
 						}
-						bundles.add(pluginBundle)
+						bundles.add(new Bundle(pluginBundle))
 					} else if (pluginBundle.name.endsWith(".app")) {
-						bundles.add(pluginBundle)
+						bundles.add(new Bundle(pluginBundle))
 					}
 				}
 			}
 		}
 	}
 
-	private void addWatchToAppBundle(ArrayList<File> bundles) {
+	private void addWatchToAppBundle(ArrayList<Bundle> bundles) {
 		def watchAppBundle = getWatchAppBundle()
 		if (watchAppBundle != null) {
 			addPluginsToAppBundle(watchAppBundle.applicationPath, bundles)
-			bundles.add(watchAppBundle.applicationPath)
+			bundles.add(new Bundle(watchAppBundle.applicationPath))
 		}
 	}
 
 	boolean isDeviceBuildOf(Type expectedType) {
 		if (type != expectedType) {
-			return false;
+			return false
 		}
 		return !this.simulator
 	}
@@ -163,5 +164,12 @@ public class ApplicationBundle {
 	}
 
 
-
+	@Override
+	String toString() {
+		return "ApplicationBundle{" +
+			"applicationPath=" + applicationPath +
+			", type=" + type +
+			", simulator=" + simulator +
+			'}';
+	}
 }

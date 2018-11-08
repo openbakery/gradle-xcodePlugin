@@ -19,6 +19,7 @@ import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
@@ -406,10 +407,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 
-		List<File> appBundles = getAppBundles(parameters.outputPath)
-		for (File bundle : appBundles) {
-			createEntitlements(bundle)
-			createExtensionSupportDirectory(bundle, xcodebuild, archiveDirectory)
+		List<Bundle> appBundles = getAppBundles(parameters.outputPath)
+		for (Bundle bundle : appBundles) {
+			createEntitlements(bundle.path)
+			createExtensionSupportDirectory(bundle.path, xcodebuild, archiveDirectory)
 		}
 
 		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)
