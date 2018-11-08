@@ -61,8 +61,8 @@ allprojects {
 
 project(':plugin') {
 	dependencies {
-		compile project(':libxcode')
-		compile project(':libxcodetools')
+		compileOnly project(':libxcode')
+		compileOnly project(':libxcodetools')
 		testCompile project(':libtest')
 	}
 }
