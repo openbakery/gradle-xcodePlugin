@@ -92,4 +92,19 @@ class AppPackageSpecification extends Specification {
 		1 * lipo.removeUnsupportedArchs(new File(applicationPath, "Frameworks/libswiftCoreGraphics.dylib"), ["armv7"])
 	}
 
+
+	def "remove archs only from dylibs"() {
+		given:
+		lipo.getArchs(new File(applicationPath, "ExampleExecutable")) >> ["armv7"]
+
+		File framework = new File(applicationPath, "Frameworks/Test.framework")
+		framework.mkdirs()
+
+		when:
+		appPackage.addSwiftSupport()
+
+		then:
+		0 * lipo.removeUnsupportedArchs(new File(applicationPath, "Frameworks/Test.framework"), ["armv7"])
+	}
+
 }
