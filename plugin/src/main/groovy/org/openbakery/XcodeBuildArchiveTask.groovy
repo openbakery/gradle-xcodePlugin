@@ -19,7 +19,9 @@ import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Xcodebuild
@@ -295,9 +297,8 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 
 		String applicationIdentifier = "UNKNOWN00ID"; // if UNKNOWN00ID this means that not application identifier is found an this value is used as fallback
-		File provisioningProfile = ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
-		if (provisioningProfile != null && provisioningProfile.exists()) {
-			ProvisioningProfileReader reader = new ProvisioningProfileReader(provisioningProfile, commandRunner)
+		ProvisioningProfileReader reader = ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
+		if (reader != null) {
 			applicationIdentifier = reader.getApplicationIdentifierPrefix()
 		}
 
@@ -364,7 +365,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			def zipFile = new File(project.getBuildDir(), "archive/" + zipFileName)
 			def baseDirectory = parameters.applicationBundle.parentFile
 
-			createZip(zipFile, baseDirectory, parameters.applicationBundle)
+			def zipArchive = new ZipArchive(zipFile, baseDirectory, commandRunner)
+			zipArchive.add(parameters.applicationBundle)
+			zipArchive.create()
 			return
 		}
 
@@ -404,10 +407,10 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 
-		List<File> appBundles = getAppBundles(parameters.outputPath)
-		for (File bundle : appBundles) {
-			createEntitlements(bundle)
-			createExtensionSupportDirectory(bundle, xcodebuild, archiveDirectory)
+		List<Bundle> appBundles = getAppBundles(parameters.outputPath)
+		for (Bundle bundle : appBundles) {
+			createEntitlements(bundle.path)
+			createExtensionSupportDirectory(bundle.path, xcodebuild, archiveDirectory)
 		}
 
 		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)

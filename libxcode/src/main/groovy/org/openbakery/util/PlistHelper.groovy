@@ -59,6 +59,14 @@ class PlistHelper {
 		}
 	}
 
+	String getStringFromPlist(File plist, String key) {
+		def value = getValueFromPlist(plist, key)
+		if (value instanceof String) {
+			return value
+		}
+		return null
+	}
+
 	void setValueForPlist(File plist, String key, List values) {
 		deleteValueFromPlist(plist, key)
 		addValueForPlist(plist, key, values)

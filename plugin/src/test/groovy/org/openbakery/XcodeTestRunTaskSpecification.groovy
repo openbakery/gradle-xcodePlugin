@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
@@ -397,8 +398,8 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.testRun()
 
 		then:
-		1 * codesign.sign(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"))
-		1 * codesign.sign(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"))
+		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"), Type.iOS))
+		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"), Type.iOS))
 
 	}
 }

@@ -2,10 +2,12 @@ package org.openbakery.test
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Extension
+import org.openbakery.xcode.Type
 
 class ApplicationDummy {
 
@@ -46,8 +48,11 @@ class ApplicationDummy {
 		PlistHelper helper = new PlistHelper(new CommandRunner())
 		helper.create(infoPlist)
 		helper.addValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
+		helper.addValueForPlist(infoPlist, "CFBundleExecutable", "ExampleExecutable")
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
+
+
 
 		switch (profileType) {
 			case ProvisioningProfileType.Development:
@@ -67,6 +72,10 @@ class ApplicationDummy {
 		return appDirectory
 	}
 
+	Bundle createBundle(boolean adHoc = true, boolean includeProvisioning = true) {
+		return new Bundle(create(adHoc, includeProvisioning), Type.iOS)
+	}
+
 	File create(boolean adHoc = true, boolean includeProvisioning = true) {
 		if (!includeProvisioning) {
 			return create(null)
@@ -74,6 +83,10 @@ class ApplicationDummy {
 
 		ProvisioningProfileType profileType = adHoc ? ProvisioningProfileType.AdHoc : ProvisioningProfileType.AppStore
 		return create(profileType)
+	}
+
+	Bundle createPluginBundle(Extension extension = Extension.today) {
+		return new Bundle(createPlugin(extension), Type.iOS)
 	}
 
 	File createPlugin(Extension extension = Extension.today) {
@@ -94,13 +107,18 @@ class ApplicationDummy {
 
 	}
 
-	void createSwiftLibs() {
-		File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib")
+	void createSwiftLibs(File applicationDirectory, File rootDirectory) {
+		File libSwiftCore = new File(applicationDirectory, "Frameworks/libswiftCore.dylib")
 		FileUtils.writeStringToFile(libSwiftCore, "dummy")
-		File libSwiftCoreArchive = new File(directory, "SwiftSupport/libswiftCore.dylib")
+		File libSwiftCoreArchive = new File(rootDirectory, "SwiftSupport/libswiftCore.dylib")
 		FileUtils.writeStringToFile(libSwiftCoreArchive, "dummy")
-		File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
+		File libswiftCoreGraphics = new File(applicationDirectory, "Frameworks/libswiftCoreGraphics.dylib")
 		FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
+
+	}
+
+	void createSwiftLibs() {
+		createSwiftLibs(applicationBundle, directory)
 	}
 
 	void createFramework() {

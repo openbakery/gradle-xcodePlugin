@@ -153,6 +153,10 @@ class Xcode {
         return getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/simctl"
     }
 
+	String getLipo() {
+		return getPath() + "/$XCODE_CONTENT_DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo"
+	}
+
     @Override
     String toString() {
         return "Xcode{" +

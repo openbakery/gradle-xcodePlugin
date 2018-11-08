@@ -62,6 +62,7 @@ allprojects {
 project(':plugin') {
 	dependencies {
 		compileOnly project(':libxcode')
+		compileOnly project(':libxcodetools')
 		testCompile project(':libtest')
 	}
 }
@@ -73,8 +74,17 @@ project(':libxcode') {
 	}
 }
 
+project(':libxcodetools') {
+	dependencies {
+		compile project(':libxcode')
+		testCompile project(':libtest')
+	}
+}
+
+
 project(':libtest') {
 	dependencies {
 		compile project(':libxcode')
+		compile project(':libxcodetools')
 	}
 }

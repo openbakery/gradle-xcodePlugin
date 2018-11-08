@@ -7,6 +7,7 @@ import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.output.TestBuildOutputAppender
@@ -69,11 +70,12 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 
 				String appBundle = getBundleFromFile(it, "TestHostPath")
 				File appBundleFile = new File(it.parentFile, appBundle)
-				codesign.sign(appBundleFile)
+
+				codesign.sign(new Bundle(appBundleFile, parameters.type))
 
 				String testBundle = getBundleFromFile(it, "TestBundlePath")
 				File testBundleFile = new File(appBundleFile, testBundle)
-				codesign.sign(testBundleFile)
+				codesign.sign(new Bundle(testBundleFile, parameters.type))
 			}
 
 		}
