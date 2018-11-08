@@ -22,8 +22,16 @@ class ApplicationBundle {
 		if (isDeviceBuildOf(Type.iOS)) {
 			addWatchToAppBundle(bundles)
 		}
-		bundles.add(new Bundle(applicationPath))
+		bundles.add(new Bundle(applicationPath, type))
 		return bundles
+	}
+
+	private Bundle createBundle(File bundleFile) {
+		return new Bundle(bundleFile, type)
+	}
+
+	Bundle getMainBundle() {
+		return getBundles().last()
 	}
 
 	String getBundleName() {
@@ -59,17 +67,17 @@ class ApplicationBundle {
 					if (pluginBundle.name.endsWith(".framework")) {
 						// Frameworks have to be signed with this path
 						File path = new File(pluginBundle, "/Versions/Current")
-						bundles.add(new Bundle(path))
+						bundles.add(createBundle(path))
 					} else if (pluginBundle.name.endsWith(".appex")) {
 
 						for (File appexBundle : pluginBundle.listFiles()) {
 							if (appexBundle.isDirectory() && appexBundle.name.endsWith(".app")) {
-								bundles.add(new Bundle(appexBundle))
+								bundles.add(createBundle(appexBundle))
 							}
 						}
-						bundles.add(new Bundle(pluginBundle))
+						bundles.add(createBundle(pluginBundle))
 					} else if (pluginBundle.name.endsWith(".app")) {
-						bundles.add(new Bundle(pluginBundle))
+						bundles.add(createBundle(pluginBundle))
 					}
 				}
 			}
@@ -80,7 +88,7 @@ class ApplicationBundle {
 		def watchAppBundle = getWatchAppBundle()
 		if (watchAppBundle != null) {
 			addPluginsToAppBundle(watchAppBundle.applicationPath, bundles)
-			bundles.add(new Bundle(watchAppBundle.applicationPath))
+			bundles.add(createBundle(watchAppBundle.applicationPath))
 		}
 	}
 

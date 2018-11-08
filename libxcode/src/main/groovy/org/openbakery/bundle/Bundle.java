@@ -2,6 +2,10 @@ package org.openbakery.bundle;
 
 import java.io.File;
 
+import org.openbakery.CommandRunner;
+import org.openbakery.util.PlistHelper;
+import org.openbakery.xcode.Type;
+
 
 /**
  * This class should hold the information for a Bundle within the application like
@@ -10,37 +14,63 @@ import java.io.File;
 public class Bundle {
 
 	public final File path;
+	public final Type type;
 
 	//public String identifier
 	//public File provisioningProfile
 
-	public Bundle(File path) {
+	public Bundle(File path, Type type) {
 		this.path = path;
+		this.type = type;
 	}
 
-	public Bundle(String path) {
-		this.path = new File(path);
+	public Bundle(String path, Type type) {
+		this(new File(path), type);
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		Bundle bundle = (Bundle) o;
-
-		return path.equals(bundle.path);
+	public File getInfoPlist() {
+		if (type == Type.macOS) {
+			return new File(path, "Contents/Info.plist");
+		}
+		return new File(path, "Info.plist");
 	}
 
-	@Override
-	public int hashCode() {
-		return path.hashCode();
+	public String getBundleIdentifier() {
+		return getStringFromPlist("CFBundleIdentifier");
 	}
+
+	public String getExecutable() {
+		return getStringFromPlist("CFBundleExecutable");
+	}
+
+	private String getStringFromPlist(String key) {
+		PlistHelper helper = new PlistHelper(new CommandRunner());
+		return helper.getStringFromPlist(getInfoPlist(), key);
+	}
+
 
 	@Override
 	public String toString() {
 		return "Bundle{" +
 			"path=" + path +
 			'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Bundle)) return false;
+
+		Bundle bundle = (Bundle) o;
+
+		if (!path.equals(bundle.path)) return false;
+		return type == bundle.type;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = path.hashCode();
+		result = 31 * result + type.hashCode();
+		return result;
 	}
 }

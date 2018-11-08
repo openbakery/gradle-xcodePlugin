@@ -1,20 +1,15 @@
-package org.openbakery.codesign
+package org.openbakery.tools
 
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Xcode
 
-class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
+open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 
-	var xcode: Xcode
-	var commandRunner: CommandRunner
-
-	init {
-		this.xcode = xcode
-		this.commandRunner = commandRunner
-	}
+	var xcode: Xcode = xcode
+	var commandRunner: CommandRunner = commandRunner
 
 
-	fun getArchs(binaryName: String): List<String> {
+	open fun getArchs(binaryName: String): List<String> {
 		val commandList = listOf(
 			xcode.lipo,
 			"-info",
@@ -30,7 +25,7 @@ class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		return listOf("armv7", "arm64")
 	}
 
-	fun removeArch(binaryName: String, arch: String) {
+	open fun removeArch(binaryName: String, arch: String) {
 		commandRunner.run(
 			xcode.lipo,
 			binaryName,
@@ -41,7 +36,7 @@ class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		)
 	}
 
-	fun removeUnsupportedArchs(binaryName: String, supportedArchs: List<String>) {
+	open fun removeUnsupportedArchs(binaryName: String, supportedArchs: List<String>) {
 
 		val archs = getArchs(binaryName).toMutableList()
 		archs.removeAll(supportedArchs)

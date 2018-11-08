@@ -87,7 +87,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		task.run()
 
 		then:
-		1 * codesign.sign(new Bundle(project.xcodebuild.applicationBundle))
+		1 * codesign.sign(new Bundle(project.xcodebuild.applicationBundle, Type.iOS))
 	}
 
 

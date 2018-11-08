@@ -70,11 +70,12 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 
 				String appBundle = getBundleFromFile(it, "TestHostPath")
 				File appBundleFile = new File(it.parentFile, appBundle)
-				codesign.sign(new Bundle(appBundleFile))
+
+				codesign.sign(new Bundle(appBundleFile, parameters.type))
 
 				String testBundle = getBundleFromFile(it, "TestBundlePath")
 				File testBundleFile = new File(appBundleFile, testBundle)
-				codesign.sign(new Bundle(testBundleFile))
+				codesign.sign(new Bundle(testBundleFile, parameters.type))
 			}
 
 		}

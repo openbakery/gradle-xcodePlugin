@@ -7,6 +7,7 @@ import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Extension
+import org.openbakery.xcode.Type
 
 class ApplicationDummy {
 
@@ -47,8 +48,11 @@ class ApplicationDummy {
 		PlistHelper helper = new PlistHelper(new CommandRunner())
 		helper.create(infoPlist)
 		helper.addValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
+		helper.addValueForPlist(infoPlist, "CFBundleExecutable", "ExampleExecutable")
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
+
+
 
 		switch (profileType) {
 			case ProvisioningProfileType.Development:
@@ -69,7 +73,7 @@ class ApplicationDummy {
 	}
 
 	Bundle createBundle(boolean adHoc = true, boolean includeProvisioning = true) {
-		return new Bundle(create(adHoc, includeProvisioning))
+		return new Bundle(create(adHoc, includeProvisioning), Type.iOS)
 	}
 
 	File create(boolean adHoc = true, boolean includeProvisioning = true) {
@@ -82,7 +86,7 @@ class ApplicationDummy {
 	}
 
 	Bundle createPluginBundle(Extension extension = Extension.today) {
-		return new Bundle(createPlugin(extension))
+		return new Bundle(createPlugin(extension), Type.iOS)
 	}
 
 	File createPlugin(Extension extension = Extension.today) {

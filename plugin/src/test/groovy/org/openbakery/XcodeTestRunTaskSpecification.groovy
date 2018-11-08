@@ -398,8 +398,8 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.testRun()
 
 		then:
-		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app")))
-		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest")))
+		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"), Type.iOS))
+		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"), Type.iOS))
 
 	}
 }

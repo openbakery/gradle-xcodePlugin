@@ -8,23 +8,22 @@ import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.codesign.ProvisioningProfileType
+import org.openbakery.tools.CommandLineTools
 import org.openbakery.util.FileHelper
-import org.openbakery.util.PlistHelper
 import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
 import org.slf4j.LoggerFactory
 import java.io.File
 
-class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignParameters: CodesignParameters, commandRunner: CommandRunner, plistHelper: PlistHelper) {
+class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignParameters: CodesignParameters, tools: CommandLineTools) {
 
 	companion object {
 		val logger = LoggerFactory.getLogger("AppPackage")!!
 	}
 
 	private val archive: File = archive
-	private val commandRunner: CommandRunner = commandRunner
-	private val plistHelper: PlistHelper = plistHelper
+	private val tools: CommandLineTools = tools
 	private val fileHelper: FileHelper = FileHelper(CommandRunner())
 	private val codesignParameters: CodesignParameters = codesignParameters
 	private val applicationBundle: ApplicationBundle = applicationBundle
@@ -36,7 +35,7 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 	private val provisioningProfileReader by lazy {
 		var bundleIdentifier = getApplication().getBundleIdentifier()
-		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	this.commandRunner, plistHelper)
+		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
 	}
 
 
@@ -108,13 +107,21 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 		val swiftLibArchive = File(this.archive, "SwiftSupport")
 
-		if (swiftLibArchive.exists()) {
-			fileHelper.copyTo(swiftLibArchive, applicationBundle.baseDirectory)
-			return File( applicationBundle.baseDirectory, "SwiftSupport")
+		if (!swiftLibArchive.exists()) {
+			return null
 		}
-		return null
+
+		fileHelper.copyTo(swiftLibArchive, applicationBundle.baseDirectory)
+		updateArchsForSwiftLibs()
+		return File( applicationBundle.baseDirectory, "SwiftSupport")
 	}
 
+
+	fun updateArchsForSwiftLibs() {
+
+		//val application = getApplication()
+		//val binaryArchs = tools.lipo.getArchs(application.executeable)
+	}
 
 	fun getProvisioningProfileType(): ProvisioningProfileType? {
 		return provisioningProfileReader?.profileType
@@ -137,7 +144,7 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 	fun codesign(applicationBundle: ApplicationBundle, xcode: Xcode) {
 		logger.debug("codesign: {}", applicationBundle)
-		val codesign = Codesign(xcode, codesignParameters, commandRunner, plistHelper)
+		val codesign = Codesign(xcode, codesignParameters, tools.commandRunner, tools.plistHelper)
 		for (bundle in applicationBundle.bundles) {
 			codesign.sign(bundle)
 		}

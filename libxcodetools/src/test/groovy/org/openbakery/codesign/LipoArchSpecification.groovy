@@ -2,6 +2,7 @@ package org.openbakery.codesign
 
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.tools.Lipo
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 

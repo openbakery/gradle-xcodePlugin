@@ -6,6 +6,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.xcode.Type
 
 class SimulatorInstallAppTask extends AbstractSimulatorTask {
 
@@ -21,7 +22,7 @@ class SimulatorInstallAppTask extends AbstractSimulatorTask {
 	void run() {
 		try {
 			logger.lifecycle("Signing " + project.xcodebuild.applicationBundle.absolutePath)
-			getCodesign().sign(new Bundle(project.xcodebuild.applicationBundle))
+			getCodesign().sign(new Bundle(project.xcodebuild.applicationBundle, Type.iOS))
 			logger.lifecycle("Installing " + project.xcodebuild.applicationBundle.absolutePath)
 			simulatorControl.simctl("install", "booted", project.xcodebuild.applicationBundle.absolutePath)
 		} catch (CommandRunnerException ex) {
