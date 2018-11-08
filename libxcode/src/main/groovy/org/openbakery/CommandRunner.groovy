@@ -139,8 +139,8 @@ class CommandRunner {
 			}
 		};
 
-		readerThread = new Thread(runnable);
-		readerThread.start();
+		readerThread = new Thread(runnable)
+		readerThread.start()
 	}
 
 	def run(String directory, List<String> commandList, OutputAppender outputAppender) {

@@ -1,8 +1,8 @@
 package org.openbakery.codesign
 
 import org.openbakery.CommandRunner
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Xcode
-import org.openbakery.xcode.XcodeFake
 import spock.lang.Specification
 
 class LipoArchSpecification extends Specification {

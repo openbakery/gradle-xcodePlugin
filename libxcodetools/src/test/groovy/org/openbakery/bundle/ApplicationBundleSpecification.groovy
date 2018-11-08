@@ -1,6 +1,10 @@
 package org.openbakery.bundle
 
+import org.openbakery.CommandRunner
+import org.openbakery.assemble.AppPackage
+import org.openbakery.codesign.CodesignParameters
 import org.openbakery.test.ApplicationDummy
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
@@ -19,10 +23,18 @@ class ApplicationBundleSpecification extends Specification {
 		applicationDummy = null
 	}
 
+	AppPackage createAppPackage(String filePath, Type type = Type.iOS) {
+		def applicationPath = new File(filePath)
+		def commandRunner = new CommandRunner()
+		def applicationBundle = new ApplicationBundle(applicationPath, type, false)
+		return new AppPackage(applicationBundle, applicationPath, new CodesignParameters(), commandRunner, new PlistHelper(commandRunner))
+
+	}
+
 
 	def "test bundleName from path"(def bundleName, def filePath) {
 		expect:
-		bundleName == new ApplicationBundle(new File(filePath), Type.iOS, false).getBundleName()
+		bundleName == createAppPackage(filePath).applicationBundle.getBundleName()
 
 		where:
 		bundleName   | filePath
@@ -35,7 +47,7 @@ class ApplicationBundleSpecification extends Specification {
 
 	def "test application"() {
 		when:
-		def bundle = new ApplicationBundle(new File("Example.app"), Type.iOS, false)
+		def bundle = createAppPackage("Example.app")
 
 		then:
 		bundle.application instanceof Application
@@ -44,19 +56,16 @@ class ApplicationBundleSpecification extends Specification {
 
 	def "test application base path"() {
 		when:
-		def applicationPath = new File("Example.app")
-
-		def bundle = new ApplicationBundle(applicationPath, Type.iOS, false)
+		def bundle = createAppPackage("Example.app")
 
 		then:
-		bundle.application.path == applicationPath
+		bundle.application.path == new File("Example.app")
 	}
 
 
 	def "test infoPlist for iOS App"() {
 		when:
-		def applicationPath = new File("Example.app")
-		def bundle = new ApplicationBundle(applicationPath, Type.iOS, false)
+		def bundle = createAppPackage("Example.app")
 
 		then:
 		bundle.application.infoPlist == new File("Example.app/Info.plist")
@@ -65,8 +74,8 @@ class ApplicationBundleSpecification extends Specification {
 
 	def "test infoPlist for macOS App"() {
 		when:
-		def applicationPath = new File("Example.app")
-		def bundle = new ApplicationBundle(applicationPath, Type.macOS, false)
+		def bundle = createAppPackage("Example.app", Type.macOS)
+
 
 		then:
 		bundle.application.infoPlist == new File("Example.app/Contents/Info.plist")
@@ -74,8 +83,8 @@ class ApplicationBundleSpecification extends Specification {
 
 	def "test bundleIdentifier for iOS App"() {
 		when:
-		applicationDummy.create()
-		def bundle = new ApplicationBundle(applicationDummy.applicationBundle, Type.iOS, false)
+		def path = applicationDummy.create()
+		def bundle = createAppPackage(path.toString())
 
 		then:
 		bundle.application.bundleIdentifier == "org.openbakery.test.Example"

@@ -1,7 +1,7 @@
 package org.openbakery.codesign
 
 import org.openbakery.CommandRunner
-import org.openbakery.xcode.XcodeFake
+import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 class LipoRemoveArchSpecification extends Specification {

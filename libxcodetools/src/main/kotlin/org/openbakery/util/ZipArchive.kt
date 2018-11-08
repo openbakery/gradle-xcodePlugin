@@ -7,7 +7,7 @@ import java.io.File
 
 
 
-class ZipArchive(archiveFile: File, baseDirectory: File, commandRunner: CommandRunner = CommandRunner()) {
+open class ZipArchive(archiveFile: File, baseDirectory: File, commandRunner: CommandRunner = CommandRunner()) {
 
 	companion object {
 		val logger = LoggerFactory.getLogger("ZipArchive")!!
@@ -41,8 +41,8 @@ class ZipArchive(archiveFile: File, baseDirectory: File, commandRunner: CommandR
 	fun create() {
 		logger.debug("create zip: {}", archiveFile)
 
-		if (!archiveFile.parentFile.exists()) {
-			archiveFile.parentFile.mkdirs()
+		if (!archiveFile.absoluteFile.parentFile.exists()) {
+			archiveFile.absoluteFile.parentFile.mkdirs()
 		}
 
 		var command = mutableListOf<String>(

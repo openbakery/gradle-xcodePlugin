@@ -1,6 +1,7 @@
-package org.openbakery.util
+package org.openbakery.zip
 
 import org.openbakery.CommandRunner
+import org.openbakery.util.ZipArchive
 import spock.lang.Specification
 
 class ZipArchiveSpecification extends Specification {

@@ -2,6 +2,7 @@ package org.openbakery.test
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.util.PlistHelper
@@ -67,6 +68,10 @@ class ApplicationDummy {
 		return appDirectory
 	}
 
+	Bundle createBundle(boolean adHoc = true, boolean includeProvisioning = true) {
+		return new Bundle(create(adHoc, includeProvisioning))
+	}
+
 	File create(boolean adHoc = true, boolean includeProvisioning = true) {
 		if (!includeProvisioning) {
 			return create(null)
@@ -74,6 +79,10 @@ class ApplicationDummy {
 
 		ProvisioningProfileType profileType = adHoc ? ProvisioningProfileType.AdHoc : ProvisioningProfileType.AppStore
 		return create(profileType)
+	}
+
+	Bundle createPluginBundle(Extension extension = Extension.today) {
+		return new Bundle(createPlugin(extension))
 	}
 
 	File createPlugin(Extension extension = Extension.today) {

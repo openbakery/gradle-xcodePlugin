@@ -41,10 +41,6 @@ class ApplicationBundle {
 		return getPayloadDirectory().parentFile
 	}
 
-	Application getApplication() {
-		return new Application(applicationPath, type)
-	}
-
 
 	private void addPluginsToAppBundle(File appBundle, ArrayList<Bundle> bundles) {
 		File plugins

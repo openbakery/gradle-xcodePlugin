@@ -1,6 +1,7 @@
 package org.openbakery.assemble
 
 import org.openbakery.CommandRunner
+import org.openbakery.bundle.Application
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
@@ -29,9 +30,12 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	private val applicationBundle: ApplicationBundle = applicationBundle
 
 
+	fun getApplication() : Application {
+		return Application(applicationBundle.applicationPath, applicationBundle.type)
+	}
 
 	private val provisioningProfileReader by lazy {
-		var bundleIdentifier = applicationBundle.application.getBundleIdentifier()
+		var bundleIdentifier = getApplication().getBundleIdentifier()
 		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	this.commandRunner, plistHelper)
 	}
 
@@ -118,13 +122,13 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 
 
-		fun prepareBundles(applicationBundle: ApplicationBundle) {
+	fun prepareBundles(applicationBundle: ApplicationBundle) {
 
 		for (bundle in applicationBundle.bundles) {
 
 			if (applicationBundle.type == Type.iOS) {
 				removeUnneededDylibsFromBundle(bundle)
-				embedProvisioningProfileToBundle(bundle)
+				//embedProvisioningProfileToBundle(bundle)
 			}
 
 		}
@@ -147,9 +151,11 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 		}
 	}
 
+	/*
 	private fun embedProvisioningProfileToBundle(bundle: Bundle) {
-		//val mobileProvisionFile = getProvisioningProfile()
+		val mobileProvisionFile = getProvisioningProfile()
 	}
+	*/
 
 
 	/* // migrate this to kotline

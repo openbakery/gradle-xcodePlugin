@@ -5,6 +5,7 @@ import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 import java.io.File
 
+// this should be replaced by the Bundle
 class Application(path: File, type: Type) {
 
 	private val plistHelper by lazy {
