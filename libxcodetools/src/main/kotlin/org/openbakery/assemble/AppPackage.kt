@@ -1,7 +1,6 @@
 package org.openbakery.assemble
 
 import org.openbakery.CommandRunner
-import org.openbakery.bundle.Application
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
@@ -29,12 +28,8 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	private val applicationBundle: ApplicationBundle = applicationBundle
 
 
-	fun getApplication() : Application {
-		return Application(applicationBundle.applicationPath, applicationBundle.type)
-	}
-
 	private val provisioningProfileReader by lazy {
-		var bundleIdentifier = getApplication().getBundleIdentifier()
+		var bundleIdentifier = applicationBundle.mainBundle.bundleIdentifier
 		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
 	}
 
@@ -112,15 +107,17 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 		}
 
 		fileHelper.copyTo(swiftLibArchive, applicationBundle.baseDirectory)
-		updateArchsForSwiftLibs()
+
+		updateArchsForSwiftLibs(frameworksPath)
 		return File( applicationBundle.baseDirectory, "SwiftSupport")
 	}
 
 
-	fun updateArchsForSwiftLibs() {
-
-		//val application = getApplication()
-		//val binaryArchs = tools.lipo.getArchs(application.executeable)
+	fun updateArchsForSwiftLibs(frameworksPath : File) {
+		val binaryArchs = tools.lipo.getArchs(applicationBundle.mainBundle.executable)
+		for (file in frameworksPath.listFiles()) {
+			tools.lipo.removeUnsupportedArchs(file, binaryArchs)
+		}
 	}
 
 	fun getProvisioningProfileType(): ProvisioningProfileType? {

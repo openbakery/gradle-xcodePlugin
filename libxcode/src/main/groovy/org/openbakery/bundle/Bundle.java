@@ -39,8 +39,8 @@ public class Bundle {
 		return getStringFromPlist("CFBundleIdentifier");
 	}
 
-	public String getExecutable() {
-		return getStringFromPlist("CFBundleExecutable");
+	public File getExecutable() {
+		return new File(path, getStringFromPlist("CFBundleExecutable"));
 	}
 
 	private String getStringFromPlist(String key) {

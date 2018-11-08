@@ -41,7 +41,7 @@ class LipoArchSpecification extends Specification {
 		commandRunner
 
 		when:
-		def archs = lipo.getArchs("")
+		def archs = lipo.getArchs(new File(""))
 
 		then:
 		archs.contains("arm64")
@@ -52,8 +52,10 @@ class LipoArchSpecification extends Specification {
 	def "get archs executes lipo"() {
 		def commandList
 
+		def file = new File("Dummy")
+
 		when:
-		lipo.getArchs("Dummy")
+		lipo.getArchs(file)
 		then:
 		1 * commandRunner.runWithResult(_) >> {
 			arguments ->
@@ -62,7 +64,7 @@ class LipoArchSpecification extends Specification {
 		commandList == [
 			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
 			"-info",
-			"Dummy"
+			file.absolutePath
 		]
 	}
 
@@ -71,7 +73,7 @@ class LipoArchSpecification extends Specification {
 		def commandList
 
 		when:
-		lipo.getArchs("A/Binary")
+		lipo.getArchs(new File("A/Binary"))
 		then:
 		1 * commandRunner.runWithResult(_) >> {
 			arguments ->
@@ -80,25 +82,25 @@ class LipoArchSpecification extends Specification {
 		commandList == [
 			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
 			"-info",
-			"A/Binary"
+			new File("A/Binary").absolutePath
 		]
 	}
 
 
-	def mockInfo(String binary, String archs) {
+	def mockInfo(File binary, String archs) {
 		def commandList = ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
 						   "-info",
-						   binary]
+						   binary.absolutePath]
 		String result = "Architectures in the fat file: Dummy are: " + archs
 		commandRunner.runWithResult(commandList) >> result
 	}
 
 	def "get archs executes lipo and process the result properly"() {
 		given:
-		mockInfo("Dummy", "armv7 arm64")
+		mockInfo(new File("Dummy"), "armv7 arm64")
 
 		when:
-		def archs = lipo.getArchs("Dummy")
+		def archs = lipo.getArchs(new File("Dummy"))
 
 		then:
 		archs.contains("arm64")
@@ -113,11 +115,11 @@ class LipoArchSpecification extends Specification {
 	def "get archs executes lipo and process the result properly with arm64e"() {
 
 		given:
-		mockInfo("Dummy", "armv7 arm64 arm64e")
+		mockInfo(new File("Dummy"), "armv7 arm64 arm64e")
 
 
 		when:
-		def archs = lipo.getArchs("Dummy")
+		def archs = lipo.getArchs(new File("Dummy"))
 
 		then:
 		archs.contains("arm64")

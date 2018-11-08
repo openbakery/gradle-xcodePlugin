@@ -107,13 +107,18 @@ class ApplicationDummy {
 
 	}
 
-	void createSwiftLibs() {
-		File libSwiftCore = new File(applicationBundle, "Frameworks/libswiftCore.dylib")
+	void createSwiftLibs(File applicationDirectory, File rootDirectory) {
+		File libSwiftCore = new File(applicationDirectory, "Frameworks/libswiftCore.dylib")
 		FileUtils.writeStringToFile(libSwiftCore, "dummy")
-		File libSwiftCoreArchive = new File(directory, "SwiftSupport/libswiftCore.dylib")
+		File libSwiftCoreArchive = new File(rootDirectory, "SwiftSupport/libswiftCore.dylib")
 		FileUtils.writeStringToFile(libSwiftCoreArchive, "dummy")
-		File libswiftCoreGraphics = new File(applicationBundle, "Frameworks/libswiftCoreGraphics.dylib")
+		File libswiftCoreGraphics = new File(applicationDirectory, "Frameworks/libswiftCoreGraphics.dylib")
 		FileUtils.writeStringToFile(libswiftCoreGraphics, "dummy")
+
+	}
+
+	void createSwiftLibs() {
+		createSwiftLibs(applicationBundle, directory)
 	}
 
 	void createFramework() {

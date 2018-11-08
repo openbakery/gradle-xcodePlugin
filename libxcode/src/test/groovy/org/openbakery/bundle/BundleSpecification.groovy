@@ -51,10 +51,11 @@ class BundleSpecification extends Specification {
 	def "test executable for iOS App"() {
 		when:
 		def path = applicationDummy.create()
+		def expectedExecutable = new File(path, "ExampleExecutable")
 		def bundle = new Bundle(path, Type.iOS)
 
 		then:
-		bundle.executable == "ExampleExecutable"
+		bundle.executable.absolutePath == expectedExecutable.absolutePath
 	}
 
 

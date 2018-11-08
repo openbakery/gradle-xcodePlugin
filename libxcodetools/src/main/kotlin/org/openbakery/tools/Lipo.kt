@@ -2,6 +2,7 @@ package org.openbakery.tools
 
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Xcode
+import java.io.File
 
 open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 
@@ -9,11 +10,11 @@ open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 	var commandRunner: CommandRunner = commandRunner
 
 
-	open fun getArchs(binaryName: String): List<String> {
+	open fun getArchs(binary: File): List<String> {
 		val commandList = listOf(
 			xcode.lipo,
 			"-info",
-			binaryName
+			binary.absolutePath
 		)
 		var result = commandRunner.runWithResult(commandList)
 		if (result != null) {
@@ -25,24 +26,24 @@ open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		return listOf("armv7", "arm64")
 	}
 
-	open fun removeArch(binaryName: String, arch: String) {
+	open fun removeArch(binary: File, arch: String) {
 		commandRunner.run(
 			xcode.lipo,
-			binaryName,
+			binary.absolutePath,
 			"-remove",
 			arch,
 			"-output",
-			binaryName
+			binary.absolutePath
 		)
 	}
 
-	open fun removeUnsupportedArchs(binaryName: String, supportedArchs: List<String>) {
+	open fun removeUnsupportedArchs(binary: File, supportedArchs: List<String>) {
 
-		val archs = getArchs(binaryName).toMutableList()
+		val archs = getArchs(binary).toMutableList()
 		archs.removeAll(supportedArchs)
 
 		archs.iterator().forEach {
-			removeArch(binaryName, it)
+			removeArch(binary, it)
 		}
 
 
