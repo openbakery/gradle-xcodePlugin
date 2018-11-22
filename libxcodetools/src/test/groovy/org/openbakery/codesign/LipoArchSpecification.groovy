@@ -44,6 +44,7 @@ class LipoArchSpecification extends Specification {
 		def archs = lipo.getArchs(new File(""))
 
 		then:
+		archs.size() == 2
 		archs.contains("arm64")
 		archs.contains("armv7")
 		!archs.contains("arm64e")
@@ -86,23 +87,27 @@ class LipoArchSpecification extends Specification {
 		]
 	}
 
-
-	def mockInfo(File binary, String archs) {
+	def mockInfo(File binary, List<String> archs) {
 		def commandList = ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo",
 						   "-info",
 						   binary.absolutePath]
-		String result = "Architectures in the fat file: Dummy are: " + archs
+
+		def isFatBinary = archs.size() > 1
+		def prefix = isFatBinary ? "Architectures in the fat file: Dummy are:" : "Non-fat file: Dummy is architecture:"
+		def result = prefix + " " + archs.join(" ") + " "
+
 		commandRunner.runWithResult(commandList) >> result
 	}
 
 	def "get archs executes lipo and process the result properly"() {
 		given:
-		mockInfo(new File("Dummy"), "armv7 arm64")
+		mockInfo(new File("Dummy"), ["armv7", "arm64"])
 
 		when:
 		def archs = lipo.getArchs(new File("Dummy"))
 
 		then:
+		archs.size() == 2
 		archs.contains("arm64")
 		archs.contains("armv7")
 		!archs.contains("arm64e")
@@ -110,21 +115,32 @@ class LipoArchSpecification extends Specification {
 	}
 
 
-
-
 	def "get archs executes lipo and process the result properly with arm64e"() {
 
 		given:
-		mockInfo(new File("Dummy"), "armv7 arm64 arm64e")
+		mockInfo(new File("Dummy"), ["armv7", "arm64", "arm64e"])
+
+		when:
+		def archs = lipo.getArchs(new File("Dummy"))
+
+		then:
+		archs.size() == 3
+		archs.contains("arm64")
+		archs.contains("armv7")
+		archs.contains("arm64e")
+	}
+
+	def "get archs executes lipo and process the result properly with non-fat binary"() {
+
+		given:
+		mockInfo(new File("Dummy"), ["arm64"])
 
 
 		when:
 		def archs = lipo.getArchs(new File("Dummy"))
 
 		then:
+		archs.size() == 1
 		archs.contains("arm64")
-		archs.contains("armv7")
-		archs.contains("arm64e")
 	}
-
 }
