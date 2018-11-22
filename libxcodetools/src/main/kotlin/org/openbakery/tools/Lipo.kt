@@ -18,10 +18,8 @@ open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		)
 		var result = commandRunner.runWithResult(commandList)
 		if (result != null) {
-			var resultArray = result.split(" are: ")
-			if (resultArray.size == 2) {
-				return resultArray[1].split(" ")
-			}
+			var archsString = result.split(":").last().trim()
+			return archsString.split(" ")
 		}
 		return listOf("armv7", "arm64")
 	}
@@ -41,12 +39,8 @@ open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 
 		val archs = getArchs(binary).toMutableList()
 		archs.removeAll(supportedArchs)
-
 		archs.iterator().forEach {
 			removeArch(binary, it)
 		}
-
-
 	}
-
 }
