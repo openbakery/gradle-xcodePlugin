@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
+import org.openbakery.codesign.EntitlementsHelper
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
@@ -309,7 +310,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		if (keychainAccessGroups != null && keychainAccessGroups.size() > 0) {
 			def modifiedKeychainAccessGroups = []
 			keychainAccessGroups.each() { group ->
-				modifiedKeychainAccessGroups << group.replace(ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX, applicationIdentifier + ".")
+				modifiedKeychainAccessGroups << group.replace(EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX, applicationIdentifier + ".")
 			}
 			plistHelper.setValueForPlist(entitlementFile, "keychain-access-groups", modifiedKeychainAccessGroups)
 		}

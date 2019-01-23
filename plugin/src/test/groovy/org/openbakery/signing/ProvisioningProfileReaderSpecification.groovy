@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.codesign.EntitlementsHelper
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.configuration.Configuration
@@ -255,7 +256,6 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
 
 		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
-
 		then:
 		entitlementsFile.exists()
 		entitlements.getList("keychain-access-groups").contains("Z7L2YCUH45.org.openbakery.test.Example")
@@ -273,9 +273,9 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
-				ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Test",
-				"CCCCCCCCCC.com.example.Test",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.Test",
+			"CCCCCCCCCC.com.example.Test",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -322,7 +322,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner)
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -343,7 +343,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -368,7 +368,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -439,7 +439,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
@@ -460,7 +460,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
 
 		def keychainAccessGroups = [
-						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+			EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
 		]
 
 		File entitlementsFile = new File(projectDir, "entitlements.plist")

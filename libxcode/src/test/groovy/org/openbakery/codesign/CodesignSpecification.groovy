@@ -87,7 +87,7 @@ class CodesignSpecification extends  Specification {
 
 
 
-	def "create keychain access groupds from xcent file"() {
+	def "create keychain access groups from xcent file"() {
 		given:
 		applicationDummy.create()
 

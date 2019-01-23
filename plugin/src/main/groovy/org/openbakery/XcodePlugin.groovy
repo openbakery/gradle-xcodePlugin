@@ -182,7 +182,7 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('infoplist.bundleIdentifier')) {
 				project.infoplist.bundleIdentifier = project['infoplist.bundleIdentifier']
 			}
-			if (project.hasProperty('infoplist.bundleIdentifierSuffix')) {
+			if (project.hasProperty('infoplist.bundleIdentifierSuffix')) {xcodetestrun
 				project.infoplist.bundleIdentifierSuffix = project['infoplist.bundleIdentifierSuffix']
 			}
 			if (project.hasProperty('infoplist.bundleDisplayName')) {

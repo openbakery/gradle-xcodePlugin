@@ -259,7 +259,7 @@ class Codesign {
 
 		keychainAccessGroups.each { item ->
 			if (StringUtils.isNotEmpty(applicationPrefix) && item.startsWith(applicationPrefix)) {
-				result << item.replace(applicationPrefix, ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX)
+				result << item.replace(applicationPrefix, EntitlementsHelper.APPLICATION_IDENTIFIER_PREFIX)
 			} else {
 				result << item
 			}
