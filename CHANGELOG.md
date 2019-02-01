@@ -2,7 +2,9 @@
 
 Bugfixes
 * IPAs build with Xcode 10.1 result in 'Invalid Swift Support' #401 
-
+* Parses test summaries of xcresult bundles #399 
+* Parses testsummary in subfolder to respect run destination. #400 
+* Fixes packaging for non-fat binaries #403
 # 0.15.3 (May 7, 2018)
 
 Bugfixes
