@@ -218,6 +218,7 @@ class PackageTaskSpecification extends Specification {
 		when:
 		File ipaBundle = new File(project.getBuildDir(), "package/Example.ipa")
 		assert !ipaBundle.exists()
+
 		packageTask.packageApplication()
 
 		List<String> entries = ipaEntries()

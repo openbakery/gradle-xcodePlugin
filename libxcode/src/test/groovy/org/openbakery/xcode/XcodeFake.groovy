@@ -11,11 +11,15 @@ class XcodeFake extends Xcode {
 
 	private String path = "/Applications/Xcode.app"
 
-	private versionString = "7.3.1"
+	private String versionString
 
+	public XcodeFake(String versionString) {
+		super(null)
+		this.versionString = versionString
+	}
 
 	public XcodeFake() {
-		super(null)
+		this("7.3.1")
 	}
 
 	Version getVersion() {

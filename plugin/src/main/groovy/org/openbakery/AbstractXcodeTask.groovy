@@ -20,6 +20,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Security
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.xcode.DestinationResolver
@@ -62,19 +63,11 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	def copy(File source, File destination) {
 		logger.debug("Copy '{}' -> '{}'", source, destination);
 
-		// use rsync to preserve the file permissions (I want to stay compatible with java 1.6 and there is no option for this)
-		/*
-		ant.exec(failonerror: "true",
-						executable: 'rsync') {
-			arg(value: '-avz')
-			arg(value: source.absolutePath)
-			arg(value: destination.absolutePath)
+		if (!source.exists()) {
+			logger.info("source does not exist " + source)
+			return
 		}
-		*/
-
-
 		File destinationPath = new File(destination, source.getName())
-
 
 		ant.exec(failonerror: "true",
 								executable: 'ditto') {
@@ -129,52 +122,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
-	def createZip(File fileToZip) {
-		File zipFile = new File(fileToZip.parentFile, FilenameUtils.getBaseName(fileToZip.getName()) + ".zip")
-		createZip(zipFile, zipFile.parentFile, fileToZip);
-	}
-
-	def createZip(File zipFile, File fileToZip) {
-		createZip(zipFile, fileToZip.parentFile, fileToZip)
-	}
-
-	def createZip(File zipFile, File baseDirectory, File... filesToZip) {
-		// we want to preserve the permissions, so use the zip command line tool
-		// maybe this can be replaced by Apache Commons Compress
-
-
-		if (!zipFile.parentFile.exists()) {
-			zipFile.parentFile.mkdirs()
-		}
-
-		logger.debug("create zip file: {}: {} ", zipFile.absolutePath, zipFile.parentFile.exists())
-		logger.debug("baseDirectory: {} ", baseDirectory)
-
-		for (File file : filesToZip) {
-			logger.debug("create of: {}: {}", file, file.exists() )
-		}
-
-		def arguments = []
-		arguments << '--symlinks';
-		arguments << '--verbose';
-		arguments << '--recurse-paths';
-		arguments << zipFile.absolutePath;
-		for (File file : filesToZip) {
-			arguments << file.getName()
-		}
-
-		logger.debug("arguments: {}", arguments)
-
-		ant.exec(failonerror: 'true',
-						executable: '/usr/bin/zip',
-						dir: baseDirectory) {
-
-			for (def argument : arguments) {
-				arg(value: argument)
-			}
-		}
-	}
-
 	/**
 	 * formats the date as ISO 8601 date
 	 * @param date
@@ -188,7 +135,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	}
 
 
-	List<File> getAppBundles(File appPath) {
+	List<Bundle> getAppBundles(File appPath) {
 		ApplicationBundle applicationBundle = new ApplicationBundle(new File(appPath,project.xcodebuild.applicationBundle.name), project.xcodebuild.type, project.xcodebuild.simulator)
 		return applicationBundle.getBundles()
 	}

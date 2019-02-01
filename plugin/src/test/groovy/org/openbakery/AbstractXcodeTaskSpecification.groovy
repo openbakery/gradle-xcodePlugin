@@ -111,65 +111,6 @@ class AbstractXcodeTaskSpecification extends Specification {
 		return entries;
 	}
 
-	def "zip"() {
-		given:
-		File tmpFile = new File(projectDir, "FileToZip.txt")
-		FileUtils.writeStringToFile(tmpFile, "dummy")
-
-		when:
-		xcodeTask.createZip(tmpFile)
-
-		File zipFile = new File(projectDir, "FileToZip.zip")
-		List<String> zipEntries = getZipEntries(zipFile);
-
-		then:
-		zipEntries.contains("FileToZip.txt")
-
-
-	}
-
-	def "Zip Directory"() {
-		given:
-		File tmpDirectory = new File(projectDir, "DirectroyToZip")
-		tmpDirectory.mkdirs()
-
-		FileUtils.writeStringToFile(new File(tmpDirectory, "first.txt"), "dummy")
-		FileUtils.writeStringToFile(new File(tmpDirectory, "second.txt"), "dummy")
-
-
-		File zipFile = new File(projectDir, "Test.zip")
-
-		when:
-		xcodeTask.createZip(zipFile, zipFile.parentFile, tmpDirectory)
-
-		List<String> zipEntries = getZipEntries(zipFile);
-
-		then:
-		zipEntries.contains("DirectroyToZip/first.txt")
-		zipEntries.contains("DirectroyToZip/second.txt")
-
-	}
-
-
-	def "Zip Multiple Files"() {
-		given:
-		File firstFile = new File(projectDir, "first.txt")
-		FileUtils.writeStringToFile(firstFile, "dummy")
-		File secondFile = new File(projectDir, "second.txt")
-		FileUtils.writeStringToFile(secondFile, "dummy")
-
-		File zipFile = new File(projectDir, "MultipleTest.zip")
-
-		when:
-		xcodeTask.createZip(zipFile, zipFile.parentFile, firstFile, secondFile)
-
-		List<String> zipEntries = getZipEntries(zipFile);
-
-		then:
-		zipEntries.contains("first.txt")
-		zipEntries.contains("second.txt")
-
-	}
 
 
 	def "create xcode lazy"() {

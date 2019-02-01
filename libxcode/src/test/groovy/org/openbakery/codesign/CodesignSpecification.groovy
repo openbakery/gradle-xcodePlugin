@@ -4,6 +4,7 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
+import org.openbakery.bundle.Bundle
 import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
@@ -148,7 +149,7 @@ class CodesignSpecification extends  Specification {
 		parameters.entitlementsFile = useEntitlementsFile
 
 		when:
-		codesign.sign(new File("dummy")) // .createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
+		codesign.sign(new Bundle("dummy", Type.iOS)) // .createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
 		then:
 
 		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
@@ -165,7 +166,7 @@ class CodesignSpecification extends  Specification {
 		applicationDummy.create()
 		when:
 		parameters.entitlementsFile = new File(tmpDirectory, "MyCustomEntitlements.plist")
-		codesign.sign(new File("dummy"))
+		codesign.sign(new Bundle("dummy", Type.iOS))
 		then:
 		thrown(IllegalArgumentException)
 	}
@@ -197,7 +198,7 @@ class CodesignSpecification extends  Specification {
 		XMLPropertyListConfiguration entitlements
 
 		given:
-		File bundle = applicationDummy.create()
+		Bundle bundle = applicationDummy.createBundle()
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
 		parameters.entitlements = [
@@ -237,7 +238,7 @@ class CodesignSpecification extends  Specification {
 		File bundle = applicationDummy.create()
 
 		when:
-		codesign.sign(bundle)
+		codesign.sign(new Bundle(bundle, Type.iOS))
 
 		then:
 		1 * commandRunner.run(_, _) >> {
@@ -260,7 +261,7 @@ class CodesignSpecification extends  Specification {
 		codesign.codesignParameters = parameters
 
 		given:
-		File bundle = applicationDummy.create()
+		Bundle bundle = applicationDummy.createBundle()
 
 		when:
 		codesign.sign(bundle)
@@ -270,7 +271,7 @@ class CodesignSpecification extends  Specification {
 			arguments ->
 				commandList = arguments[0]
 		}
-		commandList == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
+		commandList == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.path.absolutePath ]
 	}
 
 
@@ -281,7 +282,7 @@ class CodesignSpecification extends  Specification {
 		XMLPropertyListConfiguration entitlements
 
 		given:
-		File bundle = applicationDummy.create()
+		Bundle bundle = applicationDummy.createBundle()
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
 		parameters.entitlements = [
@@ -308,7 +309,7 @@ class CodesignSpecification extends  Specification {
 		FileUtils.copyFileToDirectory(xcentFile, applicationDummy.applicationBundle)
 
 		given:
-		File bundle = applicationDummy.create()
+		Bundle bundle = applicationDummy.createBundle()
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
 		when:
@@ -328,7 +329,7 @@ class CodesignSpecification extends  Specification {
 
 		given:
 		applicationDummy.create()
-		File bundle = applicationDummy.createPlugin()
+		Bundle bundle = applicationDummy.createPluginBundle()
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 
 		parameters.entitlements = [
@@ -362,7 +363,7 @@ class CodesignSpecification extends  Specification {
 
 		given:
 		applicationDummy.create()
-		File bundle = applicationDummy.createPlugin()
+		Bundle bundle = applicationDummy.createPluginBundle()
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.last())
 
 		parameters.entitlements = [

@@ -291,13 +291,12 @@ class XcodePluginSpecification extends Specification {
 		File projectDir = new File("../example/iOS/Example")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
-
 		project.evaluate()
 
-		XcodeBuildTask task = project.tasks.findByName('xcodebuild')
+		Task task  = project.tasks.getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)
 
 		then:
-
+		task instanceof XcodeBuildTask
 		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME))
 	}
 

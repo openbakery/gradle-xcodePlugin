@@ -2,8 +2,13 @@ package org.openbakery.xcode
 
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class Xcodebuild {
+
+	private static Logger logger = LoggerFactory.getLogger(Xcodebuild.class)
+
 
 	CommandRunner commandRunner
 
@@ -61,6 +66,12 @@ class Xcodebuild {
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
 		addCoverageSettings(commandList)
+
+		logger.debug("xcode.version.major: " + xcode.version.major)
+		if (xcode.version.major > 9) {
+			commandList << "-disable-concurrent-destination-testing"
+		}
+
 		return commandList
 	}
 

@@ -1,0 +1,20 @@
+# http://editorconfig.org
+root = true
+
+[*]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+curly_bracket_next_line = false
+spaces_around_operators = true
+
+[*.json]
+insert_final_newline = ignore
+
+[*.md]
+trim_trailing_whitespace = false
+

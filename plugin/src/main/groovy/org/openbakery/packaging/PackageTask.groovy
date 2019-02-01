@@ -7,10 +7,12 @@ import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunnerException
+import org.openbakery.assemble.AppPackage
 import org.openbakery.bundle.ApplicationBundle
-import org.openbakery.codesign.Codesign
+import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.CodesignParameters
-import org.openbakery.codesign.ProvisioningProfileType
+import org.openbakery.tools.CommandLineTools
+import org.openbakery.tools.Lipo
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
@@ -21,7 +23,7 @@ class PackageTask extends AbstractDistributeTask {
 	File outputPath
 
 
-	private List<File> appBundles
+	private List<Bundle> appBundles
 
 	String applicationBundleName
 	StyledTextOutput output
@@ -97,112 +99,50 @@ class PackageTask extends AbstractDistributeTask {
 		def signSettingsAvailable = true
 		if (project.xcodebuild.signing.mobileProvisionFile == null) {
 			logger.warn('No mobile provision file provided.')
-			signSettingsAvailable = false;
+			signSettingsAvailable = false
 		} else if (!project.xcodebuild.signing.keychainPathInternal.exists()) {
 			logger.warn('No certificate or keychain found.')
-			signSettingsAvailable = false;
+			signSettingsAvailable = false
 		}
 
 		codesignParameters.mergeMissing(project.xcodebuild.signing.codesignParameters)
 		codesignParameters.type = project.xcodebuild.type
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
-		Codesign codesign = new Codesign(xcode, codesignParameters, commandRunner, plistHelper)
 
-		for (File bundle : appBundles) {
 
+		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcode, commandRunner))
+		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), codesignParameters, tools)
+
+		appPackage.addSwiftSupport()
+
+		// Todo move the lines below to the AppPackager class to preapreBundle
+		// the embedProvisioningProfileToBundle is not mirgrated yet
+		//appPackage.prepareBundles(applicationBundle)
+		for (Bundle bundle : appBundles) {
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-				removeUnneededDylibsFromBundle(bundle)
+				appPackage.removeUnneededDylibsFromBundle(bundle)
 				embedProvisioningProfileToBundle(bundle)
 			}
-
-			if (signSettingsAvailable) {
-				logger.info("Codesign app: {}", bundle)
-				codesign.sign(bundle)
-			} else {
-				String message = "Bundle not signed: " + bundle
-				output.withStyle(StyledTextOutput.Style.Failure).println(message)
-			}
 		}
 
-		File appBundle = appBundles.last()
-		if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-
-			ProvisioningProfileType profileType = getProvisioningProfileType(appBundle)
-			boolean includeSupportFolders = profileType == ProvisioningProfileType.AppStore
-			createIpa(applicationFolder, includeSupportFolders)
+		if (signSettingsAvailable) {
+			appPackage.codesign(applicationBundle, xcode)
 		} else {
-			createPackage(appBundle)
+			String message = "Bundle not signed: " + applicationBundle
+			output.withStyle(StyledTextOutput.Style.Failure).println(message)
 		}
 
+		appPackage.createPackage(outputPath, getIpaFileName())
 	}
 
-	ProvisioningProfileType getProvisioningProfileType(File appBundle) {
-		File provisionFile = getProvisionFileForBundle(appBundle)
-		if (provisionFile == null) {
-			return null
-		}
-
-		ProvisioningProfileReader reader = new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
-		return reader.getProfileType()
-	}
-
-
-    def removeUnneededDylibsFromBundle(File bundle) {
-		File libswiftRemoteMirror = new File(bundle, "libswiftRemoteMirror.dylib")
-		if (libswiftRemoteMirror.exists()) {
-			libswiftRemoteMirror.delete()
-		}
-	}
 
 	File getProvisionFileForBundle(File bundle) {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
-		return ProvisioningProfileReader.getProvisionFileForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper)
+		return ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper).provisioningProfile
 	}
 
 
-	def addSwiftSupport(File payloadPath,  String applicationBundleName) {
-		File frameworksPath = new File(payloadPath, applicationBundleName + "/Frameworks")
-		if (!frameworksPath.exists()) {
-			return null
-		}
 
-		File swiftLibArchive = new File(getArchiveDirectory(), "SwiftSupport")
-
-		if (swiftLibArchive.exists()) {
-			copy(swiftLibArchive, payloadPath.getParentFile())
-			return new File(payloadPath.getParentFile(), "SwiftSupport")
-		}
-		return null
-	}
-
-
-	private void createZipPackage(File packagePath, String extension, boolean includeSupportFolders) {
-		File packageBundle = new File(outputPath, getIpaFileName() + "." + extension)
-		if (!packageBundle.parentFile.exists()) {
-			packageBundle.parentFile.mkdirs()
-		}
-
-		List<File> filesToZip = []
-		filesToZip << packagePath
-
-		if (includeSupportFolders) {
-			File swiftSupportPath = addSwiftSupport(packagePath, applicationBundleName)
-			if (swiftSupportPath != null) {
-				filesToZip << swiftSupportPath
-			}
-
-			enumerateExtensionSupportFolders(packagePath.getParentFile()) { File supportFolder ->
-				filesToZip << supportFolder
-			}
-		}
-
-		File bcSymbolMapsPath = new File(packagePath.getParentFile(), "BCSymbolMaps")
-		if (bcSymbolMapsPath.exists()) {
-			filesToZip << bcSymbolMapsPath
-		}
-
-		createZip(packageBundle, packagePath.getParentFile(), packagePath, *filesToZip)
-	}
 
 	private void enumerateExtensionSupportFolders(File parentFolder, Closure closure) {
 		def folderNames = ["MessagesApplicationExtensionSupport", "WatchKitSupport2"]
@@ -213,15 +153,6 @@ class PackageTask extends AbstractDistributeTask {
 				closure(supportFolder)
 			}
 		}
-	}
-
-	private void createIpa(File payloadPath, boolean includeSupportFolders) {
-		createZipPackage(payloadPath, "ipa", includeSupportFolders)
-	}
-
-	private void createPackage(File packagePath) {
-
-		createZipPackage(packagePath, "zip", false)
 	}
 
 
@@ -239,9 +170,8 @@ class PackageTask extends AbstractDistributeTask {
 		return bundleIdentifier
 	}
 
-
-	private void embedProvisioningProfileToBundle(File bundle) {
-		File mobileProvisionFile = getProvisionFileForBundle(bundle)
+	private void embedProvisioningProfileToBundle(Bundle bundle) {
+		File mobileProvisionFile = getProvisionFileForBundle(bundle.path)
 		if (mobileProvisionFile != null) {
 			File embeddedProvisionFile
 
@@ -259,8 +189,8 @@ class PackageTask extends AbstractDistributeTask {
 		if (destination.exists()) {
 			FileUtils.deleteDirectory(destination);
 		}
-		destination.mkdirs();
-		return destination;
+		destination.mkdirs()
+		return destination
 	}
 
 	private File createApplicationFolder() throws IOException {
@@ -285,11 +215,11 @@ class PackageTask extends AbstractDistributeTask {
 		return getAppContentPath(appBundles.last())
 	}
 
-	private String getAppContentPath(File bundle) {
+	private String getAppContentPath(Bundle bundle) {
 		if (project.xcodebuild.type == Type.iOS) {
-			return bundle.absolutePath + "/"
+			return bundle.path.absolutePath + "/"
 		}
-		return bundle.absolutePath + "/Contents/"
+		return bundle.path.absolutePath + "/Contents/"
 	}
 
 	def getIpaFileName() {

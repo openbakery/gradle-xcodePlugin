@@ -1,3 +1,8 @@
+# 0.15.4 (Feb 1, 2019)
+
+Bugfixes
+* IPAs build with Xcode 10.1 result in 'Invalid Swift Support' #401 
+
 # 0.15.3 (May 7, 2018)
 
 Bugfixes

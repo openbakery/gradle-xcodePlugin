@@ -359,6 +359,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(app, "dummy")
 
 		when:
+		xcodeBuildArchiveTask.commandRunner = new CommandRunner()
 		xcodeBuildArchiveTask.archive()
 
 		File zipFile = new File(projectDir, "build/archive/Example.zip")

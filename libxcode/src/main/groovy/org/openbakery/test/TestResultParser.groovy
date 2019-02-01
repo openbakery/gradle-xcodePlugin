@@ -37,17 +37,19 @@ public class TestResultParser {
 	}
 
 	private void parse() {
+		if (!testSummariesDirectory.exists()) {
+			return
+		}
 
-		def testSummariesArray = testSummariesDirectory.list(
-						[accept: { d, f -> f ==~ /.*TestSummaries.plist/ }] as FilenameFilter
-		)
+		def testSummariesArray = new FileNameFinder()
+			.getFileNames(testSummariesDirectory.path, '*TestSummaries.plist *.xcresult/*_Test/action_TestSummaries.plist')
 
 		if (testSummariesArray == null) {
 			return
 		}
 
 		testSummariesArray.toList().each {
-			def testResult = new XMLPropertyListConfiguration(new File(testSummariesDirectory, it))
+			def testResult = new XMLPropertyListConfiguration(it)
 			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
 
 			Destination destination = findDestinationForIdentifier(destinations, identifier)
@@ -57,7 +59,6 @@ public class TestResultParser {
 			}
 		}
 	}
-
 
 	private void store(File outputDirectory) {
 		logger.debug("store to test-result.xml")

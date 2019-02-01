@@ -670,6 +670,26 @@ class SimulatorControlSpecification extends Specification {
 		runtime.name == "iOS 11.1"
 	}
 
+	def "pair iOS 11 watchOS Simulator with iOS Simulator"() {
+		given:
+		mockXcode9_1()
+
+		when:
+		simulatorControl.pair()
+
+		then:
+		1 * commandRunner.runWithResult([SIMCTL, "pair", phoneIdentifier, watchIdentifier])
+
+		where:
+		phoneIdentifier                        | watchIdentifier
+		"BE09415B-6BAC-494A-B915-3E7132EDF882" | "C29A4DF8-0111-4310-9734-62C1ABE934B9"
+		"7AE1CDE1-9F6F-474E-BF0C-E7A20B0A7130" | "3AAF60B7-E186-40AE-AC3D-4393ABB6DEC8"
+		"AB24286A-F08B-4E85-BC75-3C30D047E57E" | "8AB20D83-995F-4668-8152-8D82464BDC71"
+		"0786AEDF-911D-4388-B482-9F4C2D92BF43" | "777188FF-91ED-4E19-9964-172248E85AA1"
+
+	}
+
+
 }
 
 

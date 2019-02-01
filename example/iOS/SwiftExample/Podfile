@@ -5,5 +5,5 @@ use_frameworks!
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'SwiftExample' do
-    pod 'Alamofire', '~> 4.0'
+    pod 'Alamofire', '~> 4.7'
 end

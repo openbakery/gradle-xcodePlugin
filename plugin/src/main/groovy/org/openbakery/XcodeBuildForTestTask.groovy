@@ -2,6 +2,8 @@ package org.openbakery
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.xcode.Destination
+import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
 class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
@@ -14,11 +16,19 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 			XcodePlugin.XCODE_CONFIG_TASK_NAME,
 			XcodePlugin.SIMULATORS_KILL_TASK_NAME
 		)
-		this.description = "Build the xcode project and the tests. A testbundle is created that contains the result.	"
+		this.description = "Builds the xcode project and test target. Creates a testbundle that contains the result."
 	}
 
 	Xcodebuild getXcodebuild() {
-		return new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, getDestinationResolver().allFor(parameters))
+		// Start with the destinations requested by the project
+		List<Destination> destinations = getDestinations()
+
+		if (parameters.type == Type.tvOS) {
+			// Get all destinations available for tvOS projects
+			destinations = getDestinationResolver().allFor(parameters)
+		}
+
+		return new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, destinations)
 	}
 
 	@TaskAction
@@ -26,18 +36,18 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 
 		if (parameters.scheme == null && parameters.target == null) {
-			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
+			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build")
 		}
 
-		outputDirectory = new File(project.getBuildDir(), "for-testing");
+		outputDirectory = new File(project.getBuildDir(), "for-testing")
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs()
 		}
 
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
-		commandRunner.setOutputFile(outputFile);
+		commandRunner.setOutputFile(outputFile)
 
-		xcodebuild.executeBuildForTesting(createXcodeBuildOutputAppender("XcodeBuildForTestTask") , project.xcodebuild.environment)
+		xcodebuild.executeBuildForTesting(createXcodeBuildOutputAppender("XcodeBuildForTestTask"), project.xcodebuild.environment)
 
 		createTestBundle()
 	}
@@ -75,12 +85,13 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		List<String> result = []
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(xcrunfile)
 		for (def item : config.getRoot().getChildren()) {
-			if (item.getChildrenCount("TestHostPath") > 0) {
-				List testHostPath = item.getChildren("TestHostPath")
-				if (testHostPath.size() > 0) {
-					String value = testHostPath[0].value - "__TESTROOT__/"
-					result << value
-					//result << new File(xcrunfile.parentFile, value)
+			if (item.getChildrenCount("DependentProductPaths") > 0) {
+				List dependencies = item.getChildren("DependentProductPaths")
+				if (dependencies.size() > 0) {
+					for (def dependency in dependencies[0].value) {
+						String value = dependency - "__TESTROOT__/"
+						result << value
+					}
 				}
 			}
 		}
