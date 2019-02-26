@@ -114,8 +114,10 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 
 	fun updateArchsForSwiftLibs(frameworksPath : File) {
-		val binaryArchs = tools.lipo.getArchs(applicationBundle.mainBundle.executable).toMutableList()
-		binaryArchs.add("armv7s")
+		val binaryArchs = tools.lipo.getArchs(applicationBundle.mainBundle.executable)
+			.plus(listOf("armv7", "armv7s"))
+			.distinct()
+
 		for (file in frameworksPath.listFiles()) {
 			if (file.extension == "dylib") {
 				tools.lipo.removeUnsupportedArchs(file, binaryArchs)

@@ -60,7 +60,7 @@ class AppPackageSpecification extends Specification {
 	}
 
 
-	def "remove archs from swift dynlib"() {
+	def "remove archs from swift dynlib for app archs armv7 & arm64"() {
 		given:
 		lipo.getArchs(new File(applicationPath, "ExampleExecutable")) >> ["armv7", "arm64"]
 
@@ -71,7 +71,7 @@ class AppPackageSpecification extends Specification {
 		1 * lipo.removeUnsupportedArchs(new File(applicationPath, "Frameworks/libswiftCore.dylib"), ["armv7", "arm64", "armv7s"])
 	}
 
-	def "remove archs from swift dynlib second"() {
+	def "remove archs from swift dynlib for app arch armv7"() {
 		given:
 		lipo.getArchs(new File(applicationPath, "ExampleExecutable")) >> ["armv7"]
 
@@ -82,6 +82,16 @@ class AppPackageSpecification extends Specification {
 		1 * lipo.removeUnsupportedArchs(new File(applicationPath, "Frameworks/libswiftCoreGraphics.dylib"), ["armv7", "armv7s"])
 	}
 
+	def "remove archs from swift dynlib for app arch armv64"() {
+		given:
+		lipo.getArchs(new File(applicationPath, "ExampleExecutable")) >> ["arm64"]
+
+		when:
+		appPackage.addSwiftSupport()
+
+		then:
+		1 * lipo.removeUnsupportedArchs(new File(applicationPath, "Frameworks/libswiftCoreGraphics.dylib"), ["arm64", "armv7", "armv7s"])
+	}
 
 	def "remove archs only from dylibs"() {
 		given:
