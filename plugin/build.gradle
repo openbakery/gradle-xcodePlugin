@@ -67,7 +67,7 @@ uploadArchives {
 	repositories {
 		mavenDeployer {
 			configuration = configurations.deployerJars
-			
+
 			repository(url: publishURL) {
 				authentication(userName: publishUser, password: publishPassword)
 			}
@@ -96,7 +96,7 @@ uploadArchives {
 
 
 pluginBundle {
-	website = 'http://openbakery.org/gradle.html'
+	website = 'https://openbakery.org/gxp/'
 	vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
 	description = 'A gradle plugin for building Xcode projects!'
 	tags = ['xcode', 'iOS', 'os x', "osx", "mac", "iphone", "ipad"]
