@@ -187,23 +187,6 @@ class TestBuildOutputAppenderTest {
 
 
 
-/*
-	@Test
-	void testFinished() {
-		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output.txt"))
-
-		StyledTextOutputStub output = new StyledTextOutputStub()
-
-		TestBuildOutputAppender appender = new TestBuildOutputAppender(output, project)
-
-		for (String line : simctlOutput.split("\n")) {
-			appender.append(line);
-		}
-
-		assert output.toString().contains("Tests finished:")
-
-	}
-*/
 	@Test
 	void testFinishedFailed() {
 		String simctlOutput = FileUtils.readFileToString(new File("src/test/Resource/xcodebuild-output-test-failed.txt"))
@@ -299,6 +282,8 @@ class TestBuildOutputAppenderTest {
 		}
 		assertThat(progress.progress, hasItem("Compile Example/AppDelegate.m"))
 	}
+
+
 
 
 }

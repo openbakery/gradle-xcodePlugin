@@ -1,0 +1,21 @@
+    cd /Users/me/workspace/
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift -frontend -c /Users/me/workspace/Project/Test/CellModelTest.swift
+/Users/me/workspace/Project/Test/ViewControllers/Search/Model/SearchCellModelTest.swift:10:18: warning: implicit import of bridging header 'Project-Bridging-Header.h' via module 'Project' is deprecated and will be removed in a later version of Swift
+@testable import Project
+                 ^
+/Users/me/workspace/Project/Test/CellModelTest.swift:16:10: error: use of unresolved identifier 'UIDocumentInteractionControllerFake'; did you mean 'UIDocumentInteractionController'?
+                return UIDocumentInteractionControllerFake(url: url)
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                       UIDocumentInteractionController
+UIKit.UIDocumentInteractionController:2:12: note: 'UIDocumentInteractionController' declared here
+open class UIDocumentInteractionController : NSObject, UIActionSheetDelegate {
+           ^
+
+
+    cd /Users/me/workspace/
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift -frontend -c /Users/me/workspace/Project/Test/CellModelTest.swift
+/Users/me/workspace/Project/Test/CellModelTest.swift:10:18: warning: implicit import of bridging header 'Project-Bridging-Header.h' via module 'Project' is deprecated and will be removed in a later version of Swift
+@testable import Project
+
+
+    cd /Users/me/workspace/

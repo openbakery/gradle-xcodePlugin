@@ -178,19 +178,6 @@ class XcodeBuildOutputAppenderTest {
 		assert output.toString().startsWith(expected) : "Expected: " + expected  + " but was " + output.toString()
 	}
 
-	@Test
-	void testErrorSwift() {
-		StyledTextOutputStub output = new StyledTextOutputStub()
-
-		XcodeBuildOutputAppender appender =  new XcodeBuildOutputAppender(output)
-
-		for (String line in swiftData.split("\n")) {
-			appender.append(line)
-		}
-
-		String expected = "   ERROR - Compile: /Users/me/project/Example/Test/UIControls/BadgeViewTest.swift\n"
-		assert output.toString().startsWith(expected) : "Expected: " + expected  + " but was " + output.toString()
-	}
 
 
 	@Test

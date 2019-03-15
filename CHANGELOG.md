@@ -1,3 +1,8 @@
+# 0.16.0 (TBA)
+
+Bugfixes
+* Updated the parsing of the output so that errors and warnings are shown when compiling swift code.
+
 # 0.15.4 (Feb 1, 2019)
 
 Bugfixes

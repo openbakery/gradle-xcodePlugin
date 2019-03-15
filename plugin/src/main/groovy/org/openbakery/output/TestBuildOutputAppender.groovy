@@ -53,45 +53,51 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		this(null, output, destinations)
 	}
 
-	@Override
-	void append(String line) {
 
-		if (line.startsWith("Compile")) {
+	@Override
+	boolean checkLine(String line) {
+		if (super.checkLine(line)) {
 			state = TestState.Compile
-			super.append(line)
-		} else if (checkTestSuite(line)) {
+			return true
+		}
+
+		if (checkTestSuite(line)) {
 			state = TestState.Started
 			currentOutput.setLength(0) // deletes the buffer
-		} else if (checkTestStart(line)) {
-			state = TestState.Running
-		} else if (checkTestFinished(line)) {
-			state = TestState.Finished
-			currentOutput.setLength(0) // deletes the buffer
-		}	else if (checkAllTestsFinished(line)) {
-			state = TestState.Done
-		} else {
-
-			// there was no state change
-			if (state == TestState.Started && currentTestCase != null) {
-				printTestResult(currentTestCase, true, "(unknown)");
-			}
-
-
-			if (state == TestState.Running || state == TestState.Compile) {
-				currentOutput.append(line)
-				currentOutput.append("\n")
-			}
-			if (state == TestState.Unknown || state == TestState.Compile) {
-				super.append(line)
-			}
-
+			return true
 		}
 
 
+		if (checkTestSuite(line)) {
+			state = TestState.Started
+			currentOutput.setLength(0) // deletes the buffer
+			return true
+		}
 
+		if (checkTestStart(line)) {
+			state = TestState.Running
+			return true
+		}
 
+		if (checkTestFinished(line)) {
+			state = TestState.Finished
+			currentOutput.setLength(0) // deletes the buffer
+			return true
+		}
 
+		if (checkAllTestsFinished(line)) {
+			state = TestState.Done
+			return true
+		}
+
+		if (state == TestState.Running || state == TestState.Compile) {
+			currentOutput.append(line)
+			currentOutput.append("\n")
+		}
+
+		return false
 	}
+
 
 	boolean checkTestSuite(String line) {
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
@@ -154,9 +160,18 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		return false
 	}
 
+	boolean isStartTest(String line) {
+		return line.startsWith("Testing started on")
+	}
+
+	boolean isStartTestLegacy(String line) {
+		return line.startsWith("Touch") && line.endsWith("xctest")
+	}
+
 	boolean checkTestStart(String line) {
 
-		if (line.startsWith("Touch") && line.endsWith("xctest")) {
+		if (isStartTest(line) || isStartTestLegacy(line)) {
+			output.withStyle(StyledTextOutput.Style.Normal).text("TESTS STARTED!\n")
 			progress("Starting Tests")
 		}
 
