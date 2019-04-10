@@ -78,7 +78,7 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 		then:
 		infoPlist.exists()
 		config.getString("ApplicationProperties.ApplicationPath") == "Applications/Example.app"
-		config.getString("ApplicationProperties.CFBundleIdentifier") == "com.cocoanetics.ExampleOSX"
+		config.getString("ApplicationProperties.CFBundleIdentifier") == "\$(PRODUCT_BUNDLE_IDENTIFIER)"
 		config.getString("ApplicationProperties.CFBundleShortVersionString") == "1.0"
 		config.getString("ApplicationProperties.CFBundleVersion") == "1"
 		config.getString("ApplicationProperties.SigningIdentity") == "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
