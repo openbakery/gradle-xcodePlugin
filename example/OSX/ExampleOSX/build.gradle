@@ -14,7 +14,6 @@ apply plugin: 'org.openbakery.xcode-plugin'
 
 
 xcodebuild {
-	version = '8'
 	scheme = 'ExampleOSX'
 	target = 'ExampleOSX'
 	type = 'OSX'
@@ -42,13 +41,13 @@ gradle.taskGraph.whenReady { taskGraph ->
 			signingCertificatePassword = System.console().readPassword("\nPlease enter the certificate password: ")
 		}
 
-	
+
 		xcodebuild {
 			signing {
 				certificateURI = signingCertificateURI           // e.g 'file:///User/.../Provisioning/Development.p12'
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
 			}
 		}
-		
+
 	}
 }
