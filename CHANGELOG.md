@@ -6,7 +6,7 @@ Bugfixes
 * Updated the parsing of the output so that errors and warnings are shown when compiling swift code.
 Changes
 * The carthage derived data is set the the projects build/derivedData/carthage directory
-
+* added `carthage.cache` boolean parameter so disable the cache (default is true)
 
 
 # 0.15.4 (Feb 1, 2019)

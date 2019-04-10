@@ -107,11 +107,13 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 			List<String> args = [getCarthageCommand(),
 													 command,
 													 ARGUMENT_PLATFORM,
-													 carthagePlatformName,
-													 ARGUMENT_CACHE_BUILDS,
-													 ARGUMENT_DERIVED_DATA,
-													 derivedDataPath.absolutePath
+													 carthagePlatformName
 			]
+			if (project.carthage.cache) {
+				args << ARGUMENT_CACHE_BUILDS
+			}
+			args << ARGUMENT_DERIVED_DATA
+			args << derivedDataPath.absolutePath
 
 			commandRunner.run(project.projectDir.absolutePath,
 				args,

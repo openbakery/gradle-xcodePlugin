@@ -196,4 +196,21 @@ class CarthageBootstrapTaskTest extends Specification {
 		new File("/foo/bar") | new File("/foo/bar/carthage").absolutePath
 	}
 
+
+	def "build without cache"() {
+		def commandList
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		project.carthage.cache = false
+		subject.bootstrap()
+
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		!commandList.contains(ARGUMENT_CACHE_BUILDS)
+	}
+
 }

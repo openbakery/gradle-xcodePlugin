@@ -30,6 +30,7 @@ import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.carthage.CarthageBootstrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
+import org.openbakery.carthage.CarthagePluginExtension
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
@@ -445,6 +446,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 		project.extensions.create("oclint", OCLintPluginExtension, project)
+		project.extensions.create("carthage", CarthagePluginExtension, project)
 	}
 
 

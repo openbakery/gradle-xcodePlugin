@@ -10,6 +10,7 @@ import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.carthage.CarthageCleanTask
+import org.openbakery.carthage.CarthagePluginExtension
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
@@ -177,6 +178,11 @@ class XcodePluginSpecification extends Specification {
 	def "contain extension oclint"() {
 		expect:
 		project.extensions.findByName('oclint') instanceof OCLintPluginExtension
+	}
+
+	def "contains carthage extension"() {
+		expect:
+		project.extensions.findByName('carthage') instanceof CarthagePluginExtension
 	}
 
 
