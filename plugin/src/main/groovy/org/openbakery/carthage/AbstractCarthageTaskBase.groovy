@@ -2,15 +2,19 @@ package org.openbakery.carthage
 
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
+import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.xcode.Type
 
 abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	static final String ACTION_BOOTSTRAP = "bootstrap"
 	static final String ACTION_UPDATE = "update"
-	static final String ARG_CACHE_BUILDS = "--cache-builds"
-	static final String ARG_PLATFORM = "--platform"
+	static final String ARGUMENT_CACHE_BUILDS = "--cache-builds"
+	static final String ARGUMENT_PLATFORM = "--platform"
+	static final String ARGUMENT_DERIVED_DATA = "--derived-data"
 	static final String CARTHAGE_FILE = "Cartfile"
 	static final String CARTHAGE_FILE_RESOLVED = "Cartfile.resolved"
 	static final String CARTHAGE_PLATFORM_IOS = "iOS"
@@ -87,9 +91,41 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		throw new IllegalStateException("The carthage command was not found. Make sure that Carthage is installed")
 	}
 
-	boolean hasCartFile() {
+	boolean hasCartfile() {
 		return project.rootProject
 				.file(CARTHAGE_FILE)
 				.exists()
 	}
+
+	void run(String command, StyledTextOutput output) {
+
+		if (hasCartfile()) {
+			logger.info('Update Carthage for platform ' + carthagePlatformName)
+
+			def derivedDataPath = new File(project.xcodebuild.derivedDataPath, "carthage")
+
+			List<String> args = [getCarthageCommand(),
+													 command,
+													 ARGUMENT_PLATFORM,
+													 carthagePlatformName,
+													 ARGUMENT_CACHE_BUILDS,
+													 ARGUMENT_DERIVED_DATA,
+													 derivedDataPath.absolutePath
+			]
+
+			commandRunner.run(project.projectDir.absolutePath,
+				args,
+				getEnvironment(),
+				new ConsoleOutputAppender(output))
+		}
+
+	}
+
+	Map<String, String> getEnvironment() {
+		if (getRequiredXcodeVersion() != null) {
+			return xcode.getXcodeSelectEnvironmentValue(getRequiredXcodeVersion())
+		}
+		return null
+	}
+
 }

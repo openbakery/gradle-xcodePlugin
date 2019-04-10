@@ -9,6 +9,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.output.ConsoleOutputAppender
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static org.openbakery.carthage.CarthageUpdateTask.*
 import static org.openbakery.xcode.Type.*
@@ -16,7 +17,7 @@ import static org.openbakery.xcode.Type.*
 class CarthageUpdateTaskSpecification extends Specification {
 
 	File projectDir
-	File cartFile
+	File cartfile
 	Project project
 	CarthageUpdateTask carthageUpdateTask;
 
@@ -28,8 +29,8 @@ class CarthageUpdateTaskSpecification extends Specification {
 	def setup() {
 		projectDir = File.createTempDir()
 
-		cartFile = new File(projectDir, "Cartfile")
-		cartFile << 'github "Alamofire/Alamofire"'
+		cartfile = new File(projectDir, "Cartfile")
+		cartfile << 'github "Alamofire/Alamofire"'
 
 		project = ProjectBuilder.builder()
 				.withProjectDir(projectDir)
@@ -87,6 +88,36 @@ class CarthageUpdateTaskSpecification extends Specification {
 		1 * commandRunner.runWithResult("which", "carthage")
 	}
 
+
+	private List<String> getCommand(String carthagePlatform, String derivedDataPath = new File(project.xcodebuild.derivedDataPath, "carthage").absolutePath) {
+		return [CARTHAGE_USR_BIN_PATH,
+						ACTION_UPDATE,
+						ARGUMENT_PLATFORM,
+						carthagePlatform,
+						ARGUMENT_CACHE_BUILDS,
+						ARGUMENT_DERIVED_DATA,
+						derivedDataPath
+		]
+	}
+
+
+	def "command runner has console appender"() {
+		def appender
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		carthageUpdateTask.update()
+
+		then:
+		1 * commandRunner.run(_, getCommand(CARTHAGE_PLATFORM_IOS), _, _) >> {
+			args -> appender = args[3]
+		}
+		appender instanceof ConsoleOutputAppender
+	}
+
+
+
 	def "run carthage update"() {
 		given:
 		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
@@ -96,13 +127,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 		carthageUpdateTask.update()
 
 		then:
-		1 * commandRunner.run(_, [CARTHAGE_USR_BIN_PATH,
-								  ACTION_UPDATE,
-								  ARG_PLATFORM,
-								  carthagePlatform,
-								  ARG_CACHE_BUILDS], _) >> {
-			args -> args[2] instanceof ConsoleOutputAppender
-		}
+		1 * commandRunner.run(_, getCommand(carthagePlatform), _, _)
 
 		where:
 		platform | carthagePlatform
@@ -123,13 +148,7 @@ class CarthageUpdateTaskSpecification extends Specification {
 		carthageUpdateTask.update()
 
 		then:
-		1 * commandRunner.run(_, [CARTHAGE_USR_BIN_PATH,
-								  ACTION_UPDATE,
-								  ARG_PLATFORM,
-								  CARTHAGE_PLATFORM_IOS,
-								  ARG_CACHE_BUILDS], _) >> {
-			args -> args[2] instanceof ConsoleOutputAppender
-		}
+		1 * commandRunner.run(_, getCommand(CARTHAGE_PLATFORM_IOS), _, _)
 	}
 
 	def "does not update if cartfile is missing"() {
@@ -138,17 +157,11 @@ class CarthageUpdateTaskSpecification extends Specification {
 		project.xcodebuild.type = platform
 
 		when:
-		cartFile.delete()
+		cartfile.delete()
 		carthageUpdateTask.update()
 
 		then:
-		0 * commandRunner.run(_, [CARTHAGE_USR_BIN_PATH,
-								  ACTION_UPDATE,
-								  ARG_PLATFORM,
-								  carthagePlatform,
-								  ARG_CACHE_BUILDS], _) >> {
-			args -> args[2] instanceof ConsoleOutputAppender
-		}
+		0 * commandRunner.run(_, getCommand(carthagePlatform), _, _)
 
 		where:
 		platform | carthagePlatform
@@ -174,4 +187,27 @@ class CarthageUpdateTaskSpecification extends Specification {
 		watchOS  | CARTHAGE_PLATFORM_WATCHOS
 		iOS      | CARTHAGE_PLATFORM_IOS
 	}
+
+
+
+	@Unroll
+	def "has derived data path set to xcodebuild.derivedData + carthage "() {
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		project.xcodebuild.derivedDataPath = xcodebuildDerivedDataPath
+		carthageUpdateTask.update()
+
+		then:
+		1 * commandRunner.run(_, getCommand(CARTHAGE_PLATFORM_IOS, derivedDataPathParameter), _, _)
+
+
+		where:
+		xcodebuildDerivedDataPath      | derivedDataPathParameter
+		new File("foo")      | new File("foo/carthage").absolutePath
+		new File("bar")      | new File("bar/carthage").absolutePath
+		new File("foo/bar")  | new File("foo/bar/carthage").absolutePath
+	}
+
 }

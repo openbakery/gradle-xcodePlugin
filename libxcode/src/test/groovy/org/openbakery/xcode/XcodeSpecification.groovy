@@ -235,11 +235,11 @@ class XcodeSpecification extends Specification {
     def "Should return a map of environment values containing the developer dir key for valid xcode version"() {
         when:
         mockInstalledXcodeVersions()
-        Map<String, String> envValues = xcode.getXcodeSelectEnvValue(version)
+        Map<String, String> envValues = xcode.getXcodeSelectEnvironmentValue(version)
 
         then:
         noExceptionThrown()
-        envValues.get(Xcode.ENV_DEVELOPER_DIR) == new File(file, Xcode.XCODE_CONTENT_DEVELOPER).absolutePath
+        envValues.get(Xcode.DEVELOPER_DIR) == new File(file, Xcode.XCODE_CONTENT_DEVELOPER).absolutePath
 
         where:
         version | file

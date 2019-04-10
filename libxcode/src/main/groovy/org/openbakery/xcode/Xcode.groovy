@@ -17,7 +17,7 @@ class Xcode {
     @VisibleForTesting
     private CommandRunner commandRunner
 
-    public static final String ENV_DEVELOPER_DIR = "DEVELOPER_DIR"
+    public static final String DEVELOPER_DIR = "DEVELOPER_DIR"
     public static final String XCODE_ACTION_XC_SELECT = "xcode-select"
     public static final String XCODE_CONTENT_DEVELOPER = "Contents/Developer"
     public static final String XCODE_CONTENT_XC_RUN = "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcrun"
@@ -50,12 +50,12 @@ class Xcode {
      * @param version : The required Xcode version
      * @return A map of environment variables to pass to the command runner
      */
-    Map<String, String> getXcodeSelectEnvValue(String version) {
+    Map<String, String> getXcodeSelectEnvironmentValue(String version) {
         setVersionFromString(version)
         File file = new File(xcodePath, XCODE_CONTENT_DEVELOPER)
         HashMap<String, String> result = new HashMap<String, String>()
         if (file.exists()) {
-            result.put(ENV_DEVELOPER_DIR, file.absolutePath)
+            result.put(DEVELOPER_DIR, file.absolutePath)
         }
         return result
     }

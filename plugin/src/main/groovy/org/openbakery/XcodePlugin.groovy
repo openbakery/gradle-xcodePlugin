@@ -27,7 +27,7 @@ import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
-import org.openbakery.carthage.CarthageBootStrapTask
+import org.openbakery.carthage.CarthageBootstrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
 import org.openbakery.cocoapods.CocoapodsBootstrapTask
@@ -597,11 +597,11 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
-		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootStrapTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootstrapTask, group: CARTHAGE_GROUP_NAME)
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageBootStrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
+		CarthageBootstrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
 		addDependencyToBuild(project, bootStrapTask)
 
 		project.getTasks()

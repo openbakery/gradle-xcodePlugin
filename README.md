@@ -26,7 +26,10 @@ Here a brief overview of the features:
 
 ## Note
 
-**Version 0.14+ of the plugin needs at least gradle version 2.14**
+Changed the version number scheme. The minor version number now stands for the year, therfor it is now 19.
+The minor versions are the release numbers then.
+The 0.15.4 was the first release 2019 that uses the old scheme that didn't follow any rules. (This should have been 0.19.0)
+Now the current version is 0.19.1 that is the second release this year. The third will then be 0.19.2.
 
 
 ## Requirements
@@ -85,7 +88,7 @@ apply plugin: "org.openbakery.xcode-plugin"
 
 When using the [openbakery.org](https://openbakery.org) repository you can also get the latest develop version by including `develop` into the version pattern. e.g.: 
 ```
-classpath "org.openbakery:xcode-plugin:0.16.0.develop.+"
+classpath "org.openbakery:xcode-plugin:0.19.1.develop.+"
 ```
 
 The develop version contains all the changes from the develop branch, where all the fixes and feature are implemented. The development version is deployed automatically when all the projects unit tests are  successful, and also the if the example projects build. 

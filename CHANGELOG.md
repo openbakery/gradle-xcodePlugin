@@ -1,7 +1,13 @@
-# 0.16.0 (TBA)
+# 0.19.1 (TBA)
+
+Note: bumped minor version number 19, that indicated the year 2019. The minor versions are the release numbers then (1 for the second release this year).  
 
 Bugfixes
 * Updated the parsing of the output so that errors and warnings are shown when compiling swift code.
+Changes
+* The carthage derived data is set the the projects build/derivedData/carthage directory
+
+
 
 # 0.15.4 (Feb 1, 2019)
 

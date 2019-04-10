@@ -14,9 +14,9 @@ import spock.lang.Unroll
 import static org.openbakery.carthage.AbstractCarthageTaskBase.*
 import static org.openbakery.xcode.Type.*
 
-class CarthageBootStrapTaskTest extends Specification {
+class CarthageBootstrapTaskTest extends Specification {
 
-	CarthageBootStrapTask subject
+	CarthageBootstrapTask subject
 	CommandRunner commandRunner = Mock(CommandRunner)
 	Xcode mockXcode = Mock(Xcode)
 	File projectDir
@@ -47,7 +47,7 @@ class CarthageBootStrapTaskTest extends Specification {
 
 	def "The carthage bootstrap task should be present"() {
 		expect:
-		subject instanceof CarthageBootStrapTask
+		subject instanceof CarthageBootstrapTask
 	}
 
 	@Unroll
@@ -57,17 +57,13 @@ class CarthageBootStrapTaskTest extends Specification {
 		project.xcodebuild.type = platform
 
 		when:
-		subject.update()
+		subject.bootstrap()
 
 		then:
 		1 * commandRunner.run(_,
-				[CARTHAGE_USR_BIN_PATH,
-				 ACTION_BOOTSTRAP,
-				 ARG_PLATFORM,
-				 carthagePlatform,
-				 ARG_CACHE_BUILDS]
-				, _
-				, _) >> {
+				getCommandRunnerArgsForPlatform(carthagePlatform),
+				_,
+				_) >> {
 			args -> args[3] instanceof ConsoleOutputAppender
 		}
 
@@ -86,7 +82,7 @@ class CarthageBootStrapTaskTest extends Specification {
 
 		when:
 		cartFile.delete()
-		subject.update()
+		subject.bootstrap()
 
 		then:
 		0 * commandRunner.run(_,
@@ -106,7 +102,7 @@ class CarthageBootStrapTaskTest extends Specification {
 
 	def "The subject output directory should be platform dependant"() {
 		when:
-		subject.xcode.getXcodeSelectEnvValue(_) >> new HashMap<String, String>()
+		subject.xcode.getXcodeSelectEnvironmentValue(_) >> new HashMap<String, String>()
 		project.xcodebuild.type = platform
 
 		then:
@@ -124,16 +120,16 @@ class CarthageBootStrapTaskTest extends Specification {
 
 	def "The xcode selection should be applied if a xcode version is defined"() {
 		when:
-		subject.xcode.getXcodeSelectEnvValue(_) >> new HashMap<String, String>()
+		subject.xcode.getXcodeSelectEnvironmentValue(_) >> new HashMap<String, String>()
 		project.xcodebuild.type = iOS
 		project.xcodebuild.version = version
 
 		subject.xcode = mockXcode
 		subject.xcode.setVersionFromString(_) >> _
-		subject.update()
+		subject.bootstrap()
 
 		then:
-		1 * mockXcode.getXcodeSelectEnvValue(version)
+		1 * mockXcode.getXcodeSelectEnvironmentValue(version)
 
 		where:
 		version | _
@@ -142,9 +138,62 @@ class CarthageBootStrapTaskTest extends Specification {
 
 	private List<String> getCommandRunnerArgsForPlatform(String carthagePlatform) {
 		return [CARTHAGE_USR_BIN_PATH,
-				ACTION_UPDATE,
-				ARG_PLATFORM,
-				carthagePlatform,
-				ARG_CACHE_BUILDS]
+						ACTION_BOOTSTRAP,
+						ARGUMENT_PLATFORM,
+						carthagePlatform,
+						ARGUMENT_CACHE_BUILDS,
+						ARGUMENT_DERIVED_DATA,
+						new File(project.xcodebuild.derivedDataPath, "carthage").absolutePath]
 	}
+
+
+	@Unroll
+	def "has derived data argument"() {
+		def commandList
+
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		subject.bootstrap()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		commandList[5] == ARGUMENT_DERIVED_DATA
+		commandList[5] == "--derived-data"
+	}
+
+	@Unroll
+	def "has derived data path set to xcodebuild.derivedData + carthage "() {
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		project.xcodebuild.derivedDataPath = xcodebuildDerivedDataPath
+		subject.bootstrap()
+
+		then:
+		1 * commandRunner.run(_,
+				[CARTHAGE_USR_BIN_PATH,
+				 ACTION_BOOTSTRAP,
+				 ARGUMENT_PLATFORM,
+				 CARTHAGE_PLATFORM_IOS,
+				 ARGUMENT_CACHE_BUILDS,
+				 ARGUMENT_DERIVED_DATA,
+				 derivedDataPathParameter]
+				, _
+				, _) >> {
+			args -> args[3] instanceof ConsoleOutputAppender
+		}
+
+
+		where:
+		xcodebuildDerivedDataPath      | derivedDataPathParameter
+		new File("foo")      | new File("foo/carthage").absolutePath
+		new File("/foo")     | new File("/foo/carthage").absolutePath
+		new File("/bar")     | new File("/bar/carthage").absolutePath
+		new File("/foo/bar") | new File("/foo/bar/carthage").absolutePath
+	}
+
 }

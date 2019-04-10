@@ -1,19 +1,26 @@
 package org.openbakery.carthage
 
+
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.ConsoleOutputAppender
 
-class CarthageUpdateTask extends AbstractCarthageTaskBase {
 
-	CarthageUpdateTask() {
+class CarthageBootstrapTask extends AbstractCarthageTaskBase {
+
+	CarthageBootstrapTask() {
 		super()
-		setDescription "Update and rebuild the Carthage project dependencies"
+		setDescription "Check out and build the Carthage project dependencies"
 	}
 
 	@TaskAction
-	void update() {
+	void bootstrap() {
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		run(ACTION_UPDATE, output)
+		run(ACTION_BOOTSTRAP, output)
 	}
+
+
+
+
+
 }
