@@ -109,8 +109,7 @@ class XcodebuildSpecification extends Specification {
 	def addDisabledCodesigningParameters(def command) {
 		command << "CODE_SIGN_IDENTITY="
 		command << "CODE_SIGNING_REQUIRED=NO"
-		//command << "CODE_SIGN_ENTITLEMENTS=" // disable for no, should be only done by build for test
-		//command << "CODE_SIGNING_ALLOWED=NO"
+		command << "CODE_SIGNING_ALLOWED=NO"
 	}
 
 

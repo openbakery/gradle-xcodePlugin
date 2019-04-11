@@ -66,6 +66,7 @@ class Xcodebuild_Xcode10_Specification extends Specification {
 	def addDisabledCodesigningParameters(def command) {
 		command << "CODE_SIGN_IDENTITY="
 		command << "CODE_SIGNING_REQUIRED=NO"
+		command << "CODE_SIGNING_ALLOWED=NO"
 	}
 
 	def "test command for iOS device has parallel testing disabled"() {

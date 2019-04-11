@@ -4,6 +4,7 @@ Note: bumped minor version number 19, that indicated the year 2019. The minor ve
 
 Bugfixes
 * Updated the parsing of the output so that errors and warnings are shown when compiling swift code.
+* Fixed device build when using Xcode 10.2: Issue #411
 Changes
 * The carthage derived data is set the the projects build/derivedData/carthage directory
 * added `carthage.cache` boolean parameter so disable the cache (default is true)

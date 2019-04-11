@@ -71,6 +71,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		return [
 						"CODE_SIGN_IDENTITY=",
 						"CODE_SIGNING_REQUIRED=NO",
+						"CODE_SIGNING_ALLOWED=NO"
 		]
 	}
 
@@ -128,6 +129,7 @@ class XcodeBuildTaskSpecification extends Specification {
 						"-configuration", "Debug",
 						"CODE_SIGN_IDENTITY=",
 						"CODE_SIGNING_REQUIRED=NO",
+						"CODE_SIGNING_ALLOWED=NO"
 		)
 
 	}
@@ -217,6 +219,7 @@ class XcodeBuildTaskSpecification extends Specification {
 															 "-configuration", "Debug",
 															 "CODE_SIGN_IDENTITY=",
 															 "CODE_SIGNING_REQUIRED=NO",
+															 "CODE_SIGNING_ALLOWED=NO"
 				]
 				expectedCommandList.addAll(expectedDerivedDataPath())
 				expectedCommandList.addAll(expectedDefaultDirectories())
