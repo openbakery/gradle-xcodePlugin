@@ -665,6 +665,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 														 "-configuration", "Debug",
 														 "CODE_SIGN_IDENTITY=",
 														 "CODE_SIGNING_REQUIRED=NO",
+														 "CODE_SIGNING_ALLOWED=NO",
 														 "-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath,
 														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
 														 "OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
