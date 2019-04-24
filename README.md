@@ -39,7 +39,7 @@ Now the current version is 0.19.1 that is the second release this year. The thir
 * Java 1.6 or greater
 
 
-### Current stable version is 0.15.3
+### Current stable version is 0.19.1
 
 
 ## Documentation
@@ -55,7 +55,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.15.3"
+  id "org.openbakery.xcode-plugin" version "0.19.1"
 }
 
 xcodebuild {
@@ -76,7 +76,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.15.+"
+	    classpath "org.openbakery:xcode-plugin:0.19.+"
 	}
 }
 

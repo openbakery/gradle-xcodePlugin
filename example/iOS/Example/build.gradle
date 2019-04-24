@@ -4,13 +4,13 @@ If you what to create a build for the device than you have to specify for sign s
 
 e.g for a adHoc build:
 
-Create a gradle.properties and add the following values: 
+Create a gradle.properties and add the following values:
 
 Example.AdHoc.SigningCertificateURI=http://.../Development.p12  // file:// urls also works here
 Example.AdHoc.SigningCertificatePassword=mySecrect
 Example.AdHoc.SigningMobileProvisionURI=http://.../Example.mobileprovision
 Example.AdHoc.SigningMobileProvisionURIWatchkit=http://.../ExampleWatchkit.mobileprovision
-Example.AdHoc.SigningMobileProvisionURIWatchKitExtension=http://.../ExampleWatchKitExtension.mobileprovision 
+Example.AdHoc.SigningMobileProvisionURIWatchKitExtension=http://.../ExampleWatchKitExtension.mobileprovision
 Example.AdHoc.SigningMobileProvisionURIWidget=http://.../ExampleWidget.mobileprovision
 
 Then run: 'gradle package/Example/AdHoc
@@ -27,7 +27,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.15.+"
+	    classpath "org.openbakery:xcode-plugin:0.19.+"
 	}
 }
 
@@ -37,10 +37,10 @@ apply plugin: 'org.openbakery.xcode-plugin'
 xcodebuild {
 	//version = "6.2"  // uncomment this if you want to use xcode 6.1, but another xcode is the default on your machine
 	//version = "8.2"
-	
+
 	target = 'Example'
 	scheme = 'Example'
-	configuration = 'Test'	
+	configuration = 'Test'
 	destination = ['iPad Air', 'iPhone 6s' ]
 }
 
@@ -76,7 +76,7 @@ def getPropertyForComponents(List<String> components) {
 		def counter = 0
 		while(project.hasProperty(propertyName+"_"+counter)) {
 			result << project.property(propertyName+"_"+counter)
-			
+
 			counter++
 		}
 		return result
@@ -116,7 +116,7 @@ task updateInfoPlist() {
 		} else {
 			shortVersionString = plistHelper.getValueFromPlist(infoPlist, "CFBundleShortVersionString")
 		}
-		
+
 		println "Version: " + version
 		println "ShortVersionString: " + shortVersionString
 
@@ -160,7 +160,7 @@ tasks.addRule("Pattern: configure/<TargetName>: " + configureDescription) { Stri
       }
 		}
 		infoplistModify.dependsOn updateInfoPlist
-		
+
     tasks[taskName].mustRunAfter(clean)
 	}
 }
@@ -174,12 +174,12 @@ tasks.addRule("Pattern: archive/<TargetName>: " + archiveDescription) { String t
 
 tasks.addRule("Pattern: package/<TargetName>/<Properties>: " + packageDescription) { String taskName ->
   if (taskName.startsWith("package")) {
-		
+
 		def tokens = taskName.split('/')
 		if (tokens.length != 3) {
 			throw new IllegalArgumentException("Wrong number of parameters: package/<TargetName>/<Properties>")
 		}
-		
+
     def targetName = tokens[1]
     def properties = tokens[2]
     def archiveTask = 'archive/' + targetName
@@ -215,7 +215,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 			appID = hockeyappAppId
 		}
 	}
-	
+
 	if (taskGraph.hasTask(tasks.deploygate)) {
 		println ("using api token: " + deploygateApiToken)
 		deploygate {
@@ -223,19 +223,19 @@ gradle.taskGraph.whenReady { taskGraph ->
 			userName = deploygateUserName
 		}
 	}
-	
+
 	if (taskGraph.hasTask(appstoreValidate) || taskGraph.hasTask(appstoreUpload)) {
-	
+
 		if (appstore.username == null) {
 			def username = System.console().readLine("\nPlease enter your Apple-ID that you use for iTunesConnect: ")
 			appstore.username = new String(username)
 		}
-		
+
 		if (appstore.password == null) {
 			def password = System.console().readPassword("\nPlease enter the password for <" + appstore.username + ">: ")
 			appstore.password = new String(password)
 		}
-	
+
 	}
 }
 
