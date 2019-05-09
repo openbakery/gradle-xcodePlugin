@@ -174,6 +174,8 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
 		dependsOn.contains(XcodePlugin.SIMULATORS_KILL_TASK_NAME)
+		dependsOn.contains(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME)
+		dependsOn.contains(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME)
 	}
 
 	

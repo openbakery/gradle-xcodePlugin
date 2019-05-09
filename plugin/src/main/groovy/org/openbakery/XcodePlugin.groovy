@@ -429,7 +429,6 @@ class XcodePlugin implements Plugin<Project> {
 
 
 			configureCarthageDependencies(project)
-			configureCocoapodsDependencies(project)
 			configureTestRunDependencies(project)
 		}
 
@@ -589,13 +588,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(COCOAPODS_UPDATE_TASK_NAME, type: CocoapodsUpdateTask, group: COCOAPODS_GROUP_NAME)
 	}
 
-	private configureCocoapodsDependencies(Project project) {
-		CocoapodsInstallTask cocoapodsInstallTask = project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME)
-		if (cocoapodsInstallTask.hasPodfile()) {
-			addDependencyToBuild(project, cocoapodsInstallTask)
-		}
-	}
-
 	private void configureCarthage(Project project) {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
@@ -603,9 +595,6 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 	private configureCarthageDependencies(Project project) {
-		CarthageBootstrapTask bootStrapTask = project.getTasks().getByName(CARTHAGE_BOOTSTRAP_TASK_NAME)
-		addDependencyToBuild(project, bootStrapTask)
-
 		project.getTasks()
 				.getByName(BasePlugin.CLEAN_TASK_NAME)
 				.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
@@ -628,24 +617,6 @@ class XcodePlugin implements Plugin<Project> {
 	}
 
 
-	private void addDependencyToBuild(Project project, Task task) {
-		logger.info("add task dependency for {}", task)
-
-		for (Task buildTask : project.getTasks().withType(XcodeBuildTask.class)) {
-			buildTask.dependsOn(task)
-		}
-
-		for (Task testTask : project.getTasks().withType(XcodeTestTask.class)) {
-			testTask.dependsOn(task)
-		}
-
-
-		for (Task buildForTestTask : project.getTasks().withType(XcodeBuildForTestTask.class)) {
-			logger.info("add task depencency for {}", buildForTestTask)
-			buildForTestTask.dependsOn(task)
-		}
-
-	}
 }
 
 

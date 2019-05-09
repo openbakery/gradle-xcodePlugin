@@ -14,7 +14,9 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		super()
 		dependsOn(
 			XcodePlugin.XCODE_CONFIG_TASK_NAME,
-			XcodePlugin.SIMULATORS_KILL_TASK_NAME
+			XcodePlugin.SIMULATORS_KILL_TASK_NAME,
+			XcodePlugin.COCOAPODS_INSTALL_TASK_NAME,
+			XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME
 		)
 		this.description = "Builds the xcode project and test target. Creates a testbundle that contains the result."
 	}

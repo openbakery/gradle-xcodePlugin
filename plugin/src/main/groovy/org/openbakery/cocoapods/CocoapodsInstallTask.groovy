@@ -16,6 +16,14 @@ public class CocoapodsInstallTask extends AbstractCocoapodsTask {
 	public CocoapodsInstallTask() {
 		super()
 		setDescription "Installs the pods for the given project"
+		this.setOnlyIf {
+			podfileExists()
+		}
+	}
+
+	boolean podfileExists() {
+		File podfile = new File(project.projectDir, "Podfile")
+		return podfile.exists()
 	}
 
 

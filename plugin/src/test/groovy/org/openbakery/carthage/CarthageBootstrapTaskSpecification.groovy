@@ -14,7 +14,7 @@ import spock.lang.Unroll
 import static org.openbakery.carthage.AbstractCarthageTaskBase.*
 import static org.openbakery.xcode.Type.*
 
-class CarthageBootstrapTaskTest extends Specification {
+class CarthageBootstrapTaskSpecification extends Specification {
 
 	CarthageBootstrapTask subject
 	CommandRunner commandRunner = Mock(CommandRunner)
@@ -49,6 +49,20 @@ class CarthageBootstrapTaskTest extends Specification {
 		expect:
 		subject instanceof CarthageBootstrapTask
 	}
+
+	def "carthage task is executed when cartfile exists"() {
+		expect:
+		subject.getOnlyIf().isSatisfiedBy(subject)
+	}
+
+	def "carthage task is skipped when cartfile is missing"() {
+		when:
+		cartFile.delete()
+
+		then:
+		!subject.getOnlyIf().isSatisfiedBy(subject)
+	}
+
 
 	@Unroll
 	def "When bootstrap is executed should only update the platform: #platform"() {

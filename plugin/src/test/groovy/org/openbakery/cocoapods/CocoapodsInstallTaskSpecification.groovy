@@ -16,10 +16,14 @@ class CocoapodsInstallTaskSpecification extends Specification {
 	CocoapodsInstallTask cocoapodsTask;
 
 	CommandRunner commandRunner = Mock(CommandRunner)
+	File projectDir
+	File podFile
 
 	def setup() {
+		projectDir = File.createTempDir()
 
-		File projectDir =  new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		podFile = new File(projectDir, "Podfile")
+		podFile << ''
 
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.buildDir = new File('build').absoluteFile
@@ -33,7 +37,21 @@ class CocoapodsInstallTaskSpecification extends Specification {
 
 
 	def cleanup() {
-		FileUtils.deleteDirectory(project.projectDir)
+		FileUtils.deleteDirectory(projectDir)
+	}
+
+
+	def "cocoapods task is executed when Podfile exists"() {
+		expect:
+		cocoapodsTask.getOnlyIf().isSatisfiedBy(cocoapodsTask)
+	}
+
+	def "cocoapods task is skipped when Podfile is missing"() {
+		when:
+		podFile.delete()
+
+		then:
+		!cocoapodsTask.getOnlyIf().isSatisfiedBy(cocoapodsTask)
 	}
 
 

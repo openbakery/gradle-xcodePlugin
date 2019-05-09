@@ -225,47 +225,6 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('cocoapodsInstall') instanceof CocoapodsInstallTask
 	}
 
-	def "xcodebuild has cocoapods dependency"() {
-		when:
-		File projectDir = new File("../example/iOS/SwiftExample")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
-		project.evaluate()
-
-		XcodeBuildTask task = project.tasks.findByName('xcodebuild')
-
-		then:
-
-		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
-	}
-
-	def "xcodetest has cocoapods dependency"() {
-		when:
-		File projectDir = new File("../example/iOS/SwiftExample")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
-		project.evaluate()
-
-		def task = project.tasks.findByName(XcodePlugin.XCODE_TEST_TASK_NAME)
-
-		then:
-
-		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
-	}
-
-	def "xcodebuildForTest has cocoapods dependency"() {
-		when:
-		File projectDir = new File("../example/iOS/SwiftExample")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
-		project.evaluate()
-
-		def task = project.tasks.findByName(XcodePlugin.XCODE_BUILD_FOR_TEST_TASK_NAME)
-
-		then:
-
-		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.COCOAPODS_INSTALL_TASK_NAME))
-	}
 
 
 	def "has cocoapods bootstrap task"() {
@@ -290,20 +249,6 @@ class XcodePluginSpecification extends Specification {
 	def "has carthage task"() {
 		expect:
 		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
-	}
-
-	def "xcodebuild has carthage bootstrap dependency"() {
-		when:
-		File projectDir = new File("../example/iOS/Example")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
-		project.evaluate()
-
-		Task task  = project.tasks.getByName(XcodePlugin.XCODE_BUILD_TASK_NAME)
-
-		then:
-		task instanceof XcodeBuildTask
-		task.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME))
 	}
 
 
