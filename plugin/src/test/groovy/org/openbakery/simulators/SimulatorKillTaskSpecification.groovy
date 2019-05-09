@@ -2,6 +2,9 @@ package org.openbakery.simulators
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin
@@ -14,7 +17,6 @@ class SimulatorKillTaskSpecification extends Specification {
 	File projectDir
 
 	def setup() {
-
 		projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
@@ -53,10 +55,8 @@ class SimulatorKillTaskSpecification extends Specification {
 		when:
 		project.xcodebuild.type = 'macOS'
 
-		task.execute()
-
 		then:
-		task.getState().getSkipped() == true
+		!task.getOnlyIf().isSatisfiedBy(task)
 	}
 
 	def "enabled on iOS"() {
@@ -64,10 +64,8 @@ class SimulatorKillTaskSpecification extends Specification {
 		project.xcodebuild.type = 'iOS'
 		project.xcodebuild.simulator = true
 
-		task.execute()
-
 		then:
-		task.getState().getSkipped() == false
+		task.getOnlyIf().isSatisfiedBy(task)
 	}
 
 	def "disabled on iOS Device"() {
@@ -75,10 +73,8 @@ class SimulatorKillTaskSpecification extends Specification {
 		project.xcodebuild.type = 'iOS'
 		project.xcodebuild.simulator = false
 
-		task.execute()
-
 		then:
-		task.getState().getSkipped() == true
+		!task.getOnlyIf().isSatisfiedBy(task)
 	}
 
 	def "enabled on tvOS"() {
@@ -86,10 +82,8 @@ class SimulatorKillTaskSpecification extends Specification {
 		project.xcodebuild.type = 'tvOS'
 		project.xcodebuild.simulator = true
 
-		task.execute()
-
 		then:
-		task.getState().getSkipped() == false
+		task.getOnlyIf().isSatisfiedBy(task)
 	}
 
 	def "disabled on tvOS"() {
@@ -97,10 +91,8 @@ class SimulatorKillTaskSpecification extends Specification {
 		project.xcodebuild.type = 'tvOS'
 		project.xcodebuild.simulator = false
 
-		task.execute()
-
 		then:
-		task.getState().getSkipped() == true
+		!task.getOnlyIf().isSatisfiedBy(task)
 	}
 
 	def "test command for iOS kill failed"() {
@@ -114,7 +106,7 @@ class SimulatorKillTaskSpecification extends Specification {
 
 
 		when:
-		task.execute()
+		task.run()
 
 		then:
 		true // no exception should be thrown

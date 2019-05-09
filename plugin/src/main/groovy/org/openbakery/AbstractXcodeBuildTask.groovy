@@ -50,7 +50,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		parameters.workspace = workspace
 	}
 
-	void setAdditionalParameters(String additionalParameters) {
+	void setAdditionalParameters(def additionalParameters) {
 		parameters.additionalParameters = additionalParameters
 	}
 

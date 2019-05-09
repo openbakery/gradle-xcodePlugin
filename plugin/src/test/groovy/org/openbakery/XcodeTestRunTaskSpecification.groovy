@@ -131,6 +131,21 @@ class XcodeTestRunTaskSpecification extends Specification {
 	}
 
 
+	def "use xctestrun with absolute path"() {
+		given:
+		createTestBundle("test")
+
+		when:
+		def xctestrun =  xcodeTestRunTestTask.getXcruntestFiles()
+
+		then:
+		xctestrun instanceof List
+		xctestrun.size() == 1
+		xctestrun[0].isAbsolute() == true
+	}
+
+
+
 	def "run xcodebuild executeTestWithoutBuilding"() {
 		given:
 		def commandList

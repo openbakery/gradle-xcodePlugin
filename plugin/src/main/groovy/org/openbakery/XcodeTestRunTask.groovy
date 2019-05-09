@@ -134,7 +134,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		List<File> result = []
 		getBundleDirectory().eachFileRecurse(FileType.FILES) {
 		    if(it.name.endsWith('.xctestrun')) {
-					result << it
+					result << it.absoluteFile
 		    }
 		}
 		return result

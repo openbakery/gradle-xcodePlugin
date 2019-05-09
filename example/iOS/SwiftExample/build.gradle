@@ -1,19 +1,19 @@
 /*
 
 If you what to create a for the device than you have to specify for sign sign settings.
-Create a gradle.properties and add the following values: 
+Create a gradle.properties and add the following values:
 
 	hockeyappApiToken = ""
 	hockeyappAppId = ""
 
-	signingIdentity = iPhone Developer: ... 
+	signingIdentity = iPhone Developer: ...
 	signingCertificateURI = http://.../Development.p12  // file:// urls also works here
 	signingCertificatePassword = password // password to unlock to p12
 	signingMobileProvisionURI = http://../Development.mobileprovision
-	
+
 	signingMobileProvisionURIWidget = http://../Development.mobileprovision // provisioning profil for the widget
 	exampleTodayWidgetBundleIdentifier = com.example.MyWidget
-	
+
 You can also scroll down and add the values directly (line 115ff).
 
 */
@@ -27,7 +27,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.15.+"
+	    classpath "org.openbakery:xcode-plugin:0.19.+"
 	}
 }
 

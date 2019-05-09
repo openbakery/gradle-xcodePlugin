@@ -1,3 +1,8 @@
+# 0.19.2 TBA
+
+Bugfixes
+* additionalParameters as list did not work when applying it to the Task
+
 # 0.19.1 (Apr 24, 2019)
 
 Note: bumped minor version number 19, that indicated the year 2019. The minor versions are the release numbers then (1 for the second release this year).  

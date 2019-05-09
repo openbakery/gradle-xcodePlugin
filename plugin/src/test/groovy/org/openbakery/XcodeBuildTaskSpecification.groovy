@@ -60,24 +60,24 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	def expectedDefaultDirectories() {
 		return [
-						"DSTROOT=" + new File(project.buildDir,"dst").absolutePath,
-						"OBJROOT=" + new File(project.buildDir,"obj").absolutePath,
-						"SYMROOT=" + new File(project.buildDir,"sym").absolutePath,
-						"SHARED_PRECOMPS_DIR=" + new File(project.buildDir,"shared").absolutePath
+			"DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
+			"OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
+			"SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
+			"SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath
 		]
 	}
 
 	def expectedCodesignSettings() {
 		return [
-						"CODE_SIGN_IDENTITY=",
-						"CODE_SIGNING_REQUIRED=NO",
-						"CODE_SIGNING_ALLOWED=NO"
+			"CODE_SIGN_IDENTITY=",
+			"CODE_SIGNING_REQUIRED=NO",
+			"CODE_SIGNING_ALLOWED=NO"
 		]
 	}
 
 	def expectedDerivedDataPath() {
 		return [
-						"-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath
+			"-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath
 		]
 
 	}
@@ -124,12 +124,12 @@ class XcodeBuildTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		commandList == createCommandWithDefaultDirectories('xcodebuild',
-						"-scheme", 'myscheme',
-						"-workspace", 'myworkspace',
-						"-configuration", "Debug",
-						"CODE_SIGN_IDENTITY=",
-						"CODE_SIGNING_REQUIRED=NO",
-						"CODE_SIGNING_ALLOWED=NO"
+			"-scheme", 'myscheme',
+			"-workspace", 'myworkspace',
+			"-configuration", "Debug",
+			"CODE_SIGN_IDENTITY=",
+			"CODE_SIGNING_REQUIRED=NO",
+			"CODE_SIGNING_ALLOWED=NO"
 		)
 
 	}
@@ -184,19 +184,18 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask.build()
 
 		then:
-		1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
 			expectedCommandList = ['xcodebuild',
 														 "-configuration", "Debug",
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
 
 	}
-
 
 
 	def "run command without signIdentity"() {
@@ -210,21 +209,21 @@ class XcodeBuildTaskSpecification extends Specification {
 		when:
 		xcodeBuildTask.build()
 
-			then:
-			1 * commandRunner.run(_,_,_,_) >> {arguments-> commandList=arguments[1]}
-			interaction {
-				expectedCommandList = ['xcodebuild',
-															 "-scheme", 'myscheme',
-															 "-workspace", 'myworkspace',
-															 "-configuration", "Debug",
-															 "CODE_SIGN_IDENTITY=",
-															 "CODE_SIGNING_REQUIRED=NO",
-															 "CODE_SIGNING_ALLOWED=NO"
-				]
-				expectedCommandList.addAll(expectedDerivedDataPath())
-				expectedCommandList.addAll(expectedDefaultDirectories())
-			}
-			commandList == expectedCommandList
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		interaction {
+			expectedCommandList = ['xcodebuild',
+														 "-scheme", 'myscheme',
+														 "-workspace", 'myworkspace',
+														 "-configuration", "Debug",
+														 "CODE_SIGN_IDENTITY=",
+														 "CODE_SIGNING_REQUIRED=NO",
+														 "CODE_SIGNING_ALLOWED=NO"
+			]
+			expectedCommandList.addAll(expectedDerivedDataPath())
+			expectedCommandList.addAll(expectedDefaultDirectories())
+		}
+		commandList == expectedCommandList
 	}
 
 	def "run command without signIdentity osx"() {
@@ -280,7 +279,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.add("ARCHS=myarch")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 
 		}
 		commandList == expectedCommandList
@@ -319,7 +318,6 @@ class XcodeBuildTaskSpecification extends Specification {
 	}
 
 
-
 	def "run command with workspace"() {
 		def commandList
 		def expectedCommandList
@@ -340,12 +338,11 @@ class XcodeBuildTaskSpecification extends Specification {
 			]
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 
 		}
 		commandList == expectedCommandList
 	}
-
 
 
 	def "run command with workspace but without scheme"() {
@@ -367,7 +364,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
 
@@ -395,11 +392,10 @@ class XcodeBuildTaskSpecification extends Specification {
 			]
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
 	}
-
 
 
 	def "run command scheme and simulatorbuild and arch"() {
@@ -425,7 +421,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.add("ARCHS=i386")
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
 	}
@@ -454,7 +450,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-target", 'mytarget',
 			]
 			expectedCommandList.addAll(expectedDefaultDirectories())
-			expectedCommandList <<  "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
+			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		commandList == expectedCommandList
 	}
@@ -462,7 +458,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	def "depends on"() {
 		when:
-		def dependsOn  = xcodeBuildTask.getDependsOn()
+		def dependsOn = xcodeBuildTask.getDependsOn()
 
 		then:
 		dependsOn.contains(XcodePlugin.XCODE_CONFIG_TASK_NAME)
@@ -474,7 +470,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		given:
 		project.xcodebuild.target = "Test"
-		commandRunner.run(_,_,_,_) >> {
+		commandRunner.run(_, _, _, _) >> {
 			throw new CommandRunnerException()
 		}
 
@@ -509,7 +505,6 @@ class XcodeBuildTaskSpecification extends Specification {
 		then:
 		project.getBuildDir().exists()
 	}
-
 
 
 	def "set target"() {
@@ -570,6 +565,17 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask.parameters.additionalParameters == "additionalParameters"
 	}
 
+	def "set additionalParameters List"() {
+		when:
+		def list = ["First", "Second"]
+		xcodeBuildTask.additionalParameters = list
+
+		then:
+		list instanceof List
+		xcodeBuildTask.parameters.additionalParameters instanceof List
+	}
+
+
 	def "set configuration"() {
 		when:
 		xcodeBuildTask.configuration = "configuration"
@@ -608,7 +614,6 @@ class XcodeBuildTaskSpecification extends Specification {
 	}
 
 
-
 	def "create xcode lazy"() {
 		given:
 
@@ -621,7 +626,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		new File(xcode8, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 
 
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >>  xcode7_3_1.absolutePath + "\n"  + xcode8.absolutePath
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode7_3_1.absolutePath + "\n" + xcode8.absolutePath
 		commandRunner.runWithResult(xcode7_3_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 7.3.1\nBuild version 7D1014"
 		commandRunner.runWithResult(xcode8.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"
 		commandRunner.runWithResult("xcodebuild", "-version") >> "Xcode 8.0\nBuild version 8A218a"

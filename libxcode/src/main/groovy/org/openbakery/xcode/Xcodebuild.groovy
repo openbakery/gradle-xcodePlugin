@@ -189,7 +189,7 @@ class Xcodebuild {
 		commandList.add("SHARED_PRECOMPS_DIR=" + parameters.sharedPrecompsDir.absolutePath)
 	}
 
-	def addAdditionalParameters(ArrayList commandList) {
+	def addAdditionalParameters(def commandList) {
 		if (parameters.arch != null) {
 			StringBuilder archs = new StringBuilder("ARCHS=");
 			for (String singleArch in parameters.arch) {
