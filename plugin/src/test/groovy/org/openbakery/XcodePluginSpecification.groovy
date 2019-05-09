@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -232,19 +233,7 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('cocoapodsBootstrap') instanceof CocoapodsBootstrapTask
 	}
 
-	/*
-	def "cocoapodsUpdate has boostrap dependency if cocoapods was not found"() {
-		CommandRunner commandRunner = Mock(CommandRunner)
-		project.commandRunner = commandRunner
 
-		when:
-		CocoapodsBootstrapTask task = project.tasks.findByName('cocoapodsBootstrap')
-		project.apply plugin: org.openbakery.XcodePlugin
-
-		then:
-		task.commandRunner == commandRunner
-	}
-	*/
 
 	def "has carthage task"() {
 		expect:
@@ -262,19 +251,6 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
 	}
 
-	def "clean has carthage clean dependency"() {
-		when:
-		File projectDir = new File("../example/iOS/Example")
-		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
-		project.apply plugin: org.openbakery.XcodePlugin
-		project.evaluate()
-
-		Task cleanTask = project.getTasks().getByName(BasePlugin.CLEAN_TASK_NAME)
-
-		then:
-
-		cleanTask.getTaskDependencies().getDependencies() contains(project.getTasks().getByName(XcodePlugin.CARTHAGE_CLEAN_TASK_NAME))
-	}
 
 
 }
