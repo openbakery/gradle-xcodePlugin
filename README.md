@@ -68,20 +68,19 @@ xcodebuild {
 You can also use the version that is deployed the repository on [openbakery.org](https://openbakery.org) with the following build.gradle file configuration:
 ```
 buildscript {
-	repositories {
-		maven {
-			url('http://repository.openbakery.org/')
-		}
-		mavenCentral()
+  repositories {
+    maven {
+      url('http://repository.openbakery.org/')
+    }
+  mavenCentral()
   }
 
-	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.19.+"
-	}
+  dependencies {
+    classpath "org.openbakery:xcode-plugin:0.19.+"
+  }
 }
 
 apply plugin: "org.openbakery.xcode-plugin"
-
 ```
 
 ### Current develop version
