@@ -99,27 +99,29 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	void run(String command, StyledTextOutput output) {
 
-		if (hasCartfile()) {
-			logger.info('Update Carthage for platform ' + carthagePlatformName)
-
-			def derivedDataPath = new File(project.xcodebuild.derivedDataPath, "carthage")
-
-			List<String> args = [getCarthageCommand(),
-													 command,
-													 ARGUMENT_PLATFORM,
-													 carthagePlatformName
-			]
-			if (project.carthage.cache) {
-				args << ARGUMENT_CACHE_BUILDS
-			}
-			args << ARGUMENT_DERIVED_DATA
-			args << derivedDataPath.absolutePath
-
-			commandRunner.run(project.projectDir.absolutePath,
-				args,
-				getEnvironment(),
-				new ConsoleOutputAppender(output))
+		if (!hasCartfile()) {
+			logger.debug("No Cartfile found, so we are done")
+			return
 		}
+
+		logger.info('Update Carthage for platform ' + carthagePlatformName)
+		def derivedDataPath = new File(project.xcodebuild.derivedDataPath, "carthage")
+
+		List<String> args = [getCarthageCommand(),
+												 command,
+												 ARGUMENT_PLATFORM,
+												 carthagePlatformName
+		]
+		if (project.carthage.cache) {
+			args << ARGUMENT_CACHE_BUILDS
+		}
+		args << ARGUMENT_DERIVED_DATA
+		args << derivedDataPath.absolutePath
+
+		commandRunner.run(project.projectDir.absolutePath,
+			args,
+			getEnvironment(),
+			new ConsoleOutputAppender(output))
 
 	}
 
