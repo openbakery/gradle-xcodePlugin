@@ -36,7 +36,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	@InputFile
 	@Optional
 	@PathSensitive(PathSensitivity.RELATIVE)
-	Provider<File> getCartFile() {
+	Provider<File> XcodeBuildPluginExtension() {
 		// Cf https://github.com/gradle/gradle/issues/2016
 		File file = project.rootProject.file(CARTHAGE_FILE)
 		return project.provider {

@@ -11,6 +11,7 @@ class XcodeSpecification extends Specification {
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 
+	static File xcode11 = new File(File.createTempDir(), "Xcode11.app")
 	static File xcode7_1_1 = new File(File.createTempDir(), "Xcode7.1.1.app")
 	static File xcode6_1 = new File(File.createTempDir(), "Xcode6-1.app")
 	static File xcode6_0 = new File(File.createTempDir(), "Xcode6.app")
@@ -19,11 +20,13 @@ class XcodeSpecification extends Specification {
 	def setup() {
 		xcode = Spy(Xcode, constructorArgs: [commandRunner])
 
+		new File(xcode11, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcode7_1_1, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcode6_1, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcode6_0, "Contents/Developer/usr/bin").mkdirs()
 		new File(xcode5_1, "Contents/Developer/usr/bin").mkdirs()
 
+		new File(xcode11, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcode7_1_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcode6_1, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
 		new File(xcode6_0, "Contents/Developer/usr/bin/xcodebuild").createNewFile()
@@ -31,6 +34,7 @@ class XcodeSpecification extends Specification {
 	}
 
 	def cleanup() {
+		FileUtils.deleteDirectory(xcode11)
 		FileUtils.deleteDirectory(xcode7_1_1)
 		FileUtils.deleteDirectory(xcode6_1)
 		FileUtils.deleteDirectory(xcode6_0)
@@ -56,11 +60,25 @@ class XcodeSpecification extends Specification {
 		commandRunner.runWithResult(xcode6_0.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.0\nBuild version 6A000")
 		commandRunner.runWithResult(xcode6_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 		commandRunner.runWithResult(xcode7_1_1.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 7.1.1\nBuild version 7B1005")
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcode5_1.absolutePath + "\n" + xcode6_0.absolutePath + "\n" + xcode6_1.absolutePath + "\n" + xcode7_1_1.absolutePath
+		commandRunner.runWithResult(xcode11.absolutePath + "/Contents/Developer/usr/bin/xcodebuild", "-version") >> ("Xcode 11.0\nBuild version 11M392r")
+
+
+		def pathResult = [
+			xcode5_1.absolutePath,
+			xcode6_0.absolutePath,
+			xcode6_1.absolutePath,
+			xcode7_1_1.absolutePath,
+			xcode11.absolutePath,
+		].join("\n")
+
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> pathResult
 	}
 
 	def useDefaultXcode() {
 		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
+		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 10\nBuild version 10B1008")
+
+
 	}
 
 	@Unroll
@@ -122,6 +140,16 @@ class XcodeSpecification extends Specification {
 		xcode.getVersion().maintenance == 1
 	}
 
+	def "xcode 11 version"() {
+		given:
+
+		useXcode("11")
+
+		expect:
+		xcode.getVersion() != null
+		xcode.getVersion().major == 11
+	}
+
 
 	def "altool default path"() {
 		given:
@@ -138,6 +166,16 @@ class XcodeSpecification extends Specification {
 		expect:
 		xcode.getAltool().contains('Xcode7.1.1.app')
 		xcode.getAltool().endsWith('Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool')
+	}
+
+	def "altool with xcode 11"() {
+		given:
+		useXcode("11")
+
+		expect:
+		xcode.version.major == 11
+		xcode.getAltool().contains('Xcode11.app')
+		xcode.getAltool().endsWith('Contents/Developer/usr/bin/altool')
 	}
 
 	def "xcrun default path"() {
