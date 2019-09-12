@@ -1,7 +1,9 @@
 package org.openbakery.test
 
+import groovy.json.JsonSlurper
 import groovy.xml.MarkupBuilder
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.openbakery.CommandRunner
 import org.openbakery.xcode.Destination
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -56,6 +58,57 @@ public class TestResultParser {
 			if (destination != null) {
 				def resultList = processTestSummary(testResult.getList("TestableSummaries"))
 				testResults.put(destination, resultList)
+			}
+		}
+
+		testSummariesDirectory.listFiles({d, f-> f ==~ /.*.xcresult/ } as FilenameFilter).each {
+			def resultList = parseV3(it)
+			testResults.put(new Destination(name: "Mock"), resultList)
+		}
+	}
+
+	public ArrayList<TestClass> parseV3(File file) {
+		def infoPlistFile = new FileNameFinder().getFileNames(file.path, "*.plist")
+		def infoPlist = new XMLPropertyListConfiguration(infoPlistFile.first())
+		if(!infoPlist.containsKey("version.major")) { return }
+
+				def runner = new CommandRunner()
+				def result = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath)
+
+
+				def json = new JsonSlurper()
+				def object = json.parseText(result)
+				def testsRef = object.actions._values.actionResult.testsRef.id._value.first()
+				def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
+
+				def results = json.parseText(testsResults)
+
+				def testStatus = new ArrayList<TestResult>()
+
+				results.summaries._values.each {
+					it.testableSummaries._values.each {
+						it.tests._values.each {
+							testWithStatus(it, testStatus)
+						}
+					}
+				}
+
+				def testClass = new TestClass(name: "Test")
+				testClass.results << testStatus
+				def arrayList = new ArrayList<TestClass>()
+				arrayList.add(testClass)
+
+				return arrayList
+	}
+
+	private void testWithStatus(Map<String, Object> test, ArrayList<TestResult> testsStatus) {
+		if (test.testStatus != null) {
+			def testResult = new TestResult(method: test.identifier._value, success: test.testStatus._value == "Success")
+			testsStatus.add(testResult)
+		}
+		if (test.subtests != null && test.subtests._values != null) {
+			test.subtests._values.each {
+				testWithStatus(it, testsStatus)
 			}
 		}
 	}

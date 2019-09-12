@@ -18,7 +18,7 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations())
 	}
 
@@ -122,6 +122,19 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.testResults.size() > 0
 	}
 
+	def "new xcresult parse test summary has result"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult")
+		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults != null
+		testResultParser.testResults.size() > 0
+	}
+
 	def "parse test summary and verify result count"() {
 		when:
 		testResultParser.parse()
@@ -144,7 +157,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Failure")
 		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
 
 		when:
