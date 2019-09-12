@@ -29,7 +29,8 @@ class TestResultParserSpecification extends Specification {
 		parameters.type = Type.iOS
 		parameters.configuredDestinations = [
 			new Destination("iPad 2"),
-			new Destination("iPhone 4s")
+			new Destination("iPhone 4s"),
+			new Destination("iPhone Xʀ")
 		]
 
 		DestinationResolver destinationResolver = new DestinationResolver(simulatorControl)
@@ -133,6 +134,19 @@ class TestResultParserSpecification extends Specification {
 		then:
 		testResultParser.testResults != null
 		testResultParser.testResults.size() > 0
+	}
+
+	def "parse new xcresult scheme and verify result count"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult")
+		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults.size() == 1
+		testResultParser.numberSuccess() == 1
 	}
 
 	def "parse test summary and verify result count"() {

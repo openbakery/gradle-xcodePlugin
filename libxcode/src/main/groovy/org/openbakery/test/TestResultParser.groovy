@@ -60,62 +60,69 @@ public class TestResultParser {
 				testResults.put(destination, resultList)
 			}
 		}
+		if (!testResults.isEmpty()) return
 
-		testSummariesDirectory.listFiles({d, f-> f ==~ /.*.xcresult/ } as FilenameFilter).each {
-			def resultList = parseV3(it)
-			testResults.put(new Destination(name: "Mock"), resultList)
+		logger.debug("Using new xcresult scheme version")
+		def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
+		files.each {
+			def xcResult = parseXCResultFile(it)
+			def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
+
+			Destination destination = findDestinationForIdentifier(destinations, identifier)
+			def resultList = parseNewTestSummaries(xcResult, it)
+			testResults.put(destination, resultList)
+
 		}
 	}
 
-	public ArrayList<TestClass> parseV3(File file) {
-		def infoPlistFile = new FileNameFinder().getFileNames(file.path, "*.plist")
-		def infoPlist = new XMLPropertyListConfiguration(infoPlistFile.first())
-		if(!infoPlist.containsKey("version.major")) { return }
+	Map<String, Object> parseXCResultFile(File file) {
+		def runner = new CommandRunner()
+		def result = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath)
+		def json = new JsonSlurper()
+		def object = json.parseText(result)
 
-				def runner = new CommandRunner()
-				def result = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath)
+		return object
+	}
 
+	ArrayList<TestClass> parseNewTestSummaries(Map<String, Object> xcResult, File file) {
+		def runner = new CommandRunner()
+		def json = new JsonSlurper()
 
-				def json = new JsonSlurper()
-				def object = json.parseText(result)
-				def testsRef = object.actions._values.actionResult.testsRef.id._value.first()
-				def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
+		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value.first()
+		def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
 
-				def results = json.parseText(testsResults)
+		def results = json.parseText(testsResults)
 
-				def testStatus = new ArrayList<TestResult>()
+		def testStatus = new ArrayList<TestClass>()
 
-				results.summaries._values.each {
-					it.testableSummaries._values.each {
-						it.tests._values.each {
-							testWithStatus(it, testStatus)
-						}
-					}
+		results.summaries._values.each {
+			it.testableSummaries._values.each {
+				it.tests._values.each {
+					testWithStatus(it, testStatus, null)
 				}
+			}
+		}
 
-				def testClass = new TestClass(name: "Test")
-				testClass.results << testStatus
-				def arrayList = new ArrayList<TestClass>()
-				arrayList.add(testClass)
-
-				return arrayList
+		return testStatus
 	}
 
-	private void testWithStatus(Map<String, Object> test, ArrayList<TestResult> testsStatus) {
-		if (test.testStatus != null) {
+	private void testWithStatus(Map<String, Object> test, ArrayList<TestClass> testsStatus, TestClass testClass) {
+		if (test.testStatus) {
 			def testResult = new TestResult(method: test.identifier._value, success: test.testStatus._value == "Success")
-			testsStatus.add(testResult)
+			testClass.results.add(testResult)
 		}
-		if (test.subtests != null && test.subtests._values != null) {
+
+		if (test.subtests && test.subtests._values && test._type._name == "ActionTestSummaryGroup") {
+			testClass = new TestClass(name: test.name._value)
+			testsStatus.add(testClass)
 			test.subtests._values.each {
-				testWithStatus(it, testsStatus)
+				testWithStatus(it, testsStatus, testClass)
 			}
 		}
 	}
 
 	private void store(File outputDirectory) {
 		logger.debug("store to test-result.xml")
-
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)
@@ -201,7 +208,6 @@ public class TestResultParser {
 					output = new StringBuilder()
 
 
-
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
 					if (testClass == null) {
 						testClass = new TestClass(name: testClassName);
@@ -271,9 +277,6 @@ public class TestResultParser {
 		}
 		return testResults;
 	}
-
-
-
 
 
 	List<TestClass> processTestSummary(List<XMLPropertyListConfiguration> list) {
