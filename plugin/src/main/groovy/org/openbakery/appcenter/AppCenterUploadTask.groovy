@@ -66,12 +66,14 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 	def prepareFiles() {
 		File ipaFile =  copyIpaToDirectory(project.appcenter.outputDirectory)
 
-		File dSymBundle = getDSymBundle();
-
+		File dSymBundle = new File(getArchiveDirectory(), "dSYMs/" + getApplicationNameFromArchive() + ".app.dSYM")
 		File dSYMFile = getDestinationFile(project.appcenter.outputDirectory, ".app.dSYM.zip")
-		def zipArchive = new ZipArchive(dSYMFile, dSymBundle.parentFile, new CommandRunner())
-		zipArchive.add(dSymBundle)
-		zipArchive.create()
+
+		if (dSymBundle.exists()) {
+			def zipArchive = new ZipArchive(dSYMFile, dSymBundle.parentFile, new CommandRunner())
+			zipArchive.add(dSymBundle)
+			zipArchive.create()
+		}
 
 		return [ipaFile, dSYMFile]
 	}
@@ -109,7 +111,7 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 			uploadDebugSymbols(dSYMFile, dsymUploadUrl)
 			commitUpload(PATH_SYMBOL_UPLOAD, dsymUploadId)
 		} else {
-			logger.info("Debug symbols not found at '" + dSYMFile.getPath() + "'. Skipping upload.")
+			logger.warn("Debug symbols not found at '" + dSYMFile.getPath() + "'. Skipping upload.")
 		}
 	}
 
