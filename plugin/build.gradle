@@ -43,6 +43,9 @@ dependencies {
 	compile gradleApi()
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.8'
 	compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.8'
+	compile 'com.squareup.okhttp3:okhttp:4.2.0'
+	compile 'com.squareup.okhttp3:logging-interceptor:4.2.0'
+	compile 'com.google.code.gson:gson:2.8.5'
 	compile 'org.pegdown:pegdown:1.6.+'
 	compile 'org.openbakery.coverage:CoverageReport:0.9.4'
 	deployerJars 'org.apache.maven.wagon:wagon-ssh:3.3.2'

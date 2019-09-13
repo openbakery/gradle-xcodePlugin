@@ -216,6 +216,19 @@ gradle.taskGraph.whenReady { taskGraph ->
 		}
 	}
 
+	if (taskGraph.hasTask(tasks.appcenter)) {
+		println ("using api token: " + appCenterApiToken)
+		appcenter {
+			apiToken = appCenterApiToken
+			appOwner = 'app-center-app-owner'
+			appName = 'app-center-app-name'
+			destination = 'Collaborators'
+			releaseNotes = "Release notes."
+			notifyTesters = true
+			mandatoryUpdate = false
+		}
+	}
+	
 	if (taskGraph.hasTask(tasks.deploygate)) {
 		println ("using api token: " + deploygateApiToken)
 		deploygate {

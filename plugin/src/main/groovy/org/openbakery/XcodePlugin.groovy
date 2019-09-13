@@ -22,6 +22,9 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.testing.Test
+import org.openbakery.appcenter.AppCenterCleanTask
+import org.openbakery.appcenter.AppCenterPluginExtension
+import org.openbakery.appcenter.AppCenterUploadTask
 import org.openbakery.appledoc.AppledocCleanTask
 import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
@@ -88,6 +91,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CARTHAGE_GROUP_NAME = "Carthage"
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
 	public static final String ANALYTICS_GROUP_NAME = "Analytics"
+	public static final String APPCENTER_GROUP_NAME = "AppCenter"
 
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
@@ -134,7 +138,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
-
+	public static final String APPCENTER_CLEAN_TASK_NAME = 'appCenterClean'
+	public static final String APPCENTER_TASK_NAME = 'appcenter'
 
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
@@ -173,6 +178,7 @@ class XcodePlugin implements Plugin<Project> {
 		configureOCLint(project)
 		configureSimulatorTasks(project)
 		configureProperties(project)
+		configureAppCenter(project)
 	}
 
 
@@ -420,6 +426,33 @@ class XcodePlugin implements Plugin<Project> {
 				project.oclint.maxPriority3 = project['oclint.maxPriority3'];
 			}
 
+			if (project.hasProperty('appcenter.appOwner')) {
+				project.appcenter.appOwner = project['appcenter.appOwner']
+			}
+
+			if (project.hasProperty('appcenter.appName')) {
+				project.appcenter.appName = project['appcenter.appName']
+			}
+
+			if (project.hasProperty('appcenter.apiToken')) {
+				project.appcenter.apiToken = project['appcenter.apiToken']
+			}
+
+			if (project.hasProperty('appcenter.destination')) {
+				project.appcenter.destination = project['appcenter.destination']
+			}
+
+			if (project.hasProperty('appcenter.releaseNotes')) {
+				project.appcenter.releaseNotes = project['appcenter.releaseNotes']
+			}
+
+			if (project.hasProperty('appcenter.notifyTesters')) {
+				project.appcenter.notifyTesters = project['appcenter.notifyTesters']
+			}
+
+			if (project.hasProperty('appcenter.mandatoryUpdate')) {
+				project.appcenter.mandatoryUpdate = project['appcenter.mandatoryUpdate']
+			}
 
 			Task testTask = (Test) project.getTasks().findByPath(JavaPlugin.TEST_TASK_NAME)
 			if (testTask == null) {
@@ -446,6 +479,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("coverage", CoveragePluginExtension, project)
 		project.extensions.create("oclint", OCLintPluginExtension, project)
 		project.extensions.create("carthage", CarthagePluginExtension, project)
+		project.extensions.create("appcenter", AppCenterPluginExtension, project)
 	}
 
 
@@ -616,6 +650,10 @@ class XcodePlugin implements Plugin<Project> {
 
 	}
 
+	private void configureAppCenter(Project project) {
+		project.task(APPCENTER_CLEAN_TASK_NAME, type: AppCenterCleanTask, group: APPCENTER_GROUP_NAME)
+		project.task(APPCENTER_TASK_NAME, type: AppCenterUploadTask, group: APPCENTER_GROUP_NAME)
+	}
 
 }
 

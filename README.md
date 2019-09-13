@@ -101,7 +101,7 @@ After you have fetched the example go to the `example/iOS/Example` directory and
 
 * Build with `gradle xcodebuild`
 * Run the unit tests with `gradle test`
-* Perform a device build and upload it to hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
+* Perform a device build and upload it to App Center or hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
 
 # Collaborate

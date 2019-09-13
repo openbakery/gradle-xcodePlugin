@@ -3,6 +3,7 @@
 If you what to create a for the device than you have to specify for sign sign settings.
 Create a gradle.properties and add the following values:
 
+	appCenterApiToken = ""
 	hockeyappApiToken = ""
 	hockeyappAppId = ""
 
