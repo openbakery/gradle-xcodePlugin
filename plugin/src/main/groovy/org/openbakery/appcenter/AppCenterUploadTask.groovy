@@ -53,13 +53,7 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 		super()
 		this.description = "Uploads the app (.ipa, .dsym) to App Center"
 
-		Interceptor interceptor = new HttpLoggingInterceptor(new LogInterceptor())
-		interceptor.level(HttpLoggingInterceptor.Level.BASIC)
-
-		okHttpClient = new OkHttpClient.Builder()
-			.addInterceptor(interceptor)
-			.build()
-
+		okHttpClient = new OkHttpClient()
 		baseUrl = HttpUrl.get(BASE_URL)
 	}
 
@@ -76,13 +70,6 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 		}
 
 		return [ipaFile, dSYMFile]
-	}
-
-	class LogInterceptor implements HttpLoggingInterceptor.Logger {
-		@Override
-		void log(@NotNull String s) {
-			logger.debug(s)
-		}
 	}
 
 	@TaskAction
