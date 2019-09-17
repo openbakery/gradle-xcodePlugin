@@ -18,13 +18,13 @@ package org.openbakery.appcenter
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.AbstractDistributeTask
+import org.openbakery.AbstractHttpDistributeTask
 import org.openbakery.CommandRunner
 import org.openbakery.appcenter.models.*
 import org.openbakery.http.HttpUtil
 import org.openbakery.util.ZipArchive
 
-class AppCenterUploadTask extends AbstractDistributeTask {
+class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 	private static final String APP_CENTER_URL = "https://api.appcenter.ms"
 	private static final String PATH_BASE_API = "v0.1/apps"
@@ -40,13 +40,10 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 	private static final String PART_KEY_IPA = "ipa"
 
 	private String baseUploadUrl
-	private HttpUtil httpUtil
 
 	AppCenterUploadTask() {
 		super()
 		this.description = "Uploads the app (.ipa, .dsym) to App Center"
-
-		httpUtil = new HttpUtil()
 	}
 
 	def prepareFiles() {
@@ -139,7 +136,7 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 		def headers = getHeaders()
 
 		def distributionRequest = new DistributionRequest(project.appcenter.destination, project.appcenter.releaseNotes,
-			project.appcenter.notifyTesters, project.appcenter.mandatoryUpdate)
+			project.appcenter.notifyTesters ?: false, project.appcenter.mandatoryUpdate ?: false)
 
 		String json = new JsonBuilder(distributionRequest).toPrettyString()
 
