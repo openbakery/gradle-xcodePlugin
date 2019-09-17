@@ -27,8 +27,7 @@ class XcodeBuildCleanTask extends DefaultTask {
 		dependsOn(
 						XcodePlugin.KEYCHAIN_CLEAN_TASK_NAME,
 						XcodePlugin.PROVISIONING_CLEAN_TASK_NAME,
-						XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
-						XcodePlugin.HOCKEYAPP_CLEAN_TASK_NAME,
+						XcodePlugin.APPCENTER_CLEAN_TASK_NAME,
 						XcodePlugin.DEPLOYGATE_CLEAN_TASK_NAME,
 		)
 		this.description = "Cleans up the generated files from the previous build"

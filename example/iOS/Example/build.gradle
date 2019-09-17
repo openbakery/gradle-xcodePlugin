@@ -208,14 +208,6 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 	// ------------------------------------------------------------------------------------------
 
-	if (taskGraph.hasTask(tasks.hockeyapp)) {
-		println ("using api token: " + hockeyappApiToken)
-		hockeyapp {
-			apiToken = hockeyappApiToken
-			appID = hockeyappAppId
-		}
-	}
-
 	if (taskGraph.hasTask(tasks.appcenter)) {
 		println ("using api token: " + appCenterApiToken)
 		appcenter {

@@ -47,9 +47,6 @@ import org.openbakery.crashlytics.CrashlyticsUploadTask
 import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
-import org.openbakery.hockeyapp.HockeyAppCleanTask
-import org.openbakery.hockeyapp.HockeyAppPluginExtension
-import org.openbakery.hockeyapp.HockeyAppUploadTask
 import org.openbakery.hockeykit.HockeyKitArchiveTask
 import org.openbakery.hockeykit.HockeyKitCleanTask
 import org.openbakery.hockeykit.HockeyKitImageTask
@@ -81,7 +78,6 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String XCODE_GROUP_NAME = "Xcode"
 	public static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
-	public static final String HOCKEYAPP_GROUP_NAME = "HockeyApp"
 	public static final String APPSTORE_GROUP_NAME = "AppStore"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String CRASHLYTICS_GROUP_NAME = "Crashlytics"
@@ -124,8 +120,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
-	public static final String HOCKEYAPP_CLEAN_TASK_NAME = 'hockeyappClean'
-	public static final String HOCKEYAPP_TASK_NAME = 'hockeyapp'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
@@ -166,7 +160,6 @@ class XcodePlugin implements Plugin<Project> {
 		configureInfoPlist(project)
 		configureProvisioning(project)
 		configureAppstore(project)
-		configureHockeyApp(project)
 		configureDeployGate(project)
 		configureCrashlytics(project)
 		configurePackage(project)
@@ -312,47 +305,6 @@ class XcodePlugin implements Plugin<Project> {
 				project.hockeykit.notes = project['hockeykit.notes']
 			}
 
-
-			if (project.hasProperty('hockeyapp.apiToken')) {
-				project.hockeyapp.apiToken = project['hockeyapp.apiToken']
-			}
-			if (project.hasProperty('hockeyapp.appID')) {
-				project.hockeyapp.appID = project['hockeyapp.appID']
-			}
-			if (project.hasProperty('hockeyapp.notes')) {
-				project.hockeyapp.notes = project['hockeyapp.notes']
-			}
-			if (project.hasProperty('hockeyapp.status')) {
-				project.hockeyapp.status = project['hockeyapp.status']
-			}
-			if (project.hasProperty('hockeyapp.notify')) {
-				project.hockeyapp.notify = project['hockeyapp.notify']
-			}
-			if (project.hasProperty('hockeyapp.notesType')) {
-				project.hockeyapp.notesType = project['hockeyapp.notesType']
-			}
-			if (project.hasProperty('hockeyapp.teams')) {
-				project.hockeyapp.teams = project['hockeyapp.teams']
-			}
-			if (project.hasProperty('hockeyapp.tags')) {
-				project.hockeyapp.tags = project['hockeyapp.tags']
-			}
-			if (project.hasProperty('hockeyapp.releaseType')) {
-				project.hockeyapp.releaseType = project['hockeyapp.releaseType']
-			}
-			if (project.hasProperty('hockeyapp.privatePage')) {
-				project.hockeyapp.privatePage = project['hockeyapp.privatePage']
-			}
-			if (project.hasProperty('hockeyapp.commitSha')) {
-				project.hockeyapp.commitSha = project['hockeyapp.commitSha']
-			}
-			if (project.hasProperty('hockeyapp.buildServerUrl')) {
-				project.hockeyapp.buildServerUrl = project['hockeyapp.buildServerUrl']
-			}
-			if (project.hasProperty('hockeyapp.repositoryUrl')) {
-				project.hockeyapp.repositoryUrl = project['hockeyapp.repositoryUrl']
-			}
-
 			if (project.hasProperty('deploygate.outputDirectory')) {
 				project.deploygate.outputDirectory = project['deploygate.outputDirectory']
 			}
@@ -473,7 +425,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("infoplist", InfoPlistExtension)
 		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("appstore", AppstorePluginExtension, project)
-		project.extensions.create("hockeyapp", HockeyAppPluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
 		project.extensions.create("coverage", CoveragePluginExtension, project)
@@ -583,12 +534,6 @@ class XcodePlugin implements Plugin<Project> {
 	private configureAppstore(Project project) {
 		project.task(APPSTORE_UPLOAD_TASK_NAME, type: AppstoreUploadTask, group: APPSTORE_GROUP_NAME)
 		project.task(APPSTORE_VALIDATE_TASK_NAME, type: AppstoreValidateTask, group: APPSTORE_GROUP_NAME)
-	}
-
-
-	private void configureHockeyApp(Project project) {
-		project.task(HOCKEYAPP_CLEAN_TASK_NAME, type: HockeyAppCleanTask, group: HOCKEYAPP_GROUP_NAME)
-		project.task(HOCKEYAPP_TASK_NAME, type: HockeyAppUploadTask, group: HOCKEYAPP_GROUP_NAME)
 	}
 
 	private void configureAppledoc(Project project) {

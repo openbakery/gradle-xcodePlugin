@@ -15,24 +15,18 @@
  */
 package org.openbakery.appcenter
 
-import com.google.gson.Gson
-import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import org.gradle.api.tasks.TaskAction
-import org.jetbrains.annotations.NotNull
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.CommandRunner
-import org.openbakery.appcenter.models.CommitRequest
-import org.openbakery.appcenter.models.CommitResponse
-import org.openbakery.appcenter.models.DistributionRequest
-import org.openbakery.appcenter.models.InitDebugSymbolRequest
-import org.openbakery.appcenter.models.InitDebugSymbolResponse
-import org.openbakery.appcenter.models.InitIpaUploadResponse
+import org.openbakery.appcenter.models.*
+import org.openbakery.http.HttpUtil
 import org.openbakery.util.ZipArchive
 
 class AppCenterUploadTask extends AbstractDistributeTask {
 
-	private static final String BASE_URL = "https://api.appcenter.ms"
+	private static final String APP_CENTER_URL = "https://api.appcenter.ms"
 	private static final String PATH_BASE_API = "v0.1/apps"
 	private static final String PATH_RELEASE_UPLOAD = "release_uploads"
 	private static final String PATH_SYMBOL_UPLOAD = "symbol_uploads"
@@ -42,19 +36,17 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 	private static final String HEADER_TOKEN = "X-API-Token"
 	private static final String MEDIA_TYPE_JSON = "application/json"
 	private static final String MEDIA_TYPE_MULTI_FORM = "multipart/form-data"
-	private static final String MEDIA_TYPE_OCTET = "application/octet-stream"
 	private static final String BLOB_TYPE_BLOCK_BLOB = "BlockBlob"
 	private static final String PART_KEY_IPA = "ipa"
 
-	private OkHttpClient okHttpClient
-	private HttpUrl baseUrl
+	private String baseUploadUrl
+	private HttpUtil httpUtil
 
 	AppCenterUploadTask() {
 		super()
 		this.description = "Uploads the app (.ipa, .dsym) to App Center"
 
-		okHttpClient = new OkHttpClient()
-		baseUrl = HttpUrl.get(BASE_URL)
+		httpUtil = new HttpUtil()
 	}
 
 	def prepareFiles() {
@@ -86,11 +78,13 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 			throw new IllegalArgumentException("Cannot upload to App Center because API Token is missing")
 		}
 
+		this.baseUploadUrl = "${APP_CENTER_URL}/${PATH_BASE_API}/${project.appcenter.appOwner}/${project.appcenter.appName}"
+
 		(ipaFile, dSYMFile) = prepareFiles()
 		(ipaUploadId, ipaUploadUrl) = initIpaUpload()
 		uploadIpa(ipaFile, ipaUploadUrl)
 		releaseUrl = commitUpload(PATH_RELEASE_UPLOAD, ipaUploadId)
-		distributeIpa(releaseUrl)
+		distributeIpa("${APP_CENTER_URL}/${releaseUrl}")
 
 		(dsymUploadId, dsymUploadUrl) = initDebugSymbolUpload()
 
@@ -103,149 +97,89 @@ class AppCenterUploadTask extends AbstractDistributeTask {
 	}
 
 	def initIpaUpload() {
-		Request request = new Request.Builder()
-			.url(baseUrl.newBuilder()
-				.addEncodedPathSegments(PATH_BASE_API)
-				.addEncodedPathSegments(project.appcenter.appOwner)
-				.addEncodedPathSegments(project.appcenter.appName)
-				.addEncodedPathSegments(PATH_RELEASE_UPLOAD)
-				.build())
-			.addHeader(HEADER_CONTENT_TYPE, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_ACCEPT, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_TOKEN, project.appcenter.apiToken)
-			.post(RequestBody.create("", MediaType.parse(MEDIA_TYPE_JSON)))
-			.build()
+		def headers = getHeaders()
 
-		Response response = okHttpClient.newCall(request).execute()
+		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_RELEASE_UPLOAD}", headers, "")
 
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException(response.message())
-		}
-
-		InitIpaUploadResponse initUploadResponse = new Gson().fromJson(response.body().string(), InitIpaUploadResponse)
+		def initIpaUploadResponse = new JsonSlurper().parseText(response) as InitIpaUploadResponse
 
 		logger.info("App Center: IPA upload initialized.")
-
-		return [initUploadResponse.upload_id, initUploadResponse.upload_url]
+		return [initIpaUploadResponse.upload_id, initIpaUploadResponse.upload_url]
 	}
 
 	def uploadIpa(File ipaFile, String uploadUrl) {
 		logger.info("App Center: Uploading IPA...")
-		Request request = new Request.Builder()
-			.url(uploadUrl)
-			.addHeader(HEADER_CONTENT_TYPE, MEDIA_TYPE_MULTI_FORM)
-			.post(new MultipartBody.Builder()
-				.addFormDataPart(PART_KEY_IPA, ipaFile.getName(),
-					RequestBody.create(ipaFile, MediaType.parse(MEDIA_TYPE_OCTET)))
-				.build())
-			.build()
 
-		Response response = okHttpClient.newCall(request).execute()
+		def headers = new HashMap<String, String>()
+		def parameters = new HashMap<String, Object>()
 
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException(response.message())
-		}
+		headers.put(HEADER_CONTENT_TYPE, MEDIA_TYPE_MULTI_FORM)
+		parameters.put(PART_KEY_IPA, ipaFile)
+
+		httpUtil.sendForm(HttpUtil.HttpVerb.POST, uploadUrl, headers, parameters)
 
 		logger.info("App Center: IPA upload completed.")
 	}
 
 	def commitUpload(String path, String uploadId) {
-		Request request = new Request.Builder()
-			.url(baseUrl.newBuilder()
-				.addEncodedPathSegments(PATH_BASE_API)
-				.addEncodedPathSegments(project.appcenter.appOwner)
-				.addEncodedPathSegments(project.appcenter.appName)
-				.addEncodedPathSegments(path)
-				.addEncodedPathSegments(uploadId)
-				.build())
-			.addHeader(HEADER_CONTENT_TYPE, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_ACCEPT, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_TOKEN, project.appcenter.apiToken)
-			.patch(RequestBody.create(new Gson().toJson(new CommitRequest()), MediaType.parse(MEDIA_TYPE_JSON)))
-			.build()
+		def headers = getHeaders()
 
-		Response response = okHttpClient.newCall(request).execute()
+		String json = new JsonBuilder(new CommitRequest()).toPrettyString()
 
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException(response.message())
-		}
+		String response = httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, "${baseUploadUrl}/${path}/${uploadId}", headers, json)
 
-		CommitResponse commitResponse = new Gson().fromJson(response.body().string(), CommitResponse)
+		def commitResponse = new JsonSlurper().parseText(response) as CommitResponse
 
 		logger.info("App Center: IPA upload committed.")
-
 		return commitResponse.release_url
+
 	}
 
 	def distributeIpa(String releaseUrl) {
-		Request request = new Request.Builder()
-			.url(baseUrl.newBuilder()
-				.addEncodedPathSegments(releaseUrl)
-				.build())
-			.addHeader(HEADER_CONTENT_TYPE, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_ACCEPT, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_TOKEN, project.appcenter.apiToken)
-			.patch(RequestBody.create(
-				new Gson().toJson(new DistributionRequest(project.appcenter.destination, project.appcenter.releaseNotes,
-					project.appcenter.notifyTesters, project.appcenter.mandatoryUpdate)),
-				MediaType.parse(MEDIA_TYPE_JSON)))
-			.build()
+		def headers = getHeaders()
 
-		Response response = okHttpClient.newCall(request).execute()
+		def distributionRequest = new DistributionRequest(project.appcenter.destination, project.appcenter.releaseNotes,
+			project.appcenter.notifyTesters, project.appcenter.mandatoryUpdate)
 
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException(response.message())
-		}
+		String json = new JsonBuilder(distributionRequest).toPrettyString()
+
+		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, releaseUrl, headers, json)
 
 		logger.info("App Center: IPA upload distributed to: '" + project.appcenter.destination + "'")
 	}
 
 	def initDebugSymbolUpload() {
-		Request request = new Request.Builder()
-			.url(baseUrl.newBuilder()
-				.addEncodedPathSegments(PATH_BASE_API)
-				.addEncodedPathSegments(project.appcenter.appOwner)
-				.addEncodedPathSegments(project.appcenter.appName)
-				.addEncodedPathSegments(PATH_SYMBOL_UPLOAD)
-				.build())
-			.addHeader(HEADER_CONTENT_TYPE, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_ACCEPT, MEDIA_TYPE_JSON)
-			.addHeader(HEADER_TOKEN, project.appcenter.apiToken)
-			.post(RequestBody.create(new Gson().toJson(new InitDebugSymbolRequest()), MediaType.parse(MEDIA_TYPE_JSON)))
-			.build()
+		def headers = getHeaders()
 
-		Response response = okHttpClient.newCall(request).execute()
+		String json = new JsonBuilder(new InitDebugSymbolRequest()).toPrettyString()
 
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException(response.message())
-		}
-
-		InitDebugSymbolResponse initDebugSymbolResponse = new Gson().fromJson(response.body().string(), InitDebugSymbolResponse)
+		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_SYMBOL_UPLOAD}", headers, json)
+		def initDebugSymbolResponse = new JsonSlurper().parseText(response) as InitDebugSymbolResponse
 
 		logger.info("App Center: Debug symbol upload initialized.")
-
 		return [initDebugSymbolResponse.symbol_upload_id, initDebugSymbolResponse.upload_url]
 	}
 
 	def uploadDebugSymbols(File dSYMFile, String uploadUrl) {
-		logger.info("App Center: Uploading debug symbols...")
+		def headers = new HashMap<String, String>()
+		def parameters = new HashMap<String, Object>()
 
-		Request request = new Request.Builder()
-			.url(uploadUrl)
-			.addHeader(HEADER_CONTENT_TYPE, MEDIA_TYPE_MULTI_FORM)
-			.addHeader(HEADER_BLOB_TYPE, BLOB_TYPE_BLOCK_BLOB)
-			.put(new MultipartBody.Builder()
-				.addFormDataPart(PART_KEY_IPA, dSYMFile.getName(),
-					RequestBody.create(dSYMFile, MediaType.parse(MEDIA_TYPE_OCTET)))
-				.build())
-			.build()
+		headers.put(HEADER_CONTENT_TYPE, MEDIA_TYPE_MULTI_FORM)
+		headers.put(HEADER_BLOB_TYPE, BLOB_TYPE_BLOCK_BLOB)
+		parameters.put(PART_KEY_IPA, dSYMFile)
 
-		Response response = okHttpClient.newCall(request).execute()
-
-		if (!response.isSuccessful()) {
-			throw new IllegalStateException(response.message())
-		}
+		httpUtil.sendForm(HttpUtil.HttpVerb.PUT, uploadUrl, headers, parameters)
 
 		logger.info("App Center: Debug symbol upload completed.")
+	}
+
+	def getHeaders() {
+		def headers = new HashMap<String, String>()
+
+		headers.put(HEADER_CONTENT_TYPE, MEDIA_TYPE_JSON)
+		headers.put(HEADER_ACCEPT, MEDIA_TYPE_JSON)
+		headers.put(HEADER_TOKEN, project.appcenter.apiToken)
+
+		return headers
 	}
 }

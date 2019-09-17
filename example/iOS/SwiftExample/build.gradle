@@ -4,8 +4,6 @@ If you what to create a for the device than you have to specify for sign sign se
 Create a gradle.properties and add the following values:
 
 	appCenterApiToken = ""
-	hockeyappApiToken = ""
-	hockeyappAppId = ""
 
 	signingIdentity = iPhone Developer: ...
 	signingCertificateURI = http://.../Development.p12  // file:// urls also works here

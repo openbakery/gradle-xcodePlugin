@@ -20,7 +20,7 @@ Here a brief overview of the features:
 * [Carthage](https://github.com/Carthage/Carthage) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) or using [CoverageReport](https://github.com/openbakery/CoverageReport) )
-* [Hockeykit](http://hockeykit.net/), [HockeyApp](http://hockeyapp.net), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
+* [Hockeykit](http://hockeykit.net/), [App Center](https://appcenter.ms), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint
 
 
@@ -101,7 +101,7 @@ After you have fetched the example go to the `example/iOS/Example` directory and
 
 * Build with `gradle xcodebuild`
 * Run the unit tests with `gradle test`
-* Perform a device build and upload it to App Center or hockeyapp with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
+* Perform a device build and upload it to App Center with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
 
 # Collaborate
