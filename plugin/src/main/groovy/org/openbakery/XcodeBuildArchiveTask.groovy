@@ -21,6 +21,8 @@ import org.gradle.api.tasks.TaskAction
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.tools.CommandLineTools
+import org.openbakery.tools.Lipo
 import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
@@ -174,7 +176,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle, boolean bitcode) {
-        File frameworksPath = appBundle.frameworksPath
+		File frameworksPath = appBundle.frameworksPath
 		if (frameworksPath.exists()) {
 			def libNames = []
 			frameworksPath.eachFile() {
@@ -384,6 +386,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			return
 		}
 
+		//CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcode, commandRunner))
+		//def archive = Archive(tools)
+		//archive.copyApplicationBundle()
 
 		// create xcarchive
 		File archiveDirectory = getArchiveDirectory()
@@ -413,7 +418,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			createExtensionSupportDirectory(bundle.path, xcodebuild, archiveDirectory)
 		}
 
-		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)
+		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator, this.plistHelper)
 
 		createInfoPlist(archiveDirectory)
 		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)

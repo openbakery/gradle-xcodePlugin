@@ -102,7 +102,6 @@ class XcodeBuildPluginExtension {
 	Devices devices = Devices.UNIVERSAL
 
 	CommandRunner commandRunner
-	VariableResolver variableResolver
 	PlistHelper plistHelper
 
 
@@ -120,7 +119,6 @@ class XcodeBuildPluginExtension {
 	public XcodeBuildPluginExtension(Project project) {
 		this.project = project;
 		this.signing = new Signing(project)
-		this.variableResolver = new VariableResolver(project)
 		commandRunner = new CommandRunner()
 		plistHelper = new PlistHelper(commandRunner)
 
@@ -144,6 +142,11 @@ class XcodeBuildPluginExtension {
 			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("derivedData")
 		}
 
+	}
+
+
+	VariableResolver getVariableResolver() {
+		return new VariableResolver(this.productName, project.projectDir, this.target)
 	}
 
 	String getWorkspace() {
@@ -297,20 +300,6 @@ class XcodeBuildPluginExtension {
 			File infoPlistFile = new File(project.projectDir, infoPlist)
 			return plistHelper.getValueFromPlist(infoPlistFile, key)
 		}
-		/*
-		try {
-			logger.debug("project.projectDir {}", project.projectDir)
-			File infoPlistFile = new File(project.projectDir, infoPlist)
-			logger.debug("get value {} from plist file {}", key, infoPlistFile)
-			return commandRunner.runWithResult([
-							"/usr/libexec/PlistBuddy",
-							infoPlistFile.absolutePath,
-							"-c",
-							"Print :" + key])
-		} catch (IllegalStateException ex) {
-			return null
-		}
-		*/
 	}
 
 	String getBundleName() {

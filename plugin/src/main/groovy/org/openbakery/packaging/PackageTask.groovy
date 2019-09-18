@@ -79,7 +79,7 @@ class PackageTask extends AbstractDistributeTask {
 			copy(supportDirectory, applicationFolder.parentFile)
 		}
 
-		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator)
+		ApplicationBundle applicationBundle = new ApplicationBundle(applicationPath , project.xcodebuild.type, project.xcodebuild.simulator, this.plistHelper)
 		appBundles = applicationBundle.getBundles()
 
 		File resourceRules = new File(applicationFolder, applicationBundleName + "/ResourceRules.plist")

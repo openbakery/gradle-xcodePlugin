@@ -16,16 +16,19 @@ public class Bundle {
 	public final File path;
 	public final Type type;
 
-	//public String identifier
-	//public File provisioningProfile
 
-	public Bundle(File path, Type type) {
+	PlistHelper plistHelper;
+
+
+	public Bundle(File path, Type type, PlistHelper helper) {
 		this.path = path;
 		this.type = type;
+		this.plistHelper = helper;
 	}
 
-	public Bundle(String path, Type type) {
-		this(new File(path), type);
+	public Bundle(String path, Type type, PlistHelper helper) {
+		this(new File(path), type, helper);
+
 	}
 
 	public File getInfoPlist() {
@@ -44,8 +47,7 @@ public class Bundle {
 	}
 
 	private String getStringFromPlist(String key) {
-		PlistHelper helper = new PlistHelper(new CommandRunner());
-		return helper.getStringFromPlist(getInfoPlist(), key);
+		return plistHelper.getStringFromPlist(getInfoPlist(), key);
 	}
 
 

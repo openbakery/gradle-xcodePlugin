@@ -83,7 +83,7 @@ class ApplicationDummy {
 	}
 
 	Bundle createBundle(boolean adHoc = true, boolean includeProvisioning = true) {
-		return new Bundle(create(adHoc, includeProvisioning), Type.iOS)
+		return new Bundle(create(adHoc, includeProvisioning), Type.iOS, plistHelperStub)
 	}
 
 	File create(boolean adHoc = true, boolean includeProvisioning = true) {
@@ -96,7 +96,7 @@ class ApplicationDummy {
 	}
 
 	Bundle createPluginBundle(Extension extension = Extension.today) {
-		return new Bundle(createPlugin(extension), Type.iOS)
+		return new Bundle(createPlugin(extension), Type.iOS, plistHelperStub)
 	}
 
 	File createPlugin(Extension extension = Extension.today) {

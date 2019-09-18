@@ -105,6 +105,7 @@ class PackageTaskSpecification extends Specification {
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleExecutable", "ELO-DMS")
 
 		project.xcodebuild.outputPath.mkdirs()
 

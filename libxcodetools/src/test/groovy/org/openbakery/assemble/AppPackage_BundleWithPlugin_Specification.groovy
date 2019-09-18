@@ -36,7 +36,7 @@ class AppPackage_BundleWithPlugin_Specification extends Specification {
 		applicationDummy.createSwiftLibs()
 		applicationDummy.createPlugin()
 
-		def tools = new CommandLineTools(commandRunner, new PlistHelper(commandRunner), lipo)
+		def tools = new CommandLineTools(commandRunner, new PlistHelper(new CommandRunner()), lipo)
 
 
 		def applicationDestination = new File(tmpDirectory, "App")
@@ -46,7 +46,7 @@ class AppPackage_BundleWithPlugin_Specification extends Specification {
 
 		applicationPath = new File(applicationDestination, archiveAppPath.getName())
 
-		def applicationBundle = new ApplicationBundle(applicationPath, Type.iOS, false)
+		def applicationBundle = new ApplicationBundle(applicationPath, Type.iOS, false, tools.plistHelper)
 
 		codesignParameters = new CodesignParameters()
 		codesignParameters.mobileProvisionFiles = applicationDummy.mobileProvisionFile
