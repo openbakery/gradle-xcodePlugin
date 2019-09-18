@@ -20,11 +20,12 @@ class ApplicationDummy {
 
 	List<File>mobileProvisionFile = []
 
-	public ApplicationDummy(File directory) {
+	public ApplicationDummy(File directory, String prefix = "Products/Applications") {
 		this.directory = directory
 		File payloadDirectory = new File(directory, "Payload")
-		payloadAppDirectory = new File(payloadDirectory, "Example.app");
-		applicationBundle = new File(directory, "Products/Applications/Example.app")
+		payloadAppDirectory = new File(payloadDirectory, "Example.app")
+		def applicationPath = new File(directory, prefix)
+		applicationBundle = new File(applicationPath, "Example.app")
 	}
 
 	void cleanup() {
@@ -162,4 +163,34 @@ class ApplicationDummy {
 		mobileProvisionFile.add(mobileProvision)
 		return widgetsDirectory
 	}
+
+
+	void createOnDemandResources() {
+		File onDemandResourcesPlist = new File(applicationBundle, "OnDemandResources.plist")
+		FileUtils.writeStringToFile(onDemandResourcesPlist, "dummy")
+
+		File onDemandResourcesDirectory = new File(applicationBundle.parentFile, "OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
+		onDemandResourcesDirectory.mkdirs()
+		File infoPlist_onDemandResourcesDirectory = new File(onDemandResourcesDirectory, "Info.plist")
+		FileUtils.writeStringToFile(infoPlist_onDemandResourcesDirectory, "dummy")
+	}
+
+	void createDsyms() {
+		File dSymDirectory = new File(applicationBundle.parentFile, "Example.app.dSym")
+		dSymDirectory.mkdirs()
+	}
+
+	void createDsyms(Extension extension) {
+		def name = ""
+		switch (extension) {
+			case Extension.today:
+				name = "ExampleTodayWidget"
+				break
+			case Extension.sticker:
+				name = "ExampleStickerPack"
+		}
+		File dSymDirectory = new File(applicationBundle.parentFile, name + ".appex.dSYM")
+		dSymDirectory.mkdirs()
+	}
+
 }

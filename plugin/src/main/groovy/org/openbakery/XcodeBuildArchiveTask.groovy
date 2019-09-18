@@ -18,6 +18,7 @@ package org.openbakery
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.assemble.Archive
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileReader
@@ -386,31 +387,17 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			return
 		}
 
-		//CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcode, commandRunner))
-		//def archive = Archive(tools)
-		//archive.copyApplicationBundle()
+		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcode, commandRunner))
 
-		// create xcarchive
-		File archiveDirectory = getArchiveDirectory()
-		File applicationsDirectory = getApplicationsDirectory()
-
-		// copy application bundle
-		copy(parameters.applicationBundle, applicationsDirectory)
-
-		File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
-		if (onDemandResources.exists()) {
-			copy(onDemandResources, getProductsDirectory())
+		File watchOSSourcePath = null
+		if (parameters.watchOutputPath && parameters.watchOutputPath.exists()) {
+			watchOSSourcePath = parameters.watchOutputPath
 		}
+		def archive = new Archive(parameters.applicationBundle, getArchiveName(), tools, watchOSSourcePath)
+		def destinationFolder = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
+		def archiveDirectory = archive.create(destinationFolder)
 
-		// copy onDemandResources
-		def dSymDirectory = new File(archiveDirectory, "dSYMs")
-		dSymDirectory.mkdirs()
-		copyDsyms(parameters.outputPath, dSymDirectory)
-        if (parameters.watchOutputPath.exists()) {
-            copyDsyms(parameters.watchOutputPath, dSymDirectory)
-        }
 
-		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 
 		List<Bundle> appBundles = getAppBundles(parameters.outputPath)
 		for (Bundle bundle : appBundles) {
@@ -418,6 +405,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			createExtensionSupportDirectory(bundle.path, xcodebuild, archiveDirectory)
 		}
 
+		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
 		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator, this.plistHelper)
 
 		createInfoPlist(archiveDirectory)
@@ -429,7 +417,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		if (project.xcodebuild.type == Type.iOS) {
 			convertInfoPlistToBinary(applicationFolder)
-            copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
+			copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
 		}
 
 		logger.debug("create archive done")
@@ -553,6 +541,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
 		archiveDirectory.mkdirs()
 		return archiveDirectory
+	}
+
+	String getArchiveName() {
+		def archiveName = project.xcodebuild.bundleName
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			archiveName += project.xcodebuild.bundleNameSuffix
+		}
+		return archiveName
 	}
 
 
