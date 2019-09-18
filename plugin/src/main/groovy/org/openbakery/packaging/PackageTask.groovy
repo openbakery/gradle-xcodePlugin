@@ -114,16 +114,7 @@ class PackageTask extends AbstractDistributeTask {
 		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), codesignParameters, tools)
 
 		appPackage.addSwiftSupport()
-
-		// Todo move the lines below to the AppPackager class to prepareBundle
-		// the embedProvisioningProfileToBundle is not migrated yet
-		// appPackage.prepareBundles(applicationBundle)
-		for (Bundle bundle : appBundles) {
-			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
-				appPackage.removeUnneededDylibsFromBundle(bundle)
-				embedProvisioningProfileToBundle(bundle)
-			}
-		}
+		appPackage.prepareBundles()
 
 		if (signSettingsAvailable) {
 			appPackage.codesign(applicationBundle, xcode)
@@ -133,12 +124,6 @@ class PackageTask extends AbstractDistributeTask {
 		}
 
 		appPackage.createPackage(outputPath, getIpaFileName())
-	}
-
-
-	File getProvisionFileForBundle(File bundle) {
-		String bundleIdentifier = getIdentifierForBundle(bundle)
-		return ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper).provisioningProfile
 	}
 
 
@@ -168,19 +153,6 @@ class PackageTask extends AbstractDistributeTask {
 		return bundleIdentifier
 	}
 
-	private void embedProvisioningProfileToBundle(Bundle bundle) {
-		File mobileProvisionFile = getProvisionFileForBundle(bundle.path)
-		if (mobileProvisionFile != null) {
-			File embeddedProvisionFile
-
-			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
-			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
-
-			logger.info("provision profile - {}", embeddedProvisionFile)
-
-			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
-		}
-	}
 
 	private File createSigningDestination(String name) throws IOException {
 		File destination = new File(outputPath, name);

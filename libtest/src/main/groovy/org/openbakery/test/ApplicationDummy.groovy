@@ -52,7 +52,10 @@ class ApplicationDummy {
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
-		mobileProvisionFile.add(getMobileProvisionFile(profileType))
+		File profile = getMobileProvisionFile(profileType)
+		if (profile != null) {
+			mobileProvisionFile.add(profile)
+		}
 
 		return appDirectory
 	}
