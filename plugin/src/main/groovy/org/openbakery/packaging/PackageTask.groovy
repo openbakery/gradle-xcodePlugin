@@ -115,9 +115,9 @@ class PackageTask extends AbstractDistributeTask {
 
 		appPackage.addSwiftSupport()
 
-		// Todo move the lines below to the AppPackager class to preapreBundle
-		// the embedProvisioningProfileToBundle is not mirgrated yet
-		//appPackage.prepareBundles(applicationBundle)
+		// Todo move the lines below to the AppPackager class to prepareBundle
+		// the embedProvisioningProfileToBundle is not migrated yet
+		// appPackage.prepareBundles(applicationBundle)
 		for (Bundle bundle : appBundles) {
 			if (project.xcodebuild.isDeviceBuildOf(Type.iOS)) {
 				appPackage.removeUnneededDylibsFromBundle(bundle)
@@ -140,8 +140,6 @@ class PackageTask extends AbstractDistributeTask {
 		String bundleIdentifier = getIdentifierForBundle(bundle)
 		return ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, project.xcodebuild.signing.mobileProvisionFile, this.commandRunner, this.plistHelper).provisioningProfile
 	}
-
-
 
 
 	private void enumerateExtensionSupportFolders(File parentFolder, Closure closure) {

@@ -52,24 +52,31 @@ class ApplicationDummy {
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
-
-
-		switch (profileType) {
-			case ProvisioningProfileType.Development:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Development.mobileprovision"))
-				break
-            case ProvisioningProfileType.AdHoc:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/test.mobileprovision"))
-				break
-			case ProvisioningProfileType.Enterprise:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Enterprise.mobileprovision"))
-				break
-			case ProvisioningProfileType.AppStore:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Appstore.mobileprovision"))
-				break
-		}
+		mobileProvisionFile.add(getMobileProvisionFile(profileType))
 
 		return appDirectory
+	}
+
+	File getMobileProvisionFile(ProvisioningProfileType profileType) {
+		switch (profileType) {
+			case ProvisioningProfileType.Development:
+				return new File("../libtest/src/main/Resource/Development.mobileprovision")
+			case ProvisioningProfileType.AdHoc:
+				return new File("../libtest/src/main/Resource/test.mobileprovision")
+			case ProvisioningProfileType.Enterprise:
+				return new File("../libtest/src/main/Resource/Enterprise.mobileprovision")
+			case ProvisioningProfileType.AppStore:
+				return new File("../libtest/src/main/Resource/Appstore.mobileprovision")
+		}
+	}
+
+	File getMobileProvisionFileForExtension(Extension extension) {
+		switch (extension) {
+			case Extension.today:
+				return new File("../libtest/src/main/Resource/extension.mobileprovision")
+			case Extension.sticker:
+				return new File("src/test/Resource/test2.mobileprovision")
+		}
 	}
 
 	Bundle createBundle(boolean adHoc = true, boolean includeProvisioning = true) {
@@ -90,13 +97,12 @@ class ApplicationDummy {
 	}
 
 	File createPlugin(Extension extension = Extension.today) {
+		File mobileProvision = getMobileProvisionFileForExtension(extension)
 		switch (extension) {
 			case Extension.today:
-				File mobileProvision = new File("../libtest/src/main/Resource/extension.mobileprovision")
 				createExtension("ExampleTodayWidget", "org.openbakery.test.ExampleWidget", mobileProvision)
                 break
 			case Extension.sticker:
-				File mobileProvision = new File("src/test/Resource/test2.mobileprovision")
 				createExtension("ExampleStickerPack", "org.openbakery.test.ExampleSticker", mobileProvision)
 				File messageExtensionSupportDirectory = new File(directory, "MessagesApplicationExtensionSupport")
 				messageExtensionSupportDirectory.mkdirs()

@@ -1,5 +1,7 @@
 package org.openbakery.assemble
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
@@ -28,15 +30,17 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	private val applicationBundle: ApplicationBundle = applicationBundle
 
 
-	private val provisioningProfileReader by lazy {
+	private val mainBundleProvisioningProfileReader by lazy {
 		var bundleIdentifier = applicationBundle.mainBundle.bundleIdentifier
 		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
 	}
 
-
-	fun getProvisioningProfile() : File? {
-		return provisioningProfileReader?.provisioningProfile
+	fun getProvisioningProfile(bundle: Bundle) : File? {
+		val identifier = bundle.bundleIdentifier
+		val reader = ProvisioningProfileReader.getReaderForIdentifier(identifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
+		return reader?.provisioningProfile
 	}
+
 
 
 	fun createPackage(outputPath: File, name: String) {
@@ -126,22 +130,19 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	}
 
 	fun getProvisioningProfileType(): ProvisioningProfileType? {
-		return provisioningProfileReader?.profileType
+		return mainBundleProvisioningProfileReader?.profileType
 	}
 
 
 
-	fun prepareBundles(applicationBundle: ApplicationBundle) {
+	fun prepareBundles() {
 
 		for (bundle in applicationBundle.bundles) {
-
 			if (applicationBundle.type == Type.iOS) {
 				removeUnneededDylibsFromBundle(bundle)
-				//embedProvisioningProfileToBundle(bundle)
+				embedProvisioningProfileToBundle(bundle)
 			}
-
 		}
-
 	}
 
 	fun codesign(applicationBundle: ApplicationBundle, xcode: Xcode) {
@@ -160,27 +161,13 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 		}
 	}
 
-	/*
 	private fun embedProvisioningProfileToBundle(bundle: Bundle) {
-		val mobileProvisionFile = getProvisioningProfile()
-	}
-	*/
-
-
-	/* // migrate this to kotline
-		private void embedProvisioningProfileToBundle(File bundle) {
-		File mobileProvisionFile = getProvisionFileForBundle(bundle)
-		if (mobileProvisionFile != null) {
-			File embeddedProvisionFile
-
-			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
-			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
-
-			logger.info("provision profile - {}", embeddedProvisionFile)
-
-			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
-		}
+		val mobileProvisionFile = getProvisioningProfile(bundle) ?: return
+		val profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
+		val embeddedProvisionFile = File(bundle.path, "embedded.$profileExtension")
+		logger.info("provision profile - {}", embeddedProvisionFile)
+		FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
 	}
 
-	 */
+
 }

@@ -94,8 +94,8 @@ class PackageTaskSpecification extends Specification {
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
 		applicationDummy = new ApplicationDummy(archiveDirectory)
-        applicationDummy.plistHelperStub = plistHelperStub
-        applicationDummy.payloadAppDirectory = payloadAppDirectory
+		applicationDummy.plistHelperStub = plistHelperStub
+		applicationDummy.payloadAppDirectory = payloadAppDirectory
 
 		def appDirectory = applicationDummy.create(adHoc)
 
@@ -109,11 +109,11 @@ class PackageTaskSpecification extends Specification {
 		project.xcodebuild.outputPath.mkdirs()
 
 		if (withSwift) {
-            applicationDummy.createSwiftLibs()
+			applicationDummy.createSwiftLibs()
 		}
 
 		if (withFramework) {
-            applicationDummy.createFramework()
+			applicationDummy.createFramework()
 		}
 
 		for (File mobileProvision in applicationDummy.mobileProvisionFile) {
@@ -128,7 +128,7 @@ class PackageTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(onDemandResources, "Info.plist"), "dummy")
 
 		if (bitcode) {
-            applicationDummy.createBCSymbolMaps()
+			applicationDummy.createBCSymbolMaps()
 		}
 	}
 
