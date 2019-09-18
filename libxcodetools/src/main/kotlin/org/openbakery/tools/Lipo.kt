@@ -2,9 +2,14 @@ package org.openbakery.tools
 
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Xcode
+import org.slf4j.LoggerFactory
 import java.io.File
 
 open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
+
+	companion object {
+		val logger = LoggerFactory.getLogger("Lipo")!!
+	}
 
 	var xcode: Xcode = xcode
 	var commandRunner: CommandRunner = commandRunner
@@ -35,8 +40,13 @@ open class Lipo(xcode: Xcode, commandRunner: CommandRunner) {
 		)
 	}
 
+	/**
+	 Remove all the unsupported architecture from the app binary.
+	 If not, then appstore connect will reject the ipa
+	 */
 	open fun removeUnsupportedArchs(binary: File, supportedArchs: List<String>) {
-
+		logger.debug("removeUnsupportedArchs at {}", binary)
+		logger.debug("supportedArchs are {}", supportedArchs)
 		val archs = getArchs(binary).toMutableList()
 		archs.removeAll(supportedArchs)
 		archs.iterator().forEach {

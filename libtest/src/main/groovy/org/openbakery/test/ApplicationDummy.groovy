@@ -153,9 +153,6 @@ class ApplicationDummy {
 		File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
 		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", bundleIdentifier)
 
-
-
-
 		File applicationBundleWidgetInfoPlist = new File(applicationBundle, widgetPath + "/Info.plist");
 
 		PlistHelper helper = new PlistHelper(new CommandRunner())

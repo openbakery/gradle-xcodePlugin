@@ -2,6 +2,7 @@ package org.openbakery.assemble
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
@@ -35,7 +36,7 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
 	}
 
-	fun getProvisioningProfile(bundle: Bundle) : File? {
+	private fun getProvisioningProfile(bundle: Bundle) : File? {
 		val identifier = bundle.bundleIdentifier
 		val reader = ProvisioningProfileReader.getReaderForIdentifier(identifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
 		return reader?.provisioningProfile
@@ -98,26 +99,31 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 
 	fun addSwiftSupport(): File? {
+		logger.debug("add SwiftSupport")
 
 		val frameworksPath = File(applicationBundle.applicationPath, "Frameworks")
 		if (!frameworksPath.exists()) {
+			logger.debug("frameworks path does not exist, so we are done. {}", frameworksPath)
 			return null
 		}
 
 		val swiftLibArchive = File(this.archive, "SwiftSupport")
 
 		if (!swiftLibArchive.exists()) {
+			logger.debug("swiftLibArchive path does not exist, so we are done. {}", swiftLibArchive)
+
 			return null
 		}
 
 		fileHelper.copyTo(swiftLibArchive, applicationBundle.baseDirectory)
 
 		updateArchsForSwiftLibs(frameworksPath)
-		return File( applicationBundle.baseDirectory, "SwiftSupport")
+		return File(applicationBundle.baseDirectory, "SwiftSupport")
 	}
 
 
 	fun updateArchsForSwiftLibs(frameworksPath : File) {
+		logger.debug("updateArchsForSwiftLibs for {}", frameworksPath)
 		val binaryArchs = tools.lipo.getArchs(applicationBundle.mainBundle.executable)
 			.plus(listOf("armv7", "armv7s"))
 			.distinct()
@@ -135,6 +141,10 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 
 
+	/*
+	The prepare function removes swift support dylibs that does not need to be included.
+	Also adds the proper embedded provisioning profiles to the main bundle but also to the extensions
+	 */
 	fun prepareBundles() {
 
 		for (bundle in applicationBundle.bundles) {
@@ -154,7 +164,7 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	}
 
 
-	fun removeUnneededDylibsFromBundle(bundle: Bundle) {
+	private fun removeUnneededDylibsFromBundle(bundle: Bundle) {
 		val libswiftRemoteMirror = File(bundle.path, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
 			libswiftRemoteMirror.delete()
