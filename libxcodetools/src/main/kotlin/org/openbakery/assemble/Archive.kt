@@ -8,6 +8,12 @@ import org.openbakery.xcode.Type
 import org.slf4j.LoggerFactory
 import java.io.File
 
+/**
+ * This class creates an .xcarchive for the application bundle
+ * Note: The implementation is not complete. Several methods must be migrated from the XcodeBuildArchiveTask to this class
+ *
+ * The idea is that this class just creates the xcarchive, but has no dependency and knowledge about gradle
+ */
 class Archive(applicationBundleFile: File, archiveName: String, type: Type, simulator: Boolean, tools: CommandLineTools, watchApplicationBundleFile: File? = null) {
 	private var applications = "Applications"
 	private var products = "Products"
@@ -32,7 +38,7 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 	fun create(destinationDirectory: File, bitcodeEnabled: Boolean) : ApplicationBundle {
 
 		val archiveDirectory = getArchiveDirectory(destinationDirectory)
-		val applicationDirectory = copyApplication(destinationDirectory, archiveDirectory)
+		val applicationDirectory = copyApplication(archiveDirectory)
 		copyOnDemandResources(archiveDirectory)
 		copyDsyms(archiveDirectory)
 
@@ -48,7 +54,7 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 	}
 
 
-	private fun copyApplication(destinationDirectory: File, archiveDirectory: File) : File {
+	private fun copyApplication(archiveDirectory: File) : File {
 		val applicationDirectory = File(archiveDirectory, "$products/$applications")
 		applicationDirectory.mkdirs()
 		fileHelper.copyTo(applicationBundleFile, applicationDirectory)
@@ -100,22 +106,55 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 				libNames.add(it.name)
 			}
 		}
-		logger.debug("swiftlibs to add: {}", libNames)
-		val swiftLibs = File(tools.lipo.xcodebuild.toolchainDirectory, "usr/lib/swift/${applicationBundle.platformName}")
+		logger.debug("swift libraries to add: {}", libNames)
 
-		swiftLibs.walk().forEach {
-			if (libNames.contains(it.name)) {
+		val swiftLibraryDirectories = getSwiftLibraryDirectories(platformName)
+
+		libNames.forEach { libraryName ->
+			val library = getSwiftLibrary(swiftLibraryDirectories, libraryName)
+			if (library != null) {
 				val swiftSupportDirectory = getSwiftSupportDirectory(archiveDirectory, platformName)
-				fileHelper.copyTo(it, swiftSupportDirectory)
+				fileHelper.copyTo(library, swiftSupportDirectory)
 
 				if (!bitcodeEnabled) {
-					val destination = File(applicationBundle.frameworksPath, it.name)
-					val commandList = listOf("/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath)
+					val destination = File(applicationBundle.frameworksPath, library.name)
+					val commandList = listOf("/usr/bin/xcrun", "bitcode_strip", library.absolutePath, "-r", "-o", destination.absolutePath)
 					tools.lipo.xcodebuild.commandRunner.run(commandList)
 				}
-
 			}
 		}
+	}
+
+	private fun getSwiftLibrary(libraryDirectories: List<File>, name: String) : File? {
+		for (directory in libraryDirectories) {
+			val result = getSwiftLibrary(directory, name)
+			if (result != null) {
+				return result
+			}
+		}
+		return null
+	}
+
+	private fun getSwiftLibrary(libraryDirectory: File, name: String) : File?{
+		val result = File(libraryDirectory, name)
+		if (result.exists()) {
+			return result
+		}
+		return null
+	}
+
+	private fun getSwiftLibraryDirectories(platformName: String) : List<File> {
+		var result = ArrayList<File>()
+		val baseDirectory = File(tools.lipo.xcodebuild.toolchainDirectory, "usr/lib/")
+		baseDirectory.listFiles().forEach {
+			if (it.isDirectory && it.name.startsWith("swift")) {
+				val platformDirectory = File(it, platformName)
+				if (platformDirectory.exists()) {
+					result.add(platformDirectory)
+				}
+			}
+		}
+		return result
 	}
 
 	private fun getSwiftSupportDirectory(archiveDirectory: File, platformName: String) : File {
@@ -126,37 +165,5 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 		return swiftSupportDirectory
 	}
 
-	/*
-	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle, boolean bitcode) {
-			File frameworksPath = appBundle.frameworksPath
-			if (frameworksPath.exists()) {
-				def libNames = []
-				frameworksPath.eachFile() {
-					libNames.add(it.getName())
-				}
-
-				logger.debug("swiftlibs to add: {}", libNames)
-
-				File swiftLibs = new File(getXcode().getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
-
-				swiftLibs.eachFile() {
-					logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
-					if (libNames.contains(it.name)) {
-						copy(it, getSwiftSupportDirectory(appBundle.platformName))
-
-						if (!bitcode) {
-							File destination = new File(frameworksPath, it.getName())
-							commandRunner.run(["/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath])
-						}
-					}
-				}
-			}
-
-			ApplicationBundle watchAppBundle = appBundle.watchAppBundle
-			if (watchAppBundle != null) {
-				createFrameworks(xcodebuild, watchAppBundle, true)
-			}
-		}
-*/
 
 }

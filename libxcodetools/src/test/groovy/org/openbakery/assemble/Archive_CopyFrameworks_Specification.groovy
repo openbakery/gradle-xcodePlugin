@@ -52,46 +52,46 @@ class Archive_CopyFrameworks_Specification extends Specification {
 
 	Xcodebuild createXcodeBuild(String buildSettings = "") {
 		XcodeFake xcode = createXcode()
-		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> buildSettings
+		commandRunner.runWithResult(_, ["xcodebuild", "clean", "-showBuildSettings"]) >> buildSettings
 		return new Xcodebuild(tmpDirectory, commandRunner, xcode, new XcodebuildParameters(), [])
 	}
 
-	def createSwiftLibs(Xcodebuild xcodebuild, boolean includeWatchLib = false, String platform = "iphoneos") {
-			def swiftLibs = [
-					"libswiftCore.dylib",
-					"libswiftCoreGraphics.dylib",
-					"libswiftDarwin.dylib",
-					"libswiftDispatch.dylib",
-					"libswiftFoundation.dylib",
-					"libswiftObjectiveC.dylib",
-					"libswiftSecurity.dylib",
-					"libswiftUIKit.dylib"
-			]
+	def createSwiftLibs(Xcodebuild xcodebuild, boolean includeWatchLib = false, String platform = "iphoneos", String swiftPath = "swift") {
+		def swiftLibs = [
+			"libswiftCore.dylib",
+			"libswiftCoreGraphics.dylib",
+			"libswiftDarwin.dylib",
+			"libswiftDispatch.dylib",
+			"libswiftFoundation.dylib",
+			"libswiftObjectiveC.dylib",
+			"libswiftSecurity.dylib",
+			"libswiftUIKit.dylib"
+		]
 
-			if (includeWatchLib) {
-				swiftLibs.add(0, "libswiftWatchKit.dylib")
-			}
-
-			File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(),  "usr/lib/swift/$platform")
-			swiftLibsDirectory.mkdirs()
-
-			swiftLibs.each { item ->
-				File lib = new File(swiftLibsDirectory, item)
-				FileUtils.writeStringToFile(lib, "bar")
-			}
-
-			return swiftLibs
+		if (includeWatchLib) {
+			swiftLibs.add(0, "libswiftWatchKit.dylib")
 		}
 
-	void mockSwiftLibs(Xcodebuild xcodebuild, File watchAppDirectory = null) {
+		File swiftLibsDirectory = new File(xcodebuild.getToolchainDirectory(), "usr/lib/$swiftPath/$platform")
+		swiftLibsDirectory.mkdirs()
+
+		swiftLibs.each { item ->
+			File lib = new File(swiftLibsDirectory, item)
+			FileUtils.writeStringToFile(lib, "bar")
+		}
+
+		return swiftLibs
+	}
+
+	void mockSwiftLibs(Xcodebuild xcodebuild, File watchAppDirectory = null, String platform = "iphoneos", String swiftPath = "swift") {
 		def includeWatchLibs = watchAppDirectory != null
 
-		def swiftLibs = createSwiftLibs(xcodebuild, includeWatchLibs)
+		def swiftLibs = createSwiftLibs(xcodebuild, includeWatchLibs, platform, swiftPath)
 		def libFiles = swiftLibs[0..4].collect { new File(applicationPath, "Frameworks/" + it) }
 
 		if (includeWatchLibs) {
 			def watchSwiftLibs = createSwiftLibs(xcodebuild, true, "watchos")
-            libFiles += watchSwiftLibs[0..4].collect { new File(watchAppDirectory, "Frameworks/" + it) }
+			libFiles += watchSwiftLibs[0..4].collect { new File(watchAppDirectory, "Frameworks/" + it) }
 		}
 
 		libFiles.forEach { FileUtils.writeStringToFile(it, "foo") }
@@ -120,14 +120,38 @@ class Archive_CopyFrameworks_Specification extends Specification {
 	}
 
 
+	def "copy swift framework for Xcode11"() {
+		given:
+		def archive = createArchive()
+		new File(archive.tools.lipo.xcodebuild.getToolchainDirectory(), "usr/lib/swift/iphoneos").mkdirs()
+
+		mockSwiftLibs(archive.tools.lipo.xcodebuild, null, "iphoneos", "swift-5")
+
+		when:
+		def destinationDirectory = new File(tmpDirectory, "build/archive")
+		archive.create(destinationDirectory)
+
+
+		File libswiftCore = new File(tmpDirectory, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
+		File supportLibswiftDirectory = new File(tmpDirectory, "build/archive/Example.xcarchive/SwiftSupport/iphoneos")
+		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
+
+		then:
+		libswiftCore.exists()
+		supportLibswiftDirectory.list().length == 5
+		supportLibswiftCore.exists()
+		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
+	}
+
+
 	List<String> bitcodeStripCommand(File dylib, Xcodebuild xcodebuild, String platform = "iphoneos") {
 		return [
-            "/usr/bin/xcrun",
-            "bitcode_strip",
-            "${xcodebuild.toolchainDirectory}/usr/lib/swift/${platform}/${dylib.name}",
-            "-r",
-            "-o",
-            dylib.absolutePath
+			"/usr/bin/xcrun",
+			"bitcode_strip",
+			"${xcodebuild.toolchainDirectory}/usr/lib/swift/${platform}/${dylib.name}",
+			"-r",
+			"-o",
+			dylib.absolutePath
 		]
 	}
 
@@ -215,7 +239,7 @@ class Archive_CopyFrameworks_Specification extends Specification {
 
 	def "copy watchkit swift framework"() {
 		given:
-		def buildSettings = "PLATFORM_DIR = " + xcodePath.absolutePath  + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
+		def buildSettings = "PLATFORM_DIR = " + xcodePath.absolutePath + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
 		def archive = createArchive(buildSettings)
 		createSwiftLibs(archive.tools.lipo.xcodebuild)
 
@@ -251,34 +275,5 @@ class Archive_CopyFrameworks_Specification extends Specification {
 		FileUtils.readFileToString(iphoneosSupportLibswiftWatchKit).equals("bar")
 		1 * commandRunner.run(iphoneosBitcodeStrip)
 	}
-
-/*
-	def "copy frameworks into watch appex"() {
-		given:
-		def buildSettings = "PLATFORM_DIR = " + xcodePath.absolutePath  + "/Contents/Developer/Platforms/iPhoneOS.platform\n"
-		def archive = createArchive(buildSettings)
-		createSwiftLibs(archive.tools.lipo.xcodebuild)
-
-		//def watchosBuildDir = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-watchos")
-		//TestHelper.createWatchOSOutput(watchosBuildDir, "Watch")
-
-		def watchAppDirectory = applicationDummy.createWatchApp("Example")
-
-
-		when:
-		def destinationDirectory = new File(tmpDirectory, "build/archive")
-		archive.create(destinationDirectory)
-
-		then:
-		File frameworkPath = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Watch/Example.app/Plugins/Watch.appex/Frameworks/Library.framework")
-		File binaryPath = new File(frameworkPath, "Binary")
-
-		binaryPath.exists()
-		FileUtils.readFileToString(binaryPath).equals("foo")
-		!new File(frameworkPath, "Headers").exists()
-		!new File(frameworkPath, "Modules").exists()
-	}
-
-*/
 
 }
