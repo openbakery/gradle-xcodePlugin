@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.XcodePlugin

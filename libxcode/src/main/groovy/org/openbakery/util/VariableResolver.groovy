@@ -7,11 +7,28 @@ import org.slf4j.LoggerFactory
 class VariableResolver {
 	private static Logger logger = LoggerFactory.getLogger(VariableResolver.class)
 
-	private Project project
 
-	VariableResolver(Project project) {
-		this.project = project
+	def binding
+
+	VariableResolver(String productName, File projectDirectory, String target) {
+		this.binding = [
+					"PRODUCT_NAME": productName,
+					"SRC_ROOT"    : projectDirectory.absolutePath,
+					"TARGET_NAME" : target
+				]
 	}
+
+	/*
+	def binding() {
+		return [
+			"PRODUCT_NAME": project.xcodebuild.productName,
+			"SRC_ROOT"    : project.projectDir.absolutePath,
+			"TARGET_NAME" : project.xcodebuild.target
+		]
+	}
+	*/
+
+
 
 	/**
 	 * Replaces the variables in the given string with the actual value. e.g. ${PRODUCT_NAME} od $(PRODUCT_NAME) get
@@ -36,7 +53,7 @@ class VariableResolver {
 		}
 
 		String result = text
-		binding().each() { key, value ->
+		binding.each() { key, value ->
 			if (value != null) {
 				/*
 				 * RegEx pattern matching any of these:
@@ -53,11 +70,5 @@ class VariableResolver {
 		return result
 	}
 
-	def binding() {
-		return [
-			"PRODUCT_NAME": project.xcodebuild.productName,
-			"SRC_ROOT"    : project.projectDir.absolutePath,
-			"TARGET_NAME" : project.xcodebuild.target
-		]
-	}
+
 }

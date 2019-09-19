@@ -1,5 +1,8 @@
 package org.openbakery.assemble
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
+import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
@@ -28,15 +31,17 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	private val applicationBundle: ApplicationBundle = applicationBundle
 
 
-	private val provisioningProfileReader by lazy {
+	private val mainBundleProvisioningProfileReader by lazy {
 		var bundleIdentifier = applicationBundle.mainBundle.bundleIdentifier
 		ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
 	}
 
-
-	fun getProvisioningProfile() : File? {
-		return provisioningProfileReader?.provisioningProfile
+	private fun getProvisioningProfile(bundle: Bundle) : File? {
+		val identifier = bundle.bundleIdentifier
+		val reader = ProvisioningProfileReader.getReaderForIdentifier(identifier, codesignParameters.mobileProvisionFiles,	tools.commandRunner, tools.plistHelper)
+		return reader?.provisioningProfile
 	}
+
 
 
 	fun createPackage(outputPath: File, name: String) {
@@ -94,26 +99,31 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 
 
 	fun addSwiftSupport(): File? {
+		logger.debug("add SwiftSupport")
 
 		val frameworksPath = File(applicationBundle.applicationPath, "Frameworks")
 		if (!frameworksPath.exists()) {
+			logger.debug("frameworks path does not exist, so we are done. {}", frameworksPath)
 			return null
 		}
 
 		val swiftLibArchive = File(this.archive, "SwiftSupport")
 
 		if (!swiftLibArchive.exists()) {
+			logger.debug("swiftLibArchive path does not exist, so we are done. {}", swiftLibArchive)
+
 			return null
 		}
 
 		fileHelper.copyTo(swiftLibArchive, applicationBundle.baseDirectory)
 
 		updateArchsForSwiftLibs(frameworksPath)
-		return File( applicationBundle.baseDirectory, "SwiftSupport")
+		return File(applicationBundle.baseDirectory, "SwiftSupport")
 	}
 
 
 	fun updateArchsForSwiftLibs(frameworksPath : File) {
+		logger.debug("updateArchsForSwiftLibs for {}", frameworksPath)
 		val binaryArchs = tools.lipo.getArchs(applicationBundle.mainBundle.executable)
 			.plus(listOf("armv7", "armv7s"))
 			.distinct()
@@ -126,22 +136,23 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	}
 
 	fun getProvisioningProfileType(): ProvisioningProfileType? {
-		return provisioningProfileReader?.profileType
+		return mainBundleProvisioningProfileReader?.profileType
 	}
 
 
 
-	fun prepareBundles(applicationBundle: ApplicationBundle) {
+	/*
+	The prepare function removes swift support dylibs that does not need to be included.
+	Also adds the proper embedded provisioning profiles to the main bundle but also to the extensions
+	 */
+	fun prepareBundles() {
 
 		for (bundle in applicationBundle.bundles) {
-
 			if (applicationBundle.type == Type.iOS) {
 				removeUnneededDylibsFromBundle(bundle)
-				//embedProvisioningProfileToBundle(bundle)
+				embedProvisioningProfileToBundle(bundle)
 			}
-
 		}
-
 	}
 
 	fun codesign(applicationBundle: ApplicationBundle, xcode: Xcode) {
@@ -153,34 +164,20 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	}
 
 
-	fun removeUnneededDylibsFromBundle(bundle: Bundle) {
+	private fun removeUnneededDylibsFromBundle(bundle: Bundle) {
 		val libswiftRemoteMirror = File(bundle.path, "libswiftRemoteMirror.dylib")
 		if (libswiftRemoteMirror.exists()) {
 			libswiftRemoteMirror.delete()
 		}
 	}
 
-	/*
 	private fun embedProvisioningProfileToBundle(bundle: Bundle) {
-		val mobileProvisionFile = getProvisioningProfile()
-	}
-	*/
-
-
-	/* // migrate this to kotline
-		private void embedProvisioningProfileToBundle(File bundle) {
-		File mobileProvisionFile = getProvisionFileForBundle(bundle)
-		if (mobileProvisionFile != null) {
-			File embeddedProvisionFile
-
-			String profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
-			embeddedProvisionFile = new File(getAppContentPath(bundle) + "embedded." + profileExtension)
-
-			logger.info("provision profile - {}", embeddedProvisionFile)
-
-			FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
-		}
+		val mobileProvisionFile = getProvisioningProfile(bundle) ?: return
+		val profileExtension = FilenameUtils.getExtension(mobileProvisionFile.absolutePath)
+		val embeddedProvisionFile = File(bundle.path, "embedded.$profileExtension")
+		logger.info("provision profile - {}", embeddedProvisionFile)
+		FileUtils.copyFile(mobileProvisionFile, embeddedProvisionFile)
 	}
 
-	 */
+
 }

@@ -136,7 +136,12 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 
 	List<Bundle> getAppBundles(File appPath) {
-		ApplicationBundle applicationBundle = new ApplicationBundle(new File(appPath,project.xcodebuild.applicationBundle.name), project.xcodebuild.type, project.xcodebuild.simulator)
+		ApplicationBundle applicationBundle = new ApplicationBundle(
+			new File(appPath,project.xcodebuild.applicationBundle.name),
+			project.xcodebuild.type,
+			project.xcodebuild.simulator,
+			this.plistHelper
+		)
 		return applicationBundle.getBundles()
 	}
 

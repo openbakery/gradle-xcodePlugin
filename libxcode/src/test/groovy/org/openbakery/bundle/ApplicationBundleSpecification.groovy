@@ -1,6 +1,7 @@
 package org.openbakery.bundle
 
 import org.openbakery.test.ApplicationDummy
+import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
@@ -13,14 +14,15 @@ class ApplicationBundleSpecification  extends Specification {
 		applicationDummy = new ApplicationDummy(tmpDirectory)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		applicationDummy.cleanup()
 		applicationDummy = null
 	}
 
 	ApplicationBundle createApplicationBundle(String filePath, Type type = Type.iOS) {
 		def applicationPath = new File(filePath)
-		return new ApplicationBundle(applicationPath, type, false)
+		def plistHelper = new PlistHelperStub()
+		return new ApplicationBundle(applicationPath, type, false, plistHelper)
 	}
 
 

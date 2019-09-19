@@ -1,5 +1,6 @@
 package org.openbakery.bundle
 
+import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Type
 
 class ApplicationBundle {
@@ -8,10 +9,13 @@ class ApplicationBundle {
 	Type type
 	boolean simulator
 
-	ApplicationBundle(File applicationPath, Type type, boolean simulator) {
+	PlistHelper plistHelper
+
+	ApplicationBundle(File applicationPath, Type type, boolean simulator, PlistHelper plistHelper) {
 		this.applicationPath = applicationPath
 		this.type = type
 		this.simulator = simulator
+		this.plistHelper = plistHelper
 	}
 
 	List<Bundle> getBundles() {
@@ -22,12 +26,12 @@ class ApplicationBundle {
 		if (isDeviceBuildOf(Type.iOS)) {
 			addWatchToAppBundle(bundles)
 		}
-		bundles.add(new Bundle(applicationPath, type))
+		bundles.add(new Bundle(applicationPath, type, this.plistHelper))
 		return bundles
 	}
 
 	private Bundle createBundle(File bundleFile) {
-		return new Bundle(bundleFile, type)
+		return new Bundle(bundleFile, type, this.plistHelper)
 	}
 
 	Bundle getMainBundle() {
@@ -145,7 +149,7 @@ class ApplicationBundle {
 			return null
 		}
 
-		return new ApplicationBundle(watchAppBundle, Type.watchOS, simulator)
+		return new ApplicationBundle(watchAppBundle, Type.watchOS, simulator, this.plistHelper)
 	}
 
 	ArrayList<File> getAppExtensionBundles() {

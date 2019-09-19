@@ -392,6 +392,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "sign test bundle path"() {
 		given:
+		def plistHelper = new PlistHelper(new CommandRunner())
 		def bundleDirectory = createTestBundleForDeviceBuild()
 		def mobileprovision = new File("../libtest/src/main/Resource/test.mobileprovision")
 		mockEntitlementsFromPlist(mobileprovision)
@@ -412,9 +413,10 @@ class XcodeTestRunTaskSpecification extends Specification {
 		when:
 		xcodeTestRunTestTask.testRun()
 
+
 		then:
-		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"), Type.iOS))
-		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"), Type.iOS))
+		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"), Type.iOS, plistHelper))
+		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"), Type.iOS, plistHelper))
 
 	}
 }

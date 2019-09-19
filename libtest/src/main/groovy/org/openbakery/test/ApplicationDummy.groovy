@@ -20,11 +20,12 @@ class ApplicationDummy {
 
 	List<File>mobileProvisionFile = []
 
-	public ApplicationDummy(File directory) {
+	public ApplicationDummy(File directory, String prefix = "Products/Applications") {
 		this.directory = directory
 		File payloadDirectory = new File(directory, "Payload")
-		payloadAppDirectory = new File(payloadDirectory, "Example.app");
-		applicationBundle = new File(directory, "Products/Applications/Example.app")
+		payloadAppDirectory = new File(payloadDirectory, "Example.app")
+		def applicationPath = new File(directory, prefix)
+		applicationBundle = new File(applicationPath, "Example.app")
 	}
 
 	void cleanup() {
@@ -52,28 +53,38 @@ class ApplicationDummy {
 
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", bundleIdentifier)
 
-
-
-		switch (profileType) {
-			case ProvisioningProfileType.Development:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Development.mobileprovision"))
-				break
-            case ProvisioningProfileType.AdHoc:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/test.mobileprovision"))
-				break
-			case ProvisioningProfileType.Enterprise:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Enterprise.mobileprovision"))
-				break
-			case ProvisioningProfileType.AppStore:
-				mobileProvisionFile.add(new File("../libtest/src/main/Resource/Appstore.mobileprovision"))
-				break
+		File profile = getMobileProvisionFile(profileType)
+		if (profile != null) {
+			mobileProvisionFile.add(profile)
 		}
 
 		return appDirectory
 	}
 
+	File getMobileProvisionFile(ProvisioningProfileType profileType) {
+		switch (profileType) {
+			case ProvisioningProfileType.Development:
+				return new File("../libtest/src/main/Resource/Development.mobileprovision")
+			case ProvisioningProfileType.AdHoc:
+				return new File("../libtest/src/main/Resource/test.mobileprovision")
+			case ProvisioningProfileType.Enterprise:
+				return new File("../libtest/src/main/Resource/Enterprise.mobileprovision")
+			case ProvisioningProfileType.AppStore:
+				return new File("../libtest/src/main/Resource/Appstore.mobileprovision")
+		}
+	}
+
+	File getMobileProvisionFileForExtension(Extension extension) {
+		switch (extension) {
+			case Extension.today:
+				return new File("../libtest/src/main/Resource/extension.mobileprovision")
+			case Extension.sticker:
+				return new File("src/test/Resource/test2.mobileprovision")
+		}
+	}
+
 	Bundle createBundle(boolean adHoc = true, boolean includeProvisioning = true) {
-		return new Bundle(create(adHoc, includeProvisioning), Type.iOS)
+		return new Bundle(create(adHoc, includeProvisioning), Type.iOS, plistHelperStub)
 	}
 
 	File create(boolean adHoc = true, boolean includeProvisioning = true) {
@@ -86,17 +97,16 @@ class ApplicationDummy {
 	}
 
 	Bundle createPluginBundle(Extension extension = Extension.today) {
-		return new Bundle(createPlugin(extension), Type.iOS)
+		return new Bundle(createPlugin(extension), Type.iOS, plistHelperStub)
 	}
 
 	File createPlugin(Extension extension = Extension.today) {
+		File mobileProvision = getMobileProvisionFileForExtension(extension)
 		switch (extension) {
 			case Extension.today:
-				File mobileProvision = new File("../libtest/src/main/Resource/extension.mobileprovision")
 				createExtension("ExampleTodayWidget", "org.openbakery.test.ExampleWidget", mobileProvision)
                 break
 			case Extension.sticker:
-				File mobileProvision = new File("src/test/Resource/test2.mobileprovision")
 				createExtension("ExampleStickerPack", "org.openbakery.test.ExampleSticker", mobileProvision)
 				File messageExtensionSupportDirectory = new File(directory, "MessagesApplicationExtensionSupport")
 				messageExtensionSupportDirectory.mkdirs()
@@ -144,9 +154,6 @@ class ApplicationDummy {
 		File infoPlistWidget = new File(payloadAppDirectory, widgetPath + "/Info.plist");
 		plistHelperStub.setValueForPlist(infoPlistWidget, "CFBundleIdentifier", bundleIdentifier)
 
-
-
-
 		File applicationBundleWidgetInfoPlist = new File(applicationBundle, widgetPath + "/Info.plist");
 
 		PlistHelper helper = new PlistHelper(new CommandRunner())
@@ -156,4 +163,51 @@ class ApplicationDummy {
 		mobileProvisionFile.add(mobileProvision)
 		return widgetsDirectory
 	}
+
+
+	void createOnDemandResources() {
+		File onDemandResourcesPlist = new File(applicationBundle, "OnDemandResources.plist")
+		FileUtils.writeStringToFile(onDemandResourcesPlist, "dummy")
+
+		File onDemandResourcesDirectory = new File(applicationBundle.parentFile, "OnDemandResources/org.openbakery.test.Example.SampleImages.assetpack")
+		onDemandResourcesDirectory.mkdirs()
+		File infoPlist_onDemandResourcesDirectory = new File(onDemandResourcesDirectory, "Info.plist")
+		FileUtils.writeStringToFile(infoPlist_onDemandResourcesDirectory, "dummy")
+	}
+
+	void createDsyms() {
+		File dSymDirectory = new File(applicationBundle.parentFile, "Example.app.dSym")
+		dSymDirectory.mkdirs()
+	}
+
+	void createDsyms(Extension extension) {
+		def name = ""
+		switch (extension) {
+			case Extension.today:
+				name = "ExampleTodayWidget"
+				break
+			case Extension.sticker:
+				name = "ExampleStickerPack"
+		}
+		File dSymDirectory = new File(applicationBundle.parentFile, name + ".appex.dSYM")
+		dSymDirectory.mkdirs()
+	}
+
+	File createWatchApp(String name) {
+		File appDirectory = new File(applicationBundle, "Watch/${name}.app")
+		appDirectory.mkdirs()
+
+		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
+		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
+
+		File framework = new File(appDirectory, "PlugIns/Watch.appex/Frameworks/Library.framework")
+		framework.mkdirs()
+
+		File binary = new File(framework, "Binary")
+		FileUtils.writeStringToFile(binary, "bar")
+
+		return appDirectory
+	}
+
 }

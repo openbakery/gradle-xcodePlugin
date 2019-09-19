@@ -33,7 +33,7 @@ class SecuritySpecification extends Specification {
 
 	}
 
-	def tearDown() {
+	def cleanup() {
 		security = null
 		commandRunner = null
 		FileUtils.deleteDirectory(tmpDirectory)

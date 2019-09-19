@@ -31,7 +31,7 @@ class AppPackageSpecification extends Specification {
 
 		def archiveAppPath = applicationDummy.create()
 		applicationDummy.createSwiftLibs()
-		def tools = new CommandLineTools(commandRunner, new PlistHelper(commandRunner), lipo)
+		def tools = new CommandLineTools(commandRunner, new PlistHelper(new CommandRunner()), lipo)
 
 
 		def applicationDestination = new File(tmpDirectory, "App")
@@ -41,13 +41,13 @@ class AppPackageSpecification extends Specification {
 
 		applicationPath = new File(applicationDestination, archiveAppPath.getName())
 
-		def applicationBundle = new ApplicationBundle(applicationPath, Type.iOS, false)
+		def applicationBundle = new ApplicationBundle(applicationPath, Type.iOS, false, tools.plistHelper)
 
 
 		appPackage = new AppPackage(applicationBundle, archivePath, new CodesignParameters(), tools)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		appPackage = null
 		applicationDummy.cleanup()
 		applicationDummy = null

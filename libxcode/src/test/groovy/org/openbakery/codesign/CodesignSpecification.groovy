@@ -149,7 +149,7 @@ class CodesignSpecification extends  Specification {
 		parameters.entitlementsFile = useEntitlementsFile
 
 		when:
-		codesign.sign(new Bundle("dummy", Type.iOS)) // .createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
+		codesign.sign(new Bundle("dummy", Type.iOS, plistHelper)) // .createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcentFile))
 		then:
 
 		1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
@@ -166,7 +166,7 @@ class CodesignSpecification extends  Specification {
 		applicationDummy.create()
 		when:
 		parameters.entitlementsFile = new File(tmpDirectory, "MyCustomEntitlements.plist")
-		codesign.sign(new Bundle("dummy", Type.iOS))
+		codesign.sign(new Bundle("dummy", Type.iOS, plistHelper))
 		then:
 		thrown(IllegalArgumentException)
 	}
@@ -238,7 +238,7 @@ class CodesignSpecification extends  Specification {
 		File bundle = applicationDummy.create()
 
 		when:
-		codesign.sign(new Bundle(bundle, Type.iOS))
+		codesign.sign(new Bundle(bundle, Type.iOS, plistHelper))
 
 		then:
 		1 * commandRunner.run(_, _) >> {

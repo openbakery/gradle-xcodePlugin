@@ -156,8 +156,10 @@ class Xcode {
 		return getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/simctl"
 	}
 
-	String getLipo() {
-		return getPath() + "/$XCODE_CONTENT_DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo"
+	// returns the default toolchain directory
+	// if you want to get the project specific toolchain directory use the method in Xcodebuild
+	String getToolchainDirectory() {
+		return getPath() + "/$XCODE_CONTENT_DEVELOPER/Toolchains/XcodeDefault.xctoolchain"
 	}
 
 	@Override

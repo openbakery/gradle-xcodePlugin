@@ -3,6 +3,8 @@ package org.openbakery.codesign
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.Lipo
+import org.openbakery.xcode.Xcodebuild
+import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
 class LipoRemoveArchSpecification extends Specification {
@@ -11,11 +13,13 @@ class LipoRemoveArchSpecification extends Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
-
-		lipo = new Lipo(new XcodeFake(), commandRunner)
+		def tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
+		def xcodebuild = new Xcodebuild(tmpDirectory, commandRunner, new XcodeFake(), new XcodebuildParameters(), [])
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> ""
+		lipo = new Lipo(xcodebuild)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		lipo = null
 		commandRunner = null
 	}

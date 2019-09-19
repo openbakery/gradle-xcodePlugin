@@ -60,7 +60,7 @@ class PackageTaskSpecification extends Specification {
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
-
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> ""
 
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
@@ -94,8 +94,8 @@ class PackageTaskSpecification extends Specification {
 		payloadAppDirectory = new File(payloadDirectory, "Example.app");
 
 		applicationDummy = new ApplicationDummy(archiveDirectory)
-        applicationDummy.plistHelperStub = plistHelperStub
-        applicationDummy.payloadAppDirectory = payloadAppDirectory
+		applicationDummy.plistHelperStub = plistHelperStub
+		applicationDummy.payloadAppDirectory = payloadAppDirectory
 
 		def appDirectory = applicationDummy.create(adHoc)
 
@@ -105,15 +105,16 @@ class PackageTaskSpecification extends Specification {
 
 		File infoPlist = new File(payloadAppDirectory, "Info.plist")
 		plistHelperStub.setValueForPlist(infoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
+		plistHelperStub.setValueForPlist(infoPlist, "CFBundleExecutable", "ELO-DMS")
 
 		project.xcodebuild.outputPath.mkdirs()
 
 		if (withSwift) {
-            applicationDummy.createSwiftLibs()
+			applicationDummy.createSwiftLibs()
 		}
 
 		if (withFramework) {
-            applicationDummy.createFramework()
+			applicationDummy.createFramework()
 		}
 
 		for (File mobileProvision in applicationDummy.mobileProvisionFile) {
@@ -128,7 +129,7 @@ class PackageTaskSpecification extends Specification {
 		FileUtils.writeStringToFile(new File(onDemandResources, "Info.plist"), "dummy")
 
 		if (bitcode) {
-            applicationDummy.createBCSymbolMaps()
+			applicationDummy.createBCSymbolMaps()
 		}
 	}
 

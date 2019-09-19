@@ -4,6 +4,8 @@ import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.Lipo
 import org.openbakery.xcode.Xcode
+import org.openbakery.xcode.Xcodebuild
+import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
 
 class LipoArchSpecification extends Specification {
@@ -12,11 +14,13 @@ class LipoArchSpecification extends Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	def setup() {
-
-		lipo = new Lipo(new XcodeFake(), commandRunner)
+		def tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
+		def xcodebuild = new Xcodebuild(tmpDirectory, commandRunner, new XcodeFake(), new XcodebuildParameters(), [])
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> ""
+		lipo = new Lipo(xcodebuild)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		lipo = null
 		commandRunner = null
 	}
@@ -26,14 +30,14 @@ class LipoArchSpecification extends Specification {
 		lipo != null
 	}
 
-	def "lipo has xcode"() {
+	def "lipo has xcodebuild"() {
 		expect:
-		lipo.xcode instanceof Xcode
+		lipo.xcodebuild instanceof Xcodebuild
 	}
 
 	def "lipo has a command runner"() {
 		expect:
-		lipo.commandRunner instanceof CommandRunner
+		lipo.xcodebuild.commandRunner instanceof CommandRunner
 	}
 
 	def "get default archs from binary"() {
@@ -143,4 +147,24 @@ class LipoArchSpecification extends Specification {
 		archs.size() == 1
 		archs.contains("arm64")
 	}
+
+
+	def "get lipo default path"() {
+		given:
+
+		expect:
+		lipo.getLipoCommand() == '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo'
+	}
+
+	/*
+	def "get lipo with custom toolchain path"() {
+		given:
+		xcode = new Xcode(new CommandRunner(), "11", "/a/custom/toolchain/path")
+
+		expect:
+		xcode.getLipo() == '/a/custom/toolchain/path/usr/bin/lipo'
+	}
+	*/
+
+
 }

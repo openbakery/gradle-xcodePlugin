@@ -18,9 +18,12 @@ package org.openbakery
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.TaskAction
+import org.openbakery.assemble.Archive
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.tools.CommandLineTools
+import org.openbakery.tools.Lipo
 import org.openbakery.util.ZipArchive
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Extension
@@ -173,51 +176,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		FileUtils.writeStringToFile(infoPlist, content.toString())
 	}
 
-	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle, boolean bitcode) {
-        File frameworksPath = appBundle.frameworksPath
-		if (frameworksPath.exists()) {
-			def libNames = []
-			frameworksPath.eachFile() {
-				libNames.add(it.getName())
-			}
-
-			logger.debug("swiftlibs to add: {}", libNames)
-
-			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
-
-			swiftLibs.eachFile() {
-				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
-				if (libNames.contains(it.name)) {
-					copy(it, getSwiftSupportDirectory(appBundle.platformName))
-
-					if (!bitcode) {
-						File destination = new File(frameworksPath, it.getName())
-						commandRunner.run(["/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath])
-					}
-				}
-			}
-		}
-
-		ApplicationBundle watchAppBundle = appBundle.watchAppBundle
-		if (watchAppBundle != null) {
-			createFrameworks(xcodebuild, watchAppBundle, true)
-		}
-	}
-
-	def getSwiftSupportDirectory(String platformName) {
-		def swiftSupportPath = "SwiftSupport"
-
-		if (xcode.version.major > 6) {
-			swiftSupportPath += "/$platformName"
-		}
-
-		File swiftSupportDirectory = new File(getArchiveDirectory(), swiftSupportPath)
-		if (!swiftSupportDirectory.exists()) {
-			swiftSupportDirectory.mkdirs()
-		}
-		return swiftSupportDirectory
-	}
-
 	def deleteDirectoryIfEmpty(File base, String child) {
 		File directory = new File(base, child)
 		if (directory.exists() && directory.list().length == 0) {
@@ -248,17 +206,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 				if (frameworkDirectory.exists()) {
 					FileUtils.deleteDirectory(frameworkDirectory)
 				}
-			}
-		}
-
-	}
-
-
-	def copyDsyms(File archiveDirectory, File dSymDirectory) {
-
-		archiveDirectory.eachFileRecurse(FileType.DIRECTORIES) { directory ->
-			if (directory.toString().toLowerCase().endsWith(".dsym")) {
-				copy(directory, dSymDirectory)
 			}
 		}
 
@@ -384,28 +331,17 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			return
 		}
 
+		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcodebuild))
 
-		// create xcarchive
-		File archiveDirectory = getArchiveDirectory()
-		File applicationsDirectory = getApplicationsDirectory()
-
-		// copy application bundle
-		copy(parameters.applicationBundle, applicationsDirectory)
-
-		File onDemandResources = new File(parameters.outputPath, "OnDemandResources")
-		if (onDemandResources.exists()) {
-			copy(onDemandResources, getProductsDirectory())
+		File watchOSSourcePath = null
+		if (parameters.watchOutputPath && parameters.watchOutputPath.exists()) {
+			watchOSSourcePath = parameters.watchOutputPath
 		}
+		def archive = new Archive(parameters.applicationBundle, getArchiveName(), parameters.type, parameters.simulator, tools, watchOSSourcePath)
+		def destinationFolder = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
+		def archiveAppBundle = archive.create(destinationFolder, project.xcodebuild.bitcode)
 
-		// copy onDemandResources
-		def dSymDirectory = new File(archiveDirectory, "dSYMs")
-		dSymDirectory.mkdirs()
-		copyDsyms(parameters.outputPath, dSymDirectory)
-        if (parameters.watchOutputPath.exists()) {
-            copyDsyms(parameters.watchOutputPath, dSymDirectory)
-        }
-
-		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
+		// TODO: The stuff below should all be mirgrated to the Archive class
 
 		List<Bundle> appBundles = getAppBundles(parameters.outputPath)
 		for (Bundle bundle : appBundles) {
@@ -413,18 +349,15 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			createExtensionSupportDirectory(bundle.path, xcodebuild, archiveDirectory)
 		}
 
-		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator)
-
 		createInfoPlist(archiveDirectory)
-		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)
 		deleteEmptyFrameworks(archiveDirectory)
 		deleteXCTestIfExists(applicationsDirectory)
 		deleteFrameworksInExtension(applicationsDirectory)
 		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
-			convertInfoPlistToBinary(applicationFolder)
-            copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
+			convertInfoPlistToBinary(archiveAppBundle.applicationPath)
+			copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
 		}
 
 		logger.debug("create archive done")
@@ -548,6 +481,14 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		def archiveDirectory = new File(project.getBuildDir(), archiveDirectoryName)
 		archiveDirectory.mkdirs()
 		return archiveDirectory
+	}
+
+	String getArchiveName() {
+		def archiveName = project.xcodebuild.bundleName
+		if (project.xcodebuild.bundleNameSuffix != null) {
+			archiveName += project.xcodebuild.bundleNameSuffix
+		}
+		return archiveName
 	}
 
 

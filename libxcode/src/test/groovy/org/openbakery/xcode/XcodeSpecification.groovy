@@ -287,12 +287,15 @@ class XcodeSpecification extends Specification {
 		"7.1.1"       | xcode7_1_1
 	}
 
-	def "get lipo default path"() {
+	def "get toolchain path"() {
 		given:
 		useDefaultXcode()
 
 		expect:
-		xcode.getLipo() == '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo'
+		xcode.getToolchainDirectory() == '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain'
 	}
+
+
+
 
 }
