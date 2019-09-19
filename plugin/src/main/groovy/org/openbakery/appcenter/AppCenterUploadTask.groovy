@@ -136,7 +136,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 		def headers = getHeaders()
 
 		def distributionRequest = new DistributionRequest(project.appcenter.destination, project.appcenter.releaseNotes,
-			project.appcenter.notifyTesters ?: false, project.appcenter.mandatoryUpdate ?: false)
+			project.appcenter.notifyTesters, project.appcenter.mandatoryUpdate)
 
 		String json = new JsonBuilder(distributionRequest).toPrettyString()
 

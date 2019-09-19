@@ -214,7 +214,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 			apiToken = appCenterApiToken
 			appOwner = 'app-center-app-owner'
 			appName = 'app-center-app-name'
-			destination = 'Collaborators'
+			destination = ["Collaborators", "QA Testers"]
 			releaseNotes = "Release notes."
 			notifyTesters = true
 			mandatoryUpdate = false

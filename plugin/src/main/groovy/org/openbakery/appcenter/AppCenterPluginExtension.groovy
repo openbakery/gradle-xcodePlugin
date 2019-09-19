@@ -23,10 +23,10 @@ class AppCenterPluginExtension {
 	String appOwner = null
 	String appName = null
 	String apiToken = null
-	String destination = null
+	List<String> destination = ["Collaborators"]
 	String releaseNotes = "This build was uploaded using the gradle xcodeplugin"
-	Boolean notifyTesters
-	Boolean mandatoryUpdate
+	Boolean notifyTesters = false
+	Boolean mandatoryUpdate = false
 
 	private final Project project
 
