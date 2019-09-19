@@ -1,41 +1,11 @@
 package org.openbakery.assemble
 
-import org.apache.commons.io.FileUtils
-import org.openbakery.CommandRunner
+import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.test.ApplicationDummy
-import org.openbakery.tools.CommandLineTools
-import org.openbakery.tools.Lipo
-import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.Extension
-import spock.lang.Specification
+import org.openbakery.xcode.Type
 
-class ArchiveSpecification extends Specification {
-
-	Archive archive
-	CommandRunner commandRunner = Mock(CommandRunner)
-	ApplicationDummy applicationDummy
-
-	File tmpDirectory
-	File applicationPath
-	CommandLineTools tools
-
-	def setup() {
-		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
-		def lipo = Mock(Lipo.class)
-		tools = new CommandLineTools(commandRunner, new PlistHelper(commandRunner), lipo)
-
-		applicationDummy = new ApplicationDummy(new File(tmpDirectory, "build"), "sym/Release-iphoneos")
-		applicationPath = applicationDummy.create()
-
-		archive = new Archive(applicationPath, "Example", tools, null)
-	}
-
-	def tearDown() {
-		archive = null
-		applicationDummy.cleanup()
-		applicationDummy = null
-		FileUtils.deleteDirectory(tmpDirectory)
-	}
+class ArchiveSpecification extends Archive_BaseSpecification {
 
 	def "archive instance is present"() {
 		expect:
@@ -54,6 +24,7 @@ class ArchiveSpecification extends Specification {
 		archiveDirectory.exists()
 		archiveDirectory.isDirectory()
 	}
+
 
 	def "copy OnDemandResources"() {
 		when:
@@ -97,7 +68,7 @@ class ArchiveSpecification extends Specification {
 	}
 
 
-	def copyMultipleDsyms() {
+	def "copy multipledDsyms"() {
 		when:
 		applicationDummy.createDsyms()
 		applicationDummy.createDsyms(Extension.today)
@@ -110,7 +81,7 @@ class ArchiveSpecification extends Specification {
 	}
 
 
-	def copyFrameworkDsyms() {
+	def "copy framework Dsyms"() {
 		given:
 		File extensionDirectory = new File(applicationDummy.applicationBundle, "OBInjector/OBInjector.framework.dSYM")
 		extensionDirectory.mkdirs()
@@ -126,14 +97,14 @@ class ArchiveSpecification extends Specification {
 	}
 
 
-	def copyWatchOSDsyms() {
+	def "copy watchOS Dsyms"() {
 		given:
 		def watchApplicationDummy = new ApplicationDummy(new File(tmpDirectory, "build"), "sym/Release-watchos")
 		watchApplicationDummy.create()
 		File extensionDirectory = new File(watchApplicationDummy.applicationBundle, "Example-Watch.dSYM")
 		extensionDirectory.mkdirs()
 
-		archive = new Archive(applicationPath, "Example", tools, watchApplicationDummy.applicationBundle)
+		archive = new Archive(applicationPath, "Example", Type.iOS, false, tools, watchApplicationDummy.applicationBundle)
 
 		when:
 		def destinationDirectory = new File(tmpDirectory, "build/archive")
@@ -144,5 +115,25 @@ class ArchiveSpecification extends Specification {
 		then:
 		dsymFile.exists()
 	}
+
+
+	def "create archive returns an ApplicationBundle"() {
+		when:
+		def destinationDirectory = new File(tmpDirectory, "build/archive")
+		def result = archive.create(destinationDirectory)
+
+		then:
+		result instanceof ApplicationBundle
+	}
+
+	def "create archive returns an ApplicationBundle with proper application path"() {
+			when:
+			def destinationDirectory = new File(tmpDirectory, "build/archive")
+			ApplicationBundle applicationBundle = archive.create(destinationDirectory)
+
+			then:
+			applicationBundle.applicationPath.absolutePath.endsWith("Products/Applications/Example.app")
+		}
+
 
 }

@@ -1,12 +1,14 @@
 package org.openbakery.assemble
 
 import org.openbakery.CommandRunner
+import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.tools.CommandLineTools
 import org.openbakery.util.FileHelper
+import org.openbakery.xcode.Type
 import org.slf4j.LoggerFactory
 import java.io.File
 
-class Archive(applicationBundleFile: File, archiveName: String, tools: CommandLineTools, watchApplicationBundleFile: File? = null) {
+class Archive(applicationBundleFile: File, archiveName: String, type: Type, simulator: Boolean, tools: CommandLineTools, watchApplicationBundleFile: File? = null) {
 	private var applications = "Applications"
 	private var products = "Products"
 
@@ -19,22 +21,26 @@ class Archive(applicationBundleFile: File, archiveName: String, tools: CommandLi
 	private val tools: CommandLineTools = tools
 	private val fileHelper: FileHelper = FileHelper(CommandRunner())
 	private val archiveName: String = archiveName
+	private val type: Type = type
+	private val simulator: Boolean = simulator
 
 
-	fun create(destinationDirectory: File) : File {
-		val archiveDirectory = copyApplication(destinationDirectory)
+	fun create(destinationDirectory: File) : ApplicationBundle {
+		val archiveDirectory = getArchiveDirectory(destinationDirectory)
+		val applicationDirectory = copyApplication(destinationDirectory, archiveDirectory)
 		copyOnDemandResources(archiveDirectory)
 		copyDsyms(archiveDirectory)
-		return archiveDirectory
+
+		val applicationBundle = ApplicationBundle(applicationDirectory, type, simulator, tools.plistHelper)
+		return applicationBundle
 	}
 
 
-	private fun copyApplication(destinationDirectory: File) : File {
-		val archiveDirectory = getArchiveDirectory(destinationDirectory)
+	private fun copyApplication(destinationDirectory: File, archiveDirectory: File) : File {
 		val applicationDirectory = File(archiveDirectory, "$products/$applications")
 		applicationDirectory.mkdirs()
 		fileHelper.copyTo(applicationBundleFile, applicationDirectory)
-		return archiveDirectory
+		return File(applicationDirectory, applicationBundleFile.name)
 	}
 
 

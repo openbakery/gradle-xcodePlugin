@@ -10,11 +10,7 @@ class CommandLineTools(commandRunner: CommandRunner, plistHelper: PlistHelper, l
 	val plistHelper: PlistHelper = plistHelper
 	val lipo: Lipo = lipo
 
-	constructor(xcode: Xcode) : this(xcode, CommandRunner())
-
-
-	constructor(xcode: Xcode, commandRunner: CommandRunner) :
-		this(commandRunner, PlistHelper(commandRunner), Lipo(xcode, commandRunner))
+	
 
 
 }

@@ -186,7 +186,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 			logger.debug("swiftlibs to add: {}", libNames)
 
-			File swiftLibs = new File(xcodebuild.getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
+			File swiftLibs = new File(getXcode().getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
 
 			swiftLibs.eachFile() {
 				logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
@@ -251,17 +251,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 				if (frameworkDirectory.exists()) {
 					FileUtils.deleteDirectory(frameworkDirectory)
 				}
-			}
-		}
-
-	}
-
-
-	def copyDsyms(File archiveDirectory, File dSymDirectory) {
-
-		archiveDirectory.eachFileRecurse(FileType.DIRECTORIES) { directory ->
-			if (directory.toString().toLowerCase().endsWith(".dsym")) {
-				copy(directory, dSymDirectory)
 			}
 		}
 
@@ -393,10 +382,9 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		if (parameters.watchOutputPath && parameters.watchOutputPath.exists()) {
 			watchOSSourcePath = parameters.watchOutputPath
 		}
-		def archive = new Archive(parameters.applicationBundle, getArchiveName(), tools, watchOSSourcePath)
+		def archive = new Archive(parameters.applicationBundle, getArchiveName(), parameters.type, parameters.simulator, tools, watchOSSourcePath)
 		def destinationFolder = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER)
-		def archiveDirectory = archive.create(destinationFolder)
-
+		def archiveAppBundle = archive.create(destinationFolder)
 
 
 		List<Bundle> appBundles = getAppBundles(parameters.outputPath)
@@ -404,9 +392,6 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			createEntitlements(bundle.path)
 			createExtensionSupportDirectory(bundle.path, xcodebuild, archiveDirectory)
 		}
-
-		File applicationFolder = new File(applicationsDirectory, parameters.applicationBundleName)
-		def archiveAppBundle = new ApplicationBundle(applicationFolder, parameters.type, parameters.simulator, this.plistHelper)
 
 		createInfoPlist(archiveDirectory)
 		createFrameworks(xcodebuild, archiveAppBundle, parameters.bitcode)
@@ -416,7 +401,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		copyBCSymbolMaps(archiveDirectory)
 
 		if (project.xcodebuild.type == Type.iOS) {
-			convertInfoPlistToBinary(applicationFolder)
+			convertInfoPlistToBinary(archiveAppBundle.applicationPath)
 			copyWatchFrameworks(archiveAppBundle, parameters.watchOutputPath)
 		}
 

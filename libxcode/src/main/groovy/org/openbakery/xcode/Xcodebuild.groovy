@@ -293,12 +293,14 @@ class Xcodebuild {
 	}
 
 
+	// returns the project specific toolchain directory.
+	// if nothing was specified the default toolchain directory is used
 	String getToolchainDirectory() {
 		String buildSetting = getBuildSetting("TOOLCHAIN_DIR")
 		if (buildSetting != null) {
 			return buildSetting
 		}
-		return "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain"
+		return xcode.getToolchainDirectory()
 	}
 
 	String getPlatformDirectory() {
