@@ -26,12 +26,24 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 
 
 	fun create(destinationDirectory: File) : ApplicationBundle {
+		return this.create(destinationDirectory, false)
+	}
+
+	fun create(destinationDirectory: File, bitcodeEnabled: Boolean) : ApplicationBundle {
+
 		val archiveDirectory = getArchiveDirectory(destinationDirectory)
 		val applicationDirectory = copyApplication(destinationDirectory, archiveDirectory)
 		copyOnDemandResources(archiveDirectory)
 		copyDsyms(archiveDirectory)
 
 		val applicationBundle = ApplicationBundle(applicationDirectory, type, simulator, tools.plistHelper)
+		if (type == Type.iOS) {
+			copyFrameworks(applicationBundle, archiveDirectory, applicationBundle.platformName, bitcodeEnabled)
+		}
+
+		if (applicationBundle.watchAppBundle != null) {
+			copyFrameworks(applicationBundle.watchAppBundle, archiveDirectory, applicationBundle.watchAppBundle.platformName, true)
+		}
 		return applicationBundle
 	}
 
@@ -69,19 +81,6 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 			}
 		}
 	}
-	/*
-	def copyDsyms(File archiveDirectory, File dSymDirectory) {
-
-		archiveDirectory.eachFileRecurse(FileType.DIRECTORIES) { directory ->
-			if (directory.toString().toLowerCase().endsWith(".dsym")) {
-				copy(directory, dSymDirectory)
-			}
-		}
-
-	}
-
-	 */
-
 
 	private fun getArchiveDirectory(destinationDirectory: File): File {
 		val archiveDirectory = File(destinationDirectory, this.archiveName + ".xcarchive")
@@ -89,5 +88,75 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 		return archiveDirectory
 	}
 
+	private fun copyFrameworks(applicationBundle: ApplicationBundle, archiveDirectory: File, platformName: String, bitcodeEnabled: Boolean) {
+		if (!applicationBundle.frameworksPath.exists()) {
+			logger.debug("framework path does not exists, so we are done")
+			return
+		}
+		var libNames = ArrayList<String>()
+
+		applicationBundle.frameworksPath.walk().forEach {
+			if (it.extension.toLowerCase() == "dylib") {
+				libNames.add(it.name)
+			}
+		}
+		logger.debug("swiftlibs to add: {}", libNames)
+		val swiftLibs = File(tools.lipo.xcodebuild.toolchainDirectory, "usr/lib/swift/${applicationBundle.platformName}")
+
+		swiftLibs.walk().forEach {
+			if (libNames.contains(it.name)) {
+				val swiftSupportDirectory = getSwiftSupportDirectory(archiveDirectory, platformName)
+				fileHelper.copyTo(it, swiftSupportDirectory)
+
+				if (!bitcodeEnabled) {
+					val destination = File(applicationBundle.frameworksPath, it.name)
+					val commandList = listOf("/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath)
+					tools.lipo.xcodebuild.commandRunner.run(commandList)
+				}
+
+			}
+		}
+	}
+
+	private fun getSwiftSupportDirectory(archiveDirectory: File, platformName: String) : File {
+		val swiftSupportDirectory = File(archiveDirectory, "SwiftSupport/$platformName")
+		if (!swiftSupportDirectory.exists()) {
+			swiftSupportDirectory.mkdirs()
+		}
+		return swiftSupportDirectory
+	}
+
+	/*
+	def createFrameworks(Xcodebuild xcodebuild, ApplicationBundle appBundle, boolean bitcode) {
+			File frameworksPath = appBundle.frameworksPath
+			if (frameworksPath.exists()) {
+				def libNames = []
+				frameworksPath.eachFile() {
+					libNames.add(it.getName())
+				}
+
+				logger.debug("swiftlibs to add: {}", libNames)
+
+				File swiftLibs = new File(getXcode().getToolchainDirectory(), "usr/lib/swift/$appBundle.platformName")
+
+				swiftLibs.eachFile() {
+					logger.debug("candidate for copy? {}: {}", it.name, libNames.contains(it.name))
+					if (libNames.contains(it.name)) {
+						copy(it, getSwiftSupportDirectory(appBundle.platformName))
+
+						if (!bitcode) {
+							File destination = new File(frameworksPath, it.getName())
+							commandRunner.run(["/usr/bin/xcrun", "bitcode_strip", it.absolutePath, "-r", "-o", destination.absolutePath])
+						}
+					}
+				}
+			}
+
+			ApplicationBundle watchAppBundle = appBundle.watchAppBundle
+			if (watchAppBundle != null) {
+				createFrameworks(xcodebuild, watchAppBundle, true)
+			}
+		}
+*/
 
 }

@@ -34,7 +34,7 @@ Now the current version is 0.19.1 that is the second release this year. The thir
 
 ## Requirements
 
-* Xcode 6 or greater
+ Xcode 7 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
 

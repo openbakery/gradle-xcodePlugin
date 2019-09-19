@@ -20,7 +20,7 @@ class LipoArchSpecification extends Specification {
 		lipo = new Lipo(xcodebuild)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		lipo = null
 		commandRunner = null
 	}

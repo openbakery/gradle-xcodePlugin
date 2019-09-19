@@ -18,7 +18,7 @@ class BundleSpecification extends Specification {
 		plistHelper = new PlistHelper(new CommandRunner())
 	}
 
-	def tearDown() {
+	def cleanup() {
 		applicationDummy.cleanup()
 		applicationDummy = null
 	}

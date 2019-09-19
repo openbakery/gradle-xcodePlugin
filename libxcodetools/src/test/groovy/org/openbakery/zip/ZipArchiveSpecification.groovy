@@ -12,7 +12,7 @@ class ZipArchiveSpecification extends Specification {
 	def setup() {
 	}
 
-	def tearDown() {
+	def cleanup() {
 		commandRunner = null
 	}
 

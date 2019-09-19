@@ -193,4 +193,21 @@ class ApplicationDummy {
 		dSymDirectory.mkdirs()
 	}
 
+	File createWatchApp(String name) {
+		File appDirectory = new File(applicationBundle, "Watch/${name}.app")
+		appDirectory.mkdirs()
+
+		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
+		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
+
+		File framework = new File(appDirectory, "PlugIns/Watch.appex/Frameworks/Library.framework")
+		framework.mkdirs()
+
+		File binary = new File(framework, "Binary")
+		FileUtils.writeStringToFile(binary, "bar")
+
+		return appDirectory
+	}
+
 }

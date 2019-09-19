@@ -47,7 +47,7 @@ class AppPackageSpecification extends Specification {
 		appPackage = new AppPackage(applicationBundle, archivePath, new CodesignParameters(), tools)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		appPackage = null
 		applicationDummy.cleanup()
 		applicationDummy = null

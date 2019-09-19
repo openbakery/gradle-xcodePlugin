@@ -53,7 +53,7 @@ class AppPackage_BundleWithPlugin_Specification extends Specification {
 		appPackage = new AppPackage(applicationBundle, archivePath, codesignParameters, tools)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		appPackage = null
 		applicationDummy.cleanup()
 		applicationDummy = null

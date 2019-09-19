@@ -14,7 +14,7 @@ class ApplicationBundleSpecification  extends Specification {
 		applicationDummy = new ApplicationDummy(tmpDirectory)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		applicationDummy.cleanup()
 		applicationDummy = null
 	}

@@ -60,7 +60,7 @@ class PackageTaskSpecification extends Specification {
 		packageTask.plistHelper = plistHelperStub
 
 		packageTask.commandRunner = commandRunner
-
+		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> ""
 
 
 		project.xcodebuild.signing.identity = "iPhone Developer: Firstname Surename (AAAAAAAAAA)"

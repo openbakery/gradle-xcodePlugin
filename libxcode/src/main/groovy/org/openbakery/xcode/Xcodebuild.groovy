@@ -21,6 +21,9 @@ class Xcodebuild {
 	List<Destination> destinations
 
 
+	public Xcodebuild(File projectDirectory, CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters) {
+		this(projectDirectory, commandRunner, xcode, parameters, [])
+	}
 
 	public Xcodebuild(File projectDirectory, CommandRunner commandRunner, Xcode xcode, XcodebuildParameters parameters, List<Destination> destinations) {
 		this.projectDirectory = projectDirectory

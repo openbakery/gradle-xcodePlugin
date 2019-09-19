@@ -30,7 +30,7 @@ class Archive_BaseSpecification extends Specification {
 		archive = new Archive(applicationPath, "Example", Type.iOS, false, tools, null)
 	}
 
-	def tearDown() {
+	def cleanup() {
 		archive = null
 		applicationDummy.cleanup()
 		applicationDummy = null

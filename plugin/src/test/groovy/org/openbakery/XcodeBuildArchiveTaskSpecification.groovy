@@ -376,26 +376,6 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 	}
 
 
-	def "swift framework in App Xcode 6"() {
-		given:
-		Xcodebuild xcodebuild = createXcodeBuild("6")
-		xcodeBuildArchiveTask.xcode = xcodebuild.xcode
-		mockSwiftLibs(xcodebuild)
-
-		when:
-		xcodeBuildArchiveTask.archive()
-
-		File libswiftCore = new File(projectDir, "build/archive/Example.xcarchive/Products/Applications/Example.app/Frameworks/libswiftCore.dylib")
-		File supportLibswiftDirectory = new File(projectDir, "build/archive/Example.xcarchive/SwiftSupport")
-		File supportLibswiftCore = new File(supportLibswiftDirectory, "libswiftCore.dylib")
-
-		then:
-		libswiftCore.exists()
-		supportLibswiftDirectory.list().length == 5
-		supportLibswiftCore.exists()
-		FileUtils.readFileToString(supportLibswiftCore).equals("bar")
-	}
-
 	def "copy swift framework with bitcode enabled"() {
 		given:
 		Xcodebuild xcodebuild = createXcodeBuild("7")

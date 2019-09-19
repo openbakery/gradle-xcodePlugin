@@ -6,6 +6,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractDistributeTask
+import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.assemble.AppPackage
 import org.openbakery.bundle.ApplicationBundle
@@ -13,9 +14,13 @@ import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.tools.CommandLineTools
 import org.openbakery.tools.Lipo
+import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
 import org.openbakery.codesign.ProvisioningProfileReader
+import org.openbakery.xcode.Xcode
+import org.openbakery.xcode.Xcodebuild
+import org.openbakery.xcode.XcodebuildParameters
 
 class PackageTask extends AbstractDistributeTask {
 
@@ -109,8 +114,8 @@ class PackageTask extends AbstractDistributeTask {
 		codesignParameters.type = project.xcodebuild.type
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
 
-
-		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcode, commandRunner))
+		Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, new XcodebuildParameters())
+		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcodebuild))
 		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), codesignParameters, tools)
 
 		appPackage.addSwiftSupport()
