@@ -88,7 +88,9 @@ public class TestResultParser {
 		def runner = new CommandRunner()
 		def json = new JsonSlurper()
 
-		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value.first()
+		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value[0]
+		if(testsRef == null) { return }
+
 		def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
 
 		def results = json.parseText(testsResults)
@@ -114,10 +116,10 @@ public class TestResultParser {
 
 		if (test.subtests && test.subtests._values && test._type._name == "ActionTestSummaryGroup") {
 			testClass = new TestClass(name: test.name._value)
-			testsStatus.add(testClass)
 			test.subtests._values.each {
 				testWithStatus(it, testsStatus, testClass)
 			}
+			if(!testClass.results.empty) { testsStatus << testClass }
 		}
 	}
 
