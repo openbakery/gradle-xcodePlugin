@@ -50,29 +50,40 @@ public class TestResultParser {
 			return
 		}
 
-		testSummariesArray.toList().each {
-			def testResult = new XMLPropertyListConfiguration(it)
-			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
+		if (isTestSummaryPlistAvailable()) {
+			logger.debug("parsing xcresult scheme version < 3")
+			testSummariesArray.toList().each {
+				def testResult = new XMLPropertyListConfiguration(it)
+				def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
 
-			Destination destination = findDestinationForIdentifier(destinations, identifier)
-			if (destination != null) {
-				def resultList = processTestSummary(testResult.getList("TestableSummaries"))
-				testResults.put(destination, resultList)
+				Destination destination = findDestinationForIdentifier(destinations, identifier)
+				if (destination != null) {
+					def resultList = processTestSummary(testResult.getList("TestableSummaries"))
+					testResults.put(destination, resultList)
+				}
+			}
+		} else {
+			logger.debug("Using new xcresult scheme version")
+			def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
+			files.each {
+				def xcResult = parseXCResultFile(it)
+				def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
+
+				Destination destination = findDestinationForIdentifier(destinations, identifier)
+				if (destination) {
+					def resultList = parseNewTestSummaries(xcResult, it)
+					testResults.put(destination, resultList)
+				}
+
 			}
 		}
-		if (!testResults.isEmpty()) return
+	}
 
-		logger.debug("Using new xcresult scheme version")
-		def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
-		files.each {
-			def xcResult = parseXCResultFile(it)
-			def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
+	private Boolean isTestSummaryPlistAvailable() {
+		def testSummaries = new FileNameFinder()
+			.getFileNames(testSummariesDirectory.path, '*TestSummaries.plist *.xcresult/*_Test/action_TestSummaries.plist')
 
-			Destination destination = findDestinationForIdentifier(destinations, identifier)
-			def resultList = parseNewTestSummaries(xcResult, it)
-			testResults.put(destination, resultList)
-
-		}
+		return !testSummaries.isEmpty()
 	}
 
 	Map<String, Object> parseXCResultFile(File file) {
