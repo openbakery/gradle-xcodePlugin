@@ -2,8 +2,6 @@ language: objective-c
 
 sudo: false
 
-osx_image: xcode11
-
 env:
   - TERM=dumb
 

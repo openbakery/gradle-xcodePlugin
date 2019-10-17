@@ -36,7 +36,7 @@ Now the current version is 0.19.1 that is the second release this year. The thir
 
 * Xcode 6 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
-* Java 1.8 or greater
+* Java 1.6 or greater
 
 
 ### Current stable version is 0.19.1
