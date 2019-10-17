@@ -126,7 +126,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse new xcresult test summary has result"() {
 		given:
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode7.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse()
@@ -173,7 +173,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse new xcresult test summary and verify number test results"() {
 		given:
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode7.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse()
@@ -204,7 +204,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse new xcresult test summary that has failure"() {
 		given:
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
-		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode7.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse()
