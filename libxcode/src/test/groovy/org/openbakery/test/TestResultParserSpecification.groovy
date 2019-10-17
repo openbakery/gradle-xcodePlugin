@@ -18,18 +18,19 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations())
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode7.txt"))
 	}
 
-	List<Destination> getDestinations() {
-		SimulatorControlFake simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt")
+	List<Destination> getDestinations(String simctlList) {
+		SimulatorControlFake simulatorControl = new SimulatorControlFake(simctlList)
 		XcodebuildParameters parameters = new XcodebuildParameters()
 		parameters.simulator = true
 		parameters.type = Type.iOS
 		parameters.configuredDestinations = [
 			new Destination("iPad 2"),
-			new Destination("iPhone 4s")
+			new Destination("iPhone 4s"),
+			new Destination("iPhone 8"),
 		]
 
 		DestinationResolver destinationResolver = new DestinationResolver(simulatorControl)
@@ -103,7 +104,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse legacy test summary has result"() {
 		given:
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Legacy/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode7.txt"))
 
 		when:
 		testResultParser.parse()
@@ -120,6 +121,33 @@ class TestResultParserSpecification extends Specification {
 		then:
 		testResultParser.testResults != null
 		testResultParser.testResults.size() > 0
+	}
+
+	def "parse new xcresult test summary has result"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults != null
+		testResultParser.testResults.size() > 0
+	}
+
+	def "parse new xcresult scheme and verify result count"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults.size() == 1
+		testResultParser.testResults.keySet()[0].name == "iPhone 8"
+		testResultParser.numberSuccess() == 4
 	}
 
 	def "parse test summary and verify result count"() {
@@ -142,10 +170,25 @@ class TestResultParserSpecification extends Specification {
 
 	}
 
+	def "parse new xcresult test summary and verify number test results"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
+
+		when:
+		testResultParser.parse()
+
+		def firstKey = testResultParser.testResults.keySet()[0]
+		then:
+		testResultParser.testResults.get(firstKey).size() == 2
+		testResultParser.numberSuccess() == 4
+
+	}
+
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
-		testResultParser = new TestResultParser(testSummaryDirectory, destinations)
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Failure")
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode7.txt"))
 
 		when:
 		testResultParser.parse()
@@ -157,6 +200,23 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.numberErrors() == 1
 
 	}
+
+	def "parse new xcresult test summary that has failure"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
+		testResultParser = new TestResultParser(testSummaryDirectory, getDestinations("simctl-list-xcode11.txt"))
+
+		when:
+		testResultParser.parse()
+
+		def firstKey = testResultParser.testResults.keySet()[0]
+		then:
+		testResultParser.testResults.get(firstKey).size() == 2
+		testResultParser.numberSuccess() == 3
+		testResultParser.numberErrors() == 1
+
+	}
+
 
 	HashMap<Destination, ArrayList<TestClass>> getMergedResult() {
 

@@ -1,7 +1,9 @@
 package org.openbakery.test
 
+import groovy.json.JsonSlurper
 import groovy.xml.MarkupBuilder
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.openbakery.CommandRunner
 import org.openbakery.xcode.Destination
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -48,21 +50,95 @@ public class TestResultParser {
 			return
 		}
 
-		testSummariesArray.toList().each {
-			def testResult = new XMLPropertyListConfiguration(it)
-			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
+		if (isTestSummaryPlistAvailable()) {
+			logger.debug("parsing xcresult scheme version < 3")
+			testSummariesArray.toList().each {
+				def testResult = new XMLPropertyListConfiguration(it)
+				def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
 
-			Destination destination = findDestinationForIdentifier(destinations, identifier)
-			if (destination != null) {
-				def resultList = processTestSummary(testResult.getList("TestableSummaries"))
-				testResults.put(destination, resultList)
+				Destination destination = findDestinationForIdentifier(destinations, identifier)
+				if (destination != null) {
+					def resultList = processLegacyTestSummary(testResult.getList("TestableSummaries"))
+					testResults.put(destination, resultList)
+				}
 			}
+		} else {
+			logger.debug("Using new xcresult scheme version")
+			def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
+			files.each {
+				def xcResult = parseXCResultFile(it)
+				def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
+
+				Destination destination = findDestinationForIdentifier(destinations, identifier)
+				if (destination) {
+					def resultList = processTestSummary(xcResult, it)
+					testResults.put(destination, resultList)
+				}
+
+			}
+		}
+	}
+
+	private Boolean isTestSummaryPlistAvailable() {
+		def testSummaries = new FileNameFinder()
+			.getFileNames(testSummariesDirectory.path, '*TestSummaries.plist *.xcresult/*_Test/action_TestSummaries.plist')
+
+		return !testSummaries.isEmpty()
+	}
+
+	Map<String, Object> parseXCResultFile(File file) {
+		def runner = new CommandRunner()
+		def result = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath)
+		def json = new JsonSlurper()
+		def object = json.parseText(result)
+
+		return object
+	}
+
+	ArrayList<TestClass> processTestSummary(Map<String, Object> xcResult, File file) {
+		def runner = new CommandRunner()
+		def json = new JsonSlurper()
+
+		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value[0]
+		if(testsRef == null) {
+			logger.debug("No tests Ref found, skipping test result parsing")
+			return
+		}
+
+		def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
+
+		def results = json.parseText(testsResults)
+
+		def testStatus = new ArrayList<TestClass>()
+
+		results.summaries._values.each {
+			it.testableSummaries._values.each {
+				it.tests._values.each {
+					testWithStatus(it, testStatus, null)
+				}
+			}
+		}
+
+		return testStatus
+	}
+
+	private void testWithStatus(Map<String, Object> test, ArrayList<TestClass> testsStatus, TestClass testClass) {
+		if (test.testStatus) {
+			def testResult = new TestResult(method: test.identifier._value, success: test.testStatus._value == "Success")
+			testClass.results.add(testResult)
+		}
+
+		if (test.subtests && test.subtests._values && test._type._name == "ActionTestSummaryGroup") {
+			testClass = new TestClass(name: test.name._value)
+			test.subtests._values.each {
+				testWithStatus(it, testsStatus, testClass)
+			}
+			if(!testClass.results.empty) { testsStatus << testClass }
 		}
 	}
 
 	private void store(File outputDirectory) {
 		logger.debug("store to test-result.xml")
-
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)
@@ -148,7 +224,6 @@ public class TestResultParser {
 					output = new StringBuilder()
 
 
-
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }
 					if (testClass == null) {
 						testClass = new TestClass(name: testClassName);
@@ -220,10 +295,7 @@ public class TestResultParser {
 	}
 
 
-
-
-
-	List<TestClass> processTestSummary(List<XMLPropertyListConfiguration> list) {
+	List<TestClass> processLegacyTestSummary(List<XMLPropertyListConfiguration> list) {
 
 		List<TestClass> resultList = []
 

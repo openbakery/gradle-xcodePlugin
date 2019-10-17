@@ -36,7 +36,7 @@ Now the current version is 0.19.1 that is the second release this year. The thir
 
  Xcode 7 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
-* Java 1.6 or greater
+* Java 1.8 or greater
 
 
 ### Current stable version is 0.19.1
@@ -68,20 +68,19 @@ xcodebuild {
 You can also use the version that is deployed the repository on [openbakery.org](https://openbakery.org) with the following build.gradle file configuration:
 ```
 buildscript {
-	repositories {
-		maven {
-			url('http://repository.openbakery.org/')
-		}
-		mavenCentral()
+  repositories {
+    maven {
+      url('http://repository.openbakery.org/')
+    }
+  mavenCentral()
   }
 
-	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.19.+"
-	}
+  dependencies {
+    classpath "org.openbakery:xcode-plugin:0.19.+"
+  }
 }
 
 apply plugin: "org.openbakery.xcode-plugin"
-
 ```
 
 ### Current develop version
