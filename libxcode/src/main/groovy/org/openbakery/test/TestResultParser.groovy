@@ -58,7 +58,7 @@ public class TestResultParser {
 
 				Destination destination = findDestinationForIdentifier(destinations, identifier)
 				if (destination != null) {
-					def resultList = processTestSummary(testResult.getList("TestableSummaries"))
+					def resultList = processLegacyTestSummary(testResult.getList("TestableSummaries"))
 					testResults.put(destination, resultList)
 				}
 			}
@@ -71,7 +71,7 @@ public class TestResultParser {
 
 				Destination destination = findDestinationForIdentifier(destinations, identifier)
 				if (destination) {
-					def resultList = parseNewTestSummaries(xcResult, it)
+					def resultList = processTestSummary(xcResult, it)
 					testResults.put(destination, resultList)
 				}
 
@@ -95,12 +95,15 @@ public class TestResultParser {
 		return object
 	}
 
-	ArrayList<TestClass> parseNewTestSummaries(Map<String, Object> xcResult, File file) {
+	ArrayList<TestClass> processTestSummary(Map<String, Object> xcResult, File file) {
 		def runner = new CommandRunner()
 		def json = new JsonSlurper()
 
 		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value[0]
-		if(testsRef == null) { return }
+		if(testsRef == null) {
+			logger.debug("No tests Ref found, skipping test result parsing")
+			return
+		}
 
 		def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
 
@@ -292,7 +295,7 @@ public class TestResultParser {
 	}
 
 
-	List<TestClass> processTestSummary(List<XMLPropertyListConfiguration> list) {
+	List<TestClass> processLegacyTestSummary(List<XMLPropertyListConfiguration> list) {
 
 		List<TestClass> resultList = []
 
