@@ -152,6 +152,14 @@ class Xcode {
 		return getPath() + XCODE_CONTENT_XC_RUN
 	}
 
+	String getXcresulttool() {
+		def xcresulttoolPath = getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcresulttool"
+		if(new File(xcresulttoolPath).exists()) {
+			return xcresulttoolPath
+		}
+		return null
+	}
+
 	String getSimctl() {
 		return getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/simctl"
 	}

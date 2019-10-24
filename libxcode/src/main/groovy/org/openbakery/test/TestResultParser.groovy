@@ -25,12 +25,14 @@ public class TestResultParser {
 
 	File testSummariesDirectory
 	List<Destination> destinations
+	String xcresulttoolPath
 
 	def testResults = new HashMap<Destination, ArrayList<TestClass>>()
 
-	public TestResultParser(File testSummariesDirectory, List<Destination> destinations) {
+	public TestResultParser(File testSummariesDirectory, String xcresulttoolPath, List<Destination> destinations) {
 		this.testSummariesDirectory = testSummariesDirectory
 		this.destinations = destinations
+		this.xcresulttoolPath = xcresulttoolPath
 	}
 
 	public void parseAndStore(File outputDirectory) {
@@ -66,6 +68,10 @@ public class TestResultParser {
 			logger.debug("Using new xcresult scheme version")
 			def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
 			files.each {
+				if(xcresulttoolPath == null) {
+					logger.debug("No xcresulttool found.")
+					return
+				}
 				def xcResult = parseXCResultFile(it)
 				def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
 
@@ -88,7 +94,7 @@ public class TestResultParser {
 
 	Map<String, Object> parseXCResultFile(File file) {
 		def runner = new CommandRunner()
-		def result = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath)
+		def result = runner.runWithResult(xcresulttoolPath, "get", "--format", "json", "--path", file.absolutePath)
 		def json = new JsonSlurper()
 		def object = json.parseText(result)
 
@@ -105,7 +111,7 @@ public class TestResultParser {
 			return
 		}
 
-		def testsResults = runner.runWithResult("xcrun", "xcresulttool", "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
+		def testsResults = runner.runWithResult(xcresulttoolPath, "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
 
 		def results = json.parseText(testsResults)
 
