@@ -126,6 +126,7 @@ class Xcode {
 
 	String getPath() {
 		if (xcodePath == null) {
+			print(commandRunner)
 			String result = commandRunner.runWithResult(XCODE_ACTION_XC_SELECT
 				, "-p")
 			xcodePath = result - "/$XCODE_CONTENT_DEVELOPER"
@@ -154,10 +155,11 @@ class Xcode {
 
 	String getXcresulttool() {
 		def xcresulttoolPath = getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcresulttool"
+		println("Path: " + xcresulttoolPath)
 		if(new File(xcresulttoolPath).exists()) {
 			return xcresulttoolPath
 		}
-		return null
+		return "xcrun xcresulttool"
 	}
 
 	String getSimctl() {

@@ -68,8 +68,9 @@ class XcodeTestTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(project.buildDir)
 	}
 
-	def mockXcodeVersion() {
+	def mockXcodeVersionAndPath() {
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 7.2.1\nBuild version 7C1002")
+		commandRunner.runWithResult("xcode-select", "-p") >> ("/Applications/Xcode.app/Contents/Developer")
 	}
 
 	def expectedDefaultDirectories() {
@@ -178,7 +179,7 @@ class XcodeTestTaskSpecification extends Specification {
 		dependsOn.contains(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME)
 	}
 
-	
+
 
 	def "test command without simulator"() {
 		project.xcodebuild.commandRunner = commandRunner
@@ -188,7 +189,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 		project.xcodebuild.type = 'macOS'
 		project.xcodebuild.target = 'Test'
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 
 
 		when:
@@ -246,7 +247,7 @@ class XcodeTestTaskSpecification extends Specification {
 						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
 						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 		)
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 
 		when:
 		xcodeTestTask.test()
@@ -270,7 +271,7 @@ class XcodeTestTaskSpecification extends Specification {
 						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
 		)
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
-
+		mockXcodeVersionAndPath()
 
 		when:
 		xcodeTestTask.test()
@@ -311,7 +312,7 @@ class XcodeTestTaskSpecification extends Specification {
 		project.xcodebuild.commandRunner = commandRunner
 		def commandList
 		def expectedCommandList = setupOSXBuild("-destination","platform=OS X,arch=x86_64")
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 
 
 		when:
@@ -333,7 +334,9 @@ class XcodeTestTaskSpecification extends Specification {
 		def expectedCommandList = setupOSXBuild(
 						"-destination", "platform=OS X,arch=x86_64"
 		)
+
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
+		mockXcodeVersionAndPath()
 
 		when:
 		xcodeTestTask.test()
@@ -354,6 +357,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "output file was set"() {
 		def givenOutputFile
 		project.xcodebuild.target = "Test"
+		mockXcodeVersionAndPath()
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 
 		when:
@@ -369,6 +373,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 	def "build directory is created"() {
 		project.xcodebuild.target = "Test"
+		mockXcodeVersionAndPath()
 		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
 
 		when:
@@ -495,7 +500,7 @@ class XcodeTestTaskSpecification extends Specification {
 		expectedCommandList.addAll(["-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"])
 		expectedCommandList.addAll(expectedDefaultDirectories())
 
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 
 
 
@@ -518,7 +523,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 
 	def "delete derivedData/Logs/Test before test is executed"() {
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 		project.xcodebuild.target = "Test"
 
 		def testDirectory = new File(project.xcodebuild.derivedDataPath, "Logs/Test")
@@ -535,7 +540,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "parse test-result.xml gets stored"() {
 		given:
 
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 		project.xcodebuild.target = "Test"
 
 		when:
@@ -550,7 +555,7 @@ class XcodeTestTaskSpecification extends Specification {
 	def "has TestResultParser"() {
 		given:
 
-		mockXcodeVersion()
+		mockXcodeVersionAndPath()
 		project.xcodebuild.target = "Test"
 
 		when:
