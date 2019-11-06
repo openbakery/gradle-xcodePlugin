@@ -39,7 +39,7 @@ xcodebuild {
 	scheme = 'SwiftExample'
 	target = 'SwiftExample'
 
-	destination = ['iPad Air', 'iPhone 6s' ]
+	destination = ['iPad Pro (11-inch)', 'iPhone 8' ]
 }
 
 
