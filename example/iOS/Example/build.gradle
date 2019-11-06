@@ -41,7 +41,7 @@ xcodebuild {
 	target = 'Example'
 	scheme = 'Example'
 	configuration = 'Test'
-	destination = ['iPad Air', 'iPhone 6s' ]
+	destination = ['iPad Pro (11-inch)', 'iPhone 8' ]
 }
 
 infoplist {
