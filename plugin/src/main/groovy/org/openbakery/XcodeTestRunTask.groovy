@@ -52,6 +52,10 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 		parameters.xctestrun = getXcruntestFiles()
 
+		if (parameters.xctestrun.size == 0) {
+			throw new IllegalStateException("No tests found!")
+		}
+
 		File testLogsDirectory = new File(parameters.derivedDataPath, "Logs/Test")
 		testLogsDirectory.deleteDir()
 
@@ -126,7 +130,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		if (bundleDirectory != null) {
 			return project.file(bundleDirectory)
 		}
-		return new File(".")
+		return project.file(".")
 	}
 
 

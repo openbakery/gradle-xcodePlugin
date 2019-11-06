@@ -56,6 +56,15 @@ class XcodeTestRunTaskSpecification extends Specification {
 	}
 
 
+
+	def createTestBundle(String directoryName) {
+		File bundleDirectory = new File(project.getProjectDir(), directoryName)
+		File testBundle = new File(bundleDirectory, "Example.testbundle")
+		testBundle.mkdirs()
+		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
+		FileUtils.copyFile(xctestrun, new File(testBundle, "Example_iphonesimulator.xctestrun"))
+	}
+
 	def "instance is of type XcodeBuildForTestTask"() {
 		expect:
 		xcodeTestRunTestTask instanceof  XcodeTestRunTask
@@ -88,7 +97,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		project.xcodebuild.destination = [
 						"iPhone 6"
 		]
-
+		createTestBundle("test")
 		xcodeTestRunTestTask.testRun()
 
 		then:
@@ -106,14 +115,14 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.bundleDirectory instanceof File
 	}
 
+	def "has default bundle directory in project folder"() {
 
-	def createTestBundle(String directoryName) {
-		File bundleDirectory = new File(project.getProjectDir(), directoryName)
-		File testBundle = new File(bundleDirectory, "Example.testbundle")
-		testBundle.mkdirs()
-		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
-		FileUtils.copyFile(xctestrun, new File(testBundle, "Example_iphonesimulator.xctestrun"))
+		expect:
+		xcodeTestRunTestTask.bundleDirectory instanceof File
+		xcodeTestRunTestTask.bundleDirectory == project.file(".")
 	}
+
+
 
 
 	def "set configure xctestrun"() {
@@ -163,8 +172,11 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "has output appender"() {
 		def outputAppender
+		given:
+		createTestBundle("test")
 
 		when:
+
 		xcodeTestRunTestTask.testRun()
 
 		then:
@@ -173,7 +185,10 @@ class XcodeTestRunTaskSpecification extends Specification {
 	}
 
 	def "delete derivedData/Logs/Test before test is executed"() {
+		given:
+		createTestBundle("test")
 		project.xcodebuild.target = "Test"
+
 
 		def testDirectory = new File(project.xcodebuild.derivedDataPath, "Logs/Test")
 		FileUtils.writeStringToFile(new File(testDirectory, "foobar"), "dummy");
@@ -204,6 +219,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "parse test-result.xml gets stored"() {
 		given:
+		createTestBundle("test")
 		project.xcodebuild.target = "Test"
 
 		when:
@@ -217,6 +233,8 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 	def "has TestResultParser"() {
 		given:
+		createTestBundle("test")
+
 		project.xcodebuild.target = "Test"
 
 		when:
@@ -231,6 +249,9 @@ class XcodeTestRunTaskSpecification extends Specification {
 	}
 
 	def "output file was set"() {
+		given:
+		createTestBundle("test")
+
 		def givenOutputFile
 		project.xcodebuild.target = "Test"
 
@@ -418,5 +439,20 @@ class XcodeTestRunTaskSpecification extends Specification {
 		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app"), Type.iOS, plistHelper))
 		1 * codesign.sign(new Bundle(new File(bundleDirectory, "DemoApp-iOS.testbundle/Debug-iphoneos/DemoApp.app/PlugIns/Tests.xctest"), Type.iOS, plistHelper))
 
+	}
+
+
+	def "executing xctestrun with project that has no tests throws an exception"() {
+		given:
+
+		when:
+		def xctestrun =  xcodeTestRunTestTask.getXcruntestFiles()
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		xctestrun instanceof List
+		xctestrun.size() == 0
+		def exception =  thrown(IllegalStateException)
+		exception.message == "No tests found!"
 	}
 }

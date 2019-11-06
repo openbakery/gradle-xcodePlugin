@@ -2,6 +2,8 @@
 
 Bugfixes
 * additionalParameters as list did not work when applying it to the Task
+* The test cases (.xctestrun) where not found because they where not search in the project directory.
+  (It looks like with newer gradle version the default directory in not in the project root anymore) 
 
 # 0.19.1 (Apr 24, 2019)
 
