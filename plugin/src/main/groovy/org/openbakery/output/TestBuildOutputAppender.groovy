@@ -148,13 +148,13 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		if (finishMatcher.matches()) {
 			String result = finishMatcher[0][2].trim()
 			String duration = finishMatcher[0][3].trim()
-			boolean failed = result.equals("failed");
+			boolean failed = (result == "failed")
 			if (failed) {
 				testsFailed++
 			}
-			printTestResult(currentTestCase, failed, duration);
-			currentTestCase = null;
-			testsCompleted++;
+			printTestResult(currentTestCase, failed, duration)
+			currentTestCase = null
+			testsCompleted++
 			return true
 		}
 		return false
@@ -171,7 +171,7 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	boolean checkTestStart(String line) {
 
 		if (isStartTest(line) || isStartTestLegacy(line)) {
-			output.withStyle(StyledTextOutput.Style.Normal).text("TESTS STARTED!\n")
+			output.withStyle(StyledTextOutput.Style.Normal).text("Tests started!\n")
 			progress("Starting Tests")
 		}
 
@@ -181,7 +181,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			startDestination()
 			String testCase = startMatcher[0][1].trim()
 
-			//0 tests completed, Test Suite 'DTActionPanelTest_iPhone'
 			int endIndex = testCase.indexOf(' ')
 			int startIndex = testCase.indexOf('[')
 			if (startIndex > 0 && endIndex > 0) {
@@ -189,12 +188,10 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 				message += ", running '" + testCase.substring(startIndex + 1, endIndex) + "'"
 				progress(message)
 			}
-
-
-			currentTestCase = testCase;
-			return true;
+			currentTestCase = testCase
+			return true
 		}
-		return false;
+		return false
 	}
 
 	private String getTestInfoMessage() {
@@ -211,8 +208,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			if (destination) {
 				startedDestination = testRun
 				output.append("\nRun tests for: ")
-				output.append(destination.toPrettyString());
-				output.println();
+				output.append(destination.toPrettyString())
+				output.println()
 			}
 		}
 	}
@@ -223,32 +220,32 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			progress("Tests finished: " + destination.toPrettyString())
 			output.append(getTestInfoMessage())
 			output.append("\n")
-			testRun++;
-			testsFailed = 0;
-			testsCompleted = 0;
+			testRun++
+			testsFailed = 0
+			testsCompleted = 0
 		}
 	}
 
 	void printTestResult(String testCase, boolean failed, String duration) {
 		if (!failed) {
 			if (!fullProgress) {
-				return;
+				return
 			}
 			output.withStyle(StyledTextOutput.Style.Identifier).text("      OK")
 		} else {
 			output.withStyle(StyledTextOutput.Style.Failure).text("  FAILED")
 		}
 		output.append(" ")
-		output.append(testCase);
+		output.append(testCase)
 		output.append(" - (")
 		output.append(duration)
 		output.append(" seconds)")
-		output.println();
-		output.println();
+		output.println()
+		output.println()
 		if (failed) {
 			output.withStyle(StyledTextOutput.Style.Identifier).text(currentOutput.toString())
-			output.println();
-			output.println();
+			output.println()
+			output.println()
 		}
 	}
 

@@ -29,6 +29,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	File outputDirectory = null
 
 	Codesign codesign = null
+	boolean fullProgress = false
 
 	XcodeTestRunTask() {
 		super()
@@ -44,7 +45,9 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(getClass(), LogLevel.LIFECYCLE);
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(getClass()).start(name, name);
-		return new TestBuildOutputAppender(progressLogger, output, destinations)
+		def result = new TestBuildOutputAppender(progressLogger, output, destinations)
+		result.fullProgress = this.fullProgress
+		result
 	}
 
 	@TaskAction

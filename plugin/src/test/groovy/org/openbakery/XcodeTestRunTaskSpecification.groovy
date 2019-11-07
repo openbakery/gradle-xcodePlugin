@@ -184,6 +184,21 @@ class XcodeTestRunTaskSpecification extends Specification {
 		outputAppender instanceof TestBuildOutputAppender
 	}
 
+	def "has output appender with full progress"() {
+		def outputAppender
+		given:
+		createTestBundle("test")
+
+		when:
+		xcodeTestRunTestTask.fullProgress = true
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> outputAppender = arguments[3] }
+		outputAppender instanceof TestBuildOutputAppender
+		((TestBuildOutputAppender)outputAppender).fullProgress == true
+	}
+
 	def "delete derivedData/Logs/Test before test is executed"() {
 		given:
 		createTestBundle("test")

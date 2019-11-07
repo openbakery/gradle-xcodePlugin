@@ -34,7 +34,7 @@ class XcodeBuildOutputAppender implements OutputAppender {
 	}
 
 	XcodeBuildOutputAppender(StyledTextOutput output) {
-		this(null, output);
+		this(null, output)
 		fullProgress = true
 	}
 
