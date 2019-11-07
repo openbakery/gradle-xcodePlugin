@@ -27,10 +27,14 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		Done // all tests are finished
 	}
 
-	def TEST_CASE_FINISH_PATTERN = ~/^Test Case '(.*)'\s(\w+)\s\((\d+\.\d+)\sseconds\)\./
-	def TEST_CASE_START_PATTERN = ~/^Test Case '(.*)' started./
-	def TEST_SUITE_START_PATTERN = ~/.*Test Suite '(.*)' started.*/
-	def FAILED_TESTS_PATTERN = ~/^Failing tests:/
+	// Matches
+	// Xcode 11: "Test case '-[EditTextTableViewCellTest test_keyLabel]' passed on 'iPhone 8' (0.008 seconds)"
+	// Xcode < 11: "Test Case '-[OBFoundationTests.AlertDialogHandlerTest test_dialog_builder]' passed (0.007 seconds)."
+	def TEST_CASE_FINISH_PATTERN = ~/^[Tt]est [Cc]ase '(.*)'\s(\w+)(\son\s'.*?')?\s\((\d+\.\d+)\sseconds\)\.?/
+
+
+	def TEST_CASE_START_PATTERN = ~/^[Tt]est [Cc]ase '(.*)' started./
+	def TEST_SUITE_START_PATTERN = ~/.*[Tt]est [Ss]uite '(.*)' started.*/
 	def TEST_FAILED_PATTERN = ~/.*\*\* TEST FAILED \*\*/
 	def TEST_SUCCEEDED_PATTERN = ~/.*\*\* TEST SUCCEEDED \*\*/
 
@@ -103,6 +107,8 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		def startMatcher = TEST_SUITE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
 			startDestination()
+			def name = startMatcher[0][1].trim()
+			progress("${getTestInfoMessage()}, running '${name}'")
 			return true
 		}
 		return false
@@ -146,13 +152,23 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 	boolean checkTestFinished(String line) {
 		def finishMatcher = TEST_CASE_FINISH_PATTERN.matcher(line)
 		if (finishMatcher.matches()) {
-			String result = finishMatcher[0][2].trim()
-			String duration = finishMatcher[0][3].trim()
+			def matchingGroups = finishMatcher[0]
+			String result = matchingGroups[2].trim()
+			String duration = matchingGroups[matchingGroups.size-1].trim()
 			boolean failed = (result == "failed")
 			if (failed) {
 				testsFailed++
 			}
-			printTestResult(currentTestCase, failed, duration)
+			String testCase = finishMatcher[0][1].trim()
+			int endIndex = testCase.indexOf(' ')
+			int startIndex = testCase.indexOf('[')
+			if (startIndex > 0 && endIndex > 0) {
+				String message = getTestInfoMessage()
+				message += ", running '" + testCase.substring(startIndex + 1, endIndex) + "'"
+				progress(message)
+			}
+
+			printTestResult(testCase, failed, duration)
 			currentTestCase = null
 			testsCompleted++
 			return true
@@ -175,19 +191,10 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 			progress("Starting Tests")
 		}
 
-
 		def startMatcher = TEST_CASE_START_PATTERN.matcher(line)
 		if (startMatcher.matches()) {
 			startDestination()
 			String testCase = startMatcher[0][1].trim()
-
-			int endIndex = testCase.indexOf(' ')
-			int startIndex = testCase.indexOf('[')
-			if (startIndex > 0 && endIndex > 0) {
-				String message = getTestInfoMessage()
-				message += ", running '" + testCase.substring(startIndex + 1, endIndex) + "'"
-				progress(message)
-			}
 			currentTestCase = testCase
 			return true
 		}
@@ -240,7 +247,6 @@ class TestBuildOutputAppender extends XcodeBuildOutputAppender {
 		output.append(" - (")
 		output.append(duration)
 		output.append(" seconds)")
-		output.println()
 		output.println()
 		if (failed) {
 			output.withStyle(StyledTextOutput.Style.Identifier).text(currentOutput.toString())

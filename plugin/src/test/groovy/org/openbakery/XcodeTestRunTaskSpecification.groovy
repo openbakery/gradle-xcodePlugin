@@ -184,13 +184,13 @@ class XcodeTestRunTaskSpecification extends Specification {
 		outputAppender instanceof TestBuildOutputAppender
 	}
 
-	def "has output appender with full progress"() {
+	def "has output appender with showProgress set to true"() {
 		def outputAppender
 		given:
 		createTestBundle("test")
 
 		when:
-		xcodeTestRunTestTask.fullProgress = true
+		xcodeTestRunTestTask.showProgress = true
 		xcodeTestRunTestTask.testRun()
 
 		then:
