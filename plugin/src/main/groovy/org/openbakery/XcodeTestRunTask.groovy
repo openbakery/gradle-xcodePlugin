@@ -29,6 +29,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	File outputDirectory = null
 
 	Codesign codesign = null
+	boolean showProgress = false
 
 	XcodeTestRunTask() {
 		super()
@@ -44,13 +45,19 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(getClass(), LogLevel.LIFECYCLE);
 		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(getClass()).start(name, name);
-		return new TestBuildOutputAppender(progressLogger, output, destinations)
+		def result = new TestBuildOutputAppender(progressLogger, output, destinations)
+		result.fullProgress = this.showProgress
+		result
 	}
 
 	@TaskAction
 	def testRun() {
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 		parameters.xctestrun = getXcruntestFiles()
+
+		if (parameters.xctestrun.size == 0) {
+			throw new IllegalStateException("No tests found!")
+		}
 
 		File testLogsDirectory = new File(parameters.derivedDataPath, "Logs/Test")
 		testLogsDirectory.deleteDir()
@@ -126,7 +133,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		if (bundleDirectory != null) {
 			return project.file(bundleDirectory)
 		}
-		return new File(".")
+		return project.file(".")
 	}
 
 

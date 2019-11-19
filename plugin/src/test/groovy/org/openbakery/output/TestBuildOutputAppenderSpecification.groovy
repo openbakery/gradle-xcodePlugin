@@ -49,8 +49,12 @@ class TestBuildOutputAppenderSpecification extends Specification {
 	}
 
 
-	def process(String outputPath) {
+	def processFile(String outputPath) {
 		String xcodeOutput = FileUtils.readFileToString(new File(outputPath))
+		processString(xcodeOutput)
+	}
+
+	def processString(String xcodeOutput) {
 		TestBuildOutputAppender appender = new TestBuildOutputAppender(progress, output, destinations)
 		for (String line : xcodeOutput.split("\n")) {
 			appender.append(line)
@@ -60,12 +64,49 @@ class TestBuildOutputAppenderSpecification extends Specification {
 
 	def "detect unit test start"() {
 		when:
-		process("src/test/Resource/xcodebuild-output/test-start-xcode-10.txt")
+		processFile("src/test/Resource/xcodebuild-output/test-start-xcode-10.txt")
 
 		then:
 		assertThat(progress.progress, hasItem("Starting Tests"))
 	}
 
+
+	def "Xcode 11 text output progress is shown"() {
+		given:
+		def output = '''
+Test suite 'EditTextTableViewCellTest' started on 'iPhone 8\'
+Test case '-[EditTextTableViewCellTest test_clear_button_is_shown]' passed on 'iPhone 8' (0.011 seconds)
+Test case '-[EditTextTableViewCellTest test_keyLabel]' passed on 'iPhone 8' (0.008 seconds)
+Test case '-[EditTextTableViewCellTest test_keyLabel_Layout]' passed on 'iPhone 8' (0.005 seconds)
+Test case '-[EditTextTableViewCellTest test_reuse_resets_the_delegate]' passed on 'iPhone 8' (0.006 seconds)
+Test case '-[EditTextTableViewCellTest test_set_editiable_enables_textField]' passed on 'iPhone 8' (0.005 seconds)
+Test case '-[EditTextTableViewCellTest test_set_not_editiable_disables_textField]' passed on 'iPhone 8' (0.005 seconds)
+Test case '-[EditTextTableViewCellTest test_textField]' passed on 'iPhone 8' (0.005 seconds)
+Test case '-[EditTextTableViewCellTest test_textFieldLayout]' passed on 'iPhone 8' (0.007 seconds)
+'''
+
+		when:
+		processString(output)
+
+		then:
+		assertThat(progress.progress, hasItem('0 tests completed, running \'EditTextTableViewCellTest\''))
+		assertThat(progress.progress, hasItem('1 tests completed, running \'EditTextTableViewCellTest\''))
+
+
+	}
+
+
+	def "showProgress appends current finished test case"() {
+		given:
+		def appender = new TestBuildOutputAppender(progress, output, destinations)
+		appender.fullProgress = true
+
+		when:
+		appender.append("Test case '-[EditTextTableViewCellTest test_keyLabel_Layout]' passed on 'iPhone 8' (0.005 seconds)")
+
+		then:
+		appender.output.toString() == "      OK -[EditTextTableViewCellTest test_keyLabel_Layout] - (0.005 seconds)\n"
+	}
 
 
 
