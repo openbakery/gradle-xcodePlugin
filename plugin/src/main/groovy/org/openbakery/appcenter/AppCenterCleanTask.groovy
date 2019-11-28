@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery.hockeyapp
+package org.openbakery.appcenter
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class HockeyAppCleanTask extends DefaultTask{
+class AppCenterCleanTask extends DefaultTask{
 
-	HockeyAppCleanTask() {
+	AppCenterCleanTask() {
 		super()
-		this.description = "Cleans up the generated files from the hockeyapp target"
+		this.description = "Cleans up the generated files from the App Center target"
 	}
 
 	@TaskAction
 	def clean() {
-		project.hockeyapp.outputDirectory.deleteDir()
+		project.appcenter.outputDirectory.deleteDir()
 	}
 }

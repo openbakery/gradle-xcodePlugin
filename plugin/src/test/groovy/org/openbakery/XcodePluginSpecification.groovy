@@ -143,8 +143,8 @@ class XcodePluginSpecification extends Specification {
 			} else if (task.getClass().getName().startsWith("org.openbakery.HockeyKit")) {
 				assert task.group == XcodePlugin.HOCKEYKIT_GROUP_NAME
 			}
-			if (task.getClass().getName().startsWith("org.openbakery.HockeyApp")) {
-				assert task.group == XcodePlugin.HOCKEYAPP_GROUP_NAME
+			if (task.getClass().getName().startsWith("org.openbakery.AppCenter")) {
+				assert task.group == XcodePlugin.APPCENTER_GROUP_NAME
 			}
 		}
 	}

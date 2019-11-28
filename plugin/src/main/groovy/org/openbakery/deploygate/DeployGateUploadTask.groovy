@@ -18,13 +18,13 @@ package org.openbakery.deploygate
 
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
-import org.openbakery.http.HttpUpload
+import org.openbakery.http.HttpUtil
 
 
 class DeployGateUploadTask extends AbstractDistributeTask {
 
 	File ipaFile
-	HttpUpload httpUpload = new HttpUpload()
+	HttpUtil httpUpload = new HttpUtil()
 
 
 	DeployGateUploadTask() {
