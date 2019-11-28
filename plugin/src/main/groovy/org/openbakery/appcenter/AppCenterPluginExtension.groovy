@@ -13,35 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openbakery.hockeyapp
+package org.openbakery.appcenter
 
 import org.gradle.api.Project
 
 
-class HockeyAppPluginExtension {
-	def Object outputDirectory
-	def String apiToken = null
-	def String appID = null
-	def String notes = "This build was uploaded using the gradle xcodeplugin"
-	def String status = 2
-	def String notify = 1
-	def String notesType = 0
-	def String[] tags = null
-	def String[] teams = null
-	def String[] users = null
-	def String releaseType = null
-	def String mandatory = 0
-	def String privatePage = false
-	def String commitSha = null
-	def String buildServerUrl = null
-	def String repositoryUrl = null
+class AppCenterPluginExtension {
+	Object outputDirectory
+	String appOwner = null
+	String appName = null
+	String apiToken = null
+	List<String> destination = ["Collaborators"]
+	String releaseNotes = "This build was uploaded using the gradle xcodeplugin"
+	Boolean notifyTesters = false
+	Boolean mandatoryUpdate = false
 
 	private final Project project
 
-	public HockeyAppPluginExtension(Project project) {
+	AppCenterPluginExtension(Project project) {
 		this.project = project
 		this.outputDirectory = {
-			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("hockeyapp")
+			return project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("appcenter")
 		}
 	}
 
