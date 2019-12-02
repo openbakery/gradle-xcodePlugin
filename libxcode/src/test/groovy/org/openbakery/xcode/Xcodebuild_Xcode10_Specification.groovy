@@ -98,12 +98,10 @@ class Xcodebuild_Xcode10_Specification extends Specification {
 				addDerivedDataPathParameters(expectedCommandList)
 				addDefaultDirectoriesParameters(expectedCommandList)
 				expectedCommandList << "-enableCodeCoverage" << "yes"
-				expectedCommandList << "-disable-concurrent-destination-testing"
-
-				expectedCommandList << "test"
 			}
-
-			commandList == expectedCommandList
+			Collections.indexOfSubList(commandList, expectedCommandList) == 0
+			commandList.removeLast() == 'test'
+			commandList.removeLast() == '-disable-concurrent-destination-testing'
 		}
 
 }

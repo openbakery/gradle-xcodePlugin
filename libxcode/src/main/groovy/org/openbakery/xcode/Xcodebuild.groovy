@@ -55,6 +55,7 @@ class Xcodebuild {
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
 		addDestinationSettingsForBuild(commandList)
+		addDisableIndexing(commandList)
 
 		commandRunner.run(projectDirectory.absolutePath, commandList, environment, outputAppender)
 	}
@@ -69,6 +70,7 @@ class Xcodebuild {
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
 		addCoverageSettings(commandList)
+		addDisableIndexing(commandList)
 
 		logger.debug("xcode.version.major: " + xcode.version.major)
 		if (xcode.version.major > 9) {
@@ -101,6 +103,7 @@ class Xcodebuild {
 			commandList.add(parameters.derivedDataPath.absolutePath)
 			addAdditionalParameters(commandList)
 			addCoverageSettings(commandList)
+			addDisableIndexing(commandList)
 
 			commandList << "-xctestrun" << it.absolutePath
 			commandList << "test-without-building"
@@ -174,6 +177,10 @@ class Xcodebuild {
 		commandList.add("CODE_SIGNING_REQUIRED=NO")
 		commandList.add("CODE_SIGNING_ALLOWED=NO")
 
+	}
+
+	def addDisableIndexing(ArrayList commandList) {
+		commandList.add('COMPILER_INDEX_STORE_ENABLE=NO')
 	}
 
 	private boolean isSimulator() {

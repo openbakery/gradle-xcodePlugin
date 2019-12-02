@@ -178,7 +178,7 @@ class XcodeTestTaskSpecification extends Specification {
 		dependsOn.contains(XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME)
 	}
 
-	
+
 
 	def "test command without simulator"() {
 		project.xcodebuild.commandRunner = commandRunner
@@ -215,9 +215,9 @@ class XcodeTestTaskSpecification extends Specification {
 														 "SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath
 			])
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
 
 	}
 
@@ -256,9 +256,9 @@ class XcodeTestTaskSpecification extends Specification {
 
 		interaction {
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
 	}
 
 
@@ -281,9 +281,9 @@ class XcodeTestTaskSpecification extends Specification {
 		interaction {
 			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
 			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
 
 	}
 
@@ -322,9 +322,10 @@ class XcodeTestTaskSpecification extends Specification {
 
 		interaction {
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
+
 	}
 
 	def "test command with coverage for OSX using Xcode 6"() {
@@ -344,9 +345,9 @@ class XcodeTestTaskSpecification extends Specification {
 		interaction {
 			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
 			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
 
 	}
 
@@ -507,9 +508,9 @@ class XcodeTestTaskSpecification extends Specification {
 
 		interaction {
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
 
 		expectedCommandList.contains("Foobar")
 	}

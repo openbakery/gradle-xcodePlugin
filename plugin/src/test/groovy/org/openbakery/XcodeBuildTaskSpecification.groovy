@@ -67,6 +67,12 @@ class XcodeBuildTaskSpecification extends Specification {
 		]
 	}
 
+	def expectedDisableIndex() {
+		return [
+			'COMPILER_INDEX_STORE_ENABLE=NO'
+		]
+	}
+
 	def expectedCodesignSettings() {
 		return [
 			"CODE_SIGN_IDENTITY=",
@@ -92,6 +98,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		def command = createCommand(commands)
 		command.addAll(expectedDerivedDataPath())
 		command.addAll(expectedDefaultDirectories())
+		command.addAll(expectedDisableIndex())
 		return command
 	}
 
@@ -168,7 +175,7 @@ class XcodeBuildTaskSpecification extends Specification {
 														 "-destination", "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 			]
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -193,7 +200,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -223,7 +230,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 	def "run command without signIdentity osx"() {
@@ -251,7 +258,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
 
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -282,7 +289,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -314,7 +321,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDerivedDataPath())
 			expectedCommandList.addAll(expectedDefaultDirectories())
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -341,7 +348,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -366,7 +373,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -394,7 +401,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -423,7 +430,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -452,7 +459,7 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList.addAll(expectedDefaultDirectories())
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 

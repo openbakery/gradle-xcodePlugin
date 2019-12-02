@@ -135,7 +135,7 @@ class XcodebuildSpecification extends Specification {
 							"-configuration", "Debug",
 			)
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -173,7 +173,7 @@ class XcodebuildSpecification extends Specification {
 														 "-destination", "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 			]
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -197,7 +197,7 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -221,7 +221,7 @@ class XcodebuildSpecification extends Specification {
 							"-configuration", "Debug"
 			)
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -247,7 +247,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
 
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 	def "no codesign for iOS simualtor build"() {
@@ -273,7 +273,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 	def "run command with arch"() {
@@ -302,7 +302,7 @@ class XcodebuildSpecification extends Specification {
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -330,7 +330,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
 			addDefaultDirectoriesParameters(expectedCommandList)
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -355,7 +355,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -379,7 +379,7 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -406,7 +406,7 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -436,7 +436,7 @@ class XcodebuildSpecification extends Specification {
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 	def "run command xcodeversion"() {
@@ -463,7 +463,7 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -506,7 +506,7 @@ class XcodebuildSpecification extends Specification {
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 	def "run command with additional parameters array"() {
@@ -531,7 +531,7 @@ class XcodebuildSpecification extends Specification {
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -597,7 +597,6 @@ class XcodebuildSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-
 		interaction {
 			expectedCommandList = createCommandWithDisabledCodesign('script', '-q', '/dev/null',
 							"xcodebuild",
@@ -608,9 +607,9 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.contains("test")
 	}
 
 
@@ -646,11 +645,11 @@ class XcodebuildSpecification extends Specification {
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.contains("test")
 	}
+
 
 	def "test command for tvOS simulator"() {
 		def commandList
@@ -679,10 +678,9 @@ class XcodebuildSpecification extends Specification {
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		expectedCommandList << "test"
 	}
 
 	def "build command for tvOS simulator"() {
@@ -714,8 +712,7 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=tvOS Simulator,id=4395107C-169C-43D7-A403-C9030B6A205D"
 		}
-
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -756,10 +753,9 @@ class XcodebuildSpecification extends Specification {
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "test"
 		}
-
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.contains("test")
 	}
 
 
@@ -783,8 +779,7 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 		}
-		commandList == expectedCommandList
-
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 	}
 
 
@@ -913,10 +908,9 @@ class XcodebuildSpecification extends Specification {
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-enableCodeCoverage" << "yes"
-			expectedCommandList << "build-for-testing"
 		}
-
-		commandList == expectedCommandList
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.contains("build-for-testing")
 	}
 
 
@@ -948,6 +942,7 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "id=83384347-6976-4E70-A54F-1CFECD1E02B1"
 			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
 			expectedCommandList << "-enableCodeCoverage" << "yes"
+			expectedCommandList << "COMPILER_INDEX_STORE_ENABLE=NO"
 			expectedCommandList << "-xctestrun" << new File("example.xctestrun").absolutePath
 			expectedCommandList << "test-without-building"
 		}
@@ -960,6 +955,7 @@ class XcodebuildSpecification extends Specification {
 
 	def "run command in directory"() {
 		def commandList
+		def expectedCommandList
 		def directory
 
 		xcodebuild.parameters.type = Type.iOS
@@ -978,11 +974,14 @@ class XcodebuildSpecification extends Specification {
 
 		directory.endsWith("buildDirectory")
 
-		commandList == createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
-				"-scheme", 'myscheme',
-				"-workspace", 'myworkspace',
-				"-configuration", "Debug"
-		)
+		interaction {
+			expectedCommandList = createCommandWithDerivedDataPath_And_DefaultDirectories('xcodebuild',
+							"-scheme", 'myscheme',
+							"-workspace", 'myworkspace',
+							"-configuration", "Debug")
+		}
+
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 
 	}
 
@@ -1075,6 +1074,62 @@ class XcodebuildSpecification extends Specification {
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		!commandList.contains('OTHER_CFLAGS="-fembed-bitcode"')
 		!commandList.contains('BITCODE_GENERATION_MODE=bitcode')
+	}
+
+
+	def "run xcodebuild build with indexing disabled"() {
+		def commandList
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+
+		when:
+		xcodebuild.parameters.bitcode = false
+		xcodebuild.execute(outputAppender, null)
+
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains('COMPILER_INDEX_STORE_ENABLE=NO')
+	}
+
+
+	def "run xcodebuild test with indexing disabled"() {
+		def commandList
+		def directory
+		xcodebuild = new Xcodebuild(new File("foobar"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		when:
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.executeTest(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains('COMPILER_INDEX_STORE_ENABLE=NO')
+	}
+
+
+	def "run xcodebuild test without build with indexing disabled"() {
+		given:
+		def commandList
+		def expectedCommandList = []
+
+		def destination = new Destination()
+		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
+		xcodebuild.parameters.destination = [destination]
+		xcodebuild.parameters.simulator = false
+
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+		xcodebuild.parameters.xctestrun = [
+		        new File("example.xctestrun")
+		]
+
+		when:
+		xcodebuild.executeTestWithoutBuilding(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains('COMPILER_INDEX_STORE_ENABLE=NO')
 	}
 
 }

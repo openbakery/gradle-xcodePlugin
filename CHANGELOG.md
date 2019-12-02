@@ -1,5 +1,7 @@
 # 0.19.2 TBA
 
+Changes
+* Added 'COMPILER_INDEX_STORE_ENABLE=NO' to disable indexing during build to speed up the build
 Bugfixes
 * additionalParameters as list did not work when applying it to the Task
 * The test cases (.xctestrun) where not found because they where not search in the project directory.
