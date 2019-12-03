@@ -2,6 +2,10 @@
 
 Changes
 * Added 'COMPILER_INDEX_STORE_ENABLE=NO' to disable indexing during build to speed up the build
+* Added [Rome](https://github.com/tmspzz/Rome) Support so that carthage dependencies can be cached.
+  If a Romefile and rome itself is present, a download is performed before the carthage bootstrap task.
+  Also a rome upload is performed afterward before running the xcodebuild itself.
+
 Bugfixes
 * additionalParameters as list did not work when applying it to the Task
 * The test cases (.xctestrun) where not found because they where not search in the project directory.
