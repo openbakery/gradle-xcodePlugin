@@ -149,6 +149,25 @@ class RomeUploadTaskSpecification extends Specification {
 		dependsOn.contains(XcodePlugin.ROME_UPLOAD_TASK_NAME)
 	}
 
+	def "xcodebuildForTest has rome upload dependency"() {
+		when:
+
+		def xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_FOR_TEST_TASK_NAME)
+		def dependsOn = xcodeBuildTask.getDependsOn()
+
+		then:
+		dependsOn.contains(XcodePlugin.ROME_UPLOAD_TASK_NAME)
+	}
+
+	def "xcodeTest task has rome upload dependency"() {
+		when:
+
+		def xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_TASK_NAME)
+		def dependsOn = xcodeBuildTask.getDependsOn()
+
+		then:
+		dependsOn.contains(XcodePlugin.ROME_UPLOAD_TASK_NAME)
+	}
 
 	@Unroll
 	def "When upload is executed the list of missing uploads is fetched the platform: #platform"() {
