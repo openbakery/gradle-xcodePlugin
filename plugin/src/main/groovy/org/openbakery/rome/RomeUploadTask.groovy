@@ -27,7 +27,8 @@ class RomeUploadTask extends AbstractRomeTask {
 	void upload() {
 		def output = services.get(StyledTextOutputFactory).create(RomeUploadTask)
 
-		def list = commandRunner.runWithResult(getRomeCommand(), "list", "--platform", getPlatformName())
+		List<String> listCommands = [getRomeCommand(), "list", "--platform", getPlatformName()]
+		def list = commandRunner.runWithResult(project.projectDir.canonicalPath, listCommands)
 
 		if (list == null) {
 			logger.debug("nothing to upload")

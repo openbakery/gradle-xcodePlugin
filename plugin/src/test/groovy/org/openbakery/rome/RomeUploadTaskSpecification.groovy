@@ -68,7 +68,8 @@ class RomeUploadTaskSpecification extends Specification {
 
 
 	def mockRomeListCommand(String result) {
-		commandRunner.runWithResult("/usr/local/bin/rome", "list", "--platform", "iOS") >> result
+		List<String> commands = ["/usr/local/bin/rome", "list", "--platform", "iOS"]
+		commandRunner.runWithResult(projectDir.canonicalPath , commands) >> result
 	}
 
 
@@ -159,7 +160,7 @@ class RomeUploadTaskSpecification extends Specification {
 		subject.upload()
 
 		then:
-		1 * commandRunner.runWithResult("/usr/local/bin/rome", "list", "--platform", romePlatform)
+		1 * commandRunner.runWithResult(projectDir.canonicalPath, ["/usr/local/bin/rome", "list", "--platform", romePlatform])
 
 		where:
 		platform | romePlatform
@@ -182,8 +183,8 @@ SecondFramework 1.0.0 : -iOS""")
 		subject.upload()
 
 		then:
-		1 * commandRunner.run(_, ["/usr/local/bin/rome", "upload", "--platform", "iOS", "FirstFramework"], _)
-		1 * commandRunner.run(_, ["/usr/local/bin/rome", "upload", "--platform", "iOS", "SecondFramework"], _)
+		1 * commandRunner.run(projectDir.canonicalPath, ["/usr/local/bin/rome", "upload", "--platform", "iOS", "FirstFramework"], _)
+		1 * commandRunner.run(projectDir.canonicalPath, ["/usr/local/bin/rome", "upload", "--platform", "iOS", "SecondFramework"], _)
 
 	}
 

@@ -44,7 +44,7 @@ class AbstractRomeTask extends AbstractXcodeTask {
 		List<String> arguments = [getRomeCommand()]
 		arguments.addAll(commands)
 
-		commandRunner.run(project.projectDir.absolutePath,
+		commandRunner.run(project.projectDir.canonicalPath,
 			arguments,
 			new ConsoleOutputAppender(output))
 
