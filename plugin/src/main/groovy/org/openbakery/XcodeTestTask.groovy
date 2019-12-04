@@ -86,7 +86,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
-			testResultParser = new TestResultParser(testLogsDirectory, destinations)
+			testResultParser = new TestResultParser(testLogsDirectory, xcode.getXcresulttool(), destinations)
 			testResultParser.parseAndStore(outputDirectory)
 			//Provide coverage with the test result destinations for id use.
 			project.coverage.setTestResultDestinations(testResultParser.testResults.keySet().toList())
