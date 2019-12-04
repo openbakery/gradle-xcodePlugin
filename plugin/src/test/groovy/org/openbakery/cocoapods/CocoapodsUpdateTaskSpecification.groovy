@@ -26,7 +26,6 @@ class CocoapodsUpdateTaskSpecification extends Specification {
 		cocoapodsTask = project.getTasks().getByPath('cocoapodsUpdate')
 
 		cocoapodsTask.commandRunner = commandRunner
-		cocoapodsTask.dependsOn.remove(XcodePlugin.COCOAPODS_BOOTSTRAP_TASK_NAME)
 
 	}
 
