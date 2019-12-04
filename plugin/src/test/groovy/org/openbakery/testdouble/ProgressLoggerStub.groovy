@@ -1,7 +1,8 @@
 package org.openbakery.testdouble
 
-import org.gradle.api.Nullable
 import org.gradle.internal.logging.progress.ProgressLogger
+
+import javax.annotation.Nullable
 
 
 class ProgressLoggerStub implements ProgressLogger {
@@ -16,26 +17,6 @@ class ProgressLoggerStub implements ProgressLogger {
 
 	@Override
 	ProgressLogger setDescription(String s) {
-		return null
-	}
-
-	@Override
-	String getShortDescription() {
-		return null
-	}
-
-	@Override
-	ProgressLogger setShortDescription(String s) {
-		return null
-	}
-
-	@Override
-	String getLoggingHeader() {
-		return null
-	}
-
-	@Override
-	ProgressLogger setLoggingHeader(String s) {
 		return null
 	}
 
@@ -55,12 +36,12 @@ class ProgressLoggerStub implements ProgressLogger {
 	}
 
 	@Override
-	void progress(@javax.annotation.Nullable String status) {
+	void progress(@Nullable String status) {
 		progress << status
 	}
 
 	@Override
-	void progress(@javax.annotation.Nullable String status, boolean b) {
+	void progress(@Nullable String status, boolean b) {
 		progress << status
 	}
 

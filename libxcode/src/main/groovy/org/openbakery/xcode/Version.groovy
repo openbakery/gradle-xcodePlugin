@@ -11,7 +11,7 @@ class Version implements Comparable<Version> {
 	public Version() {
 	}
 
-	public  Version(String version) {
+	public Version(String version) {
 		Scanner versionScanner = new Scanner(version);
 		versionScanner.useDelimiter("\\.");
 
@@ -90,5 +90,37 @@ class Version implements Comparable<Version> {
 			return this.compareTo(other) == 0
 		}
 		return false
+	}
+
+	int getMajor() {
+		return major
+	}
+
+	void setMajor(int major) {
+		this.major = major
+	}
+
+	int getMinor() {
+		return minor
+	}
+
+	void setMinor(int minor) {
+		this.minor = minor
+	}
+
+	int getMaintenance() {
+		return maintenance
+	}
+
+	void setMaintenance(int maintenance) {
+		this.maintenance = maintenance
+	}
+
+	String getSuffix() {
+		return suffix
+	}
+
+	void setSuffix(String suffix) {
+		this.suffix = suffix
 	}
 }
