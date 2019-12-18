@@ -72,13 +72,15 @@ public class TestResultParser {
 					logger.debug("No xcresulttool found.")
 					return
 				}
-				def xcResult = parseXCResultFile(it)
+				def xcResult = loadXCResultFile(it)
 				def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
-
+				logger.debug("identifier {}", identifier)
 				Destination destination = findDestinationForIdentifier(destinations, identifier)
 				if (destination) {
 					def resultList = processTestSummary(xcResult, it)
 					testResults.put(destination, resultList)
+				} else {
+					logger.debug("destination not found for identifier {}", identifier)
 				}
 
 			}
@@ -92,21 +94,22 @@ public class TestResultParser {
 		return !testSummaries.isEmpty()
 	}
 
-	Map<String, Object> parseXCResultFile(File file) {
+	Map<String, Object> loadXCResultFile(File file) {
+		logger.info("load result file {}", file)
 		def runner = new CommandRunner()
 		def result = runner.runWithResult(xcresulttoolPath, "get", "--format", "json", "--path", file.absolutePath)
 		def json = new JsonSlurper()
 		def object = json.parseText(result)
-
 		return object
 	}
 
 	ArrayList<TestClass> processTestSummary(Map<String, Object> xcResult, File file) {
+		logger.debug("processTestSummary")
 		def runner = new CommandRunner()
 		def json = new JsonSlurper()
 
 		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value[0]
-		if(testsRef == null) {
+		if (testsRef == null) {
 			logger.debug("No tests Ref found, skipping test result parsing")
 			return
 		}
@@ -117,27 +120,36 @@ public class TestResultParser {
 
 		def testStatus = new ArrayList<TestClass>()
 
+		if (results.summaries._values == null) {
+			logger.debug("No test result summeries present")
+			return []
+		}
+
 		results.summaries._values.each {
-			it.testableSummaries._values.each {
-				it.tests._values.each {
-					testWithStatus(it, testStatus, null)
+			if (it.testableSummaries._values != null) {
+				it.testableSummaries._values.each {
+					it.tests._values.each {
+						addTestResultWithStatusToTestClass(it, testStatus, null)
+					}
 				}
+			} else {
+				logger.debug.debug("testable summaries is empty")
 			}
 		}
 
 		return testStatus
 	}
 
-	private void testWithStatus(Map<String, Object> test, ArrayList<TestClass> testsStatus, TestClass testClass) {
-		if (test.testStatus) {
-			def testResult = new TestResult(method: test.identifier._value, success: test.testStatus._value == "Success")
+	private void addTestResultWithStatusToTestClass(Map<String, Object> testData, ArrayList<TestClass> testsStatus, TestClass testClass) {
+		if (testData.testStatus) {
+			def testResult = new TestResult(method: testData.identifier._value, success: testData.testStatus._value == "Success")
 			testClass.results.add(testResult)
 		}
 
-		if (test.subtests && test.subtests._values && test._type._name == "ActionTestSummaryGroup") {
-			testClass = new TestClass(name: test.name._value)
-			test.subtests._values.each {
-				testWithStatus(it, testsStatus, testClass)
+		if (testData.subtests && testData.subtests._values && testData._type._name == "ActionTestSummaryGroup") {
+			testClass = new TestClass(name: testData.name._value)
+			testData.subtests._values.each {
+				addTestResultWithStatusToTestClass(it, testsStatus, testClass)
 			}
 			if(!testClass.results.empty) { testsStatus << testClass }
 		}
