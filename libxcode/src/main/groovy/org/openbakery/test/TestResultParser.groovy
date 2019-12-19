@@ -110,8 +110,8 @@ public class TestResultParser {
 
 		def testsRef = xcResult.actions._values.actionResult.testsRef.id._value[0]
 		if (testsRef == null) {
-			logger.debug("No tests Ref found, skipping test result parsing")
-			return
+			logger.debug("No tests reference found, skipping test result parsing")
+			return []
 		}
 
 		def testsResults = runner.runWithResult(xcresulttoolPath, "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
@@ -121,19 +121,23 @@ public class TestResultParser {
 		def testStatus = new ArrayList<TestClass>()
 
 		if (results.summaries._values == null) {
-			logger.debug("No test result summeries present")
+			logger.debug("No test result summaries present")
 			return []
 		}
 
-		results.summaries._values.each {
-			if (it.testableSummaries._values != null) {
-				it.testableSummaries._values.each {
-					it.tests._values.each {
-						addTestResultWithStatusToTestClass(it, testStatus, null)
+		results.summaries._values.each { summaryItem ->
+			if (summaryItem.testableSummaries._values != null) {
+				summaryItem.testableSummaries._values.each { testableSummaryItem ->
+					if (testableSummaryItem.tests._values != null) {
+						testableSummaryItem.tests._values.each { testItem ->
+							addTestResultWithStatusToTestClass(testItem, testStatus, null)
+						}
+					} else {
+						logger.debug.debug("tests are empty")
 					}
 				}
 			} else {
-				logger.debug.debug("testable summaries is empty")
+				logger.debug.debug("testable summaries are empty")
 			}
 		}
 
