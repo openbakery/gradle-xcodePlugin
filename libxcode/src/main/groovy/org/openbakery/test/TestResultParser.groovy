@@ -68,7 +68,7 @@ public class TestResultParser {
 			logger.debug("Using new xcresult scheme version")
 			def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
 			files.each {
-				if(xcresulttoolPath == null) {
+				if (xcresulttoolPath == null) {
 					logger.debug("No xcresulttool found.")
 					return
 				}
@@ -125,6 +125,7 @@ public class TestResultParser {
 			return []
 		}
 
+		
 		results.summaries._values.each { summaryItem ->
 			if (summaryItem.testableSummaries._values != null) {
 				summaryItem.testableSummaries._values.each { testableSummaryItem ->
@@ -155,7 +156,9 @@ public class TestResultParser {
 			testData.subtests._values.each {
 				addTestResultWithStatusToTestClass(it, testsStatus, testClass)
 			}
-			if(!testClass.results.empty) { testsStatus << testClass }
+			if (!testClass.results.empty) {
+				testsStatus << testClass
+			}
 		}
 	}
 
