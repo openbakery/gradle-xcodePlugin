@@ -131,7 +131,7 @@ public class TestResultParser {
 							addTestResultWithStatusToTestClass(testItem, testStatus, null)
 						}
 					} else {
-						logger.debug.debug("tests are empty")
+						logger.debug("tests are empty")
 					}
 				}
 			} else {
