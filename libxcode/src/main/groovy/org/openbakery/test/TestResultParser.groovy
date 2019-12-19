@@ -115,21 +115,18 @@ public class TestResultParser {
 		}
 
 		def testsResults = runner.runWithResult(xcresulttoolPath, "get", "--format", "json", "--path", file.absolutePath, "--id", testsRef)
-
 		def results = json.parseText(testsResults)
-
 		def testStatus = new ArrayList<TestClass>()
 
-		if (results.summaries._values == null) {
+		if (results.summaries != null && results.summaries._values == null) {
 			logger.debug("No test result summaries present")
 			return []
 		}
 
-		
 		results.summaries._values.each { summaryItem ->
-			if (summaryItem.testableSummaries._values != null) {
+			if (summaryItem.testableSummaries != null && summaryItem.testableSummaries._values != null) {
 				summaryItem.testableSummaries._values.each { testableSummaryItem ->
-					if (testableSummaryItem.tests._values != null) {
+					if (testableSummaryItem.tests != null && testableSummaryItem.tests._values != null) {
 						testableSummaryItem.tests._values.each { testItem ->
 							addTestResultWithStatusToTestClass(testItem, testStatus, null)
 						}
