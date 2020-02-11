@@ -20,8 +20,8 @@ class HttpUtil {
 
 	HttpUtil(timeout = 120) {
 		okHttpClient = new OkHttpClient.Builder()
-			.writeTimeout(timeout, TimeUnit.SECONDS)
-		.build()
+			.readTimeout(timeout, TimeUnit.SECONDS)
+			.build()
 	}
 
 	String sendJson(HttpVerb httpVerb, String url, Map<String, String> headers, String json) {
@@ -37,6 +37,7 @@ class HttpUtil {
 		logger.debug("http headers {}", headers)
 		logger.debug("http parameters {}", parameters)
 		logger.debug("http parameters {}", json)
+		logger.debug("default read timeout {}", project.appcenter.readTimeout)
 
 		RequestBody requestBody
 

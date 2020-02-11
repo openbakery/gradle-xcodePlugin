@@ -43,7 +43,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 	AppCenterUploadTask() {
 		super()
-		writeTimeout(project.appcenter.writeTimeout)
+		readTimeout(project.appcenter.readTimeout)
 		this.description = "Uploads the app (.ipa, .dsym) to App Center"
 	}
 

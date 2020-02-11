@@ -397,8 +397,8 @@ class XcodePlugin implements Plugin<Project> {
 				project.appcenter.apiToken = project['appcenter.apiToken']
 			}
 
-			if (project.hasProperty("appcenter.writeTimeout")) {
-				project.appcenter.writeTimeout = project['appcenter.writeTimeout']
+			if (project.hasProperty("appcenter.readTimeout")) {
+				project.appcenter.readTimeout = project['appcenter.readTimeout']
 			}
 
 			if (project.hasProperty('appcenter.destination')) {
