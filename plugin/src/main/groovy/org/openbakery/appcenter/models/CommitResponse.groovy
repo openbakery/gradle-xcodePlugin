@@ -1,6 +1,8 @@
 package org.openbakery.appcenter.models
 
-class CommitResponse {
+class CommitResponse extends Expando {
 	String release_id
 	String release_url
+
+	def propertyMissing(name, value) {}
 }
