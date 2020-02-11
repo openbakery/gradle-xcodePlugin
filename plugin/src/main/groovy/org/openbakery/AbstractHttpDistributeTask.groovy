@@ -13,4 +13,8 @@ class AbstractHttpDistributeTask extends AbstractDistributeTask {
 	AbstractHttpDistributeTask() {
 		httpUtil = new HttpUtil()
 	}
+
+	def writeTimeout(Integer timeout) {
+		httpUtil = new HttpUtil(timeout)
+	}
 }

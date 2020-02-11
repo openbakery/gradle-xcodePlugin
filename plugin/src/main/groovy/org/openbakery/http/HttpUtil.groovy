@@ -1,6 +1,7 @@
 package org.openbakery.http
 
 import okhttp3.*
+import java.util.concurrent.TimeUnit
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -17,8 +18,10 @@ class HttpUtil {
 	private OkHttpClient okHttpClient
 	private static Logger logger = LoggerFactory.getLogger(HttpUtil.class)
 
-	HttpUtil() {
-		okHttpClient = new OkHttpClient()
+	HttpUtil(timeout = 120) {
+		okHttpClient = new OkHttpClient.Builder()
+			.writeTimeout(timeout, TimeUnit.SECONDS)
+		.build()
 	}
 
 	String sendJson(HttpVerb httpVerb, String url, Map<String, String> headers, String json) {
