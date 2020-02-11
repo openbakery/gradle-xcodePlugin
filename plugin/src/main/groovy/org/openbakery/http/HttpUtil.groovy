@@ -37,7 +37,6 @@ class HttpUtil {
 		logger.debug("http headers {}", headers)
 		logger.debug("http parameters {}", parameters)
 		logger.debug("http parameters {}", json)
-		logger.debug("default read timeout {}", project.appcenter.readTimeout)
 
 		RequestBody requestBody
 
