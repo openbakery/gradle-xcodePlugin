@@ -54,6 +54,16 @@ class AppCenterTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
+	def "timeout"() {
+		given:
+		appCenterUploadTask = project.getTasks().getByPath('appcenter')
+		appCenterUploadTask.httpUtil = httpUtil
+		when:
+		appCenterUploadTask.readTimeout(150)
+
+		then:
+		appCenterUploadTask.httpUtil.readTimeoutInSeconds == 150
+	}
 
 	def "archive"() {
 		when:

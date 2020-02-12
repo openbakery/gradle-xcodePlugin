@@ -17,8 +17,10 @@ class HttpUtil {
 
 	private OkHttpClient okHttpClient
 	private static Logger logger = LoggerFactory.getLogger(HttpUtil.class)
+	public Integer readTimeoutInSeconds
 
 	HttpUtil(timeout = 120) {
+		readTimeoutInSeconds = timeout
 		okHttpClient = new OkHttpClient.Builder()
 			.readTimeout(timeout, TimeUnit.SECONDS)
 			.build()
