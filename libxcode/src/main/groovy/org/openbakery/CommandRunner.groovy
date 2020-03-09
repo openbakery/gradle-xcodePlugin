@@ -121,7 +121,6 @@ class CommandRunner {
 						running = false;
 					} else {
 
-						logger.info(line)
 						if (outputAppender) {
 
 							// remove ansi colors:
