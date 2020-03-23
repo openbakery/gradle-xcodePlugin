@@ -15,13 +15,19 @@
  */
 package org.openbakery
 
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 
 class InfoPlistModifyTask extends AbstractDistributeTask {
 
+	@InputFile
 	File infoPlist
-	Boolean modfied = false
+
+	@Internal
+	Boolean modified = false
 
 	public InfoPlistModifyTask() {
 		dependsOn(XcodePlugin.XCODE_CONFIG_TASK_NAME)
@@ -84,7 +90,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 			setValueForPlist(command)
 		}
 
-		if (modfied) {
+		if (modified) {
 			logger.lifecycle("{} was updated", infoPlist)
 		} else {
 			logger.debug("Nothing was modified!")
@@ -148,7 +154,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 	void setValueForPlist(String key, String value) {
-		modfied = true
+		modified = true
 		logger.lifecycle("Set {} to {}", key, value)
 		plistHelper.setValueForPlist(infoPlist, key, value)
 
@@ -156,7 +162,7 @@ class InfoPlistModifyTask extends AbstractDistributeTask {
 
 
 	void setValueForPlist(String command) {
-		modfied = true
+		modified = true
 		logger.lifecycle("Set {}", command)
 		plistHelper.commandForPlist(infoPlist, command)
 

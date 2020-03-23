@@ -1,6 +1,7 @@
 package org.openbakery.rome
 
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
@@ -24,6 +25,7 @@ class AbstractRomeTask extends AbstractXcodeTask {
 		}
 	}
 
+	@Internal
 	String getRomeCommand() {
 		try {
 			return commandRunner.runWithResult("which", "rome")

@@ -17,6 +17,8 @@ package org.openbakery
 
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.assemble.Archive
 import org.openbakery.bundle.ApplicationBundle
@@ -45,6 +47,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 
+	@OutputFile
 	def getOutputDirectory() {
 		def archiveDirectory = new File(project.getBuildDir(), ARCHIVE_FOLDER)
 		archiveDirectory.mkdirs()
@@ -53,7 +56,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 
 
-
+	@Internal
 	def getiOSIcons() {
 		ArrayList<String> icons = new ArrayList<>();
 
@@ -72,6 +75,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		return icons
 	}
 
+	@Internal
 	def getMacOSXIcons() {
 		File appInfoPlist  = new File(parameters.applicationBundle, "Contents/Info.plist")
 		ArrayList<String> icons = new ArrayList<>();
@@ -420,12 +424,13 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		}
 	}
 
-	File getProductsDirectory() {
+	private File getProductsDirectory() {
 		File productsDirectory = new File(getArchiveDirectory(), "Products")
 		productsDirectory.mkdirs()
 		return productsDirectory
 	}
 
+	@Internal
 	File getApplicationsDirectory() {
 		File applicationsDirectory = new File(getProductsDirectory(), "Applications")
 		applicationsDirectory.mkdirs()
@@ -469,6 +474,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 
+	@Internal
 	File getArchiveDirectory() {
 
 		def archiveDirectoryName =  XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/" +  project.xcodebuild.bundleName
@@ -483,7 +489,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 		return archiveDirectory
 	}
 
-	String getArchiveName() {
+	private String getArchiveName() {
 		def archiveName = project.xcodebuild.bundleName
 		if (project.xcodebuild.bundleNameSuffix != null) {
 			archiveName += project.xcodebuild.bundleNameSuffix

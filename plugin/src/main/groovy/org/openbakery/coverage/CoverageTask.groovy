@@ -2,19 +2,23 @@ package org.openbakery.coverage
 
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.xcode.Destination
 
 class CoverageTask extends AbstractXcodeTask {
 
+	@Internal
 	Report report = new Report()
 
-	File binary
-	File profileData
-	String include
-	String exclude
-	String type
+	@InputFile File binary
+	@InputFile File profileData
+	@Input String include
+	@Input String exclude
+	@Input String type
 
 	CoverageTask() {
 		super()
@@ -100,7 +104,7 @@ class CoverageTask extends AbstractXcodeTask {
 		for (Destination destination : project.coverage.testResultDestinations) {
 			possibleDirectories.add("Build/ProfileData/" + destination.id + "/Coverage.profdata")
 		}
-        
+
 		for (String directory : possibleDirectories) {
 			this.profileData = new File(project.xcodebuild.derivedDataPath, directory)
 			if (this.profileData.exists()) {
@@ -142,6 +146,7 @@ class CoverageTask extends AbstractXcodeTask {
 	}
 
 
+	@Internal
 	Report.Type getReportType() {
 		if (this.type != null) {
 			return Report.Type.typeFromString(this.type)

@@ -4,6 +4,7 @@ import groovy.xml.MarkupBuilder
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.time.DurationFormatUtils
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
@@ -29,10 +30,9 @@ import org.openbakery.xcode.Xcodebuild
 class XcodeTestTask extends AbstractXcodeBuildTask {
 
 
-	File outputDirectory = null
-	File testLogsDirectory = null
-
-	TestResultParser testResultParser = null
+	@Internal File outputDirectory = null
+	private File testLogsDirectory = null
+	@Internal TestResultParser testResultParser = null
 
 	XcodeTestTask() {
 		super()

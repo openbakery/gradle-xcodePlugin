@@ -1,5 +1,6 @@
 package org.openbakery.simulators
 
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.XcodePlugin
 import org.openbakery.CommandRunnerException
@@ -10,6 +11,7 @@ import org.openbakery.xcode.Type
 
 class SimulatorInstallAppTask extends AbstractSimulatorTask {
 
+	@Internal
 	Codesign codesign
 
 	public SimulatorInstallAppTask() {

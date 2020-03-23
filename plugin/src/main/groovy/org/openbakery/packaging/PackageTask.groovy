@@ -2,6 +2,7 @@ package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
@@ -25,16 +26,12 @@ import org.openbakery.xcode.XcodebuildParameters
 class PackageTask extends AbstractDistributeTask {
 
 	public static final String PACKAGE_PATH = "package"
-	File outputPath
 
-
+	@Internal File outputPath
 	private List<Bundle> appBundles
-
-	String applicationBundleName
-	StyledTextOutput output
-
-
-	CodesignParameters codesignParameters = new CodesignParameters()
+	private String applicationBundleName
+	@Internal StyledTextOutput output
+	@Internal CodesignParameters codesignParameters = new CodesignParameters()
 
 	PackageTask() {
 		super();
@@ -197,7 +194,7 @@ class PackageTask extends AbstractDistributeTask {
 		return bundle.path.absolutePath + "/Contents/"
 	}
 
-	def getIpaFileName() {
+	private def getIpaFileName() {
 		if (project.xcodebuild.ipaFileName) {
 			return project.xcodebuild.ipaFileName
 		} else {

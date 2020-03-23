@@ -15,6 +15,7 @@
  */
 package org.openbakery.hockeykit
 
+import org.gradle.api.tasks.Input
 import org.openbakery.AbstractDistributeTask
 
 /**
@@ -29,6 +30,7 @@ abstract class AbstractHockeyKitTask extends AbstractDistributeTask {
 	 *
 	 * @return the output directory as absolute path
 	 */
+	@Input
 	def getOutputDirectory() {
 		def infoplist = getAppBundleInfoPlist()
 		def bundleIdentifier = plistHelper.getValueFromPlist(infoplist, "CFBundleIdentifier")

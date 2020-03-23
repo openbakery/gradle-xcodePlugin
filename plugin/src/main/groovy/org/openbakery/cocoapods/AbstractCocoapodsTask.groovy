@@ -1,5 +1,6 @@
 package org.openbakery.cocoapods
 
+import org.gradle.api.tasks.Internal
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.CommandRunnerException
@@ -8,6 +9,7 @@ import org.openbakery.output.ConsoleOutputAppender
 
 class AbstractCocoapodsTask extends AbstractXcodeTask {
 
+	@Internal
 	String podCommand = null
 
 	public void addBootstrapDependency() {

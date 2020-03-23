@@ -1,5 +1,6 @@
 package org.openbakery.simulators
 
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Type
 import org.openbakery.XcodePlugin
@@ -13,7 +14,8 @@ class SimulatorKillTask extends AbstractSimulatorTask {
 		}
 	}
 
-	boolean isSimulator() {
+	@Internal
+	protected boolean isSimulator() {
 		project.xcodebuild.isSimulatorBuildOf(Type.iOS) || project.xcodebuild.isSimulatorBuildOf(Type.tvOS)
 	}
 

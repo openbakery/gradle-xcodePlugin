@@ -2,6 +2,9 @@ package org.openbakery
 
 import groovy.io.FileType
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
@@ -16,6 +19,7 @@ import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
 
+
 /**
  * User: rene
  * Date: 25/10/16
@@ -24,12 +28,14 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 
 	private List<Destination> destinationsCache
 
-	Object bundleDirectory
-	TestResultParser testResultParser = null
-	File outputDirectory = null
+	private Object bundleDirectory
+	@Internal TestResultParser testResultParser = null
+	@Internal File outputDirectory = null
 
-	Codesign codesign = null
-	boolean showProgress = false
+	@Internal
+	protected Codesign codesign = null
+
+	protected boolean showProgress = false
 
 	XcodeTestRunTask() {
 		super()
@@ -126,6 +132,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		this.bundleDirectory = bundleDirectory
 	}
 
+	@InputFile
 	File getBundleDirectory() {
 		if (bundleDirectory instanceof File) {
 			return bundleDirectory
@@ -137,12 +144,13 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 	}
 
 
-	def getXcruntestFiles() {
+	@Internal
+	List<File> getXcruntestFiles() {
 		List<File> result = []
 		getBundleDirectory().eachFileRecurse(FileType.FILES) {
-		    if(it.name.endsWith('.xctestrun')) {
-					result << it.absoluteFile
-		    }
+			if (it.name.endsWith('.xctestrun')) {
+				result << it.absoluteFile
+			}
 		}
 		return result
 	}

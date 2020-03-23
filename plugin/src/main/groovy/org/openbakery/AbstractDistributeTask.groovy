@@ -1,6 +1,10 @@
 package org.openbakery
 
 import org.apache.commons.io.FileUtils
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.openbakery.packaging.PackageTask
 
 import java.util.regex.Pattern
@@ -13,6 +17,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 	private File archiveDirectory;
 
+	@Internal
 	File getProductsDirectory() {
 		File productsDirectory = new File(getArchiveDirectory(), "Products")
 		if (!productsDirectory.exists()) {
@@ -21,6 +26,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return productsDirectory
 	}
 
+	@Internal
 	File getApplicationBundleDirectory() {
 		File appBundleDirectory = new File(getProductsDirectory(), "Applications/" + getApplicationNameFromArchive() + ".app")
 		if (!appBundleDirectory.exists()) {
@@ -29,7 +35,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return appBundleDirectory;
 	}
 
-
+	@Internal
 	def getAppBundleInfoPlist() {
 
 		File infoPlist = new File(getApplicationBundleDirectory(), "Info.plist")
@@ -39,7 +45,6 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		}
 		return infoPlist;
 	}
-
 
 
 	File getDestinationFile(File outputDirectory, String extension) {
@@ -108,16 +113,18 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return new File(packageDirectory, fileList.get(0))
 	}
 
+	@Internal
 	File getIpaBundle() {
 		return getBundle("ipa")
 	}
 
-
+	@Internal
 	File getAppBundle() {
 		return getBundle("app")
 	}
 
 
+	@Internal
 	File getDSymBundle() {
 		File dSym = new File(getArchiveDirectory(), "dSYMs/" + getApplicationNameFromArchive() + ".app.dSYM");
 		if (!dSym.exists()) {
@@ -127,7 +134,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 	}
 
 
-
+	@Internal
 	def getArchiveDirectory() {
 		if (archiveDirectory != null) {
 			return archiveDirectory;
@@ -147,6 +154,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 	}
 
+	@Internal
 	def getApplicationNameFromArchive() {
 		def fileList = new File(getArchiveDirectory(), "Products/Applications").list(
 						[accept: { d, f -> f ==~ /.*app/ }] as FilenameFilter

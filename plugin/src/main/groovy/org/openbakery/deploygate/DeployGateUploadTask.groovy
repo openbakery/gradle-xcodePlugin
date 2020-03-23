@@ -15,7 +15,7 @@
  */
 package org.openbakery.deploygate
 
-
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractDistributeTask
 import org.openbakery.http.HttpUtil
@@ -23,7 +23,10 @@ import org.openbakery.http.HttpUtil
 
 class DeployGateUploadTask extends AbstractDistributeTask {
 
+	@Internal
 	File ipaFile
+
+	@Internal
 	HttpUtil httpUpload = new HttpUtil()
 
 

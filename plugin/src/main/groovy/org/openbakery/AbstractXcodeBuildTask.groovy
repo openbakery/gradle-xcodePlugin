@@ -1,6 +1,9 @@
 package org.openbakery
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
@@ -20,6 +23,7 @@ import org.openbakery.xcode.XcodebuildParameters
  */
 abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
+	@Internal
 	XcodebuildParameters parameters = new XcodebuildParameters()
 
 
@@ -30,46 +34,100 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 
+
 	void setTarget(String target) {
 		parameters.target = target
+	}
+
+	@Input
+	String getTarget() {
+		return parameters.target
 	}
 
 	void setScheme(String scheme) {
 		parameters.scheme = scheme
 	}
 
+	@Input
+	String getScheme() {
+		return parameters.scheme
+	}
+
 	void setSimulator(Boolean simulator) {
 		parameters.simulator = simulator
+	}
+
+	@Input
+	Boolean getSimulator() {
+		return parameters.simulator
 	}
 
 	void setType(Type type) {
 		parameters.type = type
 	}
 
+	@Input
+	Type getType() {
+		return parameters.type
+	}
+
 	void setWorkspace(String workspace) {
 		parameters.workspace = workspace
+	}
+
+	@Input
+	String getWorkspace() {
+		return parameters.workspace
 	}
 
 	void setAdditionalParameters(def additionalParameters) {
 		parameters.additionalParameters = additionalParameters
 	}
 
+
+	@Input
+	List<String>getAdditionalParameters() {
+		if (parameters.additionalParameters instanceof List) {
+			return parameters.additionalParameters
+		}
+		return [parameters.additionalParameters.toString()]
+	}
+
 	void setConfiguration(String configuration) {
 		parameters.configuration = configuration
+	}
+
+	@Input
+	String getConfiguration() {
+		return parameters.configuration
 	}
 
 	void setArch(List<String> arch) {
 		parameters.arch = arch
 	}
 
+	@Input
+	List<String> getArch() {
+		return parameters.getArch()
+	}
+
 	void setConfiguredDestinations(Set<Destination> configuredDestination) {
 		parameters.configuredDestinations = configuredDestination
+	}
+
+	@Input
+	Set<Destination>getConfiguredDestinations() {
+		return parameters.configuredDestinations
 	}
 
 	void setDevices(Devices devices) {
 		parameters.devices = devices
 	}
 
+	@Input
+	Devices getDevices() {
+		return parameters.devices
+	}
 
 	void destination(Closure closure) {
 		Destination destination = new Destination()
@@ -81,6 +139,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		parameters.setDestination(destination)
 	}
 
+	@Input
 	List<Destination> getDestinations() {
 		if (destinationsCache == null) {
 			destinationsCache = getDestinationResolver().getDestinations(parameters)
@@ -91,7 +150,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 	XcodeBuildOutputAppender createXcodeBuildOutputAppender(String name) {
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(XcodeBuildTask.class, LogLevel.LIFECYCLE);
-		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class);
+		ProgressLoggerFactory progressLoggerFactory = getServices().get(ProgressLoggerFactory.class) as ProgressLoggerFactory;
 		ProgressLogger progressLogger = progressLoggerFactory.newOperation(XcodeBuildTask.class).start(name, name);
 		return new XcodeBuildOutputAppender(progressLogger, output)
 	}

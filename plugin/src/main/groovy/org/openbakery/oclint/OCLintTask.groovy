@@ -1,13 +1,17 @@
 package org.openbakery.oclint
 
 import org.apache.commons.io.FilenameUtils
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 
 class OCLintTask extends AbstractXcodeTask {
 
+	@OutputFile
 	File outputDirectory
 
+	@Internal
 	String oclintDirectoryName = "oclint-0.13"
 
 
@@ -36,14 +40,14 @@ class OCLintTask extends AbstractXcodeTask {
 	}
 
 
-	def getDownloadURL() {
+	private def getDownloadURL() {
 		if (getOSVersion().minor >= 12) {
 			return "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-17.0.0.tar.gz"
 		}
 		return "https://github.com/oclint/oclint/releases/download/v0.13/oclint-0.13-x86_64-darwin-16.7.0.tar.gz"
 	}
 
-	File getTemporaryDirectory() {
+	private File getTemporaryDirectory() {
 		File tmpDirectory = getTemporaryDirectory("oclint")
 		if (!tmpDirectory.exists()) {
 			tmpDirectory.mkdirs()
@@ -51,7 +55,7 @@ class OCLintTask extends AbstractXcodeTask {
 		return tmpDirectory
 	}
 
-	String getFilename() {
+	private String getFilename() {
 		return FilenameUtils.getName(new URL(getDownloadURL()).getPath())
 	}
 

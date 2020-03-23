@@ -19,6 +19,7 @@ package org.openbakery
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Internal
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Security
@@ -44,6 +45,8 @@ abstract class AbstractXcodeTask extends DefaultTask {
 	public Xcode xcode
 	protected SimulatorControl simulatorControl
 	protected DestinationResolver destinationResolver
+
+	@Internal
 	Security security
 
 
@@ -105,6 +108,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return destinationFile.absolutePath
 	}
 
+	@Internal
 	def getOSVersion() {
 		Version result = new Version()
 		String versionString = System.getProperty("os.version")
@@ -134,7 +138,6 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return dateFormat.format(date)
 	}
 
-
 	List<Bundle> getAppBundles(File appPath) {
 		ApplicationBundle applicationBundle = new ApplicationBundle(
 			new File(appPath,project.xcodebuild.applicationBundle.name),
@@ -145,13 +148,13 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return applicationBundle.getBundles()
 	}
 
-
 	File getTemporaryDirectory(String path) {
 		File tmp = project.getFileResolver().withBaseDir(project.getBuildDir()).resolve("tmp")
 		return new File(tmp, path)
 	}
 
 
+	@Internal
 	Xcode getXcode() {
 		if (xcode == null) {
 			xcode = new Xcode(commandRunner, getProjectXcodeVersion())
@@ -159,10 +162,12 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return xcode
 	}
 
+	@Internal
 	String getProjectXcodeVersion() {
 		return project.xcodebuild.xcodeVersion
 	}
 
+	@Internal
 	DestinationResolver getDestinationResolver() {
 		if (destinationResolver == null) {
 			destinationResolver = new DestinationResolver(getSimulatorControl())
@@ -170,6 +175,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return destinationResolver
 	}
 
+	@Internal
 	SimulatorControl getSimulatorControl() {
 		if (simulatorControl == null) {
 			simulatorControl = new SimulatorControl(this.commandRunner, getXcode())
@@ -177,6 +183,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 		return simulatorControl
 	}
 
+	@Internal
 	String getSigningIdentity() {
 		if (project.xcodebuild.signing.identity != null) {
 			return project.xcodebuild.signing.identity

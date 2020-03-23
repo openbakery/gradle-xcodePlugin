@@ -17,6 +17,7 @@ package org.openbakery.appcenter
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractHttpDistributeTask
 import org.openbakery.CommandRunner
@@ -170,6 +171,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 		logger.info("App Center: Debug symbol upload completed.")
 	}
 
+	@Internal
 	def getHeaders() {
 		def headers = new HashMap<String, String>()
 

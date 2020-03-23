@@ -1,6 +1,7 @@
 package org.openbakery
 
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
@@ -8,6 +9,7 @@ import org.openbakery.xcode.Xcodebuild
 
 class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 
+	@Internal
 	File outputDirectory
 
 	XcodeBuildForTestTask() {
@@ -22,6 +24,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		this.description = "Builds the xcode project and test target. Creates a testbundle that contains the result."
 	}
 
+	@Internal
 	Xcodebuild getXcodebuild() {
 		// Start with the destinations requested by the project
 		List<Destination> destinations = getDestinations()
@@ -102,7 +105,8 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 	}
 
 
-	def getXcruntestFile() {
+	@Internal
+	File getXcruntestFile() {
 		def fileList = parameters.symRoot.list(
 						[accept: { d, f -> f ==~ /.*xctestrun/ }] as FilenameFilter
 		)

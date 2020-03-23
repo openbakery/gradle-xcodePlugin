@@ -36,7 +36,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	@InputFile
 	@Optional
 	@PathSensitive(PathSensitivity.RELATIVE)
-	Provider<File> XcodeBuildPluginExtension() {
+	Provider<File> getCartFile() {
 		// Cf https://github.com/gradle/gradle/issues/2016
 		File file = project.rootProject.file(CARTHAGE_FILE)
 		return project.provider {
@@ -75,6 +75,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		}
 	}
 
+	@Internal
 	String getCarthageCommand() {
 		try {
 			return commandRunner.runWithResult("which", "carthage")
@@ -125,6 +126,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	}
 
+	@Internal
 	Map<String, String> getEnvironment() {
 		if (getRequiredXcodeVersion() != null) {
 			return xcode.getXcodeSelectEnvironmentValue(getRequiredXcodeVersion())

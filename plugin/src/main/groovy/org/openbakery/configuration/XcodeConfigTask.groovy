@@ -1,5 +1,6 @@
 package org.openbakery.configuration
 
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.XcodeProjectFile
@@ -10,7 +11,7 @@ import org.openbakery.XcodeProjectFile
  */
 class XcodeConfigTask extends AbstractXcodeTask {
 
-	XcodeProjectFile xcodeProjectFile
+	@Internal XcodeProjectFile xcodeProjectFile
 
 	XcodeConfigTask() {
 		super()
