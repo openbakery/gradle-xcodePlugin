@@ -54,6 +54,16 @@ class AppCenterTaskSpecification extends Specification {
 		FileUtils.deleteDirectory(project.projectDir)
 	}
 
+	def "timeout"() {
+		given:
+		appCenterUploadTask = project.getTasks().getByPath('appcenter')
+		appCenterUploadTask.httpUtil = httpUtil
+		when:
+		appCenterUploadTask.readTimeout(150)
+
+		then:
+		appCenterUploadTask.httpUtil.readTimeoutInSeconds == 150
+	}
 
 	def "archive"() {
 		when:
@@ -95,6 +105,31 @@ class AppCenterTaskSpecification extends Specification {
 		String json = new JsonBuilder(initIpaUploadResponse).toPrettyString()
 
 		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _) >> json
+
+		String uploadId
+		String uploadUrl
+
+		when:
+		(uploadId, uploadUrl) = appCenterUploadTask.initIpaUpload()
+
+		then:
+		uploadId == expectedUploadId
+		uploadUrl == expectedUploadUrl
+	}
+
+	def "init IPA Upload with unknown json fields"() {
+		setup:
+		final String expectedUploadId = "1"
+		final String expectedUploadUrl = "https://www.someurl.com/initipaupload"
+
+		JsonBuilder builder = new JsonBuilder()
+		builder {
+			upload_url expectedUploadUrl
+			upload_id expectedUploadId
+			unknownField 'Test'
+		}
+
+		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _) >> builder.toString()
 
 		String uploadId
 		String uploadUrl
