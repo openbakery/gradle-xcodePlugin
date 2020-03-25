@@ -71,7 +71,9 @@ class Xcode {
 			.split("\n")
 			.iterator()
 			.collect { new File(it as File, XCODE_CONTENT_XCODE_BUILD) }
-			.findAll { it.exists() }
+			.findAll {
+				it.exists()
+			}
 			.find {
 				Version candidate = getXcodeVersion(it.absolutePath)
 

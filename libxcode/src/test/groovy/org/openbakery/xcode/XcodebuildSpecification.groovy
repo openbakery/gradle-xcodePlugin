@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.output.OutputAppender
+import org.openbakery.testdouble.XcodeDummy
 import spock.lang.Specification
 
 class XcodebuildSpecification extends Specification {
@@ -13,6 +14,8 @@ class XcodebuildSpecification extends Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 
 	Xcodebuild xcodebuild
+	XcodeDummy xcodeDummy
+
 
 	OutputAppender outputAppender = new OutputAppender() {
 		public void append(String output) {
@@ -37,9 +40,12 @@ class XcodebuildSpecification extends Specification {
 // iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389
 		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
 		xcodebuild = new Xcodebuild(new File("buildDirectory"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		xcodeDummy = new XcodeDummy()
 	}
 
 	def cleanup() {
+		xcodeDummy.cleanup()
 	}
 
 
@@ -444,8 +450,8 @@ class XcodebuildSpecification extends Specification {
 		def expectedCommandList
 
 		xcodebuild.commandRunner = commandRunner
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> "/Applications/Xcode.app"
-		commandRunner.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodeDummy.xcodeDirectory.absolutePath
+		commandRunner.runWithResult(xcodeDummy.xcodebuild.absolutePath, "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
 
 		xcodebuild.parameters.target = 'mytarget'
 
@@ -457,7 +463,7 @@ class XcodebuildSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = createCommandWithDefaultDirectories('/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
+			expectedCommandList = createCommandWithDefaultDirectories(xcodeDummy.xcodebuild.absolutePath,
 							"-configuration", 'Debug',
 							"-target", 'mytarget'
 			)

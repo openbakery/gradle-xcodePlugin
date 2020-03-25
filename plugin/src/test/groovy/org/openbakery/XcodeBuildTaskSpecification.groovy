@@ -9,15 +9,17 @@ import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
+import org.openbakery.testdouble.XcodeDummy
 import spock.lang.Specification
 
 
 class XcodeBuildTaskSpecification extends Specification {
 
 	Project project
+	File temporaryDirectory
 
 	XcodeBuildTask xcodeBuildTask
-
+	XcodeDummy xcodeDummy
 
 	File xcode7_3_1
 	File xcode8
@@ -38,17 +40,25 @@ class XcodeBuildTaskSpecification extends Specification {
 
 	def setup() {
 		project = ProjectBuilder.builder().build()
-		project.buildDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild/build")
+		temporaryDirectory = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
+		temporaryDirectory.mkdirs()
+
+		project.buildDir = new File(temporaryDirectory, "build")
 
 		project.apply plugin: org.openbakery.XcodePlugin
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
 		xcodeBuildTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+
+		xcodeDummy = new XcodeDummy()
+
 	}
 
 	def cleanup() {
-		FileUtils.deleteDirectory(project.buildDir)
+
+		xcodeDummy.cleanup()
+		FileUtils.deleteDirectory(temporaryDirectory)
 
 		if (xcode7_3_1 != null) {
 			FileUtils.deleteDirectory(xcode7_3_1)
@@ -439,8 +449,9 @@ class XcodeBuildTaskSpecification extends Specification {
 		def expectedCommandList
 
 		project.xcodebuild.commandRunner = commandRunner
-		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> "/Applications/Xcode.app"
-		commandRunner.runWithResult("/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild", "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
+		commandRunner.runWithResult("mdfind", "kMDItemCFBundleIdentifier=com.apple.dt.Xcode") >> xcodeDummy.xcodeDirectory.absolutePath
+
+		commandRunner.runWithResult(xcodeDummy.xcodebuild.absolutePath, "-version") >> "Xcode 5.1.1\nBuild version 5B1008"
 
 		project.xcodebuild.target = 'mytarget'
 
@@ -452,7 +463,7 @@ class XcodeBuildTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		interaction {
-			expectedCommandList = ['/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild',
+			expectedCommandList = [xcodeDummy.xcodebuild.absolutePath,
 														 "-configuration", 'Debug',
 														 "-target", 'mytarget',
 			]
@@ -460,6 +471,8 @@ class XcodeBuildTaskSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61"
 		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+
+
 	}
 
 
