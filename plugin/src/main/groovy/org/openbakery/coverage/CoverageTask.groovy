@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.xcode.Destination
@@ -14,11 +15,25 @@ class CoverageTask extends AbstractXcodeTask {
 	@Internal
 	Report report = new Report()
 
-	@InputFile File binary
-	@InputFile File profileData
-	@Input String include
-	@Input String exclude
-	@Input String type
+	@InputFile
+	@Optional
+	File binary
+
+	@InputFile
+	@Optional
+	File profileData
+
+	@Input
+	@Optional
+	String include
+
+	@Input
+	@Optional
+	String exclude
+
+	@Input
+	@Optional
+	String type
 
 	CoverageTask() {
 		super()

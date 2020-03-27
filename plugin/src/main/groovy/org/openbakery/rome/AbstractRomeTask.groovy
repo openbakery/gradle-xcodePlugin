@@ -2,6 +2,7 @@ package org.openbakery.rome
 
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
@@ -15,6 +16,7 @@ class AbstractRomeTask extends AbstractXcodeTask {
 	static final String ROME_PLATFORM_WATCHOS = "watchOS"
 
 	@Input
+	@Optional
 	String getPlatformName() {
 		switch (project.xcodebuild.type) {
 			case Type.iOS: return ROME_PLATFORM_IOS

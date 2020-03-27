@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
@@ -49,6 +50,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	String getScheme() {
 		return parameters.scheme
 	}
@@ -58,6 +60,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	Boolean getSimulator() {
 		return parameters.simulator
 	}
@@ -67,6 +70,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	Type getType() {
 		return parameters.type
 	}
@@ -76,6 +80,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	String getWorkspace() {
 		return parameters.workspace
 	}
@@ -86,6 +91,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 
 
 	@Input
+	@Optional
 	List<String>getAdditionalParameters() {
 		if (parameters.additionalParameters instanceof List) {
 			return parameters.additionalParameters
@@ -98,6 +104,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	String getConfiguration() {
 		return parameters.configuration
 	}
@@ -107,6 +114,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	List<String> getArch() {
 		return parameters.getArch()
 	}
@@ -116,6 +124,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	Set<Destination>getConfiguredDestinations() {
 		return parameters.configuredDestinations
 	}
@@ -125,6 +134,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	Devices getDevices() {
 		return parameters.devices
 	}
@@ -140,6 +150,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	List<Destination> getDestinations() {
 		if (destinationsCache == null) {
 			destinationsCache = getDestinationResolver().getDestinations(parameters)

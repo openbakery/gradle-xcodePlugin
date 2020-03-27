@@ -2,6 +2,7 @@ package org.openbakery.signing
 
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories
@@ -26,6 +27,7 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 
 
 	@Input
+	@Optional
 	List<File> getKeychainList() {
 		return security.getKeychainList()
 	}
