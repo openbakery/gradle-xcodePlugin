@@ -41,6 +41,7 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 	}
 
 	@Input
+	@Optional
 	String getTarget() {
 		return parameters.target
 	}
