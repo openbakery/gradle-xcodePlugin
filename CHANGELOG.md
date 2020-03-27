@@ -1,10 +1,12 @@
-# 0.19.2 TBA
+# 0.20.0 TBA
 
 Changes
 * Added 'COMPILER_INDEX_STORE_ENABLE=NO' to disable indexing during build to speed up the build
 * Added [Rome](https://github.com/tmspzz/Rome) Support so that carthage dependencies can be cached.
   If a Romefile and rome itself is present, a download is performed before the carthage bootstrap task.
   Also a rome upload is performed afterward before running the xcodebuild itself.
+* The destination must now not be specified exactly. If you specify 'iPad Pro (11-inch)' the first destination is picked with matches this prefix e.g. 'iPad Pro (11-inch)(2nd generation)' 
+* Made compabtile with gradle 6.x
 
 Bugfixes
 * additionalParameters as list did not work when applying it to the Task
