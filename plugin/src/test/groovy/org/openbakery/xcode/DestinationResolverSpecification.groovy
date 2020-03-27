@@ -219,8 +219,21 @@ class DestinationResolverSpecification extends Specification {
 		destinations.size() == 1
 		destinations[0].name == 'iPad Pro (12.9 inch)'
 		destinations[0].id == 'C538D7F8-E581-44FF-9B17-5391F84642FB'
+	}
 
+	def "resolve iPad Pro (12.9 inch) works with iPad Pro (12.9-inch) (3rd generation)"() {
+		given:
+		simulatorControl = new SimulatorControlStub("simctl-list-xcode11.txt")
+		destinationResolver = new DestinationResolver(simulatorControl)
+		extension.destination = ['iPad Pro (12.9-inch)']
 
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == 'iPad Pro (12.9-inch) (3rd generation)'
+		destinations[0].id == '49BE44FC-A802-4D79-9E7C-7D00D74061A4'
 	}
 
 }

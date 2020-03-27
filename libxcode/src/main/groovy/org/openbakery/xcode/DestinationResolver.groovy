@@ -45,9 +45,24 @@ class DestinationResolver {
 					if (destination.os == null) {
 						destination.os = runtime.version.toString()
 					}
-
-					availableDestinations.addAll(findMatchingDestinations(destination, allDestinations))
+					availableDestinations.addAll(findMatchingDestinations(destination, allDestinations, true))
 				}
+
+				// if no destination was found try to find a similar destination
+				// e.g. is 'iPad Pro' was specified and a 'iPad Pro (11-inch)' is present, than this is used
+				if (availableDestinations.size() == 0) {
+					for (Destination destination in parameters.configuredDestinations) {
+						if (destination.os == null) {
+							destination.os = runtime.version.toString()
+						}
+						def similarDestination = findMatchingDestinations(destination, allDestinations, false)
+						if (similarDestination.size() > 0) {
+							availableDestinations.add(similarDestination.first())
+							break
+						}
+					}
+				}
+
 
 				if (availableDestinations.isEmpty()) {
 					logger.error("No matching simulators found for specified destinations: {}", parameters.configuredDestinations)
@@ -89,7 +104,7 @@ class DestinationResolver {
 		parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)
 	}
 
-	private List<Destination> findMatchingDestinations(Destination destination, List<Destination> allDestinations) {
+	private List<Destination> findMatchingDestinations(Destination destination, List<Destination> allDestinations, boolean exact) {
 		List<Destination> result = []
 
 		logger.debug("finding matching destination for: {}", destination)
@@ -99,10 +114,18 @@ class DestinationResolver {
 				//logger.debug("{} does not match {}", device.platform, destination.platform);
 				continue
 			}
-			if (!matches(destination.name, device.name)) {
-				//logger.debug("{} does not match {}", device.name, destination.name);
-				continue
+			if (exact) {
+				if (!matches(destination.name, device.name)) {
+					//logger.debug("{} does not match {}", device.name, destination.name);
+					continue
+				}
+			} else {
+				if (!startsWith(device.name, destination.name)) {
+					//logger.debug("{} does not match {}", device.name, destination.name);
+					continue
+				}
 			}
+
 			if (!matches(destination.arch, device.arch)) {
 				//logger.debug("{} does not match {}", device.arch, destination.arch);
 				continue
@@ -124,6 +147,7 @@ class DestinationResolver {
 		return result
 	}
 
+
 	private static boolean matches(String first, String second) {
 		if (first != null && second == null) {
 			return true
@@ -142,5 +166,16 @@ class DestinationResolver {
 		}
 
 		return false
+	}
+
+	private static boolean startsWith(String first, String second) {
+		if (first != null && second == null) {
+			return true
+		}
+
+		if (first == null && second != null) {
+			return true
+		}
+		return first.startsWith(second)
 	}
 }
