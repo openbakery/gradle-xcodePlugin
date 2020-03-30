@@ -187,15 +187,17 @@ class SimulatorControl {
 
 
 	List<SimulatorRuntime> getRuntimes(Type type) {
+		logger.debug("getRuntimes for {}", type)
 		ArrayList<SimulatorRuntime> result = new ArrayList<>()
 
 		for (SimulatorRuntime runtime in getRuntimes()) {
 			if (runtime.type == type) {
-				result.add(runtime);
+				result.add(runtime)
 			}
 		}
 		Collections.sort(result, new SimulatorRuntimeComparator())
-		return result;
+		logger.debug("getRuntimes result {}", result)
+		return result
 	}
 
 	SimulatorRuntime getMostRecentRuntime(Type type) {
@@ -453,6 +455,7 @@ class SimulatorControl {
 	}
 
 	List<Destination> getAllDestinations(Type type) {
+		logger.debug("getAllDestinations for {}", type)
 		def allDestinations = []
 
 		getRuntimes(type).each { runtime ->

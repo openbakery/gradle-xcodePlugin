@@ -57,8 +57,9 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def test() {
-
+		logger.debug("test")
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
+		logger.debug("test parameters {}", parameters)
 
 		if (parameters.scheme == null && parameters.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build");
@@ -75,8 +76,11 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		File outputFile = new File(outputDirectory, "xcodebuild-output.txt")
 		commandRunner.setOutputFile(outputFile);
 
-
+		logger.debug("before getDestinations parameters {}", parameters)
 		def destinations = getDestinations()
+		logger.debug("after getDestinations parameters {}", parameters)
+		logger.debug("test destinations {}", destinations)
+
 
 		try {
 			Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, destinations)

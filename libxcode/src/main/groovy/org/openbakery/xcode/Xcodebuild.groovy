@@ -184,7 +184,8 @@ class Xcodebuild {
 	}
 
 	private boolean isSimulator() {
-		isSimulatorBuildOf(Type.iOS) || isSimulatorBuildOf(Type.tvOS)
+		boolean result = isSimulatorBuildOf(Type.iOS) || isSimulatorBuildOf(Type.tvOS)
+		return result
 	}
 
 	def addBuildPath(ArrayList commandList) {
@@ -267,6 +268,7 @@ class Xcodebuild {
 
 
 	boolean isSimulatorBuildOf(Type expectedType) {
+		logger.debug("type is {}", parameters.type)
 		if (parameters.type != expectedType) {
 			return false
 		}

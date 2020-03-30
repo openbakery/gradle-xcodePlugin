@@ -124,6 +124,7 @@ class XcodebuildParameters {
 	}
 
 	boolean isSimulatorBuildOf(Type expectedType) {
+		logger.debug("type: {}", this.type)
 		if (this.type != expectedType) {
 			logger.debug("is no simulator build")
 			return false

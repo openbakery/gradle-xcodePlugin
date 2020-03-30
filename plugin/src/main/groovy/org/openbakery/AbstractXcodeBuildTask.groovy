@@ -150,9 +150,10 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		parameters.setDestination(destination)
 	}
 
-	@Input
-	@Optional
+	@Internal
 	List<Destination> getDestinations() {
+		logger.debug("getDestinations parameters {}", parameters)
+
 		if (destinationsCache == null) {
 			destinationsCache = getDestinationResolver().getDestinations(parameters)
 		}

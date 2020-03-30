@@ -39,8 +39,9 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def buildForTest() {
+		logger.debug("buildForTest")
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
-
+		logger.debug("buildForTest parameters {}", parameters)
 		if (parameters.scheme == null && parameters.target == null) {
 			throw new IllegalArgumentException("No 'scheme' or 'target' specified, so do not know what to build")
 		}
