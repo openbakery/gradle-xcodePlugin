@@ -2,6 +2,7 @@ package org.openbakery
 
 import groovy.io.FileType
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -133,7 +134,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		this.bundleDirectory = bundleDirectory
 	}
 
-	@InputFile
+	@Input
 	@Optional
 	File getBundleDirectory() {
 		if (bundleDirectory instanceof File) {
