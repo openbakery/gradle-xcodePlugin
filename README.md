@@ -29,7 +29,7 @@ Here a brief overview of the features:
 
  Xcode 7 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
-* Java 1.8 or greater
+* Java 1.6 or greater
 
 
 ### Current stable version is 0.20.0

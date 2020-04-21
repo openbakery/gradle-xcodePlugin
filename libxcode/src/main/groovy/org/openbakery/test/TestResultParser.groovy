@@ -161,6 +161,7 @@ public class TestResultParser {
 
 	private void store(File outputDirectory) {
 		logger.debug("store to test-result.xml")
+
 		FileWriter writer = new FileWriter(new File(outputDirectory, "test-results.xml"))
 
 		def xmlBuilder = new MarkupBuilder(writer)
@@ -244,6 +245,7 @@ public class TestResultParser {
 
 				if (message.startsWith("started")) {
 					output = new StringBuilder()
+
 
 
 					TestClass testClass = resultList.find { testClass -> testClass.name.equals(testClassName) }

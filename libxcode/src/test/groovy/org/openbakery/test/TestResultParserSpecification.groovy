@@ -142,6 +142,7 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.testResults.size() > 0
 	}
 
+	//
 	def "parse new xcresult scheme and verify result count"() {
 		given:
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
@@ -176,21 +177,6 @@ class TestResultParserSpecification extends Specification {
 
 	}
 
-	def "parse new xcresult test summary and verify number test results"() {
-		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
-
-		when:
-		testResultParser.parse()
-
-		def firstKey = testResultParser.testResults.keySet()[0]
-		then:
-		testResultParser.testResults.get(firstKey).size() == 2
-		testResultParser.numberSuccess() == 4
-
-	}
-
 	def "parse test summary that has failure"() {
 		given:
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Failure")
@@ -206,23 +192,6 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.numberErrors() == 1
 
 	}
-
-	def "parse new xcresult test summary that has failure"() {
-		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
-
-		when:
-		testResultParser.parse()
-
-		def firstKey = testResultParser.testResults.keySet()[0]
-		then:
-		testResultParser.testResults.get(firstKey).size() == 2
-		testResultParser.numberSuccess() == 3
-		testResultParser.numberErrors() == 1
-
-	}
-
 
 	HashMap<Destination, ArrayList<TestClass>> getMergedResult() {
 

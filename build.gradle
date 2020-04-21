@@ -18,8 +18,8 @@ allprojects {
 	group = 'org.openbakery'
 	version = versionNumber
 
-	sourceCompatibility = "1.8"
-	targetCompatibility = "1.8"
+	sourceCompatibility = "1.6"
+	targetCompatibility = "1.6"
 
 	repositories {
 		mavenCentral()
