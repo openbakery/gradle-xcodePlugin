@@ -24,13 +24,6 @@ Here a brief overview of the features:
 * OCLint
 
 
-## Note
-
-Changed the version number scheme. The minor version number now stands for the year, therfor it is now 19.
-The minor versions are the release numbers then.
-The 0.15.4 was the first release 2019 that uses the old scheme that didn't follow any rules. (This should have been 0.19.0)
-Now the current version is 0.19.1 that is the second release this year. The third will then be 0.19.2.
-
 
 ## Requirements
 
@@ -39,7 +32,7 @@ Now the current version is 0.19.1 that is the second release this year. The thir
 * Java 1.8 or greater
 
 
-### Current stable version is 0.19.1
+### Current stable version is 0.20.0
 
 
 ## Documentation
@@ -55,7 +48,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.19.1"
+  id "org.openbakery.xcode-plugin" version "0.20.0"
 }
 
 xcodebuild {
@@ -76,7 +69,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "org.openbakery:xcode-plugin:0.19.+"
+    classpath "org.openbakery:xcode-plugin:0.20.+"
   }
 }
 
