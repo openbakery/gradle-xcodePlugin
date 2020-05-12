@@ -7,6 +7,7 @@ Changes
   Also a rome upload is performed afterward before running the xcodebuild itself.
 * The destination must now not be specified exactly. If you specify 'iPad Pro (11-inch)' the first destination is picked with matches this prefix e.g. 'iPad Pro (11-inch)(2nd generation)' 
 * Made compabtile with gradle 6.x
+* Added that embedded apps are also signed. (On macOS apps can be embedded)
 
 Bugfixes
 * additionalParameters as list did not work when applying it to the Task

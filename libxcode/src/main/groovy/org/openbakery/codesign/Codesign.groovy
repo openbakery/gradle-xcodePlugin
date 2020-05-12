@@ -33,7 +33,7 @@ class Codesign {
 	void sign(Bundle bundle) {
 		logger.debug("Codesign with Identity: {}", codesignParameters.signingIdentity)
 
-		codeSignFrameworks(bundle.path)
+		codeSignEmbeddedBundle(bundle.path)
 
 		logger.debug("Codesign {}", bundle)
 
@@ -102,7 +102,7 @@ class Codesign {
 		return new ConfigurationFromMap([:])
 	}
 
-	private void codeSignFrameworks(File bundle) {
+	private void codeSignEmbeddedBundle(File bundle) {
 
 		File frameworksDirectory
 		if (codesignParameters.type == Type.iOS) {
@@ -110,12 +110,13 @@ class Codesign {
 		} else {
 			frameworksDirectory = new File(bundle, "Contents/Frameworks")
 		}
-
 		if (frameworksDirectory.exists()) {
 
 			FilenameFilter filter = new FilenameFilter() {
 				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".dylib") || name.toLowerCase().endsWith(".framework")
+					return name.toLowerCase().endsWith(".dylib") ||
+						name.toLowerCase().endsWith(".framework") ||
+						name.toLowerCase().endsWith(".app")
 				}
 			};
 
@@ -125,6 +126,7 @@ class Codesign {
 
 			}
 		}
+
 	}
 
 	private void performCodesign(File bundle, File entitlements) {

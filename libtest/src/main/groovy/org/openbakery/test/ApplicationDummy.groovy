@@ -131,6 +131,15 @@ class ApplicationDummy {
 		createSwiftLibs(applicationBundle, directory)
 	}
 
+	void createEmbeddedApp(File applicationDirectory, File rootDirectory) {
+		File helperApp = new File(applicationDirectory, "Frameworks/Helper.app")
+		FileUtils.writeStringToFile(helperApp, "dummy")
+	}
+
+	void createEmbeddedApp() {
+		createEmbeddedApp(applicationBundle, directory)
+	}
+
 	void createFramework() {
 		File framework = new File(applicationBundle, "Frameworks/My.framework")
 		framework.mkdirs()
