@@ -364,7 +364,6 @@ class PackageTaskSpecification extends Specification {
 		def codesignAppCommand = codesignCommand("Payload/Example.app", "entitlements_test.plist")
 		def codesignWidgetCommand = codesignCommand("Payload/Example.app/PlugIns/ExampleTodayWidget.appex", "entitlements_extension.plist")
 
-		println(codesignWidgetCommand)
 		when:
 		packageTask.packageApplication()
 
