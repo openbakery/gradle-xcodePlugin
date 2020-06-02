@@ -1,4 +1,4 @@
-# 0.20.0 TBA
+# 0.20.0 (2 June, 2020)
 
 Changes
 * Added 'COMPILER_INDEX_STORE_ENABLE=NO' to disable indexing during build to speed up the build
