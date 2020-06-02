@@ -1,7 +1,5 @@
 plugins {
-	id "com.gradle.plugin-publish" version "0.10.1"
-//	id 'net.saliman.cobertura' version '3.0.0'
-//	id 'com.github.kt3k.coveralls' version '2.8.4'
+	id "com.gradle.plugin-publish" version "0.12.0"
 }
 
 
