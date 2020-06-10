@@ -12,6 +12,8 @@ import org.openbakery.appcenter.models.InitIpaUploadResponse
 import org.openbakery.http.HttpUtil
 import spock.lang.Specification
 
+import java.util.zip.ZipFile
+
 class AppCenterTaskSpecification extends Specification {
 	Project project
 	AppCenterUploadTask appCenterUploadTask
@@ -45,8 +47,11 @@ class AppCenterTaskSpecification extends Specification {
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
 		infoPlist.parentFile.mkdirs();
 
-		File dsymBundle = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
-		FileUtils.writeStringToFile(dsymBundle, "dummy")
+		File appDsym = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
+		FileUtils.writeStringToFile(appDsym, "dummy")
+
+		File frameworkDsym = new File(archiveDirectory, "dSYMs/framework.dSYM")
+		FileUtils.writeStringToFile(frameworkDsym, "dummy")
 	}
 
 
@@ -70,11 +75,13 @@ class AppCenterTaskSpecification extends Specification {
 		appCenterUploadTask.prepareFiles()
 
 		File expectedIpa = new File(project.buildDir, "appcenter/Test.ipa")
-		File expectedDSYM = new File(project.buildDir, "appcenter/Test.app.dSYM.zip")
+		File expectedDSYMZip = new File(project.buildDir, "appcenter/Test.app.dSYM.zip")
+		ZipFile dsymZipFile = new ZipFile(expectedDSYMZip)
 
 		then:
 		expectedIpa.exists()
-		expectedDSYM.exists()
+		expectedDSYMZip.exists()
+		dsymZipFile.entries().toList().size() == 2
 	}
 
 	def "archive with bundleSuffix"() {
@@ -85,12 +92,13 @@ class AppCenterTaskSpecification extends Specification {
 		appCenterUploadTask.prepareFiles()
 
 		File expectedIpa = new File(project.buildDir, "appcenter/Test-SUFFIX.ipa")
-		File expectedZip = new File(project.buildDir, "appcenter/Test-SUFFIX.app.dSYM.zip")
+		File expectedDSYMZip = new File(project.buildDir, "appcenter/Test-SUFFIX.app.dSYM.zip")
+		ZipFile dsymZipFile = new ZipFile(expectedDSYMZip)
 
 		then:
 		expectedIpa.exists()
-		expectedZip.exists()
-
+		expectedDSYMZip.exists()
+		dsymZipFile.entries().toList().size() == 2
 	}
 
 	def "init IPA Upload"() {

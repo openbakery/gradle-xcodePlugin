@@ -17,6 +17,7 @@ package org.openbakery.appcenter
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractHttpDistributeTask
@@ -52,16 +53,20 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 	def prepareFiles() {
 		File ipaFile =  copyIpaToDirectory(project.appcenter.outputDirectory)
 
-		File dSymBundle = new File(getArchiveDirectory(), "dSYMs/" + getApplicationNameFromArchive() + ".app.dSYM")
-		File dSYMFile = getDestinationFile(project.appcenter.outputDirectory, ".app.dSYM.zip")
+		File dSymBundle = new File(getArchiveDirectory(), "dSYMs")
+		File dsymDestinationFile = getDestinationFile(project.appcenter.outputDirectory, ".app.dSYM.zip")
 
 		if (dSymBundle.exists()) {
-			def zipArchive = new ZipArchive(dSYMFile, dSymBundle.parentFile, new CommandRunner())
-			zipArchive.add(dSymBundle)
+			def zipArchive = new ZipArchive(dsymDestinationFile, dSymBundle, new CommandRunner())
+			dSymBundle.eachFileRecurse { file ->
+				if (file.toString().toLowerCase().endsWith(".dsym")) {
+					zipArchive.add(file)
+				}
+			}
 			zipArchive.create()
 		}
 
-		return [ipaFile, dSYMFile]
+		return [ipaFile, dsymDestinationFile]
 	}
 
 	@TaskAction
