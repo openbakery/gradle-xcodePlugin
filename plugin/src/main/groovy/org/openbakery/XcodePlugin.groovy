@@ -30,6 +30,7 @@ import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
+import org.openbakery.appstore.NotarizeTask
 import org.openbakery.carthage.CarthageBootstrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
@@ -123,6 +124,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
+	public static final String NOTARIZE_TASK_NAME = 'notarize'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
@@ -144,8 +146,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
 
-	public static final COVERAGE_TASK_NAME = 'coverage'
-	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
+	public static final String COVERAGE_TASK_NAME = 'coverage'
+	public static final String COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
 
 
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
@@ -545,6 +547,7 @@ class XcodePlugin implements Plugin<Project> {
 	private configureAppstore(Project project) {
 		project.task(APPSTORE_UPLOAD_TASK_NAME, type: AppstoreUploadTask, group: APPSTORE_GROUP_NAME)
 		project.task(APPSTORE_VALIDATE_TASK_NAME, type: AppstoreValidateTask, group: APPSTORE_GROUP_NAME)
+		project.task(NOTARIZE_TASK_NAME, type: NotarizeTask, group: APPSTORE_GROUP_NAME)
 	}
 
 	private void configureAppledoc(Project project) {

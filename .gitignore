@@ -43,3 +43,6 @@ local.properties
 
 #Spock outputs
 out/
+
+Pods/
+Carthage/
