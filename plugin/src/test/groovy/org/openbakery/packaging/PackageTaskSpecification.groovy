@@ -151,14 +151,15 @@ class PackageTaskSpecification extends Specification {
 		File payloadApp = new File(outputPath, path)
 
 		def commandList = [
-						"/usr/bin/codesign",
-						"--force",
-						"--sign",
-						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-						"--verbose",
-						payloadApp.absolutePath,
-						"--keychain",
-						keychain.absolutePath
+			"/usr/bin/codesign",
+			"--force",
+			"--sign",
+			"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+			"--deep",
+			"--verbose",
+			payloadApp.absolutePath,
+			"--keychain",
+			keychain.absolutePath
 
 		]
 

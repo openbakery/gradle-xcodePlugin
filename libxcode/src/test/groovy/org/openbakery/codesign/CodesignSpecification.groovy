@@ -462,9 +462,46 @@ class CodesignSpecification extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", new File(bundle, "Frameworks/My.framework").absolutePath ]
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Frameworks/My.framework").absolutePath ]
 		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
+	}
 
+
+	def "codesign embedded framework with identity"() {
+		def commandLists = []
+
+		def keychain = new File("keychain")
+
+		parameters = new CodesignParameters()
+		parameters.type = Type.iOS
+		parameters.signingIdentity = "foobar"
+		parameters.keychain = keychain
+		codesign.codesignParameters = parameters
+
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework()
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.iOS, plistHelper))
+
+
+		then:
+		2 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == ["/usr/bin/codesign",
+												"--force",
+												"--sign",
+												"foobar",
+												"--deep",
+												"--verbose",
+												new File(bundle, "Frameworks/My.framework").absolutePath,
+												"--keychain",
+												keychain.absolutePath
+		]
 	}
 
 	def "codesign embedded dylib"() {
@@ -488,8 +525,8 @@ class CodesignSpecification extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", new File(bundle, "Frameworks/libswiftCore.dylib").absolutePath ]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", new File(bundle, "Frameworks/libswiftCoreGraphics.dylib").absolutePath ]
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Frameworks/libswiftCore.dylib").absolutePath ]
+		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Frameworks/libswiftCoreGraphics.dylib").absolutePath ]
 		commandLists[2] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
 	}
 
@@ -515,7 +552,7 @@ class CodesignSpecification extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", new File(bundle, "Frameworks/Helper.app").absolutePath ]
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Frameworks/Helper.app").absolutePath ]
 		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
 	}
 }

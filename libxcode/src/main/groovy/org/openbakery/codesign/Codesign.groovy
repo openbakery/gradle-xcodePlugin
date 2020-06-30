@@ -121,23 +121,21 @@ class Codesign {
 			};
 
 			for (File file in frameworksDirectory.listFiles(filter)) {
-
-				performCodesign(file, null)
-
+				performCodesign(file, null, true)
 			}
 		}
 
 	}
 
-	private void performCodesign(File bundle, File entitlements) {
+	private void performCodesign(File bundle, File entitlements, Boolean deep = false) {
 		if (codesignParameters.signingIdentity == null) {
-			performCodesignWithoutIdentity(bundle)
+			performCodesignWithoutIdentity(bundle, deep)
 		} else {
-			performCodesignWithIdentity(bundle,entitlements)
+			performCodesignWithIdentity(bundle, entitlements, deep)
 		}
 	}
 
-	private void performCodesignWithIdentity(File bundle, File entitlements) {
+	private void performCodesignWithIdentity(File bundle, File entitlements, Boolean deep) {
 		logger.info("performCodesign {}", bundle)
 
 		def codesignCommand = []
@@ -151,6 +149,9 @@ class Codesign {
 
 		codesignCommand << "--sign"
 		codesignCommand << codesignParameters.signingIdentity
+		if (deep) {
+			codesignCommand << "--deep"
+		}
 		codesignCommand << "--verbose"
 		codesignCommand << bundle.absolutePath
 		codesignCommand << "--keychain"
@@ -161,7 +162,7 @@ class Codesign {
 
 	}
 
-	private void performCodesignWithoutIdentity(File bundle) {
+	private void performCodesignWithoutIdentity(File bundle, Boolean deep) {
 		logger.info("performCodesign {}", bundle)
 
 		def codesignCommand = []
@@ -169,6 +170,9 @@ class Codesign {
 		codesignCommand << "--force"
 		codesignCommand << "--sign"
 		codesignCommand << "-"
+		if (deep) {
+			codesignCommand << "--deep"
+		}
 		codesignCommand << "--verbose"
 		codesignCommand << bundle.absolutePath
 
