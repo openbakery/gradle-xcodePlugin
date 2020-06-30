@@ -4,6 +4,8 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
+import org.openbakery.test.ApplicationDummyMacOS
+import org.openbakery.testdouble.XcodeFake
 
 class NotarizeTaskSpecification extends spock.lang.Specification {
 
@@ -13,7 +15,8 @@ class NotarizeTaskSpecification extends spock.lang.Specification {
 	File infoPlist
 
 	CommandRunner commandRunner = Mock(CommandRunner)
-	File zipBundle;
+	File zipBundle
+	ApplicationDummyMacOS applicationDummy
 
 	def setup() {
 
@@ -31,6 +34,12 @@ class NotarizeTaskSpecification extends spock.lang.Specification {
 		zipBundle = new File(project.getBuildDir(), "package/Test.zip")
 		FileUtils.writeStringToFile(zipBundle, "dummy")
 
+
+		File buildDirectory = new File(project.getBuildDir(), "package")
+
+		applicationDummy = new ApplicationDummyMacOS(buildDirectory)
+		applicationDummy.create()
+
 	}
 
 	def cleanup() {
@@ -44,20 +53,78 @@ class NotarizeTaskSpecification extends spock.lang.Specification {
 	}
 
 
-	/*
 	def "zip is missing throws exception"() {
 		given:
 		FileUtils.deleteDirectory(project.projectDir)
 
 		when:
-		task.upload()
+		task.notarize()
 
 		then:
 		thrown(IllegalStateException.class)
-
 	}
-*/
 
-	// xcrun altool --notarize-app --primary-bundle-id app.marmota.presentation --asc-provider RenePirringer160775877 --username rene.pirringer@ciqua.com   --file marmota.zip
+
+	def "when username is missing throw exception"() {
+		when:
+		task.notarize()
+
+		then:
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "Appstore username is missing. Parameter: appstore.username"
+	}
+
+
+	def "when password missing  throw exception"() {
+		given:
+		project.appstore.username = "me@example.com"
+
+		when:
+		task.notarize()
+
+		then:
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "Appstore password is missing. Parameter: appstore.password"
+	}
+
+
+	def "when ascProvider missing throw exception"() {
+		given:
+		project.appstore.username = "me@example.com"
+		project.appstore.password = "secret"
+
+		when:
+		task.notarize()
+
+		then:
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "asc-provider is missing. Parameter: appstore.ascProvider"
+	}
+
+
+
+	def "test notarize command"() {
+		given:
+		project.appstore.username = "me@example.com"
+		project.appstore.password = "1234"
+		project.appstore.ascProvider = "ME1234"
+
+		def command = "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
+
+		task.xcode = new XcodeFake()
+
+		when:
+		task.notarize()
+
+		then:
+		1 * commandRunner.run([
+			command,
+			"--notarize-app",
+			"--primary-bundle-id", "org.openbakery.macOS.Example",
+			"--asc-provider", "ME1234",
+			"--username", "me@example.com",
+			"--password", "1234",
+			"--file", zipBundle.absolutePath], _)
+	}
 
 }

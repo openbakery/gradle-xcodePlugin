@@ -2,9 +2,6 @@ package org.openbakery
 
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
 import org.openbakery.packaging.PackageTask
 
 import java.util.regex.Pattern
@@ -93,7 +90,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 		return copyBundleToDirectory(outputDirectory, getDSymBundle())
 	}
 
-	File getBundle(String extension) {
+	File getBundlePathByExtension(String extension) {
 		File packageDirectory = new File(project.getBuildDir(), PackageTask.PACKAGE_PATH)
 
 		if (!packageDirectory.exists()) {
@@ -107,7 +104,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 
 		if (fileList.isEmpty()) {
-			throw new IllegalStateException("No ipa found")
+			throw new IllegalStateException("No bundle with extension '" + extension + "' found")
 		}
 
 		return new File(packageDirectory, fileList.get(0))
@@ -115,12 +112,12 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 	@Internal
 	File getIpaBundle() {
-		return getBundle("ipa")
+		return getBundlePathByExtension("ipa")
 	}
 
 	@Internal
 	File getAppBundle() {
-		return getBundle("app")
+		return getBundlePathByExtension("app")
 	}
 
 
