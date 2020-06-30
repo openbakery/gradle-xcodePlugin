@@ -1,3 +1,9 @@
+# 0.20.1 (TBA)
+
+Changes
+* added notarize task for notarizing macOS applications
+
+
 # 0.20.0 (2 June, 2020)
 
 Changes
