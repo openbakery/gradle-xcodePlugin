@@ -155,7 +155,6 @@ class PackageTaskSpecification extends Specification {
 			"--force",
 			"--sign",
 			"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-			"--deep",
 			"--verbose",
 			payloadApp.absolutePath,
 			"--keychain",

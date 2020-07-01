@@ -13,6 +13,10 @@ import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.nio.file.Files
+
+import static groovy.io.FileType.DIRECTORIES
+
 class Codesign {
 	private static Logger logger = LoggerFactory.getLogger(Codesign.class)
 
@@ -42,7 +46,7 @@ class Codesign {
 			entitlements = prepareEntitlementsForSigning(bundle.path)
 		}
 
-		performCodesign(bundle.path, entitlements)
+		performCodesign(bundle.path, entitlements, false)
 	}
 
 	private File prepareEntitlementsForSigning(File bundle) {
@@ -104,41 +108,87 @@ class Codesign {
 
 	private void codeSignEmbeddedBundle(File bundle) {
 
-		File frameworksDirectory
+
 		if (codesignParameters.type == Type.iOS) {
-			frameworksDirectory = new File(bundle, "Frameworks")
+			embeddedBundleEntriesForIOS(bundle).each {
+				performCodesign(it)
+			}
 		} else {
-			frameworksDirectory = new File(bundle, "Contents/Frameworks")
-		}
-		if (frameworksDirectory.exists()) {
-
-			FilenameFilter filter = new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".dylib") ||
-						name.toLowerCase().endsWith(".framework") ||
-						name.toLowerCase().endsWith(".app")
-				}
-			};
-
-			for (File file in frameworksDirectory.listFiles(filter)) {
-				performCodesign(file, null, true)
+			embeddedBundleEntriesForMacOS(bundle).each {
+				performCodesign(it, null, true)
 			}
 		}
 
 	}
 
-	private void performCodesign(File bundle, File entitlements, Boolean deep = false) {
-		if (codesignParameters.signingIdentity == null) {
-			performCodesignWithoutIdentity(bundle, deep)
-		} else {
-			performCodesignWithIdentity(bundle, entitlements, deep)
+
+	private static List<File>embeddedBundleEntriesForIOS(File bundle) {
+		File directory = new File(bundle, "Frameworks")
+		if (!directory.exists()) {
+			return []
 		}
+		List<File> result = []
+
+		directory.traverse(maxDepth: 0) { file ->
+			if (file.getName().toLowerCase().endsWith(".framework") ||
+				file.getName().toLowerCase().endsWith(".app") ||
+				file.getName().toLowerCase().endsWith(".dylib")) {
+
+				result.add(file)
+			}
+		}
+		return result
 	}
 
-	private void performCodesignWithIdentity(File bundle, File entitlements, Boolean deep) {
+	private List<File> embeddedBundleEntriesForMacOS(File bundle) {
+
+		List<File> result = []
+		File directory = new File(bundle, "Contents/Frameworks")
+		if (!directory.exists()) {
+			return result
+		}
+
+		directory.traverse(type: DIRECTORIES, maxDepth: 0) { file ->
+
+			if (!file.isDirectory()) {
+				return
+			}
+
+			if (file.getName().toLowerCase().endsWith(".framework") ||
+					file.getName().toLowerCase().endsWith(".app")) {
+
+					result.addAll(getFrameworkVersions(file))
+
+			}
+
+		}
+
+		return result
+	}
+
+	static List<File> getFrameworkVersions(File directory) {
+		logger.info("getFrameworkVersion in {}", directory)
+
+
+		List<File> result = []
+		new File(directory, "Versions").traverse(type: DIRECTORIES, maxDepth: 0) { file ->
+			if (Files.isSymbolicLink(file.toPath())) {
+				return
+			}
+			result << file
+		}
+		return result
+	}
+
+
+	public void performCodesign(File bundle) {
+		this.performCodesign(bundle, null, false)
+	}
+
+	public void performCodesign(File bundle, File entitlements, boolean deep) {
 		logger.info("performCodesign {}", bundle)
 
-		def codesignCommand = []
+		List<String> codesignCommand = []
 		codesignCommand << "/usr/bin/codesign"
 		codesignCommand << "--force"
 
@@ -148,33 +198,21 @@ class Codesign {
 		}
 
 		codesignCommand << "--sign"
-		codesignCommand << codesignParameters.signingIdentity
+		if (codesignParameters.signingIdentity != null) {
+			codesignCommand << codesignParameters.signingIdentity
+		} else {
+			codesignCommand << "-"
+		}
 		if (deep) {
 			codesignCommand << "--deep"
 		}
 		codesignCommand << "--verbose"
 		codesignCommand << bundle.absolutePath
-		codesignCommand << "--keychain"
-		codesignCommand << codesignParameters.keychain.absolutePath
 
-		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
-		commandRunner.run(codesignCommand, environment)
-
-	}
-
-	private void performCodesignWithoutIdentity(File bundle, Boolean deep) {
-		logger.info("performCodesign {}", bundle)
-
-		def codesignCommand = []
-		codesignCommand << "/usr/bin/codesign"
-		codesignCommand << "--force"
-		codesignCommand << "--sign"
-		codesignCommand << "-"
-		if (deep) {
-			codesignCommand << "--deep"
+		if (codesignParameters.signingIdentity != null) {
+			codesignCommand << "--keychain"
+			codesignCommand << codesignParameters.keychain.absolutePath
 		}
-		codesignCommand << "--verbose"
-		codesignCommand << bundle.absolutePath
 
 		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
 		commandRunner.run(codesignCommand, environment)

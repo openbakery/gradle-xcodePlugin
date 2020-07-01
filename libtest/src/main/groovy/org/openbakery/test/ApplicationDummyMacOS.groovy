@@ -42,4 +42,12 @@ class ApplicationDummyMacOS {
 		return applicationBundle
 	}
 
+
+	void createFramework(String version = "A") {
+		File frameworkVersion = new File(applicationBundle, "Contents/Frameworks/My.framework/Versions/${version}")
+		frameworkVersion.mkdirs()
+		File frameworkFile = new File(frameworkVersion, "My Framework")
+		FileUtils.writeStringToFile(frameworkFile, "dummy")
+	}
+
 }
