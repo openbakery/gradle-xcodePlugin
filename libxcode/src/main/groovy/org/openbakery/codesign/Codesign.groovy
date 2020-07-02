@@ -129,10 +129,11 @@ class Codesign {
 		}
 		List<File> result = []
 
+		result.addAll(getFrameworkLibraries(directory))
+
 		directory.traverse(maxDepth: 0) { file ->
 			if (file.getName().toLowerCase().endsWith(".framework") ||
-				file.getName().toLowerCase().endsWith(".app") ||
-				file.getName().toLowerCase().endsWith(".dylib")) {
+				file.getName().toLowerCase().endsWith(".app")) {
 
 				result.add(file)
 			}
@@ -175,11 +176,27 @@ class Codesign {
 			if (Files.isSymbolicLink(file.toPath())) {
 				return
 			}
+			result.addAll(getFrameworkLibraries(new File(file, "Libraries")))
 			result << file
 		}
 		return result
 	}
 
+	static List<File> getFrameworkLibraries(File directory) {
+		logger.info("getFrameworkVersionLibraries in {}", directory)
+		List<File> result = []
+		if (!directory.exists()) {
+			return result
+		}
+
+		directory.traverse(maxDepth: 0) { file ->
+			if (file.getName().toLowerCase().endsWith(".dylib")) {
+				result << file
+			}
+		}
+
+		return result
+	}
 
 	public void performCodesign(File bundle) {
 		this.performCodesign(bundle, null, false)

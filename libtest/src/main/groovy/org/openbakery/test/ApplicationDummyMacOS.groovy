@@ -43,12 +43,21 @@ class ApplicationDummyMacOS {
 	}
 
 
-	void createFramework(String version = "A") {
+	void createFramework(String version = "A", String dylibName = null){
 		File frameworkVersion = new File(applicationBundle, "Contents/Frameworks/My.framework/Versions/${version}")
 		frameworkVersion.mkdirs()
 		File frameworkFile = new File(frameworkVersion, "My Framework")
 		FileUtils.writeStringToFile(frameworkFile, "dummy")
+
+		if (dylibName != null) {
+			File libraries = new File(frameworkVersion, "Libraries")
+			libraries.mkdirs()
+			File dylib = new File(libraries, "${dylibName}.dylib")
+			FileUtils.writeStringToFile(dylib, "dummy")
+		}
 	}
+
+
 
 	void createEmbeddedApp(String name = "HelperApp") {
 		File embeddedApp = new File(applicationBundle, "Contents/Frameworks/${name}.app/Contents/MacOS/")

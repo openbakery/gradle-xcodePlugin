@@ -148,4 +148,53 @@ class CodesignSpecificationMacOS extends  Specification {
 	}
 
 
+
+	def "codesign embedded framework embedded library"() {
+		def commandLists = []
+
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework("A", "libFoobar")
+
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		3 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoobar.dylib").absolutePath]
+		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
+		commandLists[2] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+	}
+
+	def "codesign multiple embedded framework embedded library"() {
+		def commandLists = []
+
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework("A", "libFoo")
+		applicationDummy.createFramework("A", "libBar")
+
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		4 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoo.dylib").absolutePath]
+		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libBar.dylib").absolutePath]
+		commandLists[2] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
+		commandLists[3] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+	}
+
 }
