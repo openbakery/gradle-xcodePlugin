@@ -50,4 +50,13 @@ class ApplicationDummyMacOS {
 		FileUtils.writeStringToFile(frameworkFile, "dummy")
 	}
 
+	void createEmbeddedApp(String name = "HelperApp") {
+		File embeddedApp = new File(applicationBundle, "Contents/Frameworks/${name}.app/Contents/MacOS/")
+		embeddedApp.mkdirs()
+		File executable = new File(embeddedApp, name)
+		FileUtils.writeStringToFile(executable, "dummy")
+	}
+
+
+
 }

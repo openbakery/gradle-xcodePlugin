@@ -154,11 +154,11 @@ class Codesign {
 				return
 			}
 
-			if (file.getName().toLowerCase().endsWith(".framework") ||
-					file.getName().toLowerCase().endsWith(".app")) {
-
-					result.addAll(getFrameworkVersions(file))
-
+			if (file.getName().toLowerCase().endsWith(".framework")) {
+				result.addAll(getFrameworkVersions(file))
+			}
+			if (file.getName().toLowerCase().endsWith(".app")) {
+				result.add(file)
 			}
 
 		}

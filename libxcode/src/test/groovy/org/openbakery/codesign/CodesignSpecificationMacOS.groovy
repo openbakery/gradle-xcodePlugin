@@ -98,29 +98,54 @@ class CodesignSpecificationMacOS extends  Specification {
 
 
 	def "codesign embedded framework that has symlink to version"() {
-			def commandLists = []
+		def commandLists = []
 
-			given:
-			File bundle = applicationDummy.create()
-			applicationDummy.createFramework()
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework()
 
-			File link =  new File(bundle, "Contents/Frameworks/My.framework/Versions/Current")
-			File target =  new File(bundle, "Contents/Frameworks/My.framework/Versions/A")
+		File link = new File(bundle, "Contents/Frameworks/My.framework/Versions/Current")
+		File target = new File(bundle, "Contents/Frameworks/My.framework/Versions/A")
 
-			createSymbolicLink(link.toPath(), target.toPath())
+		createSymbolicLink(link.toPath(), target.toPath())
 
-			when:
-			codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
 
 
-			then:
-			2 * commandRunner.run(_, _) >> {
-				arguments ->
-					commandLists << arguments[0]
-			}
-
-			commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
-			commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		then:
+		2 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
 		}
+
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
+		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+	}
+
+
+
+	def "codesign embedded app"() {
+		def commandLists = []
+
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createEmbeddedApp()
+
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		2 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/HelperApp.app").absolutePath]
+		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+	}
+
 
 }
