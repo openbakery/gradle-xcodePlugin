@@ -119,6 +119,8 @@ class Codesign {
 			embeddedBundleEntriesForMacOS(bundle).each {
 				if (it.name.endsWith(".app")) {
 					performCodesign(it, null, false, true)
+				} else if (it.isFile() && !it.name.endsWith("dylib")) {
+					performCodesign(it, null, false, true)
 				} else {
 					performCodesign(it, null, true, false)
 				}

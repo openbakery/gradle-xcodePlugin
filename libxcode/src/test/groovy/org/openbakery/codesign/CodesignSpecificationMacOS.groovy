@@ -50,7 +50,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		tmpDirectory.deleteDir()
 	}
 
-	def createAppCodeSignCommand(File bundle) {
+	def createCodeSignCommand(File bundle) {
 		return ["/usr/bin/codesign",
 						"--force",
 						"--sign",
@@ -90,7 +90,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		}
 
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[1] == createAppCodeSignCommand(bundle)
+		commandLists[1] == createCodeSignCommand(bundle)
 	}
 
 
@@ -114,7 +114,7 @@ class CodesignSpecificationMacOS extends  Specification {
 
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
 		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/B"))
-		commandLists[2] == createAppCodeSignCommand(bundle)
+		commandLists[2] == createCodeSignCommand(bundle)
 	}
 
 
@@ -141,7 +141,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		}
 
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[1] == createAppCodeSignCommand(bundle)
+		commandLists[1] == createCodeSignCommand(bundle)
 	}
 
 
@@ -164,8 +164,8 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == createAppCodeSignCommand(new File(bundle, "Contents/Frameworks/HelperApp.app"))
-		commandLists[1] == createAppCodeSignCommand(bundle)
+		commandLists[0] == createCodeSignCommand(new File(bundle, "Contents/Frameworks/HelperApp.app"))
+		commandLists[1] == createCodeSignCommand(bundle)
 	}
 
 
@@ -190,7 +190,7 @@ class CodesignSpecificationMacOS extends  Specification {
 
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoobar.dylib"))
 		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[2] == createAppCodeSignCommand(bundle)
+		commandLists[2] == createCodeSignCommand(bundle)
 	}
 
 	def "codesign multiple embedded framework embedded library"() {
@@ -215,7 +215,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoo.dylib"))
 		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libBar.dylib"))
 		commandLists[2] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[3] == createAppCodeSignCommand(bundle)
+		commandLists[3] == createCodeSignCommand(bundle)
 	}
 
 
@@ -238,9 +238,9 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == createFrameworkCodeSignCommand(executable)
+		commandLists[0] == createCodeSignCommand(executable)
 		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[2] == createAppCodeSignCommand(bundle)
+		commandLists[2] == createCodeSignCommand(bundle)
 
 	}
 
@@ -262,7 +262,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		}
 
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[1] == createAppCodeSignCommand(bundle)
+		commandLists[1] == createCodeSignCommand(bundle)
 
 	}
 
@@ -287,7 +287,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		}
 
 		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
-		commandLists[1] == createAppCodeSignCommand(bundle)
+		commandLists[1] == createCodeSignCommand(bundle)
 
 	}
 
