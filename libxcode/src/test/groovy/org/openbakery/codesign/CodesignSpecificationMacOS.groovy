@@ -235,10 +235,9 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources"))
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources/executable"))
 		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
 		commandLists[2] == createAppCodeSignCommand(bundle)
-
 
 	}
 

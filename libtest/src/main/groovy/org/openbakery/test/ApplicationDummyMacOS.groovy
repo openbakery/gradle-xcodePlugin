@@ -59,8 +59,9 @@ class ApplicationDummyMacOS {
 		if (resourcesFile != null) {
 			File resources = new File(frameworkVersion, "Resources")
 			resources.mkdirs()
-			File dylib = new File(resources, "${resourcesFile}")
-			FileUtils.writeStringToFile(dylib, "dummy")
+			File executable = new File(resources, "${resourcesFile}")
+			FileUtils.writeStringToFile(executable, "dummy")
+			executable.setExecutable(true)
 		}
 
 	}

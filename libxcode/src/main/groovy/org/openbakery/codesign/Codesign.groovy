@@ -183,11 +183,7 @@ class Codesign {
 				return
 			}
 
-			File resources = new File(file, "Resources")
-			if (resources.exists()) {
-				result << resources
-			}
-
+			result.addAll(getFrameworkResourceExecutables(new File(file, "Resources")))
 			result.addAll(getFrameworkLibraries(new File(file, "Libraries")))
 			result << file
 		}
@@ -208,6 +204,23 @@ class Codesign {
 		}
 
 		return result
+	}
+
+	static List<File> getFrameworkResourceExecutables(File directory) {
+		logger.info("getFrameworkResourceExecutables in {}", directory)
+		List<File> result = []
+		if (!directory.exists()) {
+			return result
+		}
+
+		directory.traverse(maxDepth: 0) { file ->
+			if (file.canExecute()) {
+				result << file
+			}
+		}
+
+		return result
+
 	}
 
 	public void performCodesign(File bundle) {
