@@ -223,7 +223,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		def commandLists = []
 		given:
 		File bundle = applicationDummy.create()
-		applicationDummy.createFramework("A", null, "executable")
+		applicationDummy.createFramework("A", null, "Resources/executable")
 
 		def executable = new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources/executable")
 		executable.setExecutable(true)
@@ -245,11 +245,40 @@ class CodesignSpecificationMacOS extends  Specification {
 	}
 
 
+	def "codesign executable in Foo and Bar directroy"() {
+		def commandLists = []
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework("A", null, "Foo/executable")
+		applicationDummy.createFramework("A", null, "Bar/executable")
+
+		def foo = new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Foo/executable")
+		foo.setExecutable(true)
+		def bar = new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Bar/executable")
+		bar.setExecutable(true)
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		4 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == createCodeSignCommand(foo)
+		commandLists[1] == createCodeSignCommand(bar)
+		commandLists[2] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[3] == createCodeSignCommand(bundle)
+
+	}
+
 	def "codesign ignore non executable files in Resources"() {
 		def commandLists = []
 		given:
 		File bundle = applicationDummy.create()
-		applicationDummy.createFramework("A", null, "Test.png")
+		applicationDummy.createFramework("A", null, "Resources/Test.png")
 
 		when:
 		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
@@ -270,7 +299,7 @@ class CodesignSpecificationMacOS extends  Specification {
 		def commandLists = []
 		given:
 		File bundle = applicationDummy.create()
-		applicationDummy.createFramework("A", null, "Test.png")
+		applicationDummy.createFramework("A", null, "Resources/Test.png")
 
 		def folder = new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources/Folder")
 		folder.mkdirs()

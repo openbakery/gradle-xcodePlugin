@@ -185,7 +185,12 @@ class Codesign {
 				return
 			}
 
-			result.addAll(getFrameworkResourceExecutables(new File(file, "Resources")))
+			// collect all binaries in the subdirectory
+			file.traverse(type: DIRECTORIES, maxDepth: 0) { subdirectory ->
+				result.addAll(getFrameworkResourceExecutables(subdirectory))
+			}
+
+
 			result.addAll(getFrameworkLibraries(new File(file, "Libraries")))
 			result << file
 		}

@@ -57,10 +57,9 @@ class ApplicationDummyMacOS {
 		}
 
 		if (resourcesFile != null) {
-			File resources = new File(frameworkVersion, "Resources")
-			resources.mkdirs()
-			File resourceFile = new File(resources, "${resourcesFile}")
-			FileUtils.writeStringToFile(resourceFile, "dummy")
+			File resources = new File(frameworkVersion, resourcesFile)
+			resources.parentFile.mkdirs()
+			FileUtils.writeStringToFile(resources, "dummy")
 		}
 
 	}
