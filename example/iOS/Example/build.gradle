@@ -66,7 +66,6 @@ task appstore(dependsOn:'package/Example/Appstore', description: 'Creates an app
 def configureDescription = 'Configures the build according to the passed <ConfigurationName>'
 def archiveDescription = 'Configures the project using "configure<ConfigurationName>" and saves an Xcode archive'
 def packageDescription = 'Packages and codesignes the project after executing "archive<ConfigurationName" and saves the resulting ipa'
-def distributeHockeyDescription = 'Executes "package<Properties>/<ConfigurationName>" and uploads the resulting ipa to Hockey. e.g. package/Example/AdHoc'
 
 def getPropertyForComponents(List<String> components) {
   def propertyName = components.join('.')

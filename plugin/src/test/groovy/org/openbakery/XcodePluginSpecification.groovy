@@ -17,10 +17,6 @@ import org.openbakery.cocoapods.CocoapodsBootstrapTask
 import org.openbakery.cocoapods.CocoapodsInstallTask
 import org.openbakery.cocoapods.CocoapodsUpdateTask
 import org.openbakery.cpd.CpdTask
-import org.openbakery.hockeykit.HockeyKitArchiveTask
-import org.openbakery.hockeykit.HockeyKitImageTask
-import org.openbakery.hockeykit.HockeyKitManifestTask
-import org.openbakery.hockeykit.HockeyKitPluginExtension
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
 import org.openbakery.signing.KeychainCreateTask
@@ -110,38 +106,12 @@ class XcodePluginSpecification extends Specification {
 
 
 
-	def "contain task hockeykit"() {
-		expect:
-		project.tasks.findByName('hockeykit') instanceof DefaultTask
-	}
-
-
-	def "contain task hockeykit archive"() {
-		expect:
-		project.tasks.findByName('hockeykitArchive') instanceof HockeyKitArchiveTask
-	}
-
-
-	def "contain task hockeykit image"() {
-		expect:
-		project.tasks.findByName('hockeykitImage') instanceof HockeyKitImageTask
-	}
-
-
-	def "contain task hockeykit manifest"() {
-		expect:
-		project.tasks.findByName('hockeykitManifest') instanceof HockeyKitManifestTask
-	}
-
-
 	def "group tasks"() {
 		project.tasks.each { task ->
 			if (task.getClass().getName().startsWith("org.openbakery.XcodeBuildTask")) {
 				assert task.group == XcodePlugin.XCODE_GROUP_NAME
 			} else if (task.getClass().getName().startsWith("org.openbakery.Xcode")) {
 				assert task.group == XcodePlugin.XCODE_GROUP_NAME
-			} else if (task.getClass().getName().startsWith("org.openbakery.HockeyKit")) {
-				assert task.group == XcodePlugin.HOCKEYKIT_GROUP_NAME
 			}
 			if (task.getClass().getName().startsWith("org.openbakery.AppCenter")) {
 				assert task.group == XcodePlugin.APPCENTER_GROUP_NAME
@@ -162,11 +132,6 @@ class XcodePluginSpecification extends Specification {
 		project.extensions.findByName('infoplist') instanceof InfoPlistExtension
 	}
 
-
-	def "contain extension hockeykit"() {
-		expect:
-		project.extensions.findByName('hockeykit') instanceof HockeyKitPluginExtension
-	}
 
 
 	def "contain extension appstore"() {

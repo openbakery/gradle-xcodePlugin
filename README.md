@@ -20,7 +20,6 @@ Here a brief overview of the features:
 * [Carthage](https://github.com/Carthage/Carthage) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) or using [CoverageReport](https://github.com/openbakery/CoverageReport) )
-* [Hockeykit](http://hockeykit.net/), [App Center](https://appcenter.ms), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint
 
 

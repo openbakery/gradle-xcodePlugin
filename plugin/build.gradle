@@ -42,7 +42,6 @@ configurations {
 dependencies {
 	compile gradleApi()
 	compile 'com.squareup.okhttp3:okhttp:4.2.0'
-	compile 'org.pegdown:pegdown:1.6.+'
 	compile 'org.openbakery.coverage:CoverageReport:0.9.4'
 	deployerJars 'org.apache.maven.wagon:wagon-ssh:3.3.2'
 }

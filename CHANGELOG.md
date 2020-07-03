@@ -1,7 +1,9 @@
 # 0.20.1 (TBA)
 
 Changes
-* added notarize task for notarizing macOS applications
+* Added notarize task for notarizing macOS applications
+* Remove HockeyKit task
+* Removed ReleaseNotes task because the pegdown dependencies causes troubles: Issue #431
 
 
 # 0.20.0 (2 June, 2020)
