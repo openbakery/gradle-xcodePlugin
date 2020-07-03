@@ -214,7 +214,7 @@ class Codesign {
 		}
 
 		directory.traverse(maxDepth: 0) { file ->
-			if (file.canExecute()) {
+			if (!file.isDirectory() && file.canExecute()) {
 				result << file
 			}
 		}

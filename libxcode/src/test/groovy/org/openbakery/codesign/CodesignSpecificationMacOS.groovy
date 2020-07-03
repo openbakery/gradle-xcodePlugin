@@ -225,6 +225,9 @@ class CodesignSpecificationMacOS extends  Specification {
 		File bundle = applicationDummy.create()
 		applicationDummy.createFramework("A", null, "executable")
 
+		def executable = new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources/executable")
+		executable.setExecutable(true)
+
 		when:
 		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
 
@@ -235,11 +238,59 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources/executable"))
+		commandLists[0] == createFrameworkCodeSignCommand(executable)
 		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
 		commandLists[2] == createAppCodeSignCommand(bundle)
 
 	}
+
+
+	def "codesign ignore non executable files in Resources"() {
+		def commandLists = []
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework("A", null, "Test.png")
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		2 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[1] == createAppCodeSignCommand(bundle)
+
+	}
+
+	def "codesign ignores folders in Resources"() {
+		def commandLists = []
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework("A", null, "Test.png")
+
+		def folder = new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources/Folder")
+		folder.mkdirs()
+
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		2 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[1] == createAppCodeSignCommand(bundle)
+
+	}
+
 
 
 }
