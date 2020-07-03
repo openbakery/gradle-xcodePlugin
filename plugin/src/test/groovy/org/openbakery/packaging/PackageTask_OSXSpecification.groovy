@@ -103,16 +103,17 @@ class PackageTask_OSXSpecification  extends Specification {
 		File entitlements = new File(tmpDir, "entitlements_test-wildcard-mac.plist")
 
 		def commandList = [
-						"/usr/bin/codesign",
-						"--force",
-						"--entitlements",
-						entitlements.absolutePath,
-						"--sign",
-						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-						"--verbose",
-						payloadApp.absolutePath,
-						"--keychain",
-						keychain.absolutePath
+			"/usr/bin/codesign",
+			"--force",
+			"--entitlements",
+			entitlements.absolutePath,
+			"--sign",
+			"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+			"--options=runtime",
+			"--verbose",
+			payloadApp.absolutePath,
+			"--keychain",
+			keychain.absolutePath
 		]
 
 		return commandList

@@ -46,7 +46,9 @@ class Codesign {
 			entitlements = prepareEntitlementsForSigning(bundle.path)
 		}
 
-		performCodesign(bundle.path, entitlements, false)
+		def hardenRuntime = (codesignParameters.type == Type.macOS)
+
+		performCodesign(bundle.path, entitlements, false, hardenRuntime)
 	}
 
 	private File prepareEntitlementsForSigning(File bundle) {
@@ -115,7 +117,11 @@ class Codesign {
 			}
 		} else {
 			embeddedBundleEntriesForMacOS(bundle).each {
-				performCodesign(it, null, true)
+				if (it.name.endsWith(".app")) {
+					performCodesign(it, null, false, true)
+				} else {
+					performCodesign(it, null, true, false)
+				}
 			}
 		}
 
@@ -176,6 +182,12 @@ class Codesign {
 			if (Files.isSymbolicLink(file.toPath())) {
 				return
 			}
+
+			File resources = new File(file, "Resources")
+			if (resources.exists()) {
+				result << resources
+			}
+
 			result.addAll(getFrameworkLibraries(new File(file, "Libraries")))
 			result << file
 		}
@@ -199,10 +211,10 @@ class Codesign {
 	}
 
 	public void performCodesign(File bundle) {
-		this.performCodesign(bundle, null, false)
+		this.performCodesign(bundle, null, false, false)
 	}
 
-	public void performCodesign(File bundle, File entitlements, boolean deep) {
+	public void performCodesign(File bundle, File entitlements, boolean deep, boolean hardenRuntime) {
 		logger.info("performCodesign {}", bundle)
 
 		List<String> codesignCommand = []
@@ -222,6 +234,9 @@ class Codesign {
 		}
 		if (deep) {
 			codesignCommand << "--deep"
+		}
+		if (hardenRuntime) {
+			codesignCommand << "--options=runtime"
 		}
 		codesignCommand << "--verbose"
 		codesignCommand << bundle.absolutePath

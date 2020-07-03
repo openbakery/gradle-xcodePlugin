@@ -50,6 +50,27 @@ class CodesignSpecificationMacOS extends  Specification {
 		tmpDirectory.deleteDir()
 	}
 
+	def createAppCodeSignCommand(File bundle) {
+		return ["/usr/bin/codesign",
+						"--force",
+						"--sign",
+						"-",
+						"--options=runtime",
+						"--verbose",
+						bundle.absolutePath]
+	}
+
+	def createFrameworkCodeSignCommand(File bundle) {
+		return ["/usr/bin/codesign",
+						"--force",
+						"--sign",
+						"-",
+						"--deep",
+						"--verbose",
+						bundle.absolutePath
+		]
+	}
+
 
 	def "codesign embedded framework that has one version"() {
 		def commandLists = []
@@ -68,8 +89,8 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[1] == createAppCodeSignCommand(bundle)
 	}
 
 
@@ -91,9 +112,9 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/B").absolutePath]
-		commandLists[2] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/B"))
+		commandLists[2] == createAppCodeSignCommand(bundle)
 	}
 
 
@@ -119,8 +140,8 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[1] == createAppCodeSignCommand(bundle)
 	}
 
 
@@ -143,8 +164,8 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/HelperApp.app").absolutePath]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		commandLists[0] == createAppCodeSignCommand(new File(bundle, "Contents/Frameworks/HelperApp.app"))
+		commandLists[1] == createAppCodeSignCommand(bundle)
 	}
 
 
@@ -167,9 +188,9 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoobar.dylib").absolutePath]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
-		commandLists[2] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoobar.dylib"))
+		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[2] == createAppCodeSignCommand(bundle)
 	}
 
 	def "codesign multiple embedded framework embedded library"() {
@@ -191,10 +212,35 @@ class CodesignSpecificationMacOS extends  Specification {
 				commandLists << arguments[0]
 		}
 
-		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoo.dylib").absolutePath]
-		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libBar.dylib").absolutePath]
-		commandLists[2] == ["/usr/bin/codesign", "--force", "--sign", "-", "--deep", "--verbose", new File(bundle, "Contents/Frameworks/My.framework/Versions/A").absolutePath]
-		commandLists[3] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath]
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libFoo.dylib"))
+		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Libraries/libBar.dylib"))
+		commandLists[2] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[3] == createAppCodeSignCommand(bundle)
 	}
+
+
+	def "codesign executable in Resources"() {
+		def commandLists = []
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework("A", null, "executable")
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.macOS, plistHelper))
+
+
+		then:
+		3 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A/Resources"))
+		commandLists[1] == createFrameworkCodeSignCommand(new File(bundle, "Contents/Frameworks/My.framework/Versions/A"))
+		commandLists[2] == createAppCodeSignCommand(bundle)
+
+
+	}
+
 
 }

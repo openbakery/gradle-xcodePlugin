@@ -43,7 +43,7 @@ class ApplicationDummyMacOS {
 	}
 
 
-	void createFramework(String version = "A", String dylibName = null){
+	void createFramework(String version = "A", String dylibName = null, String resourcesFile = null) {
 		File frameworkVersion = new File(applicationBundle, "Contents/Frameworks/My.framework/Versions/${version}")
 		frameworkVersion.mkdirs()
 		File frameworkFile = new File(frameworkVersion, "My Framework")
@@ -55,6 +55,14 @@ class ApplicationDummyMacOS {
 			File dylib = new File(libraries, "${dylibName}.dylib")
 			FileUtils.writeStringToFile(dylib, "dummy")
 		}
+
+		if (resourcesFile != null) {
+			File resources = new File(frameworkVersion, "Resources")
+			resources.mkdirs()
+			File dylib = new File(resources, "${resourcesFile}")
+			FileUtils.writeStringToFile(dylib, "dummy")
+		}
+
 	}
 
 
