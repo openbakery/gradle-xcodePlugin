@@ -55,6 +55,7 @@ class CodesignSpecificationMacOS extends  Specification {
 						"--force",
 						"--sign",
 						"-",
+						"--deep",
 						"--options=runtime",
 						"--verbose",
 						bundle.absolutePath]

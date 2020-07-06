@@ -46,9 +46,12 @@ class Codesign {
 			entitlements = prepareEntitlementsForSigning(bundle.path)
 		}
 
-		def hardenRuntime = (codesignParameters.type == Type.macOS)
+		if (codesignParameters.type == Type.macOS) {
+			performCodesign(bundle.path, entitlements, true, true)
+		} else {
+			performCodesign(bundle.path, entitlements, false, false)
+		}
 
-		performCodesign(bundle.path, entitlements, false, hardenRuntime)
 	}
 
 	private File prepareEntitlementsForSigning(File bundle) {
@@ -118,9 +121,9 @@ class Codesign {
 		} else {
 			embeddedBundleEntriesForMacOS(bundle).each {
 				if (it.name.endsWith(".app")) {
-					performCodesign(it, null, false, true)
+					performCodesign(it, null, true, true)
 				} else if (it.isFile() && !it.name.endsWith("dylib")) {
-					performCodesign(it, null, false, true)
+					performCodesign(it, null, true, true)
 				} else {
 					performCodesign(it, null, true, false)
 				}

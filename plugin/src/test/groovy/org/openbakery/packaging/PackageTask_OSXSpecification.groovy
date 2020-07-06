@@ -109,6 +109,7 @@ class PackageTask_OSXSpecification  extends Specification {
 			entitlements.absolutePath,
 			"--sign",
 			"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+			"--deep",
 			"--options=runtime",
 			"--verbose",
 			payloadApp.absolutePath,
