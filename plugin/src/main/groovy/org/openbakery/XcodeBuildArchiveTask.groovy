@@ -303,6 +303,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def archive() {
+		logger.debug("Execute archive")
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 		if (parameters.isSimulatorBuildOf(Type.iOS)) {
 			logger.debug("Create zip archive")

@@ -27,12 +27,11 @@ import org.openbakery.xcode.Xcodebuild
  * Date: 12.07.13
  * Time: 09:19
  */
-class XcodeTestTask extends AbstractXcodeBuildTask {
+class XcodeTestTask extends AbstractXcodeTestTask {
 
 
 	@Internal File outputDirectory = null
 	private File testLogsDirectory = null
-	@Internal TestResultParser testResultParser = null
 
 	XcodeTestTask() {
 		super()
@@ -90,22 +89,7 @@ class XcodeTestTask extends AbstractXcodeBuildTask {
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
-			testResultParser = new TestResultParser(testLogsDirectory, xcode.getXcresulttool(), destinations)
-			testResultParser.parseAndStore(outputDirectory)
-			//Provide coverage with the test result destinations for id use.
-			project.coverage.setTestResultDestinations(testResultParser.testResults.keySet().toList())
-
-			int numberSuccess = testResultParser.numberSuccess()
-			int numberErrors = testResultParser.numberErrors()
-			if (numberErrors == 0) {
-				logger.lifecycle("All " + numberSuccess + " tests were successful");
-			} else {
-				logger.lifecycle(numberSuccess + " tests were successful, and " + numberErrors + " failed");
-			}
-			if (numberErrors != 0) {
-				throw new Exception("Not all unit tests are successful!")
-			}
-
+			processTestResult(testLogsDirectory)
 		}
 	}
 

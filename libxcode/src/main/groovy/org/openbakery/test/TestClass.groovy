@@ -4,28 +4,18 @@ class TestClass {
 	String name
 	List results = []
 
-	int numberSuccess() {
-		int success = 0;
+	int number(TestResult.State state) {
+		int number = 0;
 		for (TestResult result in results) {
-			if (result.success) {
-				success++
+			if (result.state == state) {
+				number++
 			}
 		}
-		return success;
-	}
-
-	int numberErrors() {
-		int errors = 0;
-		for (TestResult result in results) {
-			if (!result.success) {
-				errors++
-			}
-		}
-		return errors;
+		return number;
 	}
 
 	@Override
-	public java.lang.String toString() {
+	public String toString() {
 		return "TestClass{" +
 						"name='" + name + '\'' +
 						", results=" + results +

@@ -1,17 +1,24 @@
 package org.openbakery.test
 
-class TestResult {
+public class TestResult {
+	public enum State {
+		Passed,
+		Failed,
+		Skipped
+	}
+
+
 	String method;
-	boolean success;
 	String output = "";
 	float duration;
+	State state = State.Passed
 
 
 	@Override
-	public java.lang.String toString() {
+	public String toString() {
 		return "TestResult{" +
 						"method='" + method + '\'' +
-						", success=" + success +
+						", state=" + state +
 						", output='" + output + '\'' +
 						'}';
 	}

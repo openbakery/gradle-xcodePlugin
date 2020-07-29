@@ -8,9 +8,14 @@ class SimulatorControlFake extends SimulatorControl {
 	File simctlListOutput
 
 	public SimulatorControlFake(String filename) {
-		super(null, null)
-		simctlListOutput = new File("src/test/Resource/", filename);
+		this(new File("src/test/Resource/", filename))
 	}
+
+	public SimulatorControlFake(File file) {
+		super(null, null)
+		simctlListOutput = file
+	}
+
 
 	@Override
 	String simctl(String... commands) {

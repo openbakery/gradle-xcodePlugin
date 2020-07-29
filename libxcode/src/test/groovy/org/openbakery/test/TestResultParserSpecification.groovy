@@ -47,6 +47,8 @@ class TestResultParserSpecification extends Specification {
 		FileUtils.deleteDirectory(outputDirectory)
 	}
 
+
+
 	def "parse with no result"() {
 		when:
 		testResultParser.store(outputDirectory)
@@ -59,8 +61,8 @@ class TestResultParserSpecification extends Specification {
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output.txt"))
 
 		then:
-		testResultParser.numberSuccess(result) == 2
-		testResultParser.numberErrors(result) == 0
+		testResultParser.number(result, TestResult.State.Passed) == 2
+		testResultParser.number(result, TestResult.State.Failed) == 0
 	}
 
 	def "parse failure result"() {
@@ -68,8 +70,8 @@ class TestResultParserSpecification extends Specification {
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed.txt"))
 
 		then:
-		testResultParser.numberSuccess(result) == 0
-		testResultParser.numberErrors(result) == 2
+		testResultParser.number(result, TestResult.State.Passed) == 0
+		testResultParser.number(result, TestResult.State.Failed) == 2
 	}
 
 	def "parse failure result with partial suite"() {
@@ -77,8 +79,8 @@ class TestResultParserSpecification extends Specification {
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
 		then:
-		testResultParser.numberSuccess(result) == 0
-		testResultParser.numberErrors(result) == 2
+		testResultParser.number(result, TestResult.State.Passed) == 0
+		testResultParser.number(result, TestResult.State.Failed) == 2
 	}
 
 	def "parse success result xcode 6.1"() {
@@ -86,8 +88,8 @@ class TestResultParserSpecification extends Specification {
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-xcode6_1.txt"))
 
 		then:
-		testResultParser.numberSuccess(result) == 8
-		testResultParser.numberErrors(result) == 0
+		testResultParser.number(result, TestResult.State.Passed) == 8
+		testResultParser.number(result, TestResult.State.Failed) == 0
 	}
 
 	def "parse complex test output"() {
@@ -95,7 +97,7 @@ class TestResultParserSpecification extends Specification {
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-complex-test.txt"))
 
 		then:
-		testResultParser.numberErrors(result) == 0
+		testResultParser.number(result, TestResult.State.Failed) == 0
 	}
 
 	def "parse success result for tests written in swift using Xcode 6.1"() {
@@ -103,8 +105,8 @@ class TestResultParserSpecification extends Specification {
 		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
 
 		then:
-		testResultParser.numberSuccess(result) == 2
-		testResultParser.numberErrors(result) == 0
+		testResultParser.number(result, TestResult.State.Passed) == 2
+		testResultParser.number(result, TestResult.State.Failed) == 0
 	}
 
 	def "parse legacy test summary has result"() {
@@ -154,7 +156,7 @@ class TestResultParserSpecification extends Specification {
 		then:
 		testResultParser.testResults.size() == 1
 		testResultParser.testResults.keySet()[0].name == "iPhone 8"
-		testResultParser.numberSuccess() == 4
+		testResultParser.number(TestResult.State.Passed) == 4
 	}
 
 	def "parse test summary and verify result count"() {
@@ -173,7 +175,7 @@ class TestResultParserSpecification extends Specification {
 		def firstKey = testResultParser.testResults.keySet()[0]
 		then:
 		testResultParser.testResults.get(firstKey).size() == 5
-		testResultParser.numberSuccess() == 37
+		testResultParser.number(TestResult.State.Passed) == 37
 
 	}
 
@@ -188,8 +190,8 @@ class TestResultParserSpecification extends Specification {
 		def firstKey = testResultParser.testResults.keySet()[0]
 		then:
 		testResultParser.testResults.get(firstKey).size() == 5
-		testResultParser.numberSuccess() == 36
-		testResultParser.numberErrors() == 1
+		testResultParser.number(TestResult.State.Passed) == 36
+		testResultParser.number(TestResult.State.Failed) == 1
 
 	}
 
@@ -209,7 +211,7 @@ class TestResultParserSpecification extends Specification {
 		def firstKey = mergedResult.keySet()[0]
 		then:
 		mergedResult.get(firstKey).size() == 5
-		testResultParser.numberSuccess() == 37
+		testResultParser.number(TestResult.State.Passed) == 37
 
 	}
 
@@ -227,4 +229,36 @@ class TestResultParserSpecification extends Specification {
 		testClass.results[0].output.startsWith("Test Case")
 
 	}
+
+
+	def "parse skipped result from xcodeoutput"() {
+		when:
+		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-skipped.txt"))
+
+		then:
+		testResultParser.number(result, TestResult.State.Passed) == 0
+		testResultParser.number(result, TestResult.State.Failed) == 0
+		testResultParser.number(result, TestResult.State.Skipped) == 10
+	}
+
+
+	def "parse xcresult scheme with skipped test"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Skipped")
+		Destination destination = new Destination("iPhone X")
+		destination.id = "7B40DCDA-3380-4BB9-AB92-1E3D1AC7B3BB"
+
+		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, [destination])
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults.size() == 1
+		testResultParser.testResults.keySet()[0].name == "iPhone X"
+		testResultParser.number(TestResult.State.Passed) == 1
+		testResultParser.number(TestResult.State.Skipped) == 1
+	}
+
+
 }

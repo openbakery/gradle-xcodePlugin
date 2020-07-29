@@ -14,22 +14,21 @@
 
 @implementation ExampleTests
 
-- (void)setUp
-{
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+- (void)setUp {
+	[super setUp];
 }
 
-- (void)tearDown
-{
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
+- (void)tearDown {
+	[super tearDown];
 }
 
-- (void)testExample
-{
+- (void)testExample {
 	//XCTFail(@"fail");
 	XCTAssert(YES, @"this test should not fail");
+}
+
+- (void)testSkip {
+	XCTSkip(@"This test is skipped");
 }
 
 @end

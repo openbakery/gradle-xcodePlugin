@@ -4,7 +4,7 @@ Changes
 * Added notarize task for notarizing macOS applications
 * Remove HockeyKit task
 * Removed ReleaseNotes task because the pegdown dependencies causes troubles: Issue #431
-
+* Added support for skipped tests, that they are not shown as failures.
 
 # 0.20.0 (2 June, 2020)
 

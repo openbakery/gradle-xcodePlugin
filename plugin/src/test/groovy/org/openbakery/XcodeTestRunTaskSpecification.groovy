@@ -246,22 +246,6 @@ class XcodeTestRunTaskSpecification extends Specification {
 	}
 
 
-	def "has TestResultParser"() {
-		given:
-		createTestBundle("test")
-
-		project.xcodebuild.target = "Test"
-
-		when:
-		fakeTestRun()
-		xcodeTestRunTestTask.testRun()
-
-		then:
-		xcodeTestRunTestTask.testResultParser instanceof TestResultParser
-		xcodeTestRunTestTask.testResultParser.testSummariesDirectory == new File(project.buildDir, "derivedData/Logs/Test")
-		xcodeTestRunTestTask.testResultParser.destinations.size() == 2
-
-	}
 
 	def "output file was set"() {
 		given:
@@ -470,4 +454,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		def exception =  thrown(IllegalStateException)
 		exception.message == "No tests found!"
 	}
+
+
+
 }

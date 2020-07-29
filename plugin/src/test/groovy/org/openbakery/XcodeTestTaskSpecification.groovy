@@ -553,19 +553,4 @@ class XcodeTestTaskSpecification extends Specification {
 	}
 
 
-	def "has TestResultParser"() {
-		given:
-
-		mockXcodeVersionAndPath()
-		project.xcodebuild.target = "Test"
-
-		when:
-		xcodeTestTask.test()
-
-		then:
-		xcodeTestTask.testResultParser instanceof TestResultParser
-		xcodeTestTask.testResultParser.testSummariesDirectory == new File(project.buildDir, "derivedData/Logs/Test")
-		xcodeTestTask.testResultParser.destinations.size() == 2
-
-	}
 }
