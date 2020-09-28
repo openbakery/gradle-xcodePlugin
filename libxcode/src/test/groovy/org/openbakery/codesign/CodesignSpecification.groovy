@@ -8,11 +8,11 @@ import org.openbakery.bundle.Bundle
 import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PlistHelper
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
-import org.openbakery.xcode.XcodeFake
 import spock.lang.Specification
 
 class CodesignThatStoresTheConfiguration extends Codesign {

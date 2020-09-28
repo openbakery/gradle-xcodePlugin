@@ -5,6 +5,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.output.OutputAppender
 import org.openbakery.testdouble.XcodeDummy
+import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
 class XcodebuildSpecification extends Specification {

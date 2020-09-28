@@ -2,11 +2,14 @@ package org.openbakery.carthage
 
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
+import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.xcode.Type
+
+import java.nio.charset.Charset
 
 abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
@@ -76,6 +79,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		}
 	}
 
+
 	@Internal
 	String getCarthageCommand() {
 		try {
@@ -129,10 +133,36 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	@Internal
 	Map<String, String> getEnvironment() {
+		Map<String, String> environment = new HashMap<String, String>()
+		File xconfigFile = createXCConfigIfNeeded()
+		if (xconfigFile != null) {
+			environment.put("XCODE_XCCONFIG_FILE", xconfigFile.absolutePath)
+		}
 		if (getRequiredXcodeVersion() != null) {
-			return xcode.getXcodeSelectEnvironmentValue(getRequiredXcodeVersion())
+			environment.putAll(xcode.getXcodeSelectEnvironmentValue(getRequiredXcodeVersion()))
+		}
+		return environment
+	}
+
+	File createXCConfigIfNeeded() {
+		if (this.xcode.version.major == 12) {
+			File xconfigFile = new File(project.rootProject.file("Carthage"), "gradle-xc12-carthage.xcconfig")
+
+			String xcodeBuildVersion = xcode.getBuildVersion()
+
+			String contents = ""
+			contents += 'EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200__BUILD_' + xcodeBuildVersion + ' = arm64 arm64e armv7 armv7s armv6 armv8\n'
+			contents += 'EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200 = $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200__BUILD_$(XCODE_PRODUCT_BUILD_VERSION))\n'
+			contents += 'EXCLUDED_ARCHS = $(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(EFFECTIVE_PLATFORM_SUFFIX)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))\n'
+			contents += 'ONLY_ACTIVE_ARCH=NO\n'
+			contents += 'VALID_ARCHS = $(inherited) x86_64\n'
+
+			FileUtils.writeStringToFile(xconfigFile, contents, Charset.forName("UTF-8"))
+
+			return xconfigFile
 		}
 		return null
+
 	}
 
 }

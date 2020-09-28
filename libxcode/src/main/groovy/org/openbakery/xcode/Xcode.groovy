@@ -110,13 +110,17 @@ class Xcode {
 		String xcodeVersion = commandRunner.runWithResult(xcodeBuildCommand,
 			"-version")
 
+		if (xcodeVersion == null) {
+			return new Version("0")
+		}
+
 		Matcher matcher = VERSION_PATTERN.matcher(xcodeVersion)
 		if (matcher.matches()) {
 			Version version = new Version(matcher.group(1))
 			version.suffix = matcher.group(2)
 			return version
 		}
-		return null
+		return new Version("0")
 	}
 
 	Version getVersion() {
@@ -170,6 +174,10 @@ class Xcode {
 	// if you want to get the project specific toolchain directory use the method in Xcodebuild
 	String getToolchainDirectory() {
 		return getPath() + "/$XCODE_CONTENT_DEVELOPER/Toolchains/XcodeDefault.xctoolchain"
+	}
+
+	String getBuildVersion() {
+		return getVersion().suffix
 	}
 
 	@Override
