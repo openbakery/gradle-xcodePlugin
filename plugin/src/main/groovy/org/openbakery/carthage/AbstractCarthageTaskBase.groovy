@@ -1,8 +1,8 @@
 package org.openbakery.carthage
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
-import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
@@ -157,7 +157,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 			contents += 'ONLY_ACTIVE_ARCH=NO\n'
 			contents += 'VALID_ARCHS = $(inherited) x86_64\n'
 
-			FileUtils.writeStringToFile(xconfigFile, contents, Charset.forName("UTF-8"))
+			FileUtils.writeStringToFile(xconfigFile, contents)
 
 			return xconfigFile
 		}
