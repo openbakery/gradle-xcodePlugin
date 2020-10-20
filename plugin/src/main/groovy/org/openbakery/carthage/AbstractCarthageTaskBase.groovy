@@ -15,6 +15,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	static final String ACTION_BOOTSTRAP = "bootstrap"
 	static final String ACTION_UPDATE = "update"
+	static final String ACTION_ARCHIVE = "archive"
 	static final String ARGUMENT_CACHE_BUILDS = "--cache-builds"
 	static final String ARGUMENT_PLATFORM = "--platform"
 	static final String ARGUMENT_DERIVED_DATA = "--derived-data"
@@ -103,7 +104,12 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 				.exists()
 	}
 
+
 	void run(String command, StyledTextOutput output) {
+		run(command, output, project.carthage.cache)
+	}
+
+	void run(String command, StyledTextOutput output, boolean cache) {
 
 		if (!hasCartfile()) {
 			logger.debug("No Cartfile found, so we are done")
@@ -118,7 +124,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 												 ARGUMENT_PLATFORM,
 												 carthagePlatformName
 		]
-		if (project.carthage.cache) {
+		if (cache) {
 			args << ARGUMENT_CACHE_BUILDS
 		}
 		args << ARGUMENT_DERIVED_DATA
@@ -163,6 +169,11 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		}
 		return null
 
+	}
+
+	public boolean cartfileExists() {
+		File cartfile = new File(project.projectDir, "Cartfile")
+		return cartfile.exists()
 	}
 
 }

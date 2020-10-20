@@ -31,6 +31,7 @@ import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
 import org.openbakery.appstore.NotarizeTask
+import org.openbakery.carthage.CarthageArchiveTask
 import org.openbakery.carthage.CarthageBootstrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
@@ -122,6 +123,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
+	public static final String CARTHAGE_ARCHIVE_TASK_NAME = 'carthageArchive'
 	public static final String APPCENTER_CLEAN_TASK_NAME = 'appCenterClean'
 	public static final String APPCENTER_TASK_NAME = 'appcenter'
 
@@ -528,6 +530,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootstrapTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_ARCHIVE_TASK_NAME, type: CarthageArchiveTask, group: CARTHAGE_GROUP_NAME)
 	}
 
 	private configureCarthageDependencies(Project project) {
