@@ -2,8 +2,6 @@ package org.openbakery.carthage
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.text.StyledTextOutputFactory
-import org.openbakery.AbstractXcodeTask
-import org.openbakery.XcodePlugin
 
 class CarthageArchiveTask extends AbstractCarthageTaskBase {
 
@@ -19,7 +17,7 @@ class CarthageArchiveTask extends AbstractCarthageTaskBase {
 	@TaskAction
 	void archive() {
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		run(ACTION_ARCHIVE, output, false)
+		run([ACTION_BUILD, ARGUMENT_ARCHIVE], output, false)
 	}
 
 }

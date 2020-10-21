@@ -13,8 +13,6 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.openbakery.carthage.AbstractCarthageTaskBase.*
-import static org.openbakery.carthage.AbstractCarthageTaskBase.ACTION_ARCHIVE
-import static org.openbakery.carthage.AbstractCarthageTaskBase.ACTION_ARCHIVE
 import static org.openbakery.xcode.Type.*
 
 class CarthageArchiveTaskSpecification extends Specification {
@@ -73,7 +71,8 @@ class CarthageArchiveTaskSpecification extends Specification {
 
 	private List<String> getCommandRunnerArgsForPlatform(String carthagePlatform) {
 		return [CARTHAGE_USR_BIN_PATH,
-						ACTION_ARCHIVE,
+						ACTION_BUILD,
+						ARGUMENT_ARCHIVE,
 						ARGUMENT_PLATFORM,
 						carthagePlatform,
 						ARGUMENT_DERIVED_DATA,
@@ -184,7 +183,7 @@ class CarthageArchiveTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
-		commandList[4] == ARGUMENT_DERIVED_DATA
+		commandList[5] == ARGUMENT_DERIVED_DATA
 	}
 
 
@@ -199,14 +198,15 @@ class CarthageArchiveTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_,
-				[CARTHAGE_USR_BIN_PATH,
-				 ACTION_ARCHIVE,
-				 ARGUMENT_PLATFORM,
-				 CARTHAGE_PLATFORM_IOS,
-				 ARGUMENT_DERIVED_DATA,
-				 derivedDataPathParameter]
-				, _
-				, _) >> {
+			[CARTHAGE_USR_BIN_PATH,
+			 ACTION_BUILD,
+			 ARGUMENT_ARCHIVE,
+			 ARGUMENT_PLATFORM,
+			 CARTHAGE_PLATFORM_IOS,
+			 ARGUMENT_DERIVED_DATA,
+			 derivedDataPathParameter]
+			, _
+			, _) >> {
 			args -> args[3] instanceof ConsoleOutputAppender
 		}
 

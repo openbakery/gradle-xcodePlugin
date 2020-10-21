@@ -15,7 +15,8 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	static final String ACTION_BOOTSTRAP = "bootstrap"
 	static final String ACTION_UPDATE = "update"
-	static final String ACTION_ARCHIVE = "archive"
+	static final String ACTION_BUILD = "build"
+	static final String ARGUMENT_ARCHIVE = "--archive"
 	static final String ARGUMENT_CACHE_BUILDS = "--cache-builds"
 	static final String ARGUMENT_PLATFORM = "--platform"
 	static final String ARGUMENT_DERIVED_DATA = "--derived-data"
@@ -110,6 +111,10 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	}
 
 	void run(String command, StyledTextOutput output, boolean cache) {
+		run([command], output, cache)
+	}
+
+	void run(List<String>  command, StyledTextOutput output, boolean cache) {
 
 		if (!hasCartfile()) {
 			logger.debug("No Cartfile found, so we are done")
@@ -119,11 +124,11 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		logger.info('Update Carthage for platform ' + carthagePlatformName)
 		def derivedDataPath = new File(project.xcodebuild.derivedDataPath, "carthage")
 
-		List<String> args = [getCarthageCommand(),
-												 command,
-												 ARGUMENT_PLATFORM,
-												 carthagePlatformName
-		]
+		List<String> args = [getCarthageCommand()]
+		args.addAll(command)
+		args << ARGUMENT_PLATFORM
+		args << carthagePlatformName
+
 		if (cache) {
 			args << ARGUMENT_CACHE_BUILDS
 		}
