@@ -162,11 +162,12 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 			String xcodeBuildVersion = xcode.getBuildVersion()
 
 			String contents = ""
-			contents += 'EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200__BUILD_' + xcodeBuildVersion + ' = arm64 arm64e armv7 armv7s armv6 armv8\n'
-			contents += 'EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200 = $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_simulator__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200__BUILD_$(XCODE_PRODUCT_BUILD_VERSION))\n'
-			contents += 'EXCLUDED_ARCHS = $(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(EFFECTIVE_PLATFORM_SUFFIX)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))\n'
-			contents += 'ONLY_ACTIVE_ARCH=NO\n'
-			contents += 'VALID_ARCHS = $(inherited) x86_64\n'
+
+			for (simulator in ["iphonesimulator", "appletvsimulator"]) {
+				contents += "EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_${simulator}__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200 = arm64 arm64e armv7 armv7s armv6 armv8\n"
+			}
+			contents += 'EXCLUDED_ARCHS = $(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(PLATFORM_NAME)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))\n'
+
 
 			FileUtils.writeStringToFile(xconfigFile, contents)
 
