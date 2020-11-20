@@ -8,6 +8,7 @@ import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.xcode.Type
+import org.openbakery.xcode.XCConfig
 
 import java.nio.charset.Charset
 
@@ -145,9 +146,9 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	@Internal
 	Map<String, String> getEnvironment() {
 		Map<String, String> environment = new HashMap<String, String>()
-		File xconfigFile = createXCConfigIfNeeded()
+		XCConfig xconfigFile = createXCConfigIfNeeded()
 		if (xconfigFile != null) {
-			environment.put("XCODE_XCCONFIG_FILE", xconfigFile.absolutePath)
+			environment.put("XCODE_XCCONFIG_FILE", xconfigFile.file.absolutePath)
 		}
 		if (getRequiredXcodeVersion() != null) {
 			environment.putAll(xcode.getXcodeSelectEnvironmentValue(getRequiredXcodeVersion()))
@@ -155,23 +156,22 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		return environment
 	}
 
-	File createXCConfigIfNeeded() {
+	XCConfig createXCConfigIfNeeded() {
 		if (this.xcode.version.major == 12) {
-			File xconfigFile = new File(project.rootProject.file("Carthage"), "gradle-xc12-carthage.xcconfig")
+			File file = new File(project.rootProject.file("Carthage"), "gradle-xc12-carthage.xcconfig")
+
+			XCConfig xcConfig = new XCConfig(file)
 
 			String xcodeBuildVersion = xcode.getBuildVersion()
 
-			String contents = ""
-
 			for (simulator in ["iphonesimulator", "appletvsimulator"]) {
-				contents += "EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_${simulator}__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200 = arm64 arm64e armv7 armv7s armv6 armv8\n"
+				def key = "EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_${simulator}__NATIVE_ARCH_64_BIT_x86_64__XCODE_1200"
+				def value = "arm64 arm64e armv7 armv7s armv6 armv8"
+				xcConfig.set(key, value)
 			}
-			contents += 'EXCLUDED_ARCHS = $(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(PLATFORM_NAME)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))\n'
-
-
-			FileUtils.writeStringToFile(xconfigFile, contents)
-
-			return xconfigFile
+			xcConfig.set("EXCLUDED_ARCHS", '$(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(PLATFORM_NAME)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))')
+			xcConfig.create()
+			return xcConfig
 		}
 		return null
 
