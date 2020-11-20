@@ -1,6 +1,5 @@
 package org.openbakery.xcode
 
-import jdk.jfr.events.FileReadEvent
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
