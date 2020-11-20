@@ -9,6 +9,7 @@ import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.xcode.XCConfig
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -23,6 +24,7 @@ class CarthageArchiveTaskSpecification extends Specification {
 	File projectDir
 	File cartFile
 	Project project
+	File xcconfigPath
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none()
@@ -44,6 +46,9 @@ class CarthageArchiveTaskSpecification extends Specification {
 		assert task != null
 
 		task.commandRunner = commandRunner
+
+		File carthageDirectory = project.rootProject.file("Carthage")
+		xcconfigPath = new File(carthageDirectory, "gradle-xc12-carthage.xcconfig")
 	}
 
 	def cleanup() {
@@ -217,5 +222,39 @@ class CarthageArchiveTaskSpecification extends Specification {
 		new File("/bar")     | new File("/bar/carthage").absolutePath
 		new File("/foo/bar") | new File("/foo/bar/carthage").absolutePath
 	}
+
+
+	def "When xcode 12 was set the environment contains XCODE_XCCONFIG_FILE and DEVELOPER_DIR"() {
+		Map<String, String> environment = null
+		given:
+		task.xcode = new XcodeFake("12.0.0")
+		project.xcodebuild.version = 12
+
+		when:
+		task.archive()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> environment = arguments[2] }
+
+		environment != null
+		environment["XCODE_XCCONFIG_FILE"] == xcconfigPath.absolutePath
+		environment["DEVELOPER_DIR"] == "/Applications/Xcode-12.app/Contents/Developer"
+	}
+
+
+	def "When xcode 12 then create xcconfig with proper to fix IRGen Expression"() {
+		given:
+		task.xcode = new XcodeFake("12.0.0.12A7209")
+
+		when:
+		task.archive()
+		def xcConfig = new XCConfig(xcconfigPath)
+
+		then:
+		xcConfig.entries["SWIFT_SERIALIZE_DEBUGGING_OPTIONS"] == "NO"
+		xcConfig.entries["OTHER_SWIFT_FLAGS"] == '$(inherited) -Xfrontend -no-serialize-debugging-options'
+	}
+
+
 
 }

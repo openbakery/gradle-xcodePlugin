@@ -170,6 +170,8 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 				xcConfig.set(key, value)
 			}
 			xcConfig.set("EXCLUDED_ARCHS", '$(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(PLATFORM_NAME)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))')
+			xcConfig.set("SWIFT_SERIALIZE_DEBUGGING_OPTIONS", "NO")
+			xcConfig.set("OTHER_SWIFT_FLAGS", '$(inherited) -Xfrontend -no-serialize-debugging-options')
 			xcConfig.create()
 			return xcConfig
 		}
