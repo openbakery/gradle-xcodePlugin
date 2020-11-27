@@ -11,6 +11,7 @@ class CarthageArchiveTask extends AbstractCarthageTaskBase {
 		this.setOnlyIf {
 			cartfileExists()
 		}
+		serializeDebugging = true
 	}
 
 

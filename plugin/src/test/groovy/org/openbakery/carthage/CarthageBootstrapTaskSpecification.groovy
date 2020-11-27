@@ -10,6 +10,7 @@ import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Version
+import org.openbakery.xcode.XCConfig
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -232,5 +233,23 @@ class CarthageBootstrapTaskSpecification extends Specification {
 
 		!commandList.contains(ARGUMENT_CACHE_BUILDS)
 	}
+
+
+	def "When xcode 12 then create xcconfig without SWIFT_SERIALIZE_DEBUGGING_OPTIONS"() {
+		given:
+		File carthageDirectory = project.rootProject.file("Carthage")
+		File xcconfigPath = new File(carthageDirectory, "gradle-xc12-carthage.xcconfig")
+		subject.xcode = new XcodeFake("12.0.0.12A7209")
+
+		when:
+		subject.bootstrap()
+		def xcConfig = new XCConfig(xcconfigPath)
+
+		then:
+		xcConfig.entries["SWIFT_SERIALIZE_DEBUGGING_OPTIONS"] == null
+		xcConfig.entries["OTHER_SWIFT_FLAGS"] == null
+	}
+
+
 
 }

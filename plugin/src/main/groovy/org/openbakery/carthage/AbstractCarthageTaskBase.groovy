@@ -29,8 +29,11 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	static final String CARTHAGE_PLATFORM_WATCHOS = "watchOS"
 	static final String CARTHAGE_USR_BIN_PATH = "/usr/local/bin/carthage"
 
+	boolean serializeDebugging
+
 	AbstractCarthageTaskBase() {
 		super()
+		serializeDebugging = false
 	}
 
 	@Input
@@ -153,6 +156,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		Map<String, String> environment = new HashMap<String, String>()
 		XCConfig xconfigFile = createXCConfigIfNeeded()
 		if (xconfigFile != null) {
+			logger.info("Apply carthage workaround for Xcode 12: {}", xconfigFile.entries)
 			environment.put("XCODE_XCCONFIG_FILE", xconfigFile.file.absolutePath)
 		}
 		if (getRequiredXcodeVersion() != null) {
@@ -176,8 +180,10 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 				xcConfig.set(key, value)
 			}
 			xcConfig.set("EXCLUDED_ARCHS", '$(inherited) $(EXCLUDED_ARCHS__EFFECTIVE_PLATFORM_SUFFIX_$(PLATFORM_NAME)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT)__XCODE_$(XCODE_VERSION_MAJOR))')
-			xcConfig.set("SWIFT_SERIALIZE_DEBUGGING_OPTIONS", "NO")
-			xcConfig.set("OTHER_SWIFT_FLAGS", '$(inherited) -Xfrontend -no-serialize-debugging-options')
+			if (serializeDebugging) {
+				xcConfig.set("SWIFT_SERIALIZE_DEBUGGING_OPTIONS", "NO")
+				xcConfig.set("OTHER_SWIFT_FLAGS", '$(inherited) -Xfrontend -no-serialize-debugging-options')
+			}
 			xcConfig.create()
 			logger.debug("xcConfig created")
 			return xcConfig
