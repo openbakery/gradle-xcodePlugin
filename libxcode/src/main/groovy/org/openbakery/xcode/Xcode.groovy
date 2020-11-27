@@ -95,10 +95,12 @@ class Xcode {
 	}
 
 	void selectXcode(File file) {
+		logger.debug("selectXcode {}", file)
 		String absolutePath = file.absolutePath
 		Version xcodeVersion = getXcodeVersion(absolutePath)
 		xcodePath = new File(absolutePath - XCODE_CONTENT_XCODE_BUILD)
 		this.version = xcodeVersion
+		logger.debug("Xcode version is {}", this.version)
 	}
 
 	String resolveInstalledXcodeVersionsList() {
@@ -116,7 +118,9 @@ class Xcode {
 
 		Matcher matcher = VERSION_PATTERN.matcher(xcodeVersion)
 		if (matcher.matches()) {
-			Version version = new Version(matcher.group(1))
+			def versionString = matcher.group(1)
+			logger.debug("versionString {}", versionString)
+			Version version = new Version(versionString)
 			version.suffix = matcher.group(2)
 			return version
 		}

@@ -136,15 +136,20 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		args << ARGUMENT_DERIVED_DATA
 		args << derivedDataPath.absolutePath
 
+		logger.info('Carthage arguments ' + args)
+		def environment = getEnvironment()
+		logger.info('Carthage environment ' + environment)
+
 		commandRunner.run(project.projectDir.absolutePath,
 			args,
-			getEnvironment(),
+			environment,
 			new ConsoleOutputAppender(output))
 
 	}
 
 	@Internal
 	Map<String, String> getEnvironment() {
+		logger.info("getEnvironment")
 		Map<String, String> environment = new HashMap<String, String>()
 		XCConfig xconfigFile = createXCConfigIfNeeded()
 		if (xconfigFile != null) {
@@ -157,6 +162,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	}
 
 	XCConfig createXCConfigIfNeeded() {
+		logger.debug("createXCConfigIfNeeded: " + this.xcode.version.major)
 		if (this.xcode.version.major == 12) {
 			File file = new File(project.rootProject.file("Carthage"), "gradle-xc12-carthage.xcconfig")
 
@@ -173,8 +179,10 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 			xcConfig.set("SWIFT_SERIALIZE_DEBUGGING_OPTIONS", "NO")
 			xcConfig.set("OTHER_SWIFT_FLAGS", '$(inherited) -Xfrontend -no-serialize-debugging-options')
 			xcConfig.create()
+			logger.debug("xcConfig created")
 			return xcConfig
 		}
+		logger.debug("is null")
 		return null
 
 	}
