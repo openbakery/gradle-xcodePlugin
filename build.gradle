@@ -2,7 +2,7 @@ allprojects {
 	apply plugin: 'java-gradle-plugin'
 	apply plugin: 'groovy'
 
-	def versionNumber = "0.20.1"
+	def versionNumber = "0.20.2"
 
 	if (project.hasProperty("versionNumber")) {
 		versionNumber = project.versionNumber
@@ -18,8 +18,8 @@ allprojects {
 	group = 'org.openbakery'
 	version = versionNumber
 
-	sourceCompatibility = "1.6"
-	targetCompatibility = "1.6"
+	sourceCompatibility = "1.8"
+	targetCompatibility = "1.8"
 
 	repositories {
 		mavenCentral()
