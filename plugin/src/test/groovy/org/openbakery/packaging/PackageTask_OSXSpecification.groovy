@@ -84,14 +84,15 @@ class PackageTask_OSXSpecification  extends Specification {
 		File payloadApp = new File(outputPath, path)
 
 		def commandList = [
-						"/usr/bin/codesign",
-						"--force",
-						"--sign",
-						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-						"--verbose",
-						payloadApp.absolutePath,
-						"--keychain",
-						keychain.absolutePath
+			"/usr/bin/codesign",
+			"--force",
+			"--sign",
+			"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+			"--deep",
+			"--verbose",
+			payloadApp.absolutePath,
+			"--keychain",
+			keychain.absolutePath
 		]
 
 		return commandList
@@ -102,16 +103,18 @@ class PackageTask_OSXSpecification  extends Specification {
 		File entitlements = new File(tmpDir, "entitlements_test-wildcard-mac.plist")
 
 		def commandList = [
-						"/usr/bin/codesign",
-						"--force",
-						"--entitlements",
-						entitlements.absolutePath,
-						"--sign",
-						"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
-						"--verbose",
-						payloadApp.absolutePath,
-						"--keychain",
-						keychain.absolutePath
+			"/usr/bin/codesign",
+			"--force",
+			"--entitlements",
+			entitlements.absolutePath,
+			"--sign",
+			"iPhone Developer: Firstname Surename (AAAAAAAAAA)",
+			"--deep",
+			"--options=runtime",
+			"--verbose",
+			payloadApp.absolutePath,
+			"--keychain",
+			keychain.absolutePath
 		]
 
 		return commandList
@@ -220,11 +223,11 @@ class PackageTask_OSXSpecification  extends Specification {
 	def "codesign MacApp with Framework"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A")
 
 		given:
 
-		mockExampleApp("Contents/Frameworks/Sparkle.framework")
+		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/A")
 		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:
@@ -267,7 +270,7 @@ class PackageTask_OSXSpecification  extends Specification {
 	def "codesign Mac App with framework that contains an app with symlink"() {
 		def commandList
 		def expectedCodesignCommand = codesignCommand("Example.app")
-		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework")
+		def expectedCodesignCommandLib = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A")
 		def unexpectedCodesignCommandLibApp = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/A/Resources/Autoupdate.app")
 		def unexpectedCodesignCommandLibAppWithSymlink = codesignLibCommand("Example.app/Contents/Frameworks/Sparkle.framework/Versions/Current/Resources/Autoupdate.app")
 
@@ -319,7 +322,7 @@ class PackageTask_OSXSpecification  extends Specification {
 
 	def "embed ProvisioningProfile with Framework"() {
 		given:
-		mockExampleApp("Contents/Frameworks/Sparkle.framework")
+		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/A")
 
 		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
@@ -349,7 +352,7 @@ class PackageTask_OSXSpecification  extends Specification {
 		List<String> zipEntries
 
 		given:
-		mockExampleApp("Contents/Frameworks/Sparkle.framework")
+		mockExampleApp("Contents/Frameworks/Sparkle.framework/Versions/A")
 		project.xcodebuild.signing.addMobileProvisionFile(provisionProfile)
 
 		when:

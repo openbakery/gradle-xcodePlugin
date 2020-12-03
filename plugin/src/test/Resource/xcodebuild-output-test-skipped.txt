@@ -1,0 +1,34 @@
+Test Suite 'ViewController_Test' started at 2020-07-29 10:23:37.766
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_does_not_show_sort_cell_on_MyAPP_1]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_does_not_show_sort_cell_on_MyAPP_1] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_does_not_show_sort_cell_on_MyAPP_1]' skipped (0.012 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_sort_cell_on_MyAPP_2_that_is_of_type_ItemSearchSortTableViewCell]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_sort_cell_on_MyAPP_2_that_is_of_type_ItemSearchSortTableViewCell] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_sort_cell_on_MyAPP_2_that_is_of_type_ItemSearchSortTableViewCell]' skipped (0.011 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_sort_cell_on_MyAPP_2]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_sort_cell_on_MyAPP_2] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_edit_pressed_sort_cell_on_MyAPP_2]' skipped (0.010 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemModel_action_executed_shows_sort_order_dialog]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_itemModel_action_executed_shows_sort_order_dialog] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemModel_action_executed_shows_sort_order_dialog]' skipped (0.010 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_reloads_the_itemModel]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_reloads_the_itemModel] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_reloads_the_itemModel]' skipped (0.010 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_resets_itemOrderDialog]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_resets_itemOrderDialog] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_resets_itemOrderDialog]' skipped (0.010 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_triggers_search]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_triggers_search] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_executed_triggers_search]' skipped (0.011 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_update_the_itemModel]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_update_the_itemModel] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_itemOrderDialog_itemOrderChangeClosure_update_the_itemModel]' skipped (0.010 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_sortModel_has_action_closure_set]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_sortModel_has_action_closure_set] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_sortModel_has_action_closure_set]' skipped (0.011 seconds).
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_sortModel_is_of_type_SearchItemSortModel]' started.
+/Users/groundskeeper/teamcity/work/a959a9cb6eb10086/Application/Test/Swift/ViewControllers/Search/ViewController_Test.swift:20: -[MyAPPApplication_Swift_Tests.ViewController_Test test_sortModel_is_of_type_SearchItemSortModel] : Test skipped - Disabled for now, because the server is not ready yet.
+Test Case '-[MyAPPApplication_Swift_Tests.ViewController_Test test_sortModel_is_of_type_SearchItemSortModel]' skipped (0.010 seconds).
+Test Suite 'ViewController_Test' passed at 2020-07-29 10:23:37.876.
+         Executed 10 tests, with 10 tests skipped and 0 failures (0 unexpected) in 0.104 (0.110) seconds
+** TEST SUCCEEDED **

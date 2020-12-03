@@ -296,6 +296,21 @@ class XcodeSpecification extends Specification {
 	}
 
 
+	def "get build version returns proper version"() {
+		given:
+		commandRunner.runWithResult("xcodebuild", "-version") >> versionString
+
+		when:
+		def parsedBuildVersion = xcode.getBuildVersion()
+
+		then:
+		parsedBuildVersion == buildVersion
+
+		where:
+		versionString | buildVersion
+		"Xcode 10\nBuild version 10B1008"       | "10B1008"
+		"Xcode 12.0\nBuild version 12A7209"     | "12A7209"
+	}
 
 
 }

@@ -23,18 +23,13 @@ class CarthageBootstrapTask extends AbstractCarthageTaskBase {
 		)
 	}
 
-	boolean cartfileExists() {
-		File cartfile = new File(project.projectDir, "Cartfile")
-		return cartfile.exists()
-	}
+
 
 	@TaskAction
 	void bootstrap() {
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
 		run(ACTION_BOOTSTRAP, output)
 	}
-
-
 
 
 

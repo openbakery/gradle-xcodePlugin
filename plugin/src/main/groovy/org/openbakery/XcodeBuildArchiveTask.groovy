@@ -18,6 +18,7 @@ package org.openbakery
 import groovy.io.FileType
 import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.assemble.Archive
@@ -47,7 +48,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 	}
 
 
-	@OutputFile
+	@OutputDirectory
 	def getOutputDirectory() {
 		def archiveDirectory = new File(project.getBuildDir(), ARCHIVE_FOLDER)
 		archiveDirectory.mkdirs()
@@ -302,6 +303,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 	@TaskAction
 	def archive() {
+		logger.debug("Execute archive")
 		parameters = project.xcodebuild.xcodebuildParameters.merge(parameters)
 		if (parameters.isSimulatorBuildOf(Type.iOS)) {
 			logger.debug("Create zip archive")

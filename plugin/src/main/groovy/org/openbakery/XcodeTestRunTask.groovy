@@ -2,7 +2,9 @@ package org.openbakery
 
 import groovy.io.FileType
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -16,6 +18,7 @@ import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.output.TestBuildOutputAppender
+import org.openbakery.test.TestResult
 import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
@@ -26,18 +29,18 @@ import org.openbakery.xcode.Xcodebuild
  * User: rene
  * Date: 25/10/16
  */
-class XcodeTestRunTask extends AbstractXcodeBuildTask {
+class XcodeTestRunTask extends AbstractXcodeTestTask {
 
 	private List<Destination> destinationsCache
 
 	private Object bundleDirectory
-	@Internal TestResultParser testResultParser = null
 	@Internal File outputDirectory = null
 
 	@Internal
 	protected Codesign codesign = null
 
 	protected boolean showProgress = false
+
 
 	XcodeTestRunTask() {
 		super()
@@ -102,21 +105,10 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		} catch (CommandRunnerException ex) {
 			throw new Exception("Error attempting to run the unit tests!", ex);
 		} finally {
-			testResultParser = new TestResultParser(testLogsDirectory, xcode.getXcresulttool(), destinations)
-			testResultParser.parseAndStore(outputDirectory)
-			int numberSuccess = testResultParser.numberSuccess()
-			int numberErrors = testResultParser.numberErrors()
-			if (numberErrors == 0) {
-				logger.lifecycle("All " + numberSuccess + " tests were successful");
-			} else {
-				logger.lifecycle(numberSuccess + " tests were successful, and " + numberErrors + " failed");
-			}
-			if (numberErrors != 0) {
-				throw new Exception("Not all unit tests are successful!")
-			}
-
+			processTestResult(testLogsDirectory)
 		}
 	}
+
 
 	String getBundleFromFile(File file, String key) {
 		String bundle = plistHelper.getValueFromPlist(file, "Tests:" + key)
@@ -134,7 +126,7 @@ class XcodeTestRunTask extends AbstractXcodeBuildTask {
 		this.bundleDirectory = bundleDirectory
 	}
 
-	@Input
+	@InputDirectory
 	@Optional
 	File getBundleDirectory() {
 		if (bundleDirectory instanceof File) {

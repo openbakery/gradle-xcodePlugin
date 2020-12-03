@@ -3,6 +3,7 @@ package org.openbakery.xcode
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
 import spock.lang.Specification
+import org.openbakery.testdouble.XcodeFake
 
 class Xcodebuild_Xcode10_Specification extends Specification {
 

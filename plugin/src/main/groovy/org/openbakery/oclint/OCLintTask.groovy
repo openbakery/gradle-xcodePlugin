@@ -2,13 +2,14 @@ package org.openbakery.oclint
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractXcodeTask
 
 class OCLintTask extends AbstractXcodeTask {
 
-	@OutputFile
+	@OutputDirectory
 	File outputDirectory
 
 	@Internal

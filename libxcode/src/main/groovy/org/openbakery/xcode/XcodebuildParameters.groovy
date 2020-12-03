@@ -57,6 +57,7 @@ class XcodebuildParameters {
 
 
 	XcodebuildParameters merge(XcodebuildParameters other) {
+
 		if (other.target != null) {
 			target = other.target
 		}

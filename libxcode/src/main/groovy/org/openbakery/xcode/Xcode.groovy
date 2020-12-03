@@ -95,10 +95,12 @@ class Xcode {
 	}
 
 	void selectXcode(File file) {
+		logger.debug("selectXcode {}", file)
 		String absolutePath = file.absolutePath
 		Version xcodeVersion = getXcodeVersion(absolutePath)
 		xcodePath = new File(absolutePath - XCODE_CONTENT_XCODE_BUILD)
 		this.version = xcodeVersion
+		logger.debug("Xcode version is {}", this.version)
 	}
 
 	String resolveInstalledXcodeVersionsList() {
@@ -110,13 +112,19 @@ class Xcode {
 		String xcodeVersion = commandRunner.runWithResult(xcodeBuildCommand,
 			"-version")
 
+		if (xcodeVersion == null) {
+			return new Version("0")
+		}
+
 		Matcher matcher = VERSION_PATTERN.matcher(xcodeVersion)
 		if (matcher.matches()) {
-			Version version = new Version(matcher.group(1))
+			def versionString = matcher.group(1)
+			logger.debug("versionString {}", versionString)
+			Version version = new Version(versionString)
 			version.suffix = matcher.group(2)
 			return version
 		}
-		return null
+		return new Version("0")
 	}
 
 	Version getVersion() {
@@ -128,7 +136,6 @@ class Xcode {
 
 	String getPath() {
 		if (xcodePath == null) {
-			print(commandRunner)
 			String result = commandRunner.runWithResult(XCODE_ACTION_XC_SELECT
 				, "-p")
 			xcodePath = result - "/$XCODE_CONTENT_DEVELOPER"
@@ -157,7 +164,6 @@ class Xcode {
 
 	String getXcresulttool() {
 		def xcresulttoolPath = getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcresulttool"
-		println("Path: " + xcresulttoolPath)
 		if(new File(xcresulttoolPath).exists()) {
 			return xcresulttoolPath
 		}
@@ -172,6 +178,10 @@ class Xcode {
 	// if you want to get the project specific toolchain directory use the method in Xcodebuild
 	String getToolchainDirectory() {
 		return getPath() + "/$XCODE_CONTENT_DEVELOPER/Toolchains/XcodeDefault.xctoolchain"
+	}
+
+	String getBuildVersion() {
+		return getVersion().suffix
 	}
 
 	@Override

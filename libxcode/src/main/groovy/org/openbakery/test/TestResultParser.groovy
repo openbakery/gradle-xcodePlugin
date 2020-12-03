@@ -3,6 +3,7 @@ package org.openbakery.test
 import groovy.json.JsonSlurper
 import groovy.xml.MarkupBuilder
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.gradle.api.tasks.testing.Test
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Destination
 import org.slf4j.Logger
@@ -45,44 +46,53 @@ public class TestResultParser {
 			return
 		}
 
-		def testSummariesArray = new FileNameFinder()
+		if (isTestSummaryPlistAvailable()) {
+			parseTestSummaryFile()
+		} else {
+			parseXcResult()
+		}
+	}
+
+	private void parseXcResult() {
+		logger.debug("Using new xcresult scheme version")
+		def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
+		files.each {
+			if (xcresulttoolPath == null) {
+				logger.debug("No xcresulttool found.")
+				return
+			}
+			def xcResult = loadXCResultFile(it)
+			def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
+			logger.debug("identifier {}", identifier)
+			Destination destination = findDestinationForIdentifier(destinations, identifier)
+			if (destination) {
+				def resultList = processTestSummary(xcResult, it)
+				testResults.put(destination, resultList)
+			} else {
+				logger.debug("destination not found for identifier {}", identifier)
+			}
+
+		}
+	}
+
+	private void parseTestSummaryFile() {
+
+		List<String> testSummariesArray = new FileNameFinder()
 			.getFileNames(testSummariesDirectory.path, '*TestSummaries.plist *.xcresult/*_Test/action_TestSummaries.plist')
 
 		if (testSummariesArray == null) {
 			return
 		}
 
-		if (isTestSummaryPlistAvailable()) {
-			logger.debug("parsing xcresult scheme version < 3")
-			testSummariesArray.toList().each {
-				def testResult = new XMLPropertyListConfiguration(it)
-				def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
+		logger.debug("parsing xcresult scheme version < 3")
+		testSummariesArray.toList().each {
+			def testResult = new XMLPropertyListConfiguration(it)
+			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
 
-				Destination destination = findDestinationForIdentifier(destinations, identifier)
-				if (destination != null) {
-					def resultList = processLegacyTestSummary(testResult.getList("TestableSummaries"))
-					testResults.put(destination, resultList)
-				}
-			}
-		} else {
-			logger.debug("Using new xcresult scheme version")
-			def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
-			files.each {
-				if (xcresulttoolPath == null) {
-					logger.debug("No xcresulttool found.")
-					return
-				}
-				def xcResult = loadXCResultFile(it)
-				def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
-				logger.debug("identifier {}", identifier)
-				Destination destination = findDestinationForIdentifier(destinations, identifier)
-				if (destination) {
-					def resultList = processTestSummary(xcResult, it)
-					testResults.put(destination, resultList)
-				} else {
-					logger.debug("destination not found for identifier {}", identifier)
-				}
-
+			Destination destination = findDestinationForIdentifier(destinations, identifier)
+			if (destination != null) {
+				def resultList = processLegacyTestSummary(testResult.getList("TestableSummaries"))
+				testResults.put(destination, resultList)
 			}
 		}
 	}
@@ -144,7 +154,16 @@ public class TestResultParser {
 
 	private void addTestResultWithStatusToTestClass(Map<String, Object> testData, ArrayList<TestClass> testsStatus, TestClass testClass) {
 		if (testData.testStatus) {
-			def testResult = new TestResult(method: testData.identifier._value, success: testData.testStatus._value == "Success")
+			TestResult.State state
+			def value = testData.testStatus._value
+			if (value == "Success") {
+				state = TestResult.State.Passed
+			} else if (value == "Skipped") {
+				state = TestResult.State.Skipped
+			} else {
+				state = TestResult.State.Failed
+			}
+			def testResult = new TestResult(method: testData.identifier._value, state: state)
 			testClass.results.add(testResult)
 		}
 
@@ -174,8 +193,8 @@ public class TestResultParser {
 				int success = 0;
 				int errors = 0;
 				if (resultList != null) {
-					success = numberSuccessInResultList(resultList);
-					errors = numberErrorsInResultList(resultList);
+					success = number(resultList, TestResult.State.Passed);
+					errors = number(resultList, TestResult.State.Failed);
 				}
 
 				testsuite(name: name, tests: success, errors: errors, failures: "0", skipped: "0") {
@@ -185,7 +204,7 @@ public class TestResultParser {
 						for (TestResult testResult in testClass.results) {
 							logger.debug("testResult: {}", testResult)
 							testcase(classname: testClass.name, name: testResult.method, time: testResult.duration) {
-								if (!testResult.success) {
+								if (testResult.state == TestResult.State.Failed) {
 									error(type: "failure", message: "", testResult.output)
 								}
 								'system-out'(testResult.output)
@@ -243,6 +262,7 @@ public class TestResultParser {
 				String testClassName = nameMatcher[0][1]
 				String method = nameMatcher[0][2]
 
+
 				if (message.startsWith("started")) {
 					output = new StringBuilder()
 
@@ -264,11 +284,16 @@ public class TestResultParser {
 						if (testResult != null) {
 							testResult.output = output.toString()
 
-							testResult.success = !message.toLowerCase().startsWith("failed")
-							if (!testResult.success) {
+							if (message.toLowerCase().startsWith("failed")) {
+								testResult.state = TestResult.State.Failed
 								logger.info("test + " + testResult + "failed!")
 								overallTestSuccess = false;
+							} else if (message.toLowerCase().startsWith("skipped")) {
+								testResult.state = TestResult.State.Skipped
+							} else {
+								testResult.state = TestResult.State.Passed
 							}
+
 
 							def durationMatcher = DURATION_PATTERN.matcher(message)
 							if (durationMatcher.matches()) {
@@ -355,7 +380,12 @@ public class TestResultParser {
 
 				String method = entry.getString("TestName")
 				TestResult testResult = new TestResult(method: method)
-				testResult.success = entry.getString("TestStatus") == "Success"
+
+				if (entry.getString("TestStatus") == "Success") {
+					testResult.state = TestResult.State.Passed
+				} else {
+					testResult.state = TestResult.State.Failed
+				}
 				testClass.results << testResult
 
 			} else if (entry.getString("TestObjectClass") == "IDESchemeActionTestSummaryGroup") {
@@ -369,101 +399,28 @@ public class TestResultParser {
 	}
 
 
-	public int numberSuccess() {
-		return numberSuccess(testResults)
+	public int number(TestResult.State state) {
+		return number(testResults, state)
 	}
 
 
-	public int numberSuccess(HashMap<Destination, ArrayList<TestClass>> results) {
+	public int number(HashMap<Destination, ArrayList<TestClass>> results, TestResult.State state) {
 		int success = 0;
-		for (java.util.List list in results.values()) {
-			success += numberSuccessInResultList(list);
+		for (List list in results.values()) {
+			success += number(list, state)
 		}
 		return success;
 	}
 
-	public int numberErrors() {
-		return numberErrors(testResults)
-	}
 
-	public int numberErrors(HashMap<Destination, ArrayList<TestClass>> results) {
-		int errors = 0;
-		for (java.util.List list in results.values()) {
-			errors += numberErrorsInResultList(list);
-		}
-		return errors;
-	}
 
-	int numberSuccessInResultList(java.util.List results) {
-		int success = 0;
+	int number(java.util.List results, TestResult.State state) {
+		int number = 0;
 		for (TestClass testClass in results) {
-			success += testClass.numberSuccess()
+			number += testClass.number(state)
 		}
-		return success
+		return number
 	}
-
-	int numberErrorsInResultList(java.util.List results) {
-		int errors = 0;
-		for (TestClass testClass in results) {
-			errors += testClass.numberErrors()
-		}
-		return errors
-	}
-
-	/*
-	def storeJson() {
-		logger.info("Saving test results")
-
-		def list = [];
-		for (Destination destination in project.xcodebuild.availableDestinations) {
-
-			def resultList = testResults[destination]
-
-			list << [
-							destination:
-											[
-															name    : destination.name,
-															platform: destination.platform,
-															arch    : destination.arch,
-															id      : destination.id,
-															os      : destination.os
-											],
-							results    :
-											resultList.collect {
-												TestClass t ->
-													[
-																	name  : t.name,
-																	result: t.results.collect {
-																		TestResult r ->
-																			[
-																							method  : r.method,
-																							success : r.success,
-																							duration: r.duration,
-																							output  : r.output.split("\n").collect {
-																								String s -> escapeString(s)
-																							}
-																			]
-																	}
-													]
-											}
-			]
-
-		}
-
-		def builder = new groovy.json.JsonBuilder()
-		builder(list)
-
-
-		File outputDirectory = new File(project.getBuildDir(), "test");
-		if (!outputDirectory.exists()) {
-			outputDirectory.mkdirs()
-		}
-
-		new File(outputDirectory, "results.json").withWriter { out ->
-			out.write(builder.toPrettyString())
-		}
-	}
-	*/
 
 
 	def escapeString(String string) {

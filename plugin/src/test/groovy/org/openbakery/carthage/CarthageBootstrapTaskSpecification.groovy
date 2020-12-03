@@ -8,6 +8,9 @@ import org.junit.Rule
 import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
+import org.openbakery.testdouble.XcodeFake
+import org.openbakery.xcode.Version
+import org.openbakery.xcode.XCConfig
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -19,7 +22,6 @@ class CarthageBootstrapTaskSpecification extends Specification {
 
 	CarthageBootstrapTask subject
 	CommandRunner commandRunner = Mock(CommandRunner)
-	Xcode mockXcode = Mock(Xcode)
 	File projectDir
 	File cartFile
 	Project project
@@ -137,23 +139,23 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		iOS      | CARTHAGE_PLATFORM_IOS
 	}
 
-	def "The xcode selection should be applied if a xcode version is defined"() {
-		when:
-		subject.xcode.getXcodeSelectEnvironmentValue(_) >> new HashMap<String, String>()
-		project.xcodebuild.type = iOS
-		project.xcodebuild.version = version
 
-		subject.xcode = mockXcode
-		subject.xcode.setVersionFromString(_) >> _
+	def "The xcode selection should be applied if a xcode version is defined"() {
+		Map<String, String> environment = null
+		given:
+		subject.xcode = new XcodeFake("12.0.0.ABCD")
+		project.xcodebuild.version = 12
+
+		when:
 		subject.bootstrap()
 
 		then:
-		1 * mockXcode.getXcodeSelectEnvironmentValue(version)
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> environment = arguments[2] }
 
-		where:
-		version | _
-		"7.1.1" | _
+		environment != null
+		environment["DEVELOPER_DIR"] == "/Applications/Xcode-12.app/Contents/Developer"
 	}
+
 
 	private List<String> getCommandRunnerArgsForPlatform(String carthagePlatform) {
 		return [CARTHAGE_USR_BIN_PATH,
@@ -231,5 +233,23 @@ class CarthageBootstrapTaskSpecification extends Specification {
 
 		!commandList.contains(ARGUMENT_CACHE_BUILDS)
 	}
+
+
+	def "When xcode 12 then create xcconfig without SWIFT_SERIALIZE_DEBUGGING_OPTIONS"() {
+		given:
+		File carthageDirectory = project.rootProject.file("Carthage")
+		File xcconfigPath = new File(carthageDirectory, "gradle-xc12-carthage.xcconfig")
+		subject.xcode = new XcodeFake("12.0.0.12A7209")
+
+		when:
+		subject.bootstrap()
+		def xcConfig = new XCConfig(xcconfigPath)
+
+		then:
+		xcConfig.entries["SWIFT_SERIALIZE_DEBUGGING_OPTIONS"] == null
+		xcConfig.entries["OTHER_SWIFT_FLAGS"] == null
+	}
+
+
 
 }

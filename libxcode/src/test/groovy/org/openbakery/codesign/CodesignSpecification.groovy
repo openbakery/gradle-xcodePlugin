@@ -8,11 +8,11 @@ import org.openbakery.bundle.Bundle
 import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PlistHelper
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
-import org.openbakery.xcode.XcodeFake
 import spock.lang.Specification
 
 class CodesignThatStoresTheConfiguration extends Codesign {
@@ -464,7 +464,43 @@ class CodesignSpecification extends  Specification {
 
 		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", new File(bundle, "Frameworks/My.framework").absolutePath ]
 		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
+	}
 
+
+	def "codesign embedded framework with identity"() {
+		def commandLists = []
+
+		def keychain = new File("keychain")
+
+		parameters = new CodesignParameters()
+		parameters.type = Type.iOS
+		parameters.signingIdentity = "foobar"
+		parameters.keychain = keychain
+		codesign.codesignParameters = parameters
+
+		given:
+		File bundle = applicationDummy.create()
+		applicationDummy.createFramework()
+
+		when:
+		codesign.sign(new Bundle(bundle, Type.iOS, plistHelper))
+
+
+		then:
+		2 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandLists << arguments[0]
+		}
+
+		commandLists[0] == ["/usr/bin/codesign",
+												"--force",
+												"--sign",
+												"foobar",
+												"--verbose",
+												new File(bundle, "Frameworks/My.framework").absolutePath,
+												"--keychain",
+												keychain.absolutePath
+		]
 	}
 
 	def "codesign embedded dylib"() {

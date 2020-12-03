@@ -27,6 +27,9 @@ class Version implements Comparable<Version> {
 			if (versionScanner.hasNext()) {
 				maintenance = versionScanner.nextInt()
 			}
+			if (versionScanner.hasNext()) {
+				suffix = versionScanner.next()
+			}
 		} catch (InputMismatchException ex) {
 			suffix = versionScanner.next()
 		}

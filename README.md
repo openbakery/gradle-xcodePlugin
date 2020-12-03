@@ -20,7 +20,6 @@ Here a brief overview of the features:
 * [Carthage](https://github.com/Carthage/Carthage) support
 * [Appledoc](http://gentlebytes.com/appledoc/) support
 * Code coverage support (using [gcovr](http://gcovr.com) or using [CoverageReport](https://github.com/openbakery/CoverageReport) )
-* [Hockeykit](http://hockeykit.net/), [App Center](https://appcenter.ms), [DeployGate](https://deploygate.com/) , [Apple TestFlight](https://developer.apple.com/testflight/), [Crashlytics](https://www.crashlytics.com/)
 * OCLint
 
 
@@ -32,7 +31,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.20.0
+### Current stable version is 0.20.1
 
 
 ## Documentation
@@ -48,7 +47,7 @@ Here the minimal content you need in your build.gradle file:
 
 ```
 plugins {
-  id "org.openbakery.xcode-plugin" version "0.20.0"
+  id "org.openbakery.xcode-plugin" version "0.20.1"
 }
 
 xcodebuild {
@@ -80,7 +79,7 @@ apply plugin: "org.openbakery.xcode-plugin"
 
 When using the [openbakery.org](https://openbakery.org) repository you can also get the latest develop version by including `develop` into the version pattern. e.g.: 
 ```
-classpath "org.openbakery:xcode-plugin:0.20.0.develop.+"
+classpath "org.openbakery:xcode-plugin:0.20.1.develop.+"
 ```
 
 The develop version contains all the changes from the develop branch, where all the fixes and feature are implemented. The development version is deployed automatically when all the projects unit tests are  successful, and also the if the example projects build. 

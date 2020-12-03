@@ -1,3 +1,12 @@
+# 0.20.1 (2. Dec, 2020)
+
+Changes
+* Added notarize task for notarizing macOS applications
+* Remove HockeyKit task
+* Removed ReleaseNotes task because the pegdown dependencies causes troubles: Issue #431
+* Added support for skipped tests, that they are not shown as failures.
+* Added carthage archive task, so that a binary framework can be build.
+
 # 0.20.0 (2 June, 2020)
 
 Changes

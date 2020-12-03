@@ -13,6 +13,10 @@ import org.openbakery.xcode.Xcode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.nio.file.Files
+
+import static groovy.io.FileType.DIRECTORIES
+
 class Codesign {
 	private static Logger logger = LoggerFactory.getLogger(Codesign.class)
 
@@ -42,7 +46,12 @@ class Codesign {
 			entitlements = prepareEntitlementsForSigning(bundle.path)
 		}
 
-		performCodesign(bundle.path, entitlements)
+		if (codesignParameters.type == Type.macOS) {
+			performCodesign(bundle.path, entitlements, true, true)
+		} else {
+			performCodesign(bundle.path, entitlements, false, false)
+		}
+
 	}
 
 	private File prepareEntitlementsForSigning(File bundle) {
@@ -104,43 +113,134 @@ class Codesign {
 
 	private void codeSignEmbeddedBundle(File bundle) {
 
-		File frameworksDirectory
+
 		if (codesignParameters.type == Type.iOS) {
-			frameworksDirectory = new File(bundle, "Frameworks")
+			embeddedBundleEntriesForIOS(bundle).each {
+				performCodesign(it)
+			}
 		} else {
-			frameworksDirectory = new File(bundle, "Contents/Frameworks")
-		}
-		if (frameworksDirectory.exists()) {
-
-			FilenameFilter filter = new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".dylib") ||
-						name.toLowerCase().endsWith(".framework") ||
-						name.toLowerCase().endsWith(".app")
+			embeddedBundleEntriesForMacOS(bundle).each {
+				if (it.name.endsWith(".app")) {
+					performCodesign(it, null, true, true)
+				} else if (it.isFile() && !it.name.endsWith("dylib")) {
+					performCodesign(it, null, true, true)
+				} else {
+					performCodesign(it, null, true, false)
 				}
-			};
-
-			for (File file in frameworksDirectory.listFiles(filter)) {
-
-				performCodesign(file, null)
-
 			}
 		}
 
 	}
 
-	private void performCodesign(File bundle, File entitlements) {
-		if (codesignParameters.signingIdentity == null) {
-			performCodesignWithoutIdentity(bundle)
-		} else {
-			performCodesignWithIdentity(bundle,entitlements)
+
+	private static List<File>embeddedBundleEntriesForIOS(File bundle) {
+		File directory = new File(bundle, "Frameworks")
+		if (!directory.exists()) {
+			return []
 		}
+		List<File> result = []
+
+		result.addAll(getFrameworkLibraries(directory))
+
+		directory.traverse(maxDepth: 0) { file ->
+			if (file.getName().toLowerCase().endsWith(".framework") ||
+				file.getName().toLowerCase().endsWith(".app")) {
+
+				result.add(file)
+			}
+		}
+		return result
 	}
 
-	private void performCodesignWithIdentity(File bundle, File entitlements) {
+	private List<File> embeddedBundleEntriesForMacOS(File bundle) {
+
+		List<File> result = []
+		File directory = new File(bundle, "Contents/Frameworks")
+		if (!directory.exists()) {
+			return result
+		}
+
+		directory.traverse(type: DIRECTORIES, maxDepth: 0) { file ->
+
+			if (!file.isDirectory()) {
+				return
+			}
+
+			if (file.getName().toLowerCase().endsWith(".framework")) {
+				result.addAll(getFrameworkVersions(file))
+			}
+			if (file.getName().toLowerCase().endsWith(".app")) {
+				result.add(file)
+			}
+
+		}
+
+		return result
+	}
+
+	static List<File> getFrameworkVersions(File directory) {
+		logger.info("getFrameworkVersion in {}", directory)
+
+
+		List<File> result = []
+		new File(directory, "Versions").traverse(type: DIRECTORIES, maxDepth: 0) { file ->
+			if (Files.isSymbolicLink(file.toPath())) {
+				return
+			}
+
+			// collect all binaries in the subdirectory
+			file.traverse(type: DIRECTORIES, maxDepth: 0) { subdirectory ->
+				result.addAll(getFrameworkResourceExecutables(subdirectory))
+			}
+
+
+			result.addAll(getFrameworkLibraries(new File(file, "Libraries")))
+			result << file
+		}
+		return result
+	}
+
+	static List<File> getFrameworkLibraries(File directory) {
+		logger.info("getFrameworkVersionLibraries in {}", directory)
+		List<File> result = []
+		if (!directory.exists()) {
+			return result
+		}
+
+		directory.traverse(maxDepth: 0) { file ->
+			if (file.getName().toLowerCase().endsWith(".dylib")) {
+				result << file
+			}
+		}
+
+		return result
+	}
+
+	static List<File> getFrameworkResourceExecutables(File directory) {
+		logger.info("getFrameworkResourceExecutables in {}", directory)
+		List<File> result = []
+		if (!directory.exists()) {
+			return result
+		}
+
+		directory.traverse(maxDepth: 0) { file ->
+			if (!file.isDirectory() && file.canExecute()) {
+				result << file
+			}
+		}
+
+		return result
+
+	}
+
+	public void performCodesign(File bundle) {
+		this.performCodesign(bundle, null, false, false)
+	}
+
+	public void performCodesign(File bundle, File entitlements, boolean deep, boolean hardenRuntime) {
 		logger.info("performCodesign {}", bundle)
 
-		def codesignCommand = []
+		List<String> codesignCommand = []
 		codesignCommand << "/usr/bin/codesign"
 		codesignCommand << "--force"
 
@@ -150,27 +250,24 @@ class Codesign {
 		}
 
 		codesignCommand << "--sign"
-		codesignCommand << codesignParameters.signingIdentity
+		if (codesignParameters.signingIdentity != null) {
+			codesignCommand << codesignParameters.signingIdentity
+		} else {
+			codesignCommand << "-"
+		}
+		if (deep) {
+			codesignCommand << "--deep"
+		}
+		if (hardenRuntime) {
+			codesignCommand << "--options=runtime"
+		}
 		codesignCommand << "--verbose"
 		codesignCommand << bundle.absolutePath
-		codesignCommand << "--keychain"
-		codesignCommand << codesignParameters.keychain.absolutePath
 
-		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
-		commandRunner.run(codesignCommand, environment)
-
-	}
-
-	private void performCodesignWithoutIdentity(File bundle) {
-		logger.info("performCodesign {}", bundle)
-
-		def codesignCommand = []
-		codesignCommand << "/usr/bin/codesign"
-		codesignCommand << "--force"
-		codesignCommand << "--sign"
-		codesignCommand << "-"
-		codesignCommand << "--verbose"
-		codesignCommand << bundle.absolutePath
+		if (codesignParameters.signingIdentity != null) {
+			codesignCommand << "--keychain"
+			codesignCommand << codesignParameters.keychain.absolutePath
+		}
 
 		def environment = ["DEVELOPER_DIR": xcode.getPath() + "/Contents/Developer/"]
 		commandRunner.run(codesignCommand, environment)

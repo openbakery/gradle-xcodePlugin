@@ -30,6 +30,8 @@ import org.openbakery.appledoc.AppledocTask
 import org.openbakery.appstore.AppstorePluginExtension
 import org.openbakery.appstore.AppstoreValidateTask
 import org.openbakery.appstore.AppstoreUploadTask
+import org.openbakery.appstore.NotarizeTask
+import org.openbakery.carthage.CarthageArchiveTask
 import org.openbakery.carthage.CarthageBootstrapTask
 import org.openbakery.carthage.CarthageCleanTask
 import org.openbakery.carthage.CarthageUpdateTask
@@ -47,15 +49,8 @@ import org.openbakery.crashlytics.CrashlyticsUploadTask
 import org.openbakery.deploygate.DeployGateCleanTask
 import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
-import org.openbakery.hockeykit.HockeyKitArchiveTask
-import org.openbakery.hockeykit.HockeyKitCleanTask
-import org.openbakery.hockeykit.HockeyKitImageTask
-import org.openbakery.hockeykit.HockeyKitManifestTask
-import org.openbakery.hockeykit.HockeyKitPluginExtension
-import org.openbakery.hockeykit.HockeyKitReleaseNotesTask
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
-import org.openbakery.packaging.ReleaseNotesTask
 import org.openbakery.rome.RomeDownloadTask
 import org.openbakery.rome.RomeUploadTask
 import org.openbakery.signing.KeychainCleanupTask
@@ -79,7 +74,6 @@ class XcodePlugin implements Plugin<Project> {
 	private static Logger logger = LoggerFactory.getLogger(XcodePlugin.class)
 
 	public static final String XCODE_GROUP_NAME = "Xcode"
-	public static final String HOCKEYKIT_GROUP_NAME = "HockeyKit"
 	public static final String APPSTORE_GROUP_NAME = "AppStore"
 	public static final String DEPLOYGATE_GROUP_NAME = "DeployGate"
 	public static final String CRASHLYTICS_GROUP_NAME = "Crashlytics"
@@ -107,12 +101,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
 	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
-	public static final String HOCKEYKIT_MANIFEST_TASK_NAME = "hockeykitManifest"
-	public static final String HOCKEYKIT_ARCHIVE_TASK_NAME = "hockeykitArchive"
-	public static final String HOCKEYKIT_NOTES_TASK_NAME = "hockeykitNotes"
-	public static final String HOCKEYKIT_IMAGE_TASK_NAME = "hockeykitImage"
-	public static final String HOCKEYKIT_CLEAN_TASK_NAME = "hockeykitClean"
-	public static final String HOCKEYKIT_TASK_NAME = "hockeykit"
 	public static final String KEYCHAIN_CREATE_TASK_NAME = "keychainCreate"
 	public static final String KEYCHAIN_CLEAN_TASK_NAME = "keychainClean"
 	public static final String KEYCHAIN_REMOVE_SEARCH_LIST_TASK_NAME = "keychainRemove"
@@ -120,9 +108,9 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String PROVISIONING_INSTALL_TASK_NAME = 'provisioningInstall'
 	public static final String PROVISIONING_CLEAN_TASK_NAME = 'provisioningClean'
 	public static final String PACKAGE_TASK_NAME = 'package'
-	public static final String PACKAGE_RELEASE_NOTES_TASK_NAME = 'packageReleaseNotes'
 	public static final String APPSTORE_UPLOAD_TASK_NAME = 'appstoreUpload'
 	public static final String APPSTORE_VALIDATE_TASK_NAME = 'appstoreValidate'
+	public static final String NOTARIZE_TASK_NAME = 'notarize'
 	public static final String DEPLOYGATE_TASK_NAME = 'deploygate'
 	public static final String DEPLOYGATE_CLEAN_TASK_NAME = 'deploygateClean'
 	public static final String CRASHLYTICS_TASK_NAME = 'crashlytics'
@@ -135,6 +123,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CARTHAGE_BOOTSTRAP_TASK_NAME = 'carthageBootstrap'
 	public static final String CARTHAGE_UPDATE_TASK_NAME = 'carthageUpdate'
 	public static final String CARTHAGE_CLEAN_TASK_NAME = 'carthageClean'
+	public static final String CARTHAGE_ARCHIVE_TASK_NAME = 'carthageArchive'
 	public static final String APPCENTER_CLEAN_TASK_NAME = 'appCenterClean'
 	public static final String APPCENTER_TASK_NAME = 'appcenter'
 
@@ -144,8 +133,8 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
 
-	public static final COVERAGE_TASK_NAME = 'coverage'
-	public static final COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
+	public static final String COVERAGE_TASK_NAME = 'coverage'
+	public static final String COVERAGE_CLEAN_TASK_NAME = 'coverageClean'
 
 
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
@@ -161,7 +150,6 @@ class XcodePlugin implements Plugin<Project> {
 		configureBuild(project)
 		configureTest(project)
 		configureArchive(project)
-		configureHockeyKit(project)
 		configureKeychain(project)
 		configureInfoPlist(project)
 		configureProvisioning(project)
@@ -299,19 +287,6 @@ class XcodePlugin implements Plugin<Project> {
 				project.xcodebuild.destination = project['xcodebuild.destination']
 			}
 
-			if (project.hasProperty('hockeykit.displayName')) {
-				project.hockeykit.displayName = project['hockeykit.displayName']
-			}
-			if (project.hasProperty('hockeykit.versionDirectoryName')) {
-				project.hockeykit.versionDirectoryName = project['hockeykit.versionDirectoryName']
-			}
-			if (project.hasProperty('hockeykit.outputDirectory')) {
-				project.hockeykit.outputDirectory = project['hockeykit.outputDirectory']
-			}
-			if (project.hasProperty('hockeykit.notes')) {
-				project.hockeykit.notes = project['hockeykit.notes']
-			}
-
 			if (project.hasProperty('deploygate.outputDirectory')) {
 				project.deploygate.outputDirectory = project['deploygate.outputDirectory']
 			}
@@ -405,10 +380,6 @@ class XcodePlugin implements Plugin<Project> {
 				project.appcenter.destination = project['appcenter.destination']
 			}
 
-			if (project.hasProperty('appcenter.releaseNotes')) {
-				project.appcenter.releaseNotes = project['appcenter.releaseNotes']
-			}
-
 			if (project.hasProperty('appcenter.notifyTesters')) {
 				project.appcenter.notifyTesters = project['appcenter.notifyTesters']
 			}
@@ -434,7 +405,6 @@ class XcodePlugin implements Plugin<Project> {
 	void configureExtensions(Project project) {
 		project.extensions.create("xcodebuild", XcodeBuildPluginExtension, project)
 		project.extensions.create("infoplist", InfoPlistExtension)
-		project.extensions.create("hockeykit", HockeyKitPluginExtension, project)
 		project.extensions.create("appstore", AppstorePluginExtension, project)
 		project.extensions.create("deploygate", DeployGatePluginExtension, project)
 		project.extensions.create("crashlytics", CrashlyticsPluginExtension, project)
@@ -489,16 +459,6 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(SIMULATORS_KILL_TASK_NAME, type: SimulatorKillTask, group: SIMULATORS_LIST_TASK_NAME)
 	}
 
-	private void configureHockeyKit(Project project) {
-		project.task(HOCKEYKIT_MANIFEST_TASK_NAME, type: HockeyKitManifestTask, group: HOCKEYKIT_GROUP_NAME)
-		HockeyKitArchiveTask hockeyKitArchiveTask = project.task(HOCKEYKIT_ARCHIVE_TASK_NAME, type: HockeyKitArchiveTask, group: HOCKEYKIT_GROUP_NAME)
-		project.task(HOCKEYKIT_NOTES_TASK_NAME, type: HockeyKitReleaseNotesTask, group: HOCKEYKIT_GROUP_NAME)
-		project.task(HOCKEYKIT_IMAGE_TASK_NAME, type: HockeyKitImageTask, group: HOCKEYKIT_GROUP_NAME)
-		project.task(HOCKEYKIT_CLEAN_TASK_NAME, type: HockeyKitCleanTask, group: HOCKEYKIT_GROUP_NAME)
-
-		DefaultTask hockeykitTask = project.task(HOCKEYKIT_TASK_NAME, type: DefaultTask, description: "Creates a build that can be deployed on a hockeykit Server", group: HOCKEYKIT_GROUP_NAME);
-		hockeykitTask.dependsOn(HOCKEYKIT_ARCHIVE_TASK_NAME, HOCKEYKIT_MANIFEST_TASK_NAME, HOCKEYKIT_IMAGE_TASK_NAME, HOCKEYKIT_NOTES_TASK_NAME)
-	}
 
 	private void configureKeychain(Project project) {
 		project.task(KEYCHAIN_CREATE_TASK_NAME, type: KeychainCreateTask, group: XCODE_GROUP_NAME)
@@ -525,19 +485,6 @@ class XcodePlugin implements Plugin<Project> {
 	private configurePackage(Project project) {
 		PackageTask packageTask = project.task(PACKAGE_TASK_NAME, type: PackageTask, group: XCODE_GROUP_NAME)
 
-
-		project.task(PACKAGE_RELEASE_NOTES_TASK_NAME, type: ReleaseNotesTask, group: XCODE_GROUP_NAME)
-
-		//ProvisioningCleanupTask provisioningCleanup = project.getTasks().getByName(PROVISIONING_CLEAN_TASK_NAME)
-
-		//KeychainCleanupTask keychainCleanupTask = project.getTasks().getByName(KEYCHAIN_CLEAN_TASK_NAME)
-
-/*  // disabled clean because of #115
-		packageTask.doLast {
-			provisioningCleanup.clean()
-			keychainCleanupTask.clean()
-		}
-*/
 		XcodeBuildTask xcodeBuildTask = project.getTasks().getByName(XCODE_BUILD_TASK_NAME)
 		packageTask.shouldRunAfter(xcodeBuildTask)
 	}
@@ -545,6 +492,7 @@ class XcodePlugin implements Plugin<Project> {
 	private configureAppstore(Project project) {
 		project.task(APPSTORE_UPLOAD_TASK_NAME, type: AppstoreUploadTask, group: APPSTORE_GROUP_NAME)
 		project.task(APPSTORE_VALIDATE_TASK_NAME, type: AppstoreValidateTask, group: APPSTORE_GROUP_NAME)
+		project.task(NOTARIZE_TASK_NAME, type: NotarizeTask, group: APPSTORE_GROUP_NAME)
 	}
 
 	private void configureAppledoc(Project project) {
@@ -582,6 +530,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(CARTHAGE_CLEAN_TASK_NAME, type: CarthageCleanTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_UPDATE_TASK_NAME, type: CarthageUpdateTask, group: CARTHAGE_GROUP_NAME)
 		project.task(CARTHAGE_BOOTSTRAP_TASK_NAME, type: CarthageBootstrapTask, group: CARTHAGE_GROUP_NAME)
+		project.task(CARTHAGE_ARCHIVE_TASK_NAME, type: CarthageArchiveTask, group: CARTHAGE_GROUP_NAME)
 	}
 
 	private configureCarthageDependencies(Project project) {
