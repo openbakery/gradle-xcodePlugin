@@ -34,7 +34,7 @@ class XcodeFake extends Xcode {
 
 	String resolveInstalledXcodeVersionsList() {
 		return "/Applications/Xcode-11.7.app\n" +
-			"/Applications/Xcode-12.app"
+			"/Applications/Xcode-12.2.app"
 	}
 
 	Version getXcodeVersion(String xcodeBuildCommand) {

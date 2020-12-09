@@ -22,7 +22,7 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		xcresulttoolPath = new Xcode(new CommandRunner(), "11").getXcresulttool()
+		xcresulttoolPath = new Xcode(new CommandRunner(), "12").getXcresulttool()
 
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
