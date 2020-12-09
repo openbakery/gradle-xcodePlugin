@@ -16,8 +16,8 @@
 package org.openbakery.appcenter
 
 import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.apache.commons.io.FileUtils
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.AbstractHttpDistributeTask
@@ -31,6 +31,11 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 	private static final String APP_CENTER_URL = "https://api.appcenter.ms"
 	private static final String PATH_BASE_API = "v0.1/apps"
 	private static final String PATH_RELEASE_UPLOAD = "uploads/releases"
+	private static final String PATH_SET_METADATA = "upload/set_metadata"
+	private static final String PATH_CHUNK_UPLOAD = "upload/upload_chunk"
+	private static final String PATH_UPLOAD_FINISHED = "upload/finished"
+	private static final String PATH_UPLOAD_RELEASES = "uploads/releases"
+	private static final String PATH_RELEASES = "releases"
 	private static final String PATH_SYMBOL_UPLOAD = "symbol_uploads"
 	private static final String HEADER_CONTENT_TYPE = "Content-Type"
 	private static final String HEADER_BLOB_TYPE = "x-ms-blob-type"
@@ -74,8 +79,9 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 		File ipaFile
 		File dSYMFile
 		String ipaUploadId
-		String ipaUploadUrl
-		String releaseUrl
+		String ipaUploadDomain
+		String assetId
+		String token
 		String dsymUploadId
 		String dsymUploadUrl
 
@@ -86,12 +92,17 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 		this.baseUploadUrl = "${APP_CENTER_URL}/${PATH_BASE_API}/${project.appcenter.appOwner}/${project.appcenter.appName}"
 
 		(ipaFile, dSYMFile) = prepareFiles()
-		(ipaUploadId, ipaUploadUrl) = initIpaUpload()
-		uploadIpa(ipaFile, ipaUploadUrl)
-		releaseUrl = commitUpload(PATH_RELEASE_UPLOAD, ipaUploadId)
-		distributeIpa("${APP_CENTER_URL}/${releaseUrl}")
-
+		(ipaUploadId, ipaUploadDomain, assetId, token) = initIpaUpload()
+		uploadFile(assetId, token, ipaFile)
+		updateReleaseUpload(ipaUploadId, "uploadFinished")
+		def releaseId = pollForReleaseId(ipaUploadId)
+		def release = getRelease(releaseId)
+		logger.info("download_url")
+		distributeIpa(releaseId)
 		(dsymUploadId, dsymUploadUrl) = initDebugSymbolUpload()
+
+		logger.info("download_url: ${release["download_url"]}")
+		logger.info("install_url: ${release["release_url"]}")
 
 		if (dSYMFile.exists()) {
 			uploadDebugSymbols(dSYMFile, dsymUploadUrl)
@@ -104,26 +115,102 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 	def initIpaUpload() {
 		def headers = getHeaders()
 
-		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_RELEASE_UPLOAD}", headers, "")
+		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_RELEASE_UPLOAD}", headers, null, "")
 
 		def initIpaUploadResponse = new JsonSlurper().parseText(response) as InitIpaUploadResponse
-
 		logger.info("App Center: IPA upload initialized.")
-		return [initIpaUploadResponse.upload_id, initIpaUploadResponse.upload_url]
+		return [initIpaUploadResponse.id, initIpaUploadResponse.upload_domain, initIpaUploadResponse.package_asset_id, initIpaUploadResponse.token]
 	}
 
-	def uploadIpa(File ipaFile, String uploadUrl) {
-		logger.info("App Center: Uploading IPA...")
+	private void uploadFile(String assetId, String token, File binary) {
+		def chunkSize = setReleaseUploadMetadata(assetId, token, binary)
+		uploadChunks(assetId, token, binary, chunkSize)
+		uploadFinish(assetId, token)
+	}
 
-		def headers = new HashMap<String, String>()
-		def parameters = new HashMap<String, Object>()
+	private Integer setReleaseUploadMetadata(String assetId, String token, File binary) {
+		def parameters = new HashMap<String, String>()
+		parameters.put("file_name", binary.name)
+		parameters.put("file_size", binary.size().toString())
+		parameters.put("token", token)
+		parameters.put("content_type", "application/octet-stream")
+		String uploadUrl = "${baseUploadUrl}/${PATH_SET_METADATA}/${assetId}"
+		def response = httpUtil.sendForm(HttpUtil.HttpVerb.POST, uploadUrl, headers, parameters)
 
-		headers.put(HEADER_CONTENT_TYPE, MEDIA_TYPE_MULTI_FORM)
-		parameters.put(PART_KEY_IPA, ipaFile)
+		def json = new JsonSlurper().parseText(response)
 
-		httpUtil.sendForm(HttpUtil.HttpVerb.POST, uploadUrl, headers, parameters)
+		return json.chunk_size
+	}
 
-		logger.info("App Center: IPA upload completed.")
+	private void uploadChunks(String assetId, String token, File binary, Integer chunksize) {
+		def blockNumber = 1
+		def s = binary.newDataInputStream()
+		String url = "${baseUploadUrl}/${PATH_CHUNK_UPLOAD}/${assetId}"
+		s.eachByte(chunksize) { byte[] bytes, Integer size ->
+			logger.info("upload chunk ${blockNumber}".toString())
+
+			def parameters = new HashMap<String, String>()
+			parameters.put("token", token)
+			parameters.put("block_number", blockNumber.toString())
+
+			def response = httpUtil.sendFile(HttpUtil.HttpVerb.POST, url, [:], parameters, bytes)
+
+			def json = new JsonSlurper().parseText(response)
+			if (json.error == false) {
+				blockNumber = blockNumber + 1
+			}
+		}
+	}
+
+	private void uploadFinish(String assetId, String token) {
+		def url = "${baseUploadUrl}/${PATH_UPLOAD_FINISHED}/${assetId}"
+		def parameters = ["token": token]
+
+		def response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, url, headers, parameters, null)
+
+		def json = new JsonSlurper().parseText(response)
+		if (json.error == true) {
+			logger.error("Error finishing upload")
+		}
+	}
+
+	private Map updateReleaseUpload(String uploadId, String status) {
+		def url = "${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/$uploadId"
+		def body = [
+			"upload_status": status,
+			"id"           : uploadId
+		]
+
+		def response = httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, url, headers, null, JsonOutput.toJson(body))
+
+		return new JsonSlurper().parseText(response) as Map
+	}
+
+	private String pollForReleaseId(String uploadId) {
+		def url = "${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/${uploadId}"
+
+		while (true) {
+			def response = httpUtil.getson(url, headers, [:])
+			def json = new JsonSlurper().parseText(response)
+
+			switch(json.upload_status) {
+				case "readyToBePublished":
+					def releaseId = json.release_distinct_id
+					return releaseId
+				case "error":
+					throw new Exception()
+					break
+				default:
+					sleep(1000)
+					break
+			}
+		}
+	}
+
+	private Map getRelease(String releaseId) {
+		def url = "${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/${releaseId}"
+		def response = httpUtil.getJson(url, headers, [:])
+		return new JsonSlurper().parseText(response) as Map
 	}
 
 	def commitUpload(String path, String uploadId) {
@@ -131,7 +218,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 		String json = new JsonBuilder(new CommitRequest()).toPrettyString()
 
-		String response = httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, "${baseUploadUrl}/${path}/${uploadId}", headers, json)
+		String response = httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, "${baseUploadUrl}/${path}/${uploadId}", headers, null, json)
 
 		def commitResponse = new JsonSlurper().parseText(response) as CommitResponse
 
@@ -140,15 +227,20 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 	}
 
-	def distributeIpa(String releaseUrl) {
+	def distributeIpa(String releaseId) {
 		def headers = getHeaders()
+		def url = "${baseUploadUrl}/${PATH_RELEASES}/${releaseId}"
 
-		def distributionRequest = new DistributionRequest(project.appcenter.destination, project.appcenter.releaseNotes,
-			project.appcenter.notifyTesters, project.appcenter.mandatoryUpdate)
+		def distributionRequest = new DistributionRequest(
+			project.appcenter.destination,
+			project.appcenter.releaseNotes,
+			project.appcenter.notifyTesters,
+			project.appcenter.mandatoryUpdate
+		)
 
 		String json = new JsonBuilder(distributionRequest).toPrettyString()
 
-		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, releaseUrl, headers, json)
+		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, url, headers, null, json)
 
 		logger.info("App Center: IPA upload distributed to: '" + project.appcenter.destination + "'")
 	}
@@ -158,7 +250,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 		String json = new JsonBuilder(new InitDebugSymbolRequest()).toPrettyString()
 
-		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_SYMBOL_UPLOAD}", headers, json)
+		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_SYMBOL_UPLOAD}", headers, null, json)
 		def initDebugSymbolResponse = new JsonSlurper().parseText(response) as InitDebugSymbolResponse
 
 		logger.info("App Center: Debug symbol upload initialized.")

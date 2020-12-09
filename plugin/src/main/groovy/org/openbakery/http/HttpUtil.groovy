@@ -12,7 +12,8 @@ class HttpUtil {
 	enum HttpVerb {
 		PUT,
 		POST,
-		PATCH
+		PATCH,
+		GET
 	}
 
 	private OkHttpClient okHttpClient
@@ -26,43 +27,57 @@ class HttpUtil {
 			.build()
 	}
 
-	String sendJson(HttpVerb httpVerb, String url, Map<String, String> headers, String json) {
-		return sendRequest(httpVerb, url, headers, null, json)
+	String sendJson(HttpVerb httpVerb, String url, Map<String, String> headers, Map<String, Object> parameters, String json) {
+		logger.debug("http json {}", json)
+		def requestBuilder = create(url, httpVerb, headers, parameters, RequestBody.create(json, MediaType.parse(MEDIA_TYPE_JSON)))
+		return execute(requestBuilder)
 	}
 
 	String sendForm(HttpVerb httpVerb, String url, Map<String, String> headers, Map<String, Object> parameters) {
-		return sendRequest(httpVerb, url, headers, parameters, null)
+		logger.debug("http form parameters {}", parameters)
+		MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
+			.setType(MultipartBody.FORM)
+
+		parameters.each() { key, value ->
+			if (value instanceof String) {
+				bodyBuilder.addFormDataPart(key, value)
+			} else if (value instanceof File) {
+				bodyBuilder.addFormDataPart(key, (value as File).name,
+					RequestBody.create(
+						value as File, MediaType.parse(MEDIA_TYPE_OCTET)))
+			}
+		}
+
+		def requestBody = bodyBuilder.build()
+		return execute(create(url, httpVerb, headers, null, requestBody))
 	}
 
-	private String sendRequest(HttpVerb httpVerb, String url, Map<String, String> headers, Map<String, Object> parameters, String json) {
+	String sendFile(HttpVerb httpVerb, String url, Map<String, String> headers, Map<String, Object> parameters, byte[] file) {
+		logger.debug("http byte size {}", file.size())
+		def requestBody = RequestBody.create(file, MediaType.parse(MEDIA_TYPE_OCTET))
+		def requestBuilder = create(url, httpVerb, headers, null, requestBody)
+		return execute(requestBuilder)
+	}
+
+	String getJson(String url, Map<String, String> headers, Map<String, Object> parameters) {
+		def requestBuilder = create(url, HttpVerb.GET, headers, parameters, null)
+		return execute(requestBuilder)
+	}
+
+	private static Request.Builder create(String url, HttpVerb httpVerb, Map<String, String> headers, Map<String, Object> parameters, RequestBody requestBody) {
 		logger.debug("using URL {}", url)
 		logger.debug("http headers {}", headers)
 		logger.debug("http parameters {}", parameters)
-		logger.debug("http parameters {}", json)
 
-		RequestBody requestBody
+		HttpUrl.Builder httpBuilder = HttpUrl.parse(url).newBuilder()
+		if(parameters) {
+			parameters.each {key, value ->
+				httpBuilder.addQueryParameter(key, value.toString())
+			}
+		}
 
 		Request.Builder requestBuilder = new Request.Builder()
-			.url(url)
-
-		if (json == null) {
-			MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
-				.setType(MultipartBody.FORM)
-
-			parameters.each() { key, value ->
-				if (value instanceof String) {
-					bodyBuilder.addFormDataPart(key, value)
-				} else if (value instanceof File) {
-					bodyBuilder.addFormDataPart(key, (value as File).name,
-						RequestBody.create(
-							value as File, MediaType.parse(MEDIA_TYPE_OCTET)))
-				}
-			}
-
-			requestBody = bodyBuilder.build()
-		} else {
-			requestBody = RequestBody.create(json, MediaType.parse(MEDIA_TYPE_JSON))
-		}
+			.url(httpBuilder.build())
 
 		switch (httpVerb) {
 			case HttpVerb.PUT:
@@ -74,17 +89,23 @@ class HttpUtil {
 			case HttpVerb.PATCH:
 				requestBuilder.patch(requestBody)
 				break
+			case HttpVerb.GET:
+				requestBuilder.get()
+				break
 		}
 
 		headers.each() { key, value ->
 			requestBuilder.addHeader(key, value)
 		}
 
+		return requestBuilder
+	}
+
+	private String execute(Request.Builder requestBuilder) {
 		Request request = requestBuilder.build()
 
 		Response response = okHttpClient.newCall(request).execute()
-
-		if (response.code >= 400) {
+		if (response.code() >= 400) {
 			throw new IllegalStateException("Http request failed: " + response.code + " " + response.message + ": " + response.body.string())
 		}
 
