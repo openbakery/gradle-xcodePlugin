@@ -30,7 +30,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 	private static final String APP_CENTER_URL = "https://api.appcenter.ms"
 	private static final String PATH_BASE_API = "v0.1/apps"
-	private static final String PATH_RELEASE_UPLOAD = "release_uploads"
+	private static final String PATH_RELEASE_UPLOAD = "uploads/releases"
 	private static final String PATH_SYMBOL_UPLOAD = "symbol_uploads"
 	private static final String HEADER_CONTENT_TYPE = "Content-Type"
 	private static final String HEADER_BLOB_TYPE = "x-ms-blob-type"
