@@ -1,5 +1,6 @@
 package org.openbakery.testdouble
 
+import org.openbakery.CommandRunner
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 
@@ -11,7 +12,7 @@ class XcodeFake extends Xcode {
 	private String xcodeVersionString
 
 	public XcodeFake(String versionString) {
-		super(null)
+		super(new CommandRunner())
 		this.versionString = versionString
 	}
 
@@ -44,4 +45,20 @@ class XcodeFake extends Xcode {
 		return new Version(versionString)
 	}
 
+
+	Map<String, String> getXcodeSelectEnvironmentValue(String version) {
+		File file = new File("/Applications/Xcode-${getVersion().major}.app", XCODE_CONTENT_DEVELOPER)
+		HashMap<String, String> result = new HashMap<String, String>()
+		result.put(DEVELOPER_DIR, file.absolutePath)
+		return result
+	}
+
+	@Override
+	public String toString() {
+		return "XcodeFake{" +
+			"path='" + path + '\'' +
+			", versionString='" + versionString + '\'' +
+			", xcodeVersionString='" + xcodeVersionString + '\'' +
+			'}';
+	}
 }

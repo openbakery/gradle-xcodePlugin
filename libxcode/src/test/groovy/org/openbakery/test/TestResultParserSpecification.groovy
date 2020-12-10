@@ -3,6 +3,7 @@ package org.openbakery.test
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.SimulatorControlFake
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
@@ -22,7 +23,7 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		xcresulttoolPath = new Xcode(new CommandRunner(), "11").getXcresulttool()
+		xcresulttoolPath = new Xcode(new CommandRunner(), "12").getXcresulttool()
 
 		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))

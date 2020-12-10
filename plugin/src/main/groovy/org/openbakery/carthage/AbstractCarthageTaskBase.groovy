@@ -19,6 +19,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	static final String ACTION_BUILD = "build"
 	static final String ARGUMENT_ARCHIVE = "--archive"
 	static final String ARGUMENT_CACHE_BUILDS = "--cache-builds"
+	static final String ARGUMENT_XCFRAMEWORK_BUILDS = "--create-xcframework"
 	static final String ARGUMENT_PLATFORM = "--platform"
 	static final String ARGUMENT_DERIVED_DATA = "--derived-data"
 	static final String CARTHAGE_FILE = "Cartfile"
@@ -135,6 +136,9 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 		if (cache) {
 			args << ARGUMENT_CACHE_BUILDS
+		}
+		if (project.carthage.xcframework) {
+			args << ARGUMENT_XCFRAMEWORK_BUILDS
 		}
 		args << ARGUMENT_DERIVED_DATA
 		args << derivedDataPath.absolutePath

@@ -42,6 +42,7 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
+
 		subject = project.getTasks().getByPath('carthageBootstrap')
 		assert subject != null
 
@@ -143,7 +144,11 @@ class CarthageBootstrapTaskSpecification extends Specification {
 	def "The xcode selection should be applied if a xcode version is defined"() {
 		Map<String, String> environment = null
 		given:
-		subject.xcode = new XcodeFake("12.0.0.ABCD")
+		def xcode = new XcodeFake("12.0.0.ABCD")
+		def xcodePath = new File(projectDir, "/Applications/Xcode-12.app")
+		xcodePath.mkdirs()
+		xcode.selectXcode(new File(xcodePath, Xcode.XCODE_CONTENT_XCODE_BUILD))
+		subject.xcode = xcode
 		project.xcodebuild.version = 12
 
 		when:
@@ -251,5 +256,26 @@ class CarthageBootstrapTaskSpecification extends Specification {
 	}
 
 
+	def "build xcframework"() {
+		def commandList
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		project.carthage.xcframework = true
+		subject.bootstrap()
+
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		commandList.contains(ARGUMENT_XCFRAMEWORK_BUILDS)
+		commandList.contains("--create-xcframework")
+	}
+
+	def "ARGUMENT_XCFRAMEWORK_BUILDS is --create-xcframework"() {
+		expect:
+		ARGUMENT_XCFRAMEWORK_BUILDS == "--create-xcframework"
+	}
 
 }

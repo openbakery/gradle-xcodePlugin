@@ -151,6 +151,14 @@ class XcodePluginSpecification extends Specification {
 		project.extensions.findByName('carthage') instanceof CarthagePluginExtension
 	}
 
+	def "contains carthage extension xcframework is false"() {
+		when:
+		def extension = (CarthagePluginExtension)project.extensions.findByName('carthage')
+
+		then:
+		extension.xcframework == false
+	}
+
 
 	def "oclint task"() {
 		when:
