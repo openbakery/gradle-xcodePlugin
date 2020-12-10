@@ -52,10 +52,10 @@ class HttpUtil {
 		return execute(create(url, httpVerb, headers, null, requestBody))
 	}
 
-	String sendFile(HttpVerb httpVerb, String url, Map<String, String> headers, Map<String, Object> parameters, byte[] file) {
+	String sendFile(HttpVerb httpVerb, String url, Map<String, String> headers, Map<String, Object> parameters, byte[] file, Integer size) {
 		logger.debug("http byte size {}", file.size())
-		def requestBody = RequestBody.create(file, MediaType.parse(MEDIA_TYPE_OCTET))
-		def requestBuilder = create(url, httpVerb, headers, null, requestBody)
+		def requestBody = RequestBody.create(file, MediaType.parse(MEDIA_TYPE_OCTET), 0, size)
+		def requestBuilder = create(url, httpVerb, headers, parameters, requestBody)
 		return execute(requestBuilder)
 	}
 
