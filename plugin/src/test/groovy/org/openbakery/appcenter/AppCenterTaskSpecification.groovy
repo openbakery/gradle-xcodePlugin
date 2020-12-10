@@ -103,51 +103,67 @@ class AppCenterTaskSpecification extends Specification {
 
 	def "init IPA Upload"() {
 		setup:
-		final String expectedUploadId = "1"
-		final String expectedUploadUrl = "https://www.someurl.com/initipaupload"
+		final String expectedId = "1"
+		final String expectedDomain = "https://www.someurl.com/initipaupload"
+		final String expectedToken = "2"
+  	final String expectedPackageAssetId = "3"
 
 		def initIpaUploadResponse = new InitIpaUploadResponse()
-		initIpaUploadResponse.upload_id = expectedUploadId
-		initIpaUploadResponse.upload_url = expectedUploadUrl
+		initIpaUploadResponse.id = expectedId
+		initIpaUploadResponse.upload_domain = expectedDomain
+		initIpaUploadResponse.package_asset_id = expectedPackageAssetId
+		initIpaUploadResponse.token = expectedToken
 
 		String json = new JsonBuilder(initIpaUploadResponse).toPrettyString()
 
-		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _) >> json
+		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _, _) >> json
 
-		String uploadId
-		String uploadUrl
+		String id
+		String domain
+		String token
+		String packageAssetId
 
 		when:
-		(uploadId, uploadUrl) = appCenterUploadTask.initIpaUpload()
+		(id, domain, packageAssetId, token) = appCenterUploadTask.initIpaUpload()
 
 		then:
-		uploadId == expectedUploadId
-		uploadUrl == expectedUploadUrl
+		id == expectedId
+		domain == expectedDomain
+		token == expectedToken
+		packageAssetId == expectedPackageAssetId
 	}
 
 	def "init IPA Upload with unknown json fields"() {
 		setup:
-		final String expectedUploadId = "1"
-		final String expectedUploadUrl = "https://www.someurl.com/initipaupload"
+		final String expectedId = "1"
+		final String expectedDomain = "https://www.someurl.com/initipaupload"
+		final String expectedToken = "2"
+		final String expectedPackageAssetId = "3"
 
 		JsonBuilder builder = new JsonBuilder()
 		builder {
-			upload_url expectedUploadUrl
-			upload_id expectedUploadId
+			id expectedId
+			upload_domain expectedDomain
+			package_asset_id expectedPackageAssetId
+			token expectedToken
 			unknownField 'Test'
 		}
 
-		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _) >> builder.toString()
+		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _, _) >> builder.toString()
 
-		String uploadId
-		String uploadUrl
+		String id
+		String domain
+		String token
+		String packageAssetId
 
 		when:
-		(uploadId, uploadUrl) = appCenterUploadTask.initIpaUpload()
+		(id, domain, packageAssetId, token) = appCenterUploadTask.initIpaUpload()
 
 		then:
-		uploadId == expectedUploadId
-		uploadUrl == expectedUploadUrl
+		id == expectedId
+		domain == expectedDomain
+		token == expectedToken
+		packageAssetId == expectedPackageAssetId
 	}
 
 	def "commit Upload"() {
@@ -161,7 +177,7 @@ class AppCenterTaskSpecification extends Specification {
 
 		String json = new JsonBuilder(commitResponse).toPrettyString()
 
-		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, _, _, _) >> json
+		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, _, _, _, _) >> json
 
 		String releaseUrl
 
@@ -183,7 +199,7 @@ class AppCenterTaskSpecification extends Specification {
 
 		String json = new JsonBuilder(initDebugSymbolResponse).toPrettyString()
 
-		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _) >> json
+		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _, _) >> json
 
 		String uploadId
 		String uploadUrl
