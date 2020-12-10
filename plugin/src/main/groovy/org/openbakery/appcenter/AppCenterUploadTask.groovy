@@ -16,7 +16,6 @@
 package org.openbakery.appcenter
 
 import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -119,37 +118,32 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 	private void uploadFile(String domain, String assetId, String token, File binary) {
 		def chunkSize = setReleaseUploadMetadata(domain, assetId, token, binary)
 		uploadChunks(domain, assetId, token, binary, chunkSize)
-		uploadFinish(domain, assetId, token)
+		finishUpload(domain, assetId, token)
 	}
 
 	private Integer setReleaseUploadMetadata(String domain, String assetId, String token, File binary) {
-		def parameters = new HashMap<String, String>()
-		parameters.put("file_name", binary.name)
-		parameters.put("file_size", binary.size().toString())
-		parameters.put("token", token)
-		parameters.put("content_type", "application/octet-stream")
+		def parameters = ["file_name"   : binary.name,
+											"file_size"   : binary.size().toString(),
+											"token"       : token,
+											"content_type": "application/octet-stream"]
 
-		String uploadUrl = "${domain}/${PATH_SET_METADATA}/${assetId}"
-		def response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, uploadUrl, headers, parameters, "")
+		def response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${domain}/${PATH_SET_METADATA}/${assetId}", headers, parameters, "")
+		def releaseUploadMetadataResponse = new JsonSlurper().parseText(response) as ReleaseUploadMetadataResponse
 
-		def json = new JsonSlurper().parseText(response)
-
-		return json.chunk_size
+		return releaseUploadMetadataResponse.chunk_size
 	}
 
-	private void uploadChunks(String domain, String assetId, String token, File binary, Integer chunksize) {
+	private void uploadChunks(String domain, String assetId, String token, File binary, Integer chunkSize) {
 		def blockNumber = 1
 		def s = binary.newDataInputStream()
-		String url = "${domain}/${PATH_CHUNK_UPLOAD}/${assetId}"
-		s.eachByte(chunksize) { byte[] bytes, Integer size ->
-			def parameters = new HashMap<String, String>()
-			parameters.put("token", token)
-			parameters.put("block_number", blockNumber.toString())
+		s.eachByte(chunkSize) { byte[] bytes, Integer size ->
+			def parameters = ["token"       : token,
+												"block_number": blockNumber.toString()]
 
-			def response = httpUtil.sendFile(HttpUtil.HttpVerb.POST, url, [:], parameters, bytes, size)
+			def response = httpUtil.sendFile(HttpUtil.HttpVerb.POST, "${domain}/${PATH_CHUNK_UPLOAD}/${assetId}", [:], parameters, bytes, size)
 
-			def json = new JsonSlurper().parseText(response)
-			if (json.error == false) {
+			def uploadChunkResponse = new JsonSlurper().parseText(response) as UploadChunkResponse
+			if (!uploadChunkResponse.error) {
 				blockNumber = blockNumber + 1
 			} else {
 				throw new IllegalStateException("AppCenter Chunk Upload Error: " + json.toString())
@@ -157,43 +151,35 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 		}
 	}
 
-	private void uploadFinish(String domain, String assetId, String token) {
-		def url = "${domain}/${PATH_UPLOAD_FINISHED}/${assetId}"
+	private void finishUpload(String domain, String assetId, String token) {
 		def parameters = ["token": token]
+		def response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${domain}/${PATH_UPLOAD_FINISHED}/${assetId}", headers, parameters, "")
 
-		def response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, url, headers, parameters, "")
-
-		def json = new JsonSlurper().parseText(response)
-		logger.info("Upload Finish: " + json.toString())
-		if (json.error == true) {
+		def finishUploadResponse = new JsonSlurper().parseText(response) as FinishUploadResponse
+		logger.info("Finish Upload: " + finishUploadResponse.toString())
+		if (finishUploadResponse.error) {
 			throw new IllegalStateException("AppCenter Finish Upload Error: " + json.toString())
 		}
 	}
 
 	private Map updateReleaseUpload(String uploadId, String status) {
-		def url = "${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/$uploadId"
-		def body = [
-			"upload_status": status,
-			"id"           : uploadId
-		]
-
-		def response = httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, url, headers, null, JsonOutput.toJson(body))
+		def updateReleaseRequest = new UpdateReleaseUploadRequest(uploadId, status)
+		String json = new JsonBuilder(updateReleaseRequest).toPrettyString()
+		def response = httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, "${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/$uploadId", headers, null, json)
 
 		return new JsonSlurper().parseText(response) as Map
 	}
 
 	private String pollForReleaseId(String uploadId) {
 		logger.info("AppCenter: Polling...")
-		def url = "${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/${uploadId}"
 
 		while (true) {
-			def response = httpUtil.getJson(url, headers, [:])
-			def json = new JsonSlurper().parseText(response)
+			def response = httpUtil.getJson("${baseUploadUrl}/${PATH_UPLOAD_RELEASES}/${uploadId}", headers, [:])
+			def uploadReleaseResponse = new JsonSlurper().parseText(response) as UploadReleaseResponse
 
-			switch(json.upload_status) {
+			switch(uploadReleaseResponse.upload_status) {
 				case "readyToBePublished":
-					def releaseId = json.release_distinct_id
-					return releaseId
+					return uploadReleaseResponse.release_distinct_id
 				case "error":
 					throw new IllegalStateException("AppCenter Poll Upload Error: " + json.toString())
 					break
@@ -206,8 +192,7 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 
 	private Map getRelease(String releaseId) {
 		logger.info("AppCenter: Get Release...")
-		def url = "${baseUploadUrl}/${PATH_RELEASES}/${releaseId}"
-		def response = httpUtil.getJson(url, headers, [:])
+		def response = httpUtil.getJson("${baseUploadUrl}/${PATH_RELEASES}/${releaseId}", headers, [:])
 		return new JsonSlurper().parseText(response) as Map
 	}
 
@@ -227,18 +212,14 @@ class AppCenterUploadTask extends AbstractHttpDistributeTask {
 	def distributeIpa(String releaseId) {
 		logger.info("AppCenter: Distribute...")
 		def headers = getHeaders()
-		def url = "${baseUploadUrl}/${PATH_RELEASES}/${releaseId}"
-
 		def distributionRequest = new DistributionRequest(
 			project.appcenter.destination,
 			project.appcenter.releaseNotes,
 			project.appcenter.notifyTesters,
 			project.appcenter.mandatoryUpdate
 		)
-
 		String json = new JsonBuilder(distributionRequest).toPrettyString()
-
-		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, url, headers, null, json)
+		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, "${baseUploadUrl}/${PATH_RELEASES}/${releaseId}", headers, null, json)
 
 		logger.info("App Center: IPA upload distributed to: '" + project.appcenter.destination + "'")
 	}
