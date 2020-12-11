@@ -12,13 +12,14 @@ class CarthageArchiveTask extends AbstractCarthageTaskBase {
 			cartfileExists()
 		}
 		serializeDebugging = true
+		parameters.cache = false
 	}
 
 
 	@TaskAction
 	void archive() {
 		def output = services.get(StyledTextOutputFactory).create(CarthageUpdateTask)
-		run([ACTION_BUILD, ARGUMENT_ARCHIVE], output, false)
+		run([ACTION_BUILD, ARGUMENT_ARCHIVE], output)
 	}
 
 }

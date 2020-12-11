@@ -20,6 +20,8 @@ import org.openbakery.xcode.Xcodebuild
 
 class XcodeBuildTask extends AbstractXcodeBuildTask {
 
+
+
 	XcodeBuildTask() {
 		super()
 

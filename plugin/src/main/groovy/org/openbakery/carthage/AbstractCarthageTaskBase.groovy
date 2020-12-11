@@ -9,6 +9,7 @@ import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.XCConfig
+import org.openbakery.xcode.XcodebuildParameters
 
 import java.nio.charset.Charset
 
@@ -32,10 +33,36 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	boolean serializeDebugging
 
+	@Internal
+	CarthageParameters parameters = new CarthageParameters()
+
+
 	AbstractCarthageTaskBase() {
 		super()
 		serializeDebugging = false
 	}
+
+
+	void setXcframework(Boolean xcframework) {
+		parameters.xcframework = xcframework
+	}
+
+	@Input
+	@Optional
+	String getXcframework() {
+		return parameters.xcframework
+	}
+
+	void setCache(Boolean cache) {
+		parameters.cache = cache
+	}
+
+	@Input
+	@Optional
+	String getCache() {
+		return parameters.cache
+	}
+
 
 	@Input
 	@Optional
@@ -111,15 +138,14 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	}
 
 
+
 	void run(String command, StyledTextOutput output) {
-		run(command, output, project.carthage.cache)
+		run([command], output)
 	}
 
-	void run(String command, StyledTextOutput output, boolean cache) {
-		run([command], output, cache)
-	}
+	void run(List<String>  command, StyledTextOutput output) {
 
-	void run(List<String>  command, StyledTextOutput output, boolean cache) {
+		parameters = project.carthage.parameters.merge(parameters)
 
 		if (!hasCartfile()) {
 			logger.debug("No Cartfile found, so we are done")
@@ -134,10 +160,10 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		args << ARGUMENT_PLATFORM
 		args << carthagePlatformName
 
-		if (cache) {
+		if (parameters.cache) {
 			args << ARGUMENT_CACHE_BUILDS
 		}
-		if (project.carthage.xcframework) {
+		if (parameters.xcframework) {
 			args << ARGUMENT_XCFRAMEWORK_BUILDS
 		}
 		args << ARGUMENT_DERIVED_DATA
@@ -171,6 +197,10 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	XCConfig createXCConfigIfNeeded() {
 		logger.debug("createXCConfigIfNeeded: " + this.xcode.version.major)
+		if (parameters.xcframework) {
+			logger.debug("xcframework build does not need the arch workaround for Xcode12")
+			return null
+		}
 		if (this.xcode.version.major == 12) {
 			File file = new File(project.rootProject.file("Carthage"), "gradle-xc12-carthage.xcconfig")
 

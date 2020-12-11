@@ -256,7 +256,51 @@ class CarthageBootstrapTaskSpecification extends Specification {
 	}
 
 
-	def "build xcframework"() {
+	def "When xcode 12 builds xcframeworks then NO xcconfig with SWIFT_SERIALIZE_DEBUGGING_OPTIONS is created"() {
+		given:
+		File carthageDirectory = project.rootProject.file("Carthage")
+		File xcconfigPath = new File(carthageDirectory, "gradle-xc12-carthage.xcconfig")
+		subject.xcode = new XcodeFake("12.0.0.12A7209")
+		subject.xcframework = true
+
+		when:
+		subject.bootstrap()
+
+		then:
+		xcconfigPath.exists() == false
+	}
+
+
+
+	def "ARGUMENT_XCFRAMEWORK_BUILDS is --create-xcframework"() {
+		expect:
+		ARGUMENT_XCFRAMEWORK_BUILDS == "--create-xcframework"
+	}
+
+
+	def "cache parameter is merged"() {
+		given:
+		project.carthage.cache = false
+
+		when:
+		subject.bootstrap()
+
+		then:
+		subject.parameters.cache == false
+	}
+
+	def "xcframework parameter is merged"() {
+		given:
+		project.carthage.xcframework = true
+
+		when:
+		subject.bootstrap()
+
+		then:
+		subject.parameters.xcframework == true
+	}
+
+	def "build with global xcframework parameter"() {
 		def commandList
 		given:
 		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
@@ -273,9 +317,21 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		commandList.contains("--create-xcframework")
 	}
 
-	def "ARGUMENT_XCFRAMEWORK_BUILDS is --create-xcframework"() {
-		expect:
-		ARGUMENT_XCFRAMEWORK_BUILDS == "--create-xcframework"
+	def "build with task xcframework parameter"() {
+		def commandList
+		given:
+		commandRunner.runWithResult("which", "carthage") >> "/usr/local/bin/carthage"
+
+		when:
+		subject.xcframework = true
+		subject.bootstrap()
+
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		commandList.contains(ARGUMENT_XCFRAMEWORK_BUILDS)
+		commandList.contains("--create-xcframework")
 	}
 
 }
