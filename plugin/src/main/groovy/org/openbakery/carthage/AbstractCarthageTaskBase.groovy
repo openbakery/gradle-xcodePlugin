@@ -227,9 +227,5 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	}
 
-	public boolean cartfileExists() {
-		File cartfile = new File(project.projectDir, "Cartfile")
-		return cartfile.exists()
-	}
 
 }

@@ -15,7 +15,7 @@ class CarthageBootstrapTask extends AbstractCarthageTaskBase {
 		super()
 		setDescription "Check out and build the Carthage project dependencies"
 		this.setOnlyIf {
-			cartfileExists()
+			hasCartfile()
 		}
 
 		dependsOn(

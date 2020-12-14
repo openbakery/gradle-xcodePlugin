@@ -9,7 +9,6 @@ import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.testdouble.XcodeFake
-import org.openbakery.xcode.Version
 import org.openbakery.xcode.XCConfig
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
@@ -23,7 +22,7 @@ class CarthageBootstrapTaskSpecification extends Specification {
 	CarthageBootstrapTask subject
 	CommandRunner commandRunner = Mock(CommandRunner)
 	File projectDir
-	File cartFile
+	File carthageFile
 	Project project
 
 	@Rule
@@ -32,8 +31,8 @@ class CarthageBootstrapTaskSpecification extends Specification {
 	void setup() {
 		projectDir = File.createTempDir()
 
-		cartFile = new File(projectDir, "Cartfile")
-		cartFile << 'github "Alamofire/Alamofire"'
+		createCarthageFile()
+
 
 		project = ProjectBuilder.builder()
 				.withProjectDir(projectDir)
@@ -47,6 +46,12 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		assert subject != null
 
 		subject.commandRunner = commandRunner
+	}
+
+
+	void createCarthageFile(String name = "Cartfile") {
+		carthageFile = new File(projectDir, name)
+		carthageFile << 'github "Alamofire/Alamofire"'
 	}
 
 	def cleanup() {
@@ -63,9 +68,20 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		subject.getOnlyIf().isSatisfiedBy(subject)
 	}
 
+
+	def "carthage task is executed when only Cartfile.private exists"() {
+		carthageFile.delete()
+
+		when:
+		createCarthageFile("Cartfile.private")
+
+		then:
+		subject.getOnlyIf().isSatisfiedBy(subject)
+	}
+
 	def "carthage task is skipped when cartfile is missing"() {
 		when:
-		cartFile.delete()
+		carthageFile.delete()
 
 		then:
 		!subject.getOnlyIf().isSatisfiedBy(subject)
@@ -103,7 +119,7 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		project.xcodebuild.type = platform
 
 		when:
-		cartFile.delete()
+		carthageFile.delete()
 		subject.bootstrap()
 
 		then:

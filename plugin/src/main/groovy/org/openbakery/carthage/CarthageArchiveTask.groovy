@@ -9,7 +9,7 @@ class CarthageArchiveTask extends AbstractCarthageTaskBase {
 		super()
 		setDescription "Create a binary framework that can be used a Carthage project dependencies"
 		this.setOnlyIf {
-			cartfileExists()
+			hasCartfile()
 		}
 		serializeDebugging = true
 		parameters.cache = false

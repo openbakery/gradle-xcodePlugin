@@ -22,7 +22,7 @@ class CarthageArchiveTaskSpecification extends Specification {
 	CarthageArchiveTask task
 	CommandRunner commandRunner = Mock(CommandRunner)
 	File projectDir
-	File cartFile
+	File carthageFile
 	Project project
 	File xcconfigPath
 
@@ -32,8 +32,8 @@ class CarthageArchiveTaskSpecification extends Specification {
 	void setup() {
 		projectDir = File.createTempDir()
 
-		cartFile = new File(projectDir, "Cartfile")
-		cartFile << 'github "Alamofire/Alamofire"'
+		carthageFile = new File(projectDir, "Cartfile")
+		carthageFile << 'github "Alamofire/Alamofire"'
 
 		project = ProjectBuilder.builder()
 				.withProjectDir(projectDir)
@@ -67,7 +67,7 @@ class CarthageArchiveTaskSpecification extends Specification {
 
 	def "carthage archive task is skipped when cartfile is missing"() {
 		when:
-		cartFile.delete()
+		carthageFile.delete()
 
 		then:
 		!task.getOnlyIf().isSatisfiedBy(task)
@@ -116,7 +116,7 @@ class CarthageArchiveTaskSpecification extends Specification {
 		project.xcodebuild.type = platform
 
 		when:
-		cartFile.delete()
+		carthageFile.delete()
 		task.archive()
 
 		then:
