@@ -1,3 +1,9 @@
+# 0.21.0 (TBA)
+
+Changes
+* Added support for xcframeworks when using carthage
+* Carthage bootstrap is executed also when only the Carthage.private file exists
+
 # 0.20.1 (2. Dec, 2020)
 
 Changes

@@ -1,18 +1,13 @@
 package org.openbakery.carthage
 
 import org.apache.commons.io.FileUtils
-import org.apache.tools.ant.taskdefs.optional.extension.Specification
 import org.gradle.api.Project
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
-import org.openbakery.xcode.Version
-import org.openbakery.xcode.Xcode
 import spock.lang.Specification
-
-import static org.openbakery.carthage.AbstractCarthageTaskBase.getARGUMENT_DERIVED_DATA
 
 class AbstractCarthageTaskBaseSpecification extends Specification {
 
@@ -21,7 +16,7 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 	CommandRunner commandRunner = Mock(CommandRunner)
 	XcodeFake xcodeFake
 	File projectDir
-	File cartFile
+	File carthageFile
 	Project project
 	File xcconfigPath
 	StyledTextOutput output
@@ -29,8 +24,7 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 	void setup() {
 		projectDir = File.createTempDir()
 
-		cartFile = new File(projectDir, "Cartfile")
-		cartFile << 'github "Alamofire/Alamofire"'
+		createCarthageFile()
 
 		project = ProjectBuilder.builder()
 				.withProjectDir(projectDir)
@@ -52,6 +46,10 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 
 	}
 
+	void createCarthageFile(String name = "Cartfile") {
+		carthageFile = new File(projectDir, name)
+		carthageFile << 'github "Alamofire/Alamofire"'
+	}
 
 	def cleanup() {
 		FileUtils.deleteDirectory(projectDir)
@@ -62,6 +60,20 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 		task instanceof AbstractCarthageTaskBase
 	}
 
+	def "The has carthage file when only Cartfile is present"() {
+		expect:
+		task.hasCartfile()
+	}
+
+	def "The has carthage file when only Cartfile.private is present"() {
+		carthageFile.delete()
+
+		when:
+		createCarthageFile("Cartfile.private")
+
+		then:
+		task.hasCartfile()
+	}
 
 	def "When xcode 11 then xcconfig is not created"() {
 		given:

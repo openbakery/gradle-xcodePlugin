@@ -24,6 +24,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	static final String ARGUMENT_PLATFORM = "--platform"
 	static final String ARGUMENT_DERIVED_DATA = "--derived-data"
 	static final String CARTHAGE_FILE = "Cartfile"
+	static final String CARTHAGE_FILE_PRIVATE = "Cartfile.private"
 	static final String CARTHAGE_FILE_RESOLVED = "Cartfile.resolved"
 	static final String CARTHAGE_PLATFORM_IOS = "iOS"
 	static final String CARTHAGE_PLATFORM_MACOS = "Mac"
@@ -132,9 +133,8 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	}
 
 	boolean hasCartfile() {
-		return project.rootProject
-				.file(CARTHAGE_FILE)
-				.exists()
+		return project.rootProject.file(CARTHAGE_FILE).exists() ||
+			project.rootProject.file(CARTHAGE_FILE_PRIVATE).exists()
 	}
 
 
