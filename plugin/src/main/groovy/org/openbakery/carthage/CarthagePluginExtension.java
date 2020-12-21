@@ -1,12 +1,12 @@
 package org.openbakery.carthage;
 
 import org.gradle.api.Project;
-import org.openbakery.xcode.XcodebuildParameters;
 
 public class CarthagePluginExtension {
 
 	boolean cache = true;
 	boolean xcframework = false;
+	String command = null;
 
 	public CarthagePluginExtension(Project project) {
 	}
@@ -16,6 +16,7 @@ public class CarthagePluginExtension {
 		CarthageParameters result = new CarthageParameters();
 		result.setCache(this.cache);
 		result.setXcframework(this.xcframework);
+		result.setCommand(this.command);
 		return result;
 	}
 

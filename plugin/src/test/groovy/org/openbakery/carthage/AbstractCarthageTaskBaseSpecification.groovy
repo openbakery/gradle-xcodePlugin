@@ -9,6 +9,8 @@ import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
 
+import static org.openbakery.carthage.AbstractCarthageTaskBase.getARGUMENT_DERIVED_DATA
+
 class AbstractCarthageTaskBaseSpecification extends Specification {
 
 
@@ -33,7 +35,7 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 		project.buildDir = new File(projectDir, 'build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		task = project.getTasks().getByPath('carthageBootstrap')
+		task = (AbstractCarthageTaskBase)project.getTasks().getByPath('carthageBootstrap')
 		assert task != null
 
 
@@ -164,5 +166,28 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 		environment["DEVELOPER_DIR"] == "/Applications/Xcode-12.app/Contents/Developer"
 	}
 
+
+	def "When custom command was set, then the custom command is used"() {
+		when:
+		task.command = "/my/custom/carthage"
+
+		then:
+		task.carthageCommand == "/my/custom/carthage"
+	}
+
+
+	def "When custom command was set globally, then the custom command is used"() {
+		given:
+		def commandList
+		project.carthage.command = "/my/custom/carthage"
+
+		when:
+		task.run("bootstrap", output)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		commandList[0] == "/my/custom/carthage"
+	}
 
 }

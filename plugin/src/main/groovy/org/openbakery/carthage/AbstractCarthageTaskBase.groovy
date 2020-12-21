@@ -64,6 +64,16 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 		return parameters.cache
 	}
 
+	void setCommand(String command) {
+		parameters.command = command
+	}
+
+	@Input
+	@Optional
+	String getCommand() {
+		return parameters.command
+	}
+
 
 	@Input
 	@Optional
@@ -117,6 +127,11 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
 	@Internal
 	String getCarthageCommand() {
+
+		if (parameters.command != null) {
+			return parameters.command
+		}
+
 		try {
 			return commandRunner.runWithResult("which", "carthage")
 		} catch (CommandRunnerException) {
