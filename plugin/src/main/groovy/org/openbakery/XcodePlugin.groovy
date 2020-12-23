@@ -23,6 +23,7 @@ import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.testing.Test
 import org.openbakery.appcenter.AppCenterCleanTask
+import org.openbakery.appcenter.AppCenterDsymUploadTask
 import org.openbakery.appcenter.AppCenterPluginExtension
 import org.openbakery.appcenter.AppCenterUploadTask
 import org.openbakery.appledoc.AppledocCleanTask
@@ -126,6 +127,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CARTHAGE_ARCHIVE_TASK_NAME = 'carthageArchive'
 	public static final String APPCENTER_CLEAN_TASK_NAME = 'appCenterClean'
 	public static final String APPCENTER_TASK_NAME = 'appcenter'
+	public static final String APPCENTER_DSYM_UPLOAD_TASK_NAME = 'appcenterDsymUpload'
 
 	public static final String ROME_UPLOAD_TASK_NAME = 'romeUpload'
 	public static final String ROME_DOWNLOAD_TASK_NAME = 'romeDownload'
@@ -563,6 +565,7 @@ class XcodePlugin implements Plugin<Project> {
 	private void configureAppCenter(Project project) {
 		project.task(APPCENTER_CLEAN_TASK_NAME, type: AppCenterCleanTask, group: APPCENTER_GROUP_NAME)
 		project.task(APPCENTER_TASK_NAME, type: AppCenterUploadTask, group: APPCENTER_GROUP_NAME)
+		project.task(APPCENTER_DSYM_UPLOAD_TASK_NAME, type: AppCenterDsymUploadTask, group: APPCENTER_GROUP_NAME)
 	}
 
 }

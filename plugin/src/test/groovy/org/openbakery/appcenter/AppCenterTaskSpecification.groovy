@@ -37,7 +37,6 @@ class AppCenterTaskSpecification extends Specification {
 		appCenterUploadTask.commandRunner = commandRunner
 		appCenterUploadTask.httpUtil = httpUtil
 
-
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")
 
@@ -60,9 +59,6 @@ class AppCenterTaskSpecification extends Specification {
 	}
 
 	def "timeout"() {
-		given:
-		appCenterUploadTask = project.getTasks().getByPath('appcenter')
-		appCenterUploadTask.httpUtil = httpUtil
 		when:
 		appCenterUploadTask.readTimeout(150)
 
@@ -103,6 +99,8 @@ class AppCenterTaskSpecification extends Specification {
 
 	def "init IPA Upload"() {
 		setup:
+		project.appcenter.apiToken = "123"
+
 		final String expectedId = "1"
 		final String expectedDomain = "https://www.someurl.com/initipaupload"
 		final String expectedToken = "2"
@@ -135,6 +133,8 @@ class AppCenterTaskSpecification extends Specification {
 
 	def "init IPA Upload with unknown json fields"() {
 		setup:
+		project.appcenter.apiToken = "123"
+
 		final String expectedId = "1"
 		final String expectedDomain = "https://www.someurl.com/initipaupload"
 		final String expectedToken = "2"
