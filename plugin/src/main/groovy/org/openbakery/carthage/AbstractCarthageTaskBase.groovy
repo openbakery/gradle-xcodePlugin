@@ -1,17 +1,13 @@
 package org.openbakery.carthage
 
-import org.apache.commons.io.FileUtils
+
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.gradle.internal.logging.text.StyledTextOutput
-import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.AbstractXcodeTask
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.XCConfig
-import org.openbakery.xcode.XcodebuildParameters
-
-import java.nio.charset.Charset
 
 abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 
@@ -20,7 +16,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	static final String ACTION_BUILD = "build"
 	static final String ARGUMENT_ARCHIVE = "--archive"
 	static final String ARGUMENT_CACHE_BUILDS = "--cache-builds"
-	static final String ARGUMENT_XCFRAMEWORK_BUILDS = "--create-xcframework"
+	static final String ARGUMENT_XCFRAMEWORK_BUILD = "--use-xcframeworks"
 	static final String ARGUMENT_PLATFORM = "--platform"
 	static final String ARGUMENT_DERIVED_DATA = "--derived-data"
 	static final String CARTHAGE_FILE = "Cartfile"
@@ -179,7 +175,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 			args << ARGUMENT_CACHE_BUILDS
 		}
 		if (parameters.xcframework) {
-			args << ARGUMENT_XCFRAMEWORK_BUILDS
+			args << ARGUMENT_XCFRAMEWORK_BUILD
 		}
 		args << ARGUMENT_DERIVED_DATA
 		args << derivedDataPath.absolutePath
