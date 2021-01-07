@@ -12,6 +12,11 @@ class AbstractAppCenterTask extends AbstractHttpDistributeTask {
 	private static final String HEADER_TOKEN = "X-API-Token"
 	private static final String MEDIA_TYPE_JSON = "application/json"
 
+	AbstractAppCenterTask() {
+		logger.debug("default read timeout {}", project.appcenter.readTimeout)
+		readTimeout(project.appcenter.readTimeout)
+	}
+
 	@Internal
 	def getBaseUploadUrl() {
 		return "${APP_CENTER_URL}/${PATH_BASE_API}/${project.appcenter.appOwner}/${project.appcenter.appName}"

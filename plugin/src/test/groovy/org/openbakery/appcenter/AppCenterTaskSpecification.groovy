@@ -7,7 +7,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.appcenter.models.CommitResponse
-import org.openbakery.appcenter.models.InitDebugSymbolResponse
 import org.openbakery.appcenter.models.InitIpaUploadResponse
 import org.openbakery.http.HttpUtil
 import spock.lang.Specification
@@ -56,14 +55,6 @@ class AppCenterTaskSpecification extends Specification {
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
-	}
-
-	def "timeout"() {
-		when:
-		appCenterUploadTask.readTimeout(150)
-
-		then:
-		appCenterUploadTask.httpUtil.readTimeoutInSeconds == 150
 	}
 
 	def "archive"() {
@@ -186,29 +177,5 @@ class AppCenterTaskSpecification extends Specification {
 
 		then:
 		releaseUrl == expectedReleaseUrl
-	}
-
-	def "init Debug Symbol Upload"() {
-		setup:
-		final String expectedUploadId = "3"
-		final String expectedUploadUrl = "https://www.someurl.com/initdebugupload"
-
-		def initDebugSymbolResponse = new InitDebugSymbolResponse()
-		initDebugSymbolResponse.symbol_upload_id = expectedUploadId
-		initDebugSymbolResponse.upload_url = expectedUploadUrl
-
-		String json = new JsonBuilder(initDebugSymbolResponse).toPrettyString()
-
-		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _, _) >> json
-
-		String uploadId
-		String uploadUrl
-
-		when:
-		(uploadId, uploadUrl) = appCenterUploadTask.initDebugSymbolUpload()
-
-		then:
-		uploadId == expectedUploadId
-		uploadUrl == expectedUploadUrl
 	}
 }

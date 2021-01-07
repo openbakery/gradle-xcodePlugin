@@ -17,8 +17,6 @@ class AppCenterUploadTask extends AbstractAppCenterTask {
 
 	AppCenterUploadTask() {
 		super()
-		logger.debug("default read timeout {}", project.appcenter.readTimeout)
-		readTimeout(project.appcenter.readTimeout)
 		this.description = "Uploads the app (.ipa) to App Center"
 	}
 
@@ -38,7 +36,7 @@ class AppCenterUploadTask extends AbstractAppCenterTask {
 		distributeIpa(releaseId)
 	}
 
-	def initIpaUpload() {
+	private def initIpaUpload() {
 		logger.info("App Center: Initialize upload...")
 		String response = httpUtil.sendJson(HttpUtil.HttpVerb.POST, "${baseUploadUrl}/${PATH_RELEASE_UPLOAD}", headers, null, "")
 
