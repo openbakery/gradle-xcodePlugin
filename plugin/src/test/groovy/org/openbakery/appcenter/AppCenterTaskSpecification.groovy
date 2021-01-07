@@ -1,5 +1,6 @@
 package org.openbakery.appcenter
 
+import ch.qos.logback.core.util.FileUtil
 import groovy.json.JsonBuilder
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
@@ -8,6 +9,9 @@ import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildArchiveTask
 import org.openbakery.appcenter.models.CommitResponse
 import org.openbakery.appcenter.models.InitIpaUploadResponse
+import org.openbakery.appcenter.models.ReleaseUploadMetadataResponse
+import org.openbakery.appcenter.models.UploadChunkResponse
+import org.openbakery.appcenter.models.UploadReleaseResponse
 import org.openbakery.http.HttpUtil
 import spock.lang.Specification
 
@@ -21,6 +25,11 @@ class AppCenterTaskSpecification extends Specification {
 	HttpUtil httpUtil = Mock(HttpUtil)
 
 	File infoPlist
+
+	InitIpaUploadResponse initResponse
+	ReleaseUploadMetadataResponse metadataResponse
+	UploadChunkResponse chunkResponse
+	UploadReleaseResponse releaseResponse
 
 	def setup() {
 		File projectDir = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
@@ -37,7 +46,7 @@ class AppCenterTaskSpecification extends Specification {
 		appCenterUploadTask.httpUtil = httpUtil
 
 		File ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
-		FileUtils.writeStringToFile(ipaBundle, "dummy")
+		FileUtils.writeByteArrayToFile(ipaBundle, [0] * 10 as byte[])
 
 		File archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Test.xcarchive")
 		archiveDirectory.mkdirs()
@@ -45,16 +54,54 @@ class AppCenterTaskSpecification extends Specification {
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
 		infoPlist.parentFile.mkdirs();
 
-		File appDsym = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
-		FileUtils.writeStringToFile(appDsym, "dummy")
+		initResponse = new InitIpaUploadResponse()
+		initResponse.id = "1"
+		initResponse.upload_domain = "mock://init.co"
+		initResponse.package_asset_id = "11"
+		initResponse.token = "initToken"
 
-		File frameworkDsym = new File(archiveDirectory, "dSYMs/framework.dSYM")
-		FileUtils.writeStringToFile(frameworkDsym, "dummy")
+		metadataResponse = new ReleaseUploadMetadataResponse()
+		metadataResponse.chunk_size = 5
+
+		chunkResponse = new UploadChunkResponse()
+		chunkResponse.error = false
+
+		releaseResponse = new UploadReleaseResponse()
+		releaseResponse.upload_status = "readyToBePublished"
+		releaseResponse.release_distinct_id = "2"
 	}
 
 
 	def cleanup() {
 		FileUtils.deleteDirectory(project.projectDir)
+	}
+
+	def jsonString(Object object) {
+		new JsonBuilder(object).toPrettyString()
+	}
+
+	def "upload"() {
+		given:
+		project.appcenter.apiToken = "123"
+		httpUtil.sendJson(HttpUtil.HttpVerb.POST, _, _, _, _) >>> [
+			jsonString(initResponse),
+			jsonString(metadataResponse),
+		]
+		httpUtil.sendFile(HttpUtil.HttpVerb.POST, _, _, _, _, _) >>> [
+			jsonString(chunkResponse)
+		]
+		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, _, _, _, _) >> jsonString([test:"test"])
+		httpUtil.getJson(_, _, _) >>> [
+			jsonString(releaseResponse),
+			jsonString([test: "test"])
+		]
+
+		when:
+		appCenterUploadTask.upload()
+
+		then:
+		File expectedIpa = new File(project.buildDir, "appcenter/Test.ipa")
+		expectedIpa.exists()
 	}
 
 	def "archive"() {
@@ -95,7 +142,7 @@ class AppCenterTaskSpecification extends Specification {
 		final String expectedId = "1"
 		final String expectedDomain = "https://www.someurl.com/initipaupload"
 		final String expectedToken = "2"
-  	final String expectedPackageAssetId = "3"
+		final String expectedPackageAssetId = "3"
 
 		def initIpaUploadResponse = new InitIpaUploadResponse()
 		initIpaUploadResponse.id = expectedId

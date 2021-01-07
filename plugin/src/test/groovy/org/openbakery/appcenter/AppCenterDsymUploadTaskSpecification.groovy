@@ -72,7 +72,7 @@ class AppCenterDsymUploadTaskSpecification extends Specification {
 	}
 
 	def jsonString(Object object) {
-		return new JsonBuilder(object).toPrettyString()
+		new JsonBuilder(object).toPrettyString()
 	}
 
 	def "upload"() {
