@@ -36,4 +36,10 @@ class AbstractAppCenterTask extends AbstractHttpDistributeTask {
 
 		return headers
 	}
+
+	@Internal
+	File getDsymDirectory() {
+		File dsymDirectory = new File(getArchiveDirectory(), "dSYMs")
+		return dsymDirectory
+	}
 }

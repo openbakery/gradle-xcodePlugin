@@ -25,6 +25,8 @@ class AppCenterDsymUploadTaskSpecification extends Specification {
 	HttpUtil httpUtil = Mock(HttpUtil)
 
 	File infoPlist
+	File appDsym
+	File frameworkDsym
 
 	InitDebugSymbolRequest initRequest
 	InitDebugSymbolResponse initResponse
@@ -50,10 +52,10 @@ class AppCenterDsymUploadTaskSpecification extends Specification {
 		infoPlist = new File(archiveDirectory, "Products/Applications/Test.app/Info.plist");
 		infoPlist.parentFile.mkdirs();
 
-		File appDsym = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
+		appDsym = new File(archiveDirectory, "dSYMs/Test.app.dSYM")
 		FileUtils.writeStringToFile(appDsym, "dummy")
 
-		File frameworkDsym = new File(archiveDirectory, "dSYMs/framework.dSYM")
+		frameworkDsym = new File(archiveDirectory, "dSYMs/framework.dSYM")
 		FileUtils.writeStringToFile(frameworkDsym, "dummy")
 
 		initRequest = new InitDebugSymbolRequest()
@@ -109,5 +111,37 @@ class AppCenterDsymUploadTaskSpecification extends Specification {
 		then:
 		expectedDSYMZip.exists()
 		dsymZipFile.entries().toList().size() == 2
+	}
+
+	def "dsym upload task is executed when dysm folder exists"() {
+		expect:
+		appCenterDsymUploadTask.getOnlyIf().isSatisfiedBy(appCenterDsymUploadTask)
+	}
+
+	def "dsym upload task is skipped when dsym folder is missing"() {
+		when:
+		appDsym.delete()
+		frameworkDsym.delete()
+		appDsym.parentFile.delete()
+
+		then:
+		!appCenterDsymUploadTask.getOnlyIf().isSatisfiedBy(appCenterDsymUploadTask)
+	}
+
+	def "The task should not be executed if the dsym folder is missing"() {
+		given:
+		project.appcenter.apiToken = "123"
+
+		when:
+		appDsym.delete()
+		frameworkDsym.delete()
+		appDsym.parentFile.delete()
+
+		appCenterDsymUploadTask.upload()
+
+		then:
+		0 * httpUtil.sendJson(_, _, _, _, jsonString(initRequest)) >> { }
+		0 * httpUtil.sendJson(_, { it.endsWith(initResponse.symbol_upload_id) }, _, _, jsonString(commitRequest)) >> { }
+		0 * httpUtil.sendForm(_, _, _, _) >> { }
 	}
 }

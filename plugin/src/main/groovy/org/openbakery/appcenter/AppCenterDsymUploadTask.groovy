@@ -23,10 +23,17 @@ class AppCenterDsymUploadTask extends AbstractAppCenterTask {
 	AppCenterDsymUploadTask() {
 		super()
 		this.description = "Uploads the debug symbols (.dsym) to App Center"
+		this.setOnlyIf {
+			getDsymDirectory().exists()
+		}
 	}
 
 	@TaskAction
 	def upload() throws IOException{
+		if (!getDsymDirectory().exists()) {
+			logger.debug("No dSYMs directory found, so we are done")
+			return
+		}
 		File dsymDestinationFile = getDestinationFile(project.appcenter.outputDirectory, ".app.dSYM.zip")
 
 		def zipArchive = new ZipArchive(dsymDestinationFile, dsymDirectory, new CommandRunner())
@@ -42,15 +49,6 @@ class AppCenterDsymUploadTask extends AbstractAppCenterTask {
 		(dsymUploadId, dsymUploadUrl) = initDebugSymbolUpload()
 		uploadDebugSymbols(dsymDestinationFile, dsymUploadUrl)
 		commitUpload(PATH_SYMBOL_UPLOAD, dsymUploadId)
-	}
-
-	@Internal
-	File getDsymDirectory() {
-		File dsymDirectory = new File(getArchiveDirectory(), "dSYMs")
-		if (!dsymDirectory.exists()) {
-			throw new IllegalStateException("dSYM bundle not found: " + dsymDirectory.absolutePath)
-		}
-		return dsymDirectory
 	}
 
 	def initDebugSymbolUpload() {
