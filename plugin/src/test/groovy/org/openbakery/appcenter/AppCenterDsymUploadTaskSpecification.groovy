@@ -78,8 +78,6 @@ class AppCenterDsymUploadTaskSpecification extends Specification {
 	def "upload"() {
 		given:
 		project.appcenter.apiToken = "123"
-		httpUtil.sendJson(_, _, _, _, jsonString(initRequest)) >> jsonString(initResponse)
-		httpUtil.sendJson(_, _, _, _, jsonString(commitRequest)) >> jsonString(commitResponse)
 
 		when:
 		appCenterDsymUploadTask.upload()
@@ -91,8 +89,8 @@ class AppCenterDsymUploadTaskSpecification extends Specification {
 		expectedDSYMZip.exists()
 		dsymZipFile.entries().toList().size() == 2
 		1 * httpUtil.sendJson(_, _, _, _, jsonString(initRequest)) >> jsonString(initResponse)
-		1 * httpUtil.sendForm(_, initResponse.upload_url, _, _)
 		1 * httpUtil.sendJson(_, { it.endsWith(initResponse.symbol_upload_id) }, _, _, jsonString(commitRequest)) >> jsonString(commitResponse)
+		1 * httpUtil.sendForm(_, initResponse.upload_url, _, _)
 	}
 
 	def "bundleSuffix"() {
