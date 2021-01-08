@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.XcodeBuildArchiveTask
+import org.openbakery.XcodePlugin
 import org.openbakery.appcenter.models.FinishUploadResponse
 import org.openbakery.appcenter.models.InitIpaUploadResponse
 import org.openbakery.appcenter.models.ReleaseUploadMetadataResponse
@@ -13,8 +14,6 @@ import org.openbakery.appcenter.models.UploadChunkResponse
 import org.openbakery.appcenter.models.UploadReleaseResponse
 import org.openbakery.http.HttpUtil
 import spock.lang.Specification
-
-import java.util.zip.ZipFile
 
 class AppCenterTaskSpecification extends Specification {
 	Project project
@@ -101,9 +100,8 @@ class AppCenterTaskSpecification extends Specification {
 		]
 		2 * httpUtil.sendFile(HttpUtil.HttpVerb.POST, _, _, _, _, _) >> jsonString(chunkResponse)
 		2 * httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, _, _, _, _) >> jsonString([test:"test"])
-		2 * httpUtil.getJson(_, _, _) >>> [
-			jsonString(releaseResponse),
-			jsonString([test: "test"])
+		1 * httpUtil.getJson(_, _, _) >>> [
+			jsonString(releaseResponse)
 		]
 	}
 
@@ -119,8 +117,7 @@ class AppCenterTaskSpecification extends Specification {
 		httpUtil.sendFile(HttpUtil.HttpVerb.POST, _, _, _, _, _) >> jsonString(chunkResponse)
 		httpUtil.sendJson(HttpUtil.HttpVerb.PATCH, _, _, _, _) >> jsonString([test:"test"])
 		httpUtil.getJson(_, _, _) >>> [
-			jsonString(releaseResponse),
-			jsonString([test: "test"])
+			jsonString(releaseResponse)
 		]
 
 		when:

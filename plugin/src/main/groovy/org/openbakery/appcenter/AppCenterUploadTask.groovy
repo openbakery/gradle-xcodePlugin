@@ -32,7 +32,6 @@ class AppCenterUploadTask extends AbstractAppCenterTask {
 		uploadFile(ipaUploadDomain, assetId, token, ipaFile)
 		updateReleaseUpload(ipaUploadId, "uploadFinished")
 		def releaseId = pollForReleaseId(ipaUploadId)
-		getRelease(releaseId)
 		distributeIpa(releaseId)
 	}
 
@@ -120,12 +119,6 @@ class AppCenterUploadTask extends AbstractAppCenterTask {
 					break
 			}
 		}
-	}
-
-	private Map getRelease(String releaseId) {
-		logger.info("AppCenter: Get Release...")
-		def response = httpUtil.getJson("${baseUploadUrl}/${PATH_RELEASES}/${releaseId}", headers, [:])
-		return new JsonSlurper().parseText(response) as Map
 	}
 
 	def distributeIpa(String releaseId) {
