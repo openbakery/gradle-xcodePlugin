@@ -40,7 +40,7 @@ class AppCenterTaskSpecification extends Specification {
 		project.xcodebuild.productType = 'app'
 		project.xcodebuild.productName = 'Test'
 
-		appCenterUploadTask = project.getTasks().getByPath('appcenter')
+		appCenterUploadTask = project.getTasks().getByName(XcodePlugin.APPCENTER_IPA_UPLOAD_TASK_NAME)
 
 		appCenterUploadTask.commandRunner = commandRunner
 		appCenterUploadTask.httpUtil = httpUtil

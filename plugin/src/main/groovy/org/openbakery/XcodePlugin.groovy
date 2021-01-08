@@ -127,6 +127,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String CARTHAGE_ARCHIVE_TASK_NAME = 'carthageArchive'
 	public static final String APPCENTER_CLEAN_TASK_NAME = 'appCenterClean'
 	public static final String APPCENTER_TASK_NAME = 'appcenter'
+	public static final String APPCENTER_IPA_UPLOAD_TASK_NAME = 'appcenterIpaUpload'
 	public static final String APPCENTER_DSYM_UPLOAD_TASK_NAME = 'appcenterDsymUpload'
 
 	public static final String ROME_UPLOAD_TASK_NAME = 'romeUpload'
@@ -564,8 +565,15 @@ class XcodePlugin implements Plugin<Project> {
 
 	private void configureAppCenter(Project project) {
 		project.task(APPCENTER_CLEAN_TASK_NAME, type: AppCenterCleanTask, group: APPCENTER_GROUP_NAME)
-		project.task(APPCENTER_TASK_NAME, type: AppCenterUploadTask, group: APPCENTER_GROUP_NAME)
-		project.task(APPCENTER_DSYM_UPLOAD_TASK_NAME, type: AppCenterDsymUploadTask, group: APPCENTER_GROUP_NAME)
+		Task uploadIpaTask = project.task(APPCENTER_IPA_UPLOAD_TASK_NAME, type: AppCenterUploadTask, group: APPCENTER_GROUP_NAME)
+		Task dsymUploadTask = project.task(APPCENTER_DSYM_UPLOAD_TASK_NAME, type: AppCenterDsymUploadTask, group: APPCENTER_GROUP_NAME)
+
+		Task uploadWithDsymTask = project.getTasks().create(APPCENTER_TASK_NAME)
+		uploadWithDsymTask.group = APPCENTER_GROUP_NAME
+		uploadWithDsymTask.description = "Runs: " + APPCENTER_IPA_UPLOAD_TASK_NAME + " " + APPCENTER_DSYM_UPLOAD_TASK_NAME
+		dsymUploadTask.mustRunAfter(uploadIpaTask)
+		uploadWithDsymTask.dependsOn(uploadIpaTask)
+		uploadWithDsymTask.dependsOn(dsymUploadTask)
 	}
 
 }
