@@ -18,7 +18,7 @@ class AbstractAppCenterTaskSpecification extends Specification {
 			.build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		task = project.getTasks().getByPath(XcodePlugin.APPCENTER_TASK_NAME)
+		task = project.getTasks().getByPath(XcodePlugin.APPCENTER_IPA_UPLOAD_TASK_NAME)
 		assert task != null
 	}
 
