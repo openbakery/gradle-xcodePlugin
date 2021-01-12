@@ -157,7 +157,6 @@ class CarthageArchiveTaskSpecification extends Specification {
 	}
 
 
-
 	def "The xcode selection should be applied if a xcode version is defined"() {
 		Map<String, String> environment = null
 		given:
