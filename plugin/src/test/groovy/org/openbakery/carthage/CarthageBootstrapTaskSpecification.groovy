@@ -288,9 +288,9 @@ class CarthageBootstrapTaskSpecification extends Specification {
 
 
 
-	def "ARGUMENT_XCFRAMEWORK_BUILDS is --create-xcframework"() {
+	def "ARGUMENT_XCFRAMEWORK_BUILDS is --use-xcframeworks"() {
 		expect:
-		ARGUMENT_XCFRAMEWORK_BUILDS == "--create-xcframework"
+		ARGUMENT_XCFRAMEWORK_BUILD == "--use-xcframeworks"
 	}
 
 
@@ -329,8 +329,8 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
-		commandList.contains(ARGUMENT_XCFRAMEWORK_BUILDS)
-		commandList.contains("--create-xcframework")
+		commandList.contains(ARGUMENT_XCFRAMEWORK_BUILD)
+		commandList.contains("--use-xcframeworks")
 	}
 
 	def "build with task xcframework parameter"() {
@@ -346,8 +346,8 @@ class CarthageBootstrapTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
-		commandList.contains(ARGUMENT_XCFRAMEWORK_BUILDS)
-		commandList.contains("--create-xcframework")
+		commandList.contains(ARGUMENT_XCFRAMEWORK_BUILD)
+		commandList.contains("--use-xcframeworks")
 	}
 
 }
