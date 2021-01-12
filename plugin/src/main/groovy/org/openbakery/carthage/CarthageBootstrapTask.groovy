@@ -17,10 +17,6 @@ class CarthageBootstrapTask extends AbstractCarthageTaskBase {
 		this.setOnlyIf {
 			hasCartfile()
 		}
-
-		dependsOn(
-			XcodePlugin.ROME_DOWNLOAD_TASK_NAME
-		)
 	}
 
 

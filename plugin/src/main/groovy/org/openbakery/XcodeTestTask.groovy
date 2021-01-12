@@ -39,8 +39,7 @@ class XcodeTestTask extends AbstractXcodeTestTask {
 			XcodePlugin.XCODE_CONFIG_TASK_NAME,
 			XcodePlugin.SIMULATORS_KILL_TASK_NAME,
 			XcodePlugin.COCOAPODS_INSTALL_TASK_NAME,
-			XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME,
-			XcodePlugin.ROME_UPLOAD_TASK_NAME
+			XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"

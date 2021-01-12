@@ -51,8 +51,6 @@ import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
-import org.openbakery.rome.RomeDownloadTask
-import org.openbakery.rome.RomeUploadTask
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.packaging.PackageTask
@@ -84,7 +82,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SIMULATORS_GROUP_NAME = "Simulators"
 	public static final String ANALYTICS_GROUP_NAME = "Analytics"
 	public static final String APPCENTER_GROUP_NAME = "AppCenter"
-	public static final String ROME_GROUP_NAME = "Rome"
 
 
 	public static final String XCODE_TEST_TASK_NAME = "xcodetest"
@@ -127,9 +124,6 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String APPCENTER_CLEAN_TASK_NAME = 'appCenterClean'
 	public static final String APPCENTER_TASK_NAME = 'appcenter'
 
-	public static final String ROME_UPLOAD_TASK_NAME = 'romeUpload'
-	public static final String ROME_DOWNLOAD_TASK_NAME = 'romeDownload'
-
 	public static final String APPLEDOC_TASK_NAME = 'appledoc'
 	public static final String APPLEDOC_CLEAN_TASK_NAME = 'appledocClean'
 
@@ -166,7 +160,6 @@ class XcodePlugin implements Plugin<Project> {
 		configureSimulatorTasks(project)
 		configureProperties(project)
 		configureAppCenter(project)
-		configureRome(project)
 	}
 
 
@@ -539,10 +532,6 @@ class XcodePlugin implements Plugin<Project> {
 				.dependsOn(project.getTasks().getByName(CARTHAGE_CLEAN_TASK_NAME))
 	}
 
-	private void configureRome(Project project) {
-		project.task(ROME_UPLOAD_TASK_NAME, type: RomeUploadTask, group: ROME_GROUP_NAME)
-		project.task(ROME_DOWNLOAD_TASK_NAME, type: RomeDownloadTask, group: ROME_GROUP_NAME)
-	}
 
 	private void configureOCLint(Project project) {
 		OCLintTask reportTask = project.task(OCLINT_REPORT_TASK_NAME, type: OCLintTask, group: ANALYTICS_GROUP_NAME)

@@ -3,6 +3,7 @@
 Changes
 * Added support for xcframeworks when using carthage
 * Carthage bootstrap is executed also when only the Carthage.private file exists
+* Remove [Rome](https://github.com/tmspzz/Rome) support
 
 # 0.20.1 (2. Dec, 2020)
 

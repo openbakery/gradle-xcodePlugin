@@ -30,7 +30,6 @@ class XcodeBuildTask extends AbstractXcodeBuildTask {
 			XcodePlugin.INFOPLIST_MODIFY_TASK_NAME,
 			XcodePlugin.COCOAPODS_INSTALL_TASK_NAME,
 			XcodePlugin.CARTHAGE_BOOTSTRAP_TASK_NAME,
-			XcodePlugin.ROME_UPLOAD_TASK_NAME,
 		)
 		this.description = "Builds the Xcode project"
 	}
