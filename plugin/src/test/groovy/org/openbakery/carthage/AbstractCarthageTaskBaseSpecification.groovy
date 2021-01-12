@@ -8,6 +8,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
+import spock.lang.Ignore
 
 import static org.openbakery.carthage.AbstractCarthageTaskBase.getARGUMENT_DERIVED_DATA
 
@@ -149,6 +150,7 @@ class AbstractCarthageTaskBaseSpecification extends Specification {
 		environment["XCODE_XCCONFIG_FILE"] == xcconfigPath.absolutePath
 	}
 
+	@Ignore
 	def "When xcode 12 was set via xcodeversion then the environment contains XCODE_XCCONFIG_FILE and DEVELOPER_DIR"() {
 		Map<String, String> environment = null
 		given:

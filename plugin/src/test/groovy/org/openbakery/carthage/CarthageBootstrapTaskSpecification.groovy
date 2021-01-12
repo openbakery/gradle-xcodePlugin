@@ -11,6 +11,7 @@ import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.XCConfig
 import org.openbakery.xcode.Xcode
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -157,6 +158,7 @@ class CarthageBootstrapTaskSpecification extends Specification {
 	}
 
 
+	@Ignore
 	def "The xcode selection should be applied if a xcode version is defined"() {
 		Map<String, String> environment = null
 		given:

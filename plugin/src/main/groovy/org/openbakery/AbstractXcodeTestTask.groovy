@@ -1,11 +1,13 @@
 package org.openbakery
 
 import org.gradle.api.logging.Logger
+import org.gradle.api.tasks.Internal
 import org.openbakery.test.TestResult
 import org.openbakery.test.TestResultParser
 
 class AbstractXcodeTestTask extends AbstractXcodeBuildTask {
 
+	@Internal
 	Logger printLogger = this.logger
 
 	void processTestResult(File testLogsDirectory) {

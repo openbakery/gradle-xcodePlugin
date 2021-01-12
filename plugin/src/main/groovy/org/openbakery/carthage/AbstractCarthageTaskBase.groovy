@@ -28,6 +28,7 @@ abstract class AbstractCarthageTaskBase extends AbstractXcodeTask {
 	static final String CARTHAGE_PLATFORM_WATCHOS = "watchOS"
 	static final String CARTHAGE_USR_BIN_PATH = "/usr/local/bin/carthage"
 
+	@Internal
 	boolean serializeDebugging
 
 	@Internal
