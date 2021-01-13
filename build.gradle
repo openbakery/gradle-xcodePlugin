@@ -68,8 +68,8 @@ allprojects {
 
 project(':plugin') {
 	dependencies {
-		api project(':libxcode')
-		api project(':libxcodetools') 
+		implementation project(':libxcode')
+		implementation project(':libxcodetools') 
 		testImplementation project(':libtest')
 	}
 }
