@@ -289,7 +289,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 	}
 
 
-	String getEntitlementWithApplicationIdentifier(String applicationIdentifier) {
+	String getEntitlementWithApplicationIdentifier(String applicationIdentifier, String ubiquityContainerIdentifiers = "ABCDE12345.*" ) {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 						"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
 						"<plist version=\"1.0\">\n" +
@@ -307,7 +307,7 @@ class ProvisioningProfileReaderSpecification extends Specification {
 						"    <key>com.apple.developer.ubiquity-kvstore-identifier</key>\n" +
 						"    <string>ABCDE12345.*</string>\n" +
 						"    <key>com.apple.developer.ubiquity-container-identifiers</key>\n" +
-						"    <string>ABCDE12345.*</string>\n" +
+						"    <array><string>" + ubiquityContainerIdentifiers + "</string></array>\n" +
 						"</dict>\n" +
 						"</plist>"
 	}
@@ -468,7 +468,31 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		then:
 		entitlementsFile.exists()
-		plistHelper.getValueFromPlist(entitlementsFile, "com.apple.developer.ubiquity-container-identifiers").startsWith("XXXXXZZZZZ.")
+		plistHelper.getValueFromPlist(entitlementsFile, "com.apple.developer.ubiquity-container-identifiers")[0].startsWith("XXXXXZZZZZ.")
+	}
+
+
+	def "extract Entitlements with ubiquity-container-identifiers that has no wildcard should keep current value"() {
+		given:
+		File mobileprovision = new File("src/test/Resource/openbakery-team.mobileprovision")
+
+		def applicationIdentifier = "AAAAAAAAAAA.org.openbakery.test.Example.*"
+		def containerIdentifier = "iCloud.org.openkery.test.Example"
+		commandRunner.runWithResult(_) >> getEntitlementWithApplicationIdentifier(applicationIdentifier, containerIdentifier)
+
+		when:
+		ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileprovision, commandRunner, new PlistHelper(new CommandRunner()))
+
+		def keychainAccessGroups = [
+						ProvisioningProfileReader.APPLICATION_IDENTIFIER_PREFIX + "org.openbakery.test.Example",
+		]
+
+		File entitlementsFile = new File(projectDir, "entitlements.plist")
+		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example.widget", keychainAccessGroups, null)
+
+		then:
+		entitlementsFile.exists()
+		plistHelper.getValueFromPlist(entitlementsFile, "com.apple.developer.ubiquity-container-identifiers")[0].equals(containerIdentifier)
 	}
 
 
