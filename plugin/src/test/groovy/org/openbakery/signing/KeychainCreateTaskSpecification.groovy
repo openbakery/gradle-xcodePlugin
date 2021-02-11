@@ -69,33 +69,14 @@ class KeychainCreateTaskSpecification extends Specification {
 		version.maintenance == 0
 	}
 
-
-	def "create with OS X 10.8"() {
-		given:
-		System.setProperty("os.version", "10.8.0")
-
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
-
-		when:
-		keychainCreateTask.create()
-
-		then:
-		1 * security.createKeychain(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
-		0 * security.setKeychainList([project.xcodebuild.signing.keychainPathInternal])
-	}
-
-
 	def mockListKeychains() {
 		String result = "    \""+ loginKeychain.absolutePath + "\"";
 		commandRunner.runWithResult( ["security", "list-keychains"]) >> result
 	}
 
-	def "create with OS X 10.9 adds keychain to list"() {
+	def "adds keychain to list"() {
 		given:
-		System.setProperty("os.version", "10.9.0")
+		System.setProperty("os.version", "10.15.0")
 
 		Security security = Mock(Security)
 		keychainCreateTask.security = security
@@ -137,9 +118,9 @@ class KeychainCreateTaskSpecification extends Specification {
 	}
 
 
-	def "create with macOS 10.12.0 set-key-partition-list"() {
+	def "set-key-partition-list"() {
 		given:
-		System.setProperty("os.version", "10.12.0")
+		System.setProperty("os.version", "10.15.0")
 
 		Security security = Mock(Security)
 		keychainCreateTask.security = security
@@ -153,22 +134,4 @@ class KeychainCreateTaskSpecification extends Specification {
 		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
 		1 * security.setPartitionList(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
 	}
-
-
-	def "create with macOS 10.11.0 NOT set-key-partition-list"() {
-		given:
-		System.setProperty("os.version", "10.11.0")
-
-		Security security = Mock(Security)
-		keychainCreateTask.security = security
-		security.getKeychainList() >> []
-		when:
-		keychainCreateTask.create()
-
-		then:
-		1 * security.createKeychain(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-		1 * security.importCertificate(keychainDestinationFile, "password",  project.xcodebuild.signing.keychainPathInternal)
-		0 * security.setPartitionList(project.xcodebuild.signing.keychainPathInternal, "This_is_the_default_keychain_password")
-	}
-
 }

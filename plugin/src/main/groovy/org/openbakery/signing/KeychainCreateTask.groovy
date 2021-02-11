@@ -62,16 +62,11 @@ class KeychainCreateTask extends AbstractKeychainTask {
 		security.createKeychain(keychain, project.xcodebuild.signing.keychainPassword)
 		security.importCertificate(new File(certificateFile), project.xcodebuild.signing.certificatePassword, keychain)
 
+    List<File> keychainList = getKeychainList()
+    keychainList.add(keychain)
+    setKeychainList(keychainList)
 
-		if (getOSVersion().minor >= 9) {
-			List<File> keychainList = getKeychainList()
-			keychainList.add(keychain)
-			setKeychainList(keychainList)
-		}
-
-		if (getOSVersion().minor >= 12) {
-			security.setPartitionList(keychain, project.xcodebuild.signing.keychainPassword)
-		}
+    security.setPartitionList(keychain, project.xcodebuild.signing.keychainPassword)
 
 		// Set a custom timeout on the keychain if requested
 		if (project.xcodebuild.signing.timeout != null) {
