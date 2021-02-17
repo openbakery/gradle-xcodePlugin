@@ -356,23 +356,36 @@ class ProvisioningProfileReader {
 	}
 
 	private void setBundleIdentifierToEntitlementsForValue(File entitlementFile, String bundleIdentifier, String prefix, String value) {
+		logger.debug("")
+		logger.debug("setBundleIdentifierToEntitlementsForValue")
+		logger.debug("value            " + value)
 		def currentValue = plistHelper.getValueFromPlist(entitlementFile, value)
 
 		if (currentValue == null) {
+			logger.debug("nothing to do")
 			return
 		}
+		logger.debug("entitlementFile  " + entitlementFile)
+		logger.debug("bundleIdentifier " + bundleIdentifier)
+		logger.debug("prefix           " + prefix)
+
 
 		if (currentValue instanceof List) {
 			def modifiedValues = []
 			currentValue.each { item ->
+				logger.debug("item " + item)
 				if (item.toString().endsWith('*')) {
 					modifiedValues << prefix + "." + bundleIdentifier
+				} else {
+					modifiedValues << item.toString()
 				}
 			}
+			logger.debug("set to           " + modifiedValues)
 			plistHelper.setValueForPlist(entitlementFile, value, modifiedValues)
 
 		} else {
 			if (currentValue.toString().endsWith('*')) {
+				logger.debug("set to           " +  prefix + "."  + bundleIdentifier)
 				plistHelper.setValueForPlist(entitlementFile, value, prefix + "."  + bundleIdentifier)
 			}
 		}
