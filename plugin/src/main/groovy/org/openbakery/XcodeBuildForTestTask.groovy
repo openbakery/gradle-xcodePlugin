@@ -1,6 +1,6 @@
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+	import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Destination
@@ -87,6 +87,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 
 
 	List<String> getAppBundles(File xcrunfile) {
+		logger.debug("getAppBundles for {}", xcrunfile)
 
 		List<String> result = []
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(xcrunfile)
@@ -101,6 +102,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 				}
 			}
 		}
+		logger.debug("result appBundles for {}", result)
 		return result
 	}
 
