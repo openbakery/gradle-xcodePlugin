@@ -56,9 +56,9 @@ task sourcesJar(type: Jar) {
 }
 
 install {
-    repositories.mavenInstaller {
+	repositories.mavenInstaller {
 		modifyPom(pom)
-    }
+	}
 }
 
 uploadArchives {
