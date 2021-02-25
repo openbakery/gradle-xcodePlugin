@@ -55,6 +55,11 @@ task sourcesJar(type: Jar) {
 	classifier = 'sources'
 }
 
+install {
+    repositories.mavenInstaller {
+		modifyPom(pom)
+    }
+}
 
 uploadArchives {
 	repositories {
@@ -65,11 +70,7 @@ uploadArchives {
 				authentication(userName: publishUser, password: publishPassword)
 			}
 
-			pom.whenConfigured {
-    		p -> p.dependencies = p.dependencies.findAll { 
-        	dep -> dep.artifactId != "libxcode" && dep.artifactId != "libxcodetools"
-    		}
-			}
+			modifyPom(pom)
 
 			pom.project {
 				licenses {
@@ -91,8 +92,13 @@ uploadArchives {
 	}
 }
 
-
-
+def modifyPom(MavenPom pom) {
+	pom.whenConfigured { p -> 
+		p.dependencies = p.dependencies.findAll { dep -> 
+			dep.artifactId != "libxcode" && dep.artifactId != "libxcodetools"
+		}
+	}
+}
 
 pluginBundle {
 	website = 'https://openbakery.org/gxp/'
