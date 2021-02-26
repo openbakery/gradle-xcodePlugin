@@ -65,7 +65,7 @@ class ProvisioningInstallTask extends AbstractXcodeTask {
 
 
 
-			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, this.plistHelper)
+			ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(new File(mobileProvisionFile), this.commandRunner, project.xcodebuild.signing.keychainPathInternal, this.plistHelper)
 
 			String uuid = provisioningProfileIdReader.getUUID()
 

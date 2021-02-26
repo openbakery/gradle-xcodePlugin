@@ -297,7 +297,7 @@ class Codesign {
 			return null
 		}
 
-		return new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper)
+		return new ProvisioningProfileReader(provisionFile, this.commandRunner, this.plistHelper, codesignParameters.keychain)
 	}
 
 	File createEntitlementsFile(String bundleIdentifier, Configuration configuration) {
@@ -310,8 +310,7 @@ class Codesign {
 		logger.info("createEntitlementsFile for bundleIdentifier {}", bundleIdentifier)
 
 
-
-		ProvisioningProfileReader reader = ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, this.plistHelper)
+		ProvisioningProfileReader reader = ProvisioningProfileReader.getReaderForIdentifier(bundleIdentifier, codesignParameters.mobileProvisionFiles, this.commandRunner, codesignParameters.keychain, this.plistHelper)
 		if (reader == null) {
 			return null
 		}
