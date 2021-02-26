@@ -51,13 +51,21 @@ class ProvisioningProfileReader {
 
 	File provisioningProfile
 	private File provisioningPlist
-
+	private File keychain
 
 	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner) {
-		this(provisioningProfile, commandRunner, new PlistHelper(commandRunner))
+		this(provisioningProfile, commandRunner, null, new PlistHelper(commandRunner))
 	}
 
 	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner, PlistHelper plistHelper) {
+		this(provisioningProfile, commandRunner, null, plistHelper)
+	}
+
+	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner, File keychain) {
+		this(provisioningProfile, commandRunner, keychain, new PlistHelper(commandRunner))
+	}
+
+	ProvisioningProfileReader(File provisioningProfile, CommandRunner commandRunner, File keychain, PlistHelper plistHelper) {
 		super()
 
 		logger.debug("load provisioningProfile: {}", provisioningProfile)
@@ -70,16 +78,21 @@ class ProvisioningProfileReader {
 
 		this.plistHelper = plistHelper
 
+		this.keychain = keychain
+
 		checkExpired()
 	}
 
-
 	static ProvisioningProfileReader getReaderForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, PlistHelper plistHelper) {
+		this.getReaderForIdentifier(bundleIdentifier, mobileProvisionFiles, commandRunner, null, plistHelper)
+	}
+
+	static ProvisioningProfileReader getReaderForIdentifier(String bundleIdentifier, List<File> mobileProvisionFiles, CommandRunner commandRunner, File keychain, PlistHelper plistHelper) {
 		def provisionFileMap = [:]
 
 		for (File mobileProvisionFile : mobileProvisionFiles) {
 			if (mobileProvisionFile.exists()) {
-				ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, commandRunner, plistHelper)
+				ProvisioningProfileReader reader = new ProvisioningProfileReader(mobileProvisionFile, commandRunner, keychain, plistHelper)
 				provisionFileMap.put(reader.getApplicationIdentifier(), reader)
 			}
 		}
@@ -175,18 +188,31 @@ class ProvisioningProfileReader {
 			provisioningPlist = new File(tmpDir, "provision_" + basename + ".plist")
 			provisioningPlist.deleteOnExit()
 
+			if (this.keychain) {
+				logger.debug("Using keychain " + keychain)
+			} else {
+				logger.debug("Using default keychain")
+			}
+
+			List<String> commands = []
+			commands << "security"
+			commands << "cms"
+			commands << "-D"
+			commands << "-i"
+			commands << provisioningProfile.getCanonicalPath()
+			commands << "-o"
+			commands << provisioningPlist.absolutePath
+
+			if (this.keychain) {
+				commands << "-k"
+				commands << keychain.absolutePath
+			}
+
 			try {
-				commandRunner.run(["security",
-													 "cms",
-													 "-D",
-													 "-i",
-													 provisioningProfile.getCanonicalPath(),
-													 "-o",
-													 provisioningPlist.absolutePath
-				])
+				commandRunner.run(commands)
 			} catch (CommandRunnerException ex) {
-				if (!provisioningPlist.exists()) {
-					throw new IllegalStateException("provisioning plist does not exist: " + provisioningPlist)
+				if (!provisioningPlist.exists() || provisioningPlist.length() == 0) {
+					throw new IllegalStateException("provisioning plist does not exist or is empty: " + provisioningPlist)
 				}
 			}
 		}
