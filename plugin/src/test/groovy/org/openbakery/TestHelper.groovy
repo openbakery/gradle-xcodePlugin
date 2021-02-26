@@ -23,7 +23,7 @@ class TestHelper {
 		FileUtils.copyFile(infoPlist, destinationInfoPlist)
 
 		PlistHelper plistHelper = new PlistHelper(new CommandRunner())
-		plistHelper.setValueForPlist(destinationInfoPlist, "CFBundleIdentifier", "org.openbakery.test.Example")
+		plistHelper.setValueForPlist(destinationInfoPlist, "CFBundleIdentifier", "org.openbakery.gxp.Example")
 
 
 		FileUtils.writeStringToFile(new File(destinationDirectory, "${name}.app/Icon.png"), "dummy")

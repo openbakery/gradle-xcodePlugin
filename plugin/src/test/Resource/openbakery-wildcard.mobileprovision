@@ -16,7 +16,7 @@
 	<key>Entitlements</key>
 	<dict>
 		<key>application-identifier</key>
-		<string>AAAAAAAAAAA.org.openbakery.test.Example.*</string>
+		<string>AAAAAAAAAAA.org.openbakery.gxp.Example.*</string>
 		<key>get-task-allow</key>
 		<false/>
 		<key>keychain-access-groups</key>

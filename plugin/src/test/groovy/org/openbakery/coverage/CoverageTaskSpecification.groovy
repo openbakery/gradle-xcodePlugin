@@ -161,26 +161,26 @@ class CoverageTaskSpecification extends Specification {
 	def "profile data binary with target"() {
 		given:
 
-		File projectDir =  new File("../example/iOS/ExampleWatchkit")
-		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "ExampleWatchkit.xcodeproj/project.pbxproj"))
+		File projectDir =  new File("../example/iOS/Example")
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File(projectDir, "Example.xcodeproj/project.pbxproj"))
 
 		Project localProject = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		localProject.apply plugin: org.openbakery.XcodePlugin
 		localProject.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
-		localProject.xcodebuild.target = "ExampleWatchkit"
+		localProject.xcodebuild.target = "Example"
 
 		coverageTask = localProject.getTasks().getByPath('coverage')
 		coverageTask.report.commandRunner = Mock(org.openbakery.coverage.command.CommandRunner)
 
-		File profData = new File(localProject.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/ExampleWatchkit/Coverage.profdata")
+		File profData = new File(localProject.xcodebuild.derivedDataPath, "Build/Intermediates/CodeCoverage/Example/Coverage.profdata")
 		FileUtils.writeStringToFile(profData, "Dummy")
 
 		when:
 		coverageTask.coverage()
 
 		then:
-		coverageTask.report.profileData.toString().endsWith("Build/Intermediates/CodeCoverage/ExampleWatchkit/Coverage.profdata")
-		coverageTask.report.binary.toString().endsWith("ExampleWatchkit/build/sym/Debug-iphonesimulator/ExampleWatchkit.app/ExampleWatchkit")
+		coverageTask.report.profileData.toString().endsWith("Build/Intermediates/CodeCoverage/Example/Coverage.profdata")
+		coverageTask.report.binary.toString().endsWith("Example/build/sym/Debug-iphonesimulator/Example.app/Example")
 		thrown(IllegalArgumentException)
 
 		cleanup:

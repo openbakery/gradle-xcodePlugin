@@ -555,9 +555,9 @@ class ProvisioningProfileReaderSpecification extends Specification {
 
 		where:
 		identifier                              | filename
-		"org.openbakery.test.Example"           | new File("src/test/Resource/openbakery.mobileprovision")
-		"org.openbakery.test.Example.widget"    | new File("src/test/Resource/openbakery-wildcard.mobileprovision")
-		"org.openbakery.test.Example.extension" | new File("src/test/Resource/openbakery-wildcard.mobileprovision")
+		"org.openbakery.gxp.Example"           | new File("src/test/Resource/openbakery.mobileprovision")
+		"org.openbakery.gxp.Example.widget"    | new File("src/test/Resource/openbakery-wildcard.mobileprovision")
+		"org.openbakery.gxp.Example.extension" | new File("src/test/Resource/openbakery-wildcard.mobileprovision")
 
 	}
 

@@ -60,7 +60,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 		appDirectory = TestHelper.createDummyApp(buildOutputDirectory, "Example")
 
-		FileUtils.copyFileToDirectory(new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/ExampleWatchkit.entitlements"), new File(projectDir, "ExampleWatchkit"))
+		FileUtils.copyFileToDirectory(new File("../example/iOS/Example/Example/Example.entitlements"), new File(projectDir, "Example"))
 	}
 
 	def cleanup() {
@@ -155,15 +155,15 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.plistHelper = new PlistHelper(commandRunner)
 		project.xcodebuild.plistHelper = xcodeBuildArchiveTask.plistHelper
 
-		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit/Info.plist")
-		File destinationInfoPlist = new File(projectDir, "ExampleWatchkit/Info.plist")
+		File infoPlist = new File("../example/iOS/Example/Example/Example-Info.plist")
+		File destinationInfoPlist = new File(projectDir, "Example/Info.plist")
 		FileUtils.copyFile(infoPlist, destinationInfoPlist)
 
-		xcodeBuildArchiveTask.plistHelper.setValueForPlist(destinationInfoPlist, "CFBundleIdentifier", "org.openbakery.test.ExampleWatchkit")
+		xcodeBuildArchiveTask.plistHelper.setValueForPlist(destinationInfoPlist, "CFBundleIdentifier", "org.openbakery.gxp.Example")
 
-		project.xcodebuild.target = "ExampleWatchkit"
+		project.xcodebuild.target = "Example"
 		project.xcodebuild.configuration = "Debug"
-		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/ExampleWatchkit/ExampleWatchkit.xcodeproj/project.pbxproj"))
+		XcodeProjectFile xcodeProjectFile = new XcodeProjectFile(project, new File("../example/iOS/Example/Example.xcodeproj/project.pbxproj"))
 		xcodeProjectFile.parse()
 		project.xcodebuild.projectSettings = xcodeProjectFile.getProjectSettings()
 	}
@@ -180,7 +180,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		File appDirectory = new File(appDirectory, "Watch/${name}.app")
 		appDirectory.mkdirs()
 
-		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File watchInfoPlist = new File("../example/iOS/Example/Example WatchKit Extension/Info.plist")
 		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
 		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
 
@@ -334,7 +334,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		then:
 		infoPlist.exists()
 		config.getString("ApplicationProperties.ApplicationPath") == "Applications/Example.app"
-		config.getString("ApplicationProperties.CFBundleIdentifier") == "org.openbakery.test.Example"
+		config.getString("ApplicationProperties.CFBundleIdentifier") == "org.openbakery.gxp.Example"
 		config.getString("ApplicationProperties.CFBundleShortVersionString") == "1.0"
 		config.getString("ApplicationProperties.CFBundleVersion") == "1.0"
 		config.getString("ApplicationProperties.SigningIdentity") == "iPhone Developer: Firstname Surename (AAAAAAAAAA)"
@@ -545,8 +545,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		entitlements.exists()
 		entitlements.isFile()
 
-		entitlements.text.contains("<key>application-identifier</key>\n\t<string>UNKNOWN00ID.org.openbakery.test.Example</string>")
-		entitlements.text.contains("<array>\n\t\t<string>UNKNOWN00ID.org.openbakery.test.Example</string>")
+		entitlements.text.contains("<key>application-identifier</key>\n\t<string>UNKNOWN00ID.org.openbakery.gxp.Example</string>")
+		entitlements.text.contains("<array>\n\t\t<string>UNKNOWN00ID.org.openbakery.gxp.Example</string>")
 	}
 
 	def "copy entitlements if present"() {
@@ -563,8 +563,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		entitlements.exists()
 		entitlements.isFile()
 
-		entitlements.text.contains("<key>application-identifier</key>\n\t<string>AAAAAAAAAAA.org.openbakery.test.Example</string>")
-		entitlements.text.contains("<array>\n\t\t<string>AAAAAAAAAAA.org.openbakery.test.Example</string>")
+		entitlements.text.contains("<key>application-identifier</key>\n\t<string>AAAAAAAAAAA.org.openbakery.gxp.Example</string>")
+		entitlements.text.contains("<array>\n\t\t<string>AAAAAAAAAAA.org.openbakery.gxp.Example</string>")
 	}
 
 	def "copy entitlements but there are non"() {
@@ -704,9 +704,9 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 		setupProject()
 
-		File extensionDirectory = new File(buildOutputDirectory, "Example.app/PlugIns/ExampleWatchKit Sticker Pack.appex")
+		File extensionDirectory = new File(buildOutputDirectory, "Example.app/PlugIns/ExampleStickerPack.appex")
 		extensionDirectory.mkdirs()
-		File infoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchKit Sticker Pack/Info.plist")
+		File infoPlist = new File("../example/iOS/Example/ExampleStickerPack/Info.plist")
 		File destinationInfoPlist = new File(extensionDirectory, "Info.plist")
 		FileUtils.copyFile(infoPlist, destinationInfoPlist)
 
