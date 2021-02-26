@@ -206,7 +206,7 @@ class ApplicationDummy {
 		File appDirectory = new File(applicationBundle, "Watch/${name}.app")
 		appDirectory.mkdirs()
 
-		File watchInfoPlist = new File("../example/iOS/ExampleWatchkit/ExampleWatchkit WatchKit Extension/Info.plist")
+		File watchInfoPlist = new File("../example/iOS/Example/Example WatchKit Extension/Info.plist")
 		File watchDestinationInfoPlist = new File(appDirectory, "Info.plist")
 		FileUtils.copyFile(watchInfoPlist, watchDestinationInfoPlist)
 
