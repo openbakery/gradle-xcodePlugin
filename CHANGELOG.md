@@ -4,6 +4,7 @@ Changes
 * Added support for xcframeworks when using carthage
 * Carthage bootstrap is executed also when only the Carthage.private file exists
 * Remove [Rome](https://github.com/tmspzz/Rome) support
+* Change that the altool use the apiKey and apiIssue instead of the username and password.
 
 # 0.20.1 (2. Dec, 2020)
 

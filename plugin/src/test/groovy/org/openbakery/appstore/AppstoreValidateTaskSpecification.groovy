@@ -52,8 +52,8 @@ class AppstoreValidateTaskSpecification extends Specification {
 
 	def "test validate"() {
 		given:
-		project.appstore.username = "me@example.com"
-		project.appstore.password = "1234"
+		project.appstore.apiKey = "key"
+		project.appstore.apiIssuer = "issuer"
 
 		def command = "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
 
@@ -61,13 +61,13 @@ class AppstoreValidateTaskSpecification extends Specification {
 		task.validate()
 
 		then:
-		1 * commandRunner.run([command, "--validate-app", "--username", "me@example.com", "--password", "1234", "--file", ipaBundle.absolutePath], _)
+		1 * commandRunner.run([command, "--validate-app", "--apiKey", "key", "--apiIssuer", "issuer", "--file", ipaBundle.absolutePath], _)
 	}
 
 
-	def "password missing"() {
+	def "apiIssuer missing"() {
 		given:
-		project.appstore.username = "me@example.com"
+		project.appstore.apiKey = "me@example.com"
 
 		when:
 		task.validate()
@@ -76,7 +76,7 @@ class AppstoreValidateTaskSpecification extends Specification {
 		thrown(IllegalArgumentException.class)
 	}
 
-	def "username missing"() {
+	def "apiKey missing"() {
 		when:
 		task.validate()
 

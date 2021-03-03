@@ -138,9 +138,9 @@ class XcodePlugin implements Plugin<Project> {
 
 
 	void apply(Project project) {
-		project.getPlugins().apply(BasePlugin.class);
+		project.getPlugins().apply(BasePlugin.class)
 
-		System.setProperty("java.awt.headless", "true");
+		System.setProperty("java.awt.headless", "true")
 
 		configureExtensions(project)
 		configureClean(project)
@@ -202,10 +202,6 @@ class XcodePlugin implements Plugin<Project> {
 			}
 			if (project.hasProperty('infoplist.shortVersionStringPrefix')) {
 				project.infoplist.shortVersionStringPrefix = project['infoplist.shortVersionStringPrefix']
-			}
-
-			if (project.hasProperty('infoplist.iconPath')) {
-				project.infoplist.iconPath = project['infoplist.iconPath']
 			}
 
 			if (project.hasProperty('xcodebuild.scheme')) {
@@ -326,11 +322,11 @@ class XcodePlugin implements Plugin<Project> {
 				project.coverage.exclude = project['coverage.exclude']
 			}
 
-			if (project.hasProperty('appstore.username')) {
-				project.appstore.username = project['appstore.username']
+			if (project.hasProperty('appstore.apiKey')) {
+				project.appstore.apiKey = project['appstore.apiKey']
 			}
-			if (project.hasProperty('appstore.password')) {
-				project.appstore.password = project['appstore.password']
+			if (project.hasProperty('appstore.apiIssuer')) {
+				project.appstore.apiIssuer = project['appstore.apiIssuer']
 			}
 
 

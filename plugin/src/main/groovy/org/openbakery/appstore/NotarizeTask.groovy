@@ -27,12 +27,12 @@ class NotarizeTask extends AbstractDistributeTask {
 		Bundle applicationBundle = new Bundle(applicationPath, Type.macOS, this.plistHelper)
 
 
-		if (project.appstore.username == null) {
-			throw new IllegalArgumentException("Appstore username is missing. Parameter: appstore.username")
+		if (project.appstore.apiKey == null) {
+			throw new IllegalArgumentException("Appstore apiKey is missing. Parameter: appstore.apiKey")
 		}
 
-		if (project.appstore.password == null) {
-			throw new IllegalArgumentException("Appstore password is missing. Parameter: appstore.password")
+		if (project.appstore.apiIssuer == null) {
+			throw new IllegalArgumentException("Appstore apiIssuer is missing. Parameter: appstore.apiIssuer")
 		}
 
 		if (project.appstore.ascProvider == null) {
@@ -46,8 +46,8 @@ class NotarizeTask extends AbstractDistributeTask {
 											 "--notarize-app",
 											 "--primary-bundle-id", applicationBundle.bundleIdentifier,
 											 "--asc-provider", project.appstore.ascProvider,
-											 "--username", project.appstore.username,
-											 "--password",  project.appstore.password,
+											 "--apiKey", project.appstore.apiKey,
+											 "--apiIssuer",  project.appstore.apiIssuer,
 											 "--file", zipBundle.getAbsolutePath()],
 			new ConsoleOutputAppender(output))
 

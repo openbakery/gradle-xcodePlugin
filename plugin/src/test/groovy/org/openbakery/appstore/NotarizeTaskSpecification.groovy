@@ -65,33 +65,33 @@ class NotarizeTaskSpecification extends spock.lang.Specification {
 	}
 
 
-	def "when username is missing throw exception"() {
+	def "when apiKey is missing throw exception"() {
 		when:
 		task.notarize()
 
 		then:
 		def ex = thrown(IllegalArgumentException.class)
-		ex.message == "Appstore username is missing. Parameter: appstore.username"
+		ex.message == "Appstore apiKey is missing. Parameter: appstore.apiKey"
 	}
 
 
-	def "when password missing  throw exception"() {
+	def "when apiIssuer missing  throw exception"() {
 		given:
-		project.appstore.username = "me@example.com"
+		project.appstore.apiKey = "key"
 
 		when:
 		task.notarize()
 
 		then:
 		def ex = thrown(IllegalArgumentException.class)
-		ex.message == "Appstore password is missing. Parameter: appstore.password"
+		ex.message == "Appstore apiIssuer is missing. Parameter: appstore.apiIssuer"
 	}
 
 
 	def "when ascProvider missing throw exception"() {
 		given:
-		project.appstore.username = "me@example.com"
-		project.appstore.password = "secret"
+		project.appstore.apiKey = "key"
+		project.appstore.apiIssuer = "secret"
 
 		when:
 		task.notarize()
@@ -105,8 +105,8 @@ class NotarizeTaskSpecification extends spock.lang.Specification {
 
 	def "test notarize command"() {
 		given:
-		project.appstore.username = "me@example.com"
-		project.appstore.password = "1234"
+		project.appstore.apiKey = "key"
+		project.appstore.apiIssuer = "1234"
 		project.appstore.ascProvider = "ME1234"
 
 		def command = "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
@@ -122,8 +122,8 @@ class NotarizeTaskSpecification extends spock.lang.Specification {
 			"--notarize-app",
 			"--primary-bundle-id", "org.openbakery.macOS.Example",
 			"--asc-provider", "ME1234",
-			"--username", "me@example.com",
-			"--password", "1234",
+			"--apiKey", "key",
+			"--apiIssuer", "1234",
 			"--file", zipBundle.absolutePath], _)
 	}
 
