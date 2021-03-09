@@ -54,7 +54,7 @@ class AppstoreUploadTaskSpecification extends Specification {
 		task.xcode != null
 	}
 
-	def "test upload"() {
+	def "test upload with api key and issuer"() {
 		given:
 		project.appstore.apiKey = "key"
 		project.appstore.apiIssuer = "1234"
@@ -75,4 +75,27 @@ class AppstoreUploadTaskSpecification extends Specification {
 													 ipaBundle.absolutePath], _)
 
 	}
+
+	def "test upload with username and password"() {
+		given:
+		project.appstore.username = "user"
+		project.appstore.password = "pass"
+
+		task.xcode = new XcodeFake()
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool",
+													 "--upload-app",
+													 "--username",
+													 "user",
+													 "--password",
+													 "pass",
+													 "--file",
+													 ipaBundle.absolutePath], _)
+
+	}
+
 }

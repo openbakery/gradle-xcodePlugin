@@ -50,7 +50,7 @@ class AppstoreValidateTaskSpecification extends Specification {
 	}
 
 
-	def "test validate"() {
+	def "test validate using api key"() {
 		given:
 		project.appstore.apiKey = "key"
 		project.appstore.apiIssuer = "issuer"
@@ -62,6 +62,21 @@ class AppstoreValidateTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run([command, "--validate-app", "--apiKey", "key", "--apiIssuer", "issuer", "--file", ipaBundle.absolutePath], _)
+	}
+
+
+	def "test validate using username/password"() {
+		given:
+		project.appstore.username = "user"
+		project.appstore.password = "secret"
+
+		def command = "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool"
+
+		when:
+		task.validate()
+
+		then:
+		1 * commandRunner.run([command, "--validate-app", "--username", "user", "--password", "secret", "--file", ipaBundle.absolutePath], _)
 	}
 
 
@@ -77,10 +92,48 @@ class AppstoreValidateTaskSpecification extends Specification {
 	}
 
 	def "apiKey missing"() {
+		given:
+		project.appstore.apiIssuer = "me@example.com"
+
 		when:
 		task.validate()
 
 		then:
-		thrown(IllegalArgumentException.class)
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "Appstore apiKey is missing. Parameter: appstore.apiKey"
 	}
+
+	def "credentials missing"() {
+		when:
+		task.validate()
+
+		then:
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "Credentials are missing. Either apiKey/apiIssuer of username/password"
+	}
+
+	def "username is missing"() {
+		given:
+		project.appstore.password = "secret"
+
+		when:
+		task.validate()
+
+		then:
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "Appstore username is missing. Parameter: appstore.username"
+	}
+
+	def "password is missing"() {
+		given:
+		project.appstore.username = "user"
+
+		when:
+		task.validate()
+
+		then:
+		def ex = thrown(IllegalArgumentException.class)
+		ex.message == "Appstore password is missing. Parameter: appstore.password"
+	}
+
 }

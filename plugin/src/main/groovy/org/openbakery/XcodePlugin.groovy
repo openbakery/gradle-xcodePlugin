@@ -329,6 +329,13 @@ class XcodePlugin implements Plugin<Project> {
 				project.appstore.apiIssuer = project['appstore.apiIssuer']
 			}
 
+			if (project.hasProperty('appstore.username')) {
+				project.appstore.username = project['appstore.username']
+			}
+			if (project.hasProperty('appstore.password')) {
+				project.appstore.password = project['appstore.password']
+			}
+
 
 			if (project.hasProperty('oclint.reportType')) {
 				project.oclint.reportType = project['oclint.reportType'];

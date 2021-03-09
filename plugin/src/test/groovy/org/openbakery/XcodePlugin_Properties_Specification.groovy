@@ -60,6 +60,8 @@ class XcodePlugin_Properties_Specification extends Specification {
 		key                                      | value
 		"appstore.apiKey"                        | "key"
 		"appstore.apiIssuer"                     | "issuer"
+		"appstore.username"                      | "user"
+		"appstore.password"                      | "password"
 		"infoplist.bundleIdentifier"             | "bundleIdentifier"
 		"infoplist.bundleIdentifierSuffix"       | "bundleIdentifierSuffix"
 		"infoplist.bundleDisplayName"            | "bundleDisplayName"
