@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.testdouble.PlistHelperStub
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
@@ -30,7 +30,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		xcodeBuildForTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_FOR_TEST_TASK_NAME)
 		xcodeBuildForTestTask.commandRunner = commandRunner
 		xcodeBuildForTestTask.xcode = new XcodeFake()
-		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
+		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode8.txt"))
 		project.xcodebuild.plistHelper = new PlistHelperStub()
 	}
 
@@ -149,7 +149,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		Destination destination = new Destination()
 		destination.os = "9.1"
 		xcodeBuildForTestTask.parameters.setDestination(destination)
-		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
+		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7_1.txt"))
 
 		def destinations = xcodeBuildForTestTask.getDestinations()
 
@@ -163,7 +163,7 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		when:
 		xcodeBuildForTestTask.parameters.simulator = true
 		xcodeBuildForTestTask.parameters.type = Type.iOS
-		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
+		xcodeBuildForTestTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7_1.txt"))
 
 		def destinations = xcodeBuildForTestTask.getDestinations()
 

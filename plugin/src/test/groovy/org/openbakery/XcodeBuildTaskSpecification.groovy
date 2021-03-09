@@ -3,7 +3,7 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Devices
@@ -49,7 +49,7 @@ class XcodeBuildTaskSpecification extends Specification {
 
 		xcodeBuildTask = project.getTasks().getByPath(XcodePlugin.XCODE_BUILD_TASK_NAME)
 		xcodeBuildTask.commandRunner = commandRunner
-		xcodeBuildTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+		xcodeBuildTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7.txt"))
 
 		xcodeDummy = new XcodeDummy()
 

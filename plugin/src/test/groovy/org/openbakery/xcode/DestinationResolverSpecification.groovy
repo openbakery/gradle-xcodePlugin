@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.simulators.SimulatorControl
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import spock.lang.Specification
 
 class DestinationResolverSpecification extends Specification {
@@ -20,7 +20,7 @@ class DestinationResolverSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 		extension = new XcodeBuildPluginExtension(project)
-		simulatorControl = new SimulatorControlStub("simctl-list-xcode7_1.txt")
+		simulatorControl = new SimulatorControlFake("simctl-list-xcode7_1.txt")
 		destinationResolver = new DestinationResolver(simulatorControl)
 	}
 
@@ -69,7 +69,7 @@ class DestinationResolverSpecification extends Specification {
 
 	def "available destinations default xcode 7"() {
 		when:
-		destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		destinationResolver.simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt");
 		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
 
 		then:
@@ -208,7 +208,7 @@ class DestinationResolverSpecification extends Specification {
 
 	def "resolve iPad Pro (12.9 inch)"() {
 		given:
-		simulatorControl = new SimulatorControlStub("simctl-list-xcode8.txt")
+		simulatorControl = new SimulatorControlFake("simctl-list-xcode8.txt")
 		destinationResolver = new DestinationResolver(simulatorControl)
 		extension.destination = ['iPad Pro (12.9 inch)']
 
@@ -223,7 +223,7 @@ class DestinationResolverSpecification extends Specification {
 
 	def "resolve iPad Pro (12.9 inch) works with iPad Pro (12.9-inch) (3rd generation)"() {
 		given:
-		simulatorControl = new SimulatorControlStub("simctl-list-xcode11.txt")
+		simulatorControl = new SimulatorControlFake("simctl-list-xcode11.txt")
 		destinationResolver = new DestinationResolver(simulatorControl)
 		extension.destination = ['iPad Pro (12.9-inch)']
 

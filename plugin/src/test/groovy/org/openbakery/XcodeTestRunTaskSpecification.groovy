@@ -8,7 +8,7 @@ import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.output.TestBuildOutputAppender
 import org.openbakery.test.TestResultParser
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.DestinationResolver
@@ -39,7 +39,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask = project.getTasks().getByPath(XcodePlugin.XCODE_TEST_RUN_TASK_NAME)
 		xcodeTestRunTestTask.commandRunner = commandRunner
 		xcodeTestRunTestTask.xcode = new XcodeFake()
-		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode8.txt"))
+		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode8.txt"))
 		project.xcodebuild.signing.identity = "my identity"
 
 
@@ -217,7 +217,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 
 	def fakeTestRun() {
-		xcodeTestRunTestTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		xcodeTestRunTestTask.destinationResolver.simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt");
 
 		project.xcodebuild.destination {
 			name = "iPad 2"

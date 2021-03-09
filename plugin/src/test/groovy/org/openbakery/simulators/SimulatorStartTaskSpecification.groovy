@@ -3,9 +3,10 @@ package org.openbakery.simulators
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.testdouble.SimulatorControlFake
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Destination
 import org.openbakery.XcodePlugin
-import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.xcode.DestinationResolver
 import spock.lang.Specification
 
@@ -83,7 +84,9 @@ class SimulatorStartTaskSpecification extends Specification {
 	def "run with specified device"() {
 		given:
 
-		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+		def simulatorControlStub = new SimulatorControlFake("simctl-list-xcode7.txt")
+		simulatorControlStub.xcode = new XcodeFake("11.0")
+		destinationResolver = new DestinationResolver(simulatorControlStub)
 		task.destinationResolver = destinationResolver
 
 		Destination destination

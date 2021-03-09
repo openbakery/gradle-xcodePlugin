@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.XcodePlugin
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import spock.lang.Specification
 
 class SimulatorsListTaskSpecification extends Specification {
@@ -30,7 +30,7 @@ class SimulatorsListTaskSpecification extends Specification {
 
     def "list xcode 9.1 simulators"() {
         when:
-        task.simulatorControl = new SimulatorControlStub("simctl-list-xcode9_1.txt")
+        task.simulatorControl = new SimulatorControlFake("simctl-list-xcode9_1.txt")
 
         task.list()
 

@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.SimulatorControlFake
-import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
@@ -49,7 +48,7 @@ class XcodeTestRunTask_TestResult_Specification extends Specification {
 
 
 	List<Destination> getDestinations(String simctlList) {
-		File file = new File("../libxcode/src/test/Resource/", simctlList)
+		File file = new File("../libtest/src/main/Resource/", simctlList)
 		SimulatorControlFake simulatorControl = new SimulatorControlFake(file)
 		XcodebuildParameters parameters = new XcodebuildParameters()
 		parameters.simulator = true

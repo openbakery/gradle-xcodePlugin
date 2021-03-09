@@ -45,7 +45,6 @@ class SimulatorControl {
 	ArrayList<SimulatorDeviceType> deviceTypes
 	ArrayList<SimulatorRuntime> runtimes
 	HashMap<SimulatorRuntime, List<SimulatorDevice>> devices
-	HashMap<String, SimulatorDevice> identifierToDevice
 	ArrayList<SimulatorDevicePair> devicePairs
 
 
@@ -60,7 +59,6 @@ class SimulatorControl {
 		runtimes = new ArrayList<>()
 		devices = new HashMap<>()
 		deviceTypes = new ArrayList<>()
-    identifierToDevice = new HashMap<>()
 		devicePairs = new ArrayList<>()
 
 		if (xcode.version.major < 12) {
@@ -159,7 +157,6 @@ class SimulatorControl {
 					if (simulatorDevices != null) {
 						SimulatorDevice device = new SimulatorDevice(line)
 						simulatorDevices.add(device)
-            identifierToDevice[device.identifier]=device
 					}
 
 					break
@@ -223,7 +220,7 @@ class SimulatorControl {
 		def start = System.currentTimeMillis()
 		while ((System.currentTimeMillis() - start) < timeoutMS) {
 			parse()
-			def polledDevice = identifierToDevice[device.identifier]
+			def polledDevice = getDeviceWithIdentifier(device.identifier)
 			if (polledDevice != null && polledDevice.state == "Booted")
 				return
 			sleep(500)

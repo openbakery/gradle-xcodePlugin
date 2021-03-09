@@ -4,11 +4,11 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.testdouble.ProgressLoggerStub
 import org.junit.Test
 import org.junit.Before
-import org.openbakery.testdouble.SimulatorControlStub
 import org.openbakery.xcode.DestinationResolver
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +50,7 @@ class TestBuildOutputAppenderTest {
 		project.buildDir = new File('build').absoluteFile
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt")
+		SimulatorControlFake simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt")
 
 		project.xcodebuild.destination {
 			name = "iPad 2"

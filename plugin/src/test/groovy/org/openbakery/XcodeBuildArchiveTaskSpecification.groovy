@@ -6,7 +6,7 @@ import org.apache.commons.lang.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
@@ -51,7 +51,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.plistHelper = plistHelper
 		xcodeBuildArchiveTask.commandRunner = commandRunner
 		xcodeBuildArchiveTask.xcode.commandRunner = commandRunner
-		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7.txt"))
 
 
 		buildOutputDirectory = new File(project.xcodebuild.symRoot, project.xcodebuild.configuration + "-iphoneos")
@@ -622,7 +622,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		def expectedCommandList
 
 		given:
-		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7.txt"))
+		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7.txt"))
 
 		setupProject()
 

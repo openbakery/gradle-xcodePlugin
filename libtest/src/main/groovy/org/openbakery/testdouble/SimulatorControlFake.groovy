@@ -8,12 +8,13 @@ class SimulatorControlFake extends SimulatorControl {
 	File simctlListOutput
 
 	public SimulatorControlFake(String filename) {
-		this(new File("src/test/Resource/", filename))
+		this(new File("../libtest/src/main/Resource/", filename))
 	}
 
 	public SimulatorControlFake(File file) {
 		super(null, null)
 		simctlListOutput = file
+		xcode = new XcodeFake("11.0")
 	}
 
 

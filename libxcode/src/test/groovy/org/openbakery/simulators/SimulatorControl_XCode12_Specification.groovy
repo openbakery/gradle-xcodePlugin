@@ -32,7 +32,7 @@ class SimulatorControl_XCode12_Specification extends Specification {
 	}
 
 	void mockSimctlList() {
-		String json = FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode12-full.json"))
+		String json = FileUtils.readFileToString(new File("../libtest/src/main/Resource/simctl-list-xcode12-full.json"))
 		commandRunner.runWithResult([xcode.getSimctl(), "list", "--json"]) >> json
 	}
 

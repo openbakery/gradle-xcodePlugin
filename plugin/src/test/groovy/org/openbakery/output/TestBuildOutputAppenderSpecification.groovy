@@ -5,7 +5,7 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.ProgressLoggerStub
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import spock.lang.Specification
@@ -27,7 +27,7 @@ class TestBuildOutputAppenderSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDirectory).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		SimulatorControlStub simulatorControl = new SimulatorControlStub("simctl-list-xcode10.txt")
+		SimulatorControlFake simulatorControl = new SimulatorControlFake("simctl-list-xcode10.txt")
 
 		project.xcodebuild.destination {
 			name = "iPad Air"

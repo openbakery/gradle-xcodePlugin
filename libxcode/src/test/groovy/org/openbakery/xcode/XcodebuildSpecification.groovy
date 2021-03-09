@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.output.OutputAppender
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.testdouble.XcodeDummy
 import org.openbakery.testdouble.XcodeFake
 import spock.lang.Specification
@@ -39,7 +40,7 @@ class XcodebuildSpecification extends Specification {
 						new Destination("iPhone 4s")
 		]
 // iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389
-		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode7_1.txt"))
+		destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7_1.txt"))
 		xcodebuild = new Xcodebuild(new File("buildDirectory"), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
 
 		xcodeDummy = new XcodeDummy()

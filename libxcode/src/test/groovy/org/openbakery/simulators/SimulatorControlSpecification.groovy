@@ -2,6 +2,7 @@ package org.openbakery.simulators
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Version
@@ -13,35 +14,37 @@ class SimulatorControlSpecification extends Specification {
 	File projectDir
 	SimulatorControl simulatorControl
 	CommandRunner commandRunner = Mock(CommandRunner);
-	Xcode xcode = Mock(Xcode);
+	Xcode xcode
 
-	def SIMCTL = "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
+	String simctlCommand
 
 	def setup() {
-		xcode.getSimctl() >> SIMCTL
-		xcode.getPath() >> "/Applications/Xcode.app"
+		xcode = new XcodeFake("11.0")
+		simctlCommand = xcode.getSimctl()
 		simulatorControl = new SimulatorControl(commandRunner, xcode)
 	}
 
 	def cleanup() {
 	}
 
-
+	String loadSimctlList(String filename) {
+		return FileUtils.readFileToString(new File("../libtest/src/main/Resource/", filename))
+	}
 
 	void mockXcode7() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7.txt")
 	}
 
 	void mockXcode8() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode8.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode8.txt")
 	}
 
 	void mockXcode9() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode9.txt")
 	}
 
 	void mockXcode9_1() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode9_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode9_1.txt")
 	}
 
 
@@ -65,7 +68,7 @@ class SimulatorControlSpecification extends Specification {
 
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 
 		when:
 		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
@@ -79,7 +82,7 @@ class SimulatorControlSpecification extends Specification {
 
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 
 		when:
 		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.tvOS)
@@ -113,10 +116,12 @@ class SimulatorControlSpecification extends Specification {
 		devices.get(0).state.equals("Shutdown")
 	}
 
+
+
 	def "devices iOS9.1"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 
 		when:
 		List<SimulatorRuntime> runtimes = simulatorControl.getRuntimes()
@@ -143,20 +148,20 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 4s", "com.apple.CoreSimulator.SimDeviceType.iPhone-4s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 4s", "com.apple.CoreSimulator.SimDeviceType.iPhone-4s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
 
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
 
 	}
 
@@ -168,8 +173,8 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "pair", "86895139-2FA4-4E97-A91A-C088A02F7BCD", "FE4BE76C-A3A1-4FB0-8BD4-7B87B4ACEDB2"])
-		1 * commandRunner.runWithResult([SIMCTL, "pair", "2A40D83C-EF8E-46AB-9C50-7DA01DA0B01F", "6F866EE0-55E8-439C-95F4-3FF19DAF553F"])
+		1 * commandRunner.runWithResult([simctlCommand, "pair", "86895139-2FA4-4E97-A91A-C088A02F7BCD", "FE4BE76C-A3A1-4FB0-8BD4-7B87B4ACEDB2"])
+		1 * commandRunner.runWithResult([simctlCommand, "pair", "2A40D83C-EF8E-46AB-9C50-7DA01DA0B01F", "6F866EE0-55E8-439C-95F4-3FF19DAF553F"])
 
 	}
 
@@ -215,7 +220,7 @@ class SimulatorControlSpecification extends Specification {
 	def "get 8.4 device for destination xcode 7.1"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 		Destination destination = new Destination()
 		destination.name = "iPad 2"
 		destination.platform = 'iOS Simulator'
@@ -232,7 +237,7 @@ class SimulatorControlSpecification extends Specification {
 	def "get 9.1 device for destination xcode 7.1"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 		Destination destination = new Destination()
 		destination.name = "iPad 2"
 		destination.platform = 'iOS Simulator'
@@ -250,7 +255,7 @@ class SimulatorControlSpecification extends Specification {
 	def "get all iOS simulator destinations"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 
 		when:
 		List<Destination> allDestinations = simulatorControl.getAllDestinations(Type.iOS)
@@ -266,7 +271,7 @@ class SimulatorControlSpecification extends Specification {
 	def "get all iOS simulator destinations of runtime"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 
 		SimulatorRuntime runtime = simulatorControl.getMostRecentRuntime(Type.iOS)
 		when:
@@ -282,7 +287,7 @@ class SimulatorControlSpecification extends Specification {
 	def "get all tvOS simulator destinations"() {
 		given:
 		commandRunner.runWithResult(["/Applications/Xcode.app/Contents/Developer/usr/bin/xcrun", "-sdk", "iphoneos", "-find", "simctl"]) >> "/Applications/Xcode.app/Contents/Developer/usr/bin/simctl"
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode7_1.txt"))
+		commandRunner.runWithResult([simctlCommand, "list"]) >> loadSimctlList("simctl-list-xcode7_1.txt")
 
 		when:
 		List<Destination> allDestinations = simulatorControl.getAllDestinations(Type.tvOS)
@@ -374,33 +379,33 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Pro (9.7-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPad Pro (12.9-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Pro (9.7-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Pro (12.9-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 
 
 
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 7 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "iPhone 7", "com.apple.CoreSimulator.SimDeviceType.iPhone-7", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 7 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 7", "com.apple.CoreSimulator.SimDeviceType.iPhone-7", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
 
 
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
 
 
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch Series 2 - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple Watch Series 2 - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch Series 2 - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch Series 2 - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
 
-		1 * commandRunner.runWithResult([SIMCTL, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
+		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
 
 	}
 
@@ -486,7 +491,7 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.pair()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "pair", phoneIdentifier, watchIdentifier])
+		1 * commandRunner.runWithResult([simctlCommand, "pair", phoneIdentifier, watchIdentifier])
 
 		where:
 		phoneIdentifier                        | watchIdentifier

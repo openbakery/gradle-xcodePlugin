@@ -2,6 +2,7 @@ package org.openbakery.xcode
 
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
+import org.openbakery.testdouble.SimulatorControlFake
 import spock.lang.Specification
 import org.openbakery.testdouble.XcodeFake
 
@@ -34,7 +35,7 @@ class Xcodebuild_Xcode10_Specification extends Specification {
 						new Destination("iPhone XR")
 		]
 // iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389
-		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode10.txt"))
+		destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode10.txt"))
 		xcodebuild = new Xcodebuild(new File("buildDirectory"), commandRunner, new XcodeFake("10.0"), parameters, destinationResolver.getDestinations(parameters))
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';

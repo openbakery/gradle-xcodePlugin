@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.simulators.SimulatorControl
 import org.openbakery.test.TestResultParser
-import org.openbakery.testdouble.SimulatorControlStub
+import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
@@ -40,7 +40,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 		xcodeTestTask.xcode.commandRunner = commandRunner
 
-		xcodeTestTask.destinationResolver.simulatorControl = new SimulatorControlStub("simctl-list-xcode7.txt");
+		xcodeTestTask.destinationResolver.simulatorControl = new SimulatorControlFake("simctl-list-xcode7.txt");
 
 		project.xcodebuild.destination {
 			name = "iPad 2"
