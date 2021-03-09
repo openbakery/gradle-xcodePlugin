@@ -69,10 +69,16 @@ class SimulatorControl {
 	}
 
 	void parseJson() {
-		String simctlList = simctl("list", "--json")
+		String simctlList = simctlWithResult("list", "--json")
 
 		def jsonSlurper = new JsonSlurper()
 		def jsonData = jsonSlurper.parseText(simctlList)
+
+		if (jsonData.devicetypes instanceof ArrayList) {
+			jsonData.devicetypes.eachWithIndex { item, index ->
+				deviceTypes << new SimulatorDeviceType(item.name, item.identifier)
+			}
+		}
 
 		if (jsonData.runtimes instanceof ArrayList) {
 			jsonData.runtimes.eachWithIndex { item, index ->
@@ -119,7 +125,7 @@ class SimulatorControl {
 
 	void parseLegacy() {
 		Section section = null
-		String simctlList = simctl("list")
+		String simctlList = simctlWithResult("list")
 
 		ArrayList<SimulatorDevice> simulatorDevices = null
 
@@ -315,6 +321,7 @@ class SimulatorControl {
 		return null
 	}
 
+
 	List <SimulatorDevice> getDevices(SimulatorRuntime runtime) {
 		return getDevices().get(runtime)
 	}
@@ -343,13 +350,20 @@ class SimulatorControl {
 	}
 
 
-	String simctl(String... commands) {
+	String simctlWithResult(String... commands) {
 		ArrayList<String>parameters = new ArrayList<>()
 		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
 		return commandRunner.runWithResult(parameters)
 	}
 
+
+	void simctl(String... commands) {
+		ArrayList<String>parameters = new ArrayList<>()
+		parameters.add(xcode.getSimctl())
+		parameters.addAll(commands)
+		commandRunner.run(parameters)
+	}
 
 
 
@@ -359,19 +373,44 @@ class SimulatorControl {
 			for (SimulatorDevice device in entry.getValue()) {
 				if (device.available) {
 					println "Delete simulator: '" + device.name + "' " + device.identifier
-					simctl("delete", device.identifier)
+					simctlWithResult("delete", device.identifier)
 				}
 			}
 		}
 	}
 
-
 	void createAll() {
+
+		if (xcode.version.major < 12) {
+			create(getDeviceTypes())
+			return
+		}
+
+		def types = getDeviceTypes(["iPhone-8",
+																"iPhone-8-Plus",
+																"iPhone-11",
+																"iPhone-11-Pro",
+																"iPhone-11-Pro-Max",
+																"iPhone-SE--2nd-generation-",
+																"iPhone-12-mini",
+																"iPhone-12",
+																"iPhone-12-Pro",
+																"iPhone-12-Pro-Max",
+																"iPod-touch--7th-generation-",
+																"iPad-Pro--9-7-inch-",
+																"iPad-Pro--11-inch---2nd-generation-",
+																"iPad-Pro--12-9-inch---4th-generation-",
+																"iPad--8th-generation-",
+																"iPad-Air--4th-generation-"])
+		create(types)
+	}
+
+	void create(List<SimulatorDeviceType> deviceTypes) {
 		for (SimulatorRuntime runtime in getRuntimes()) {
 
 			if (runtime.available) {
 
-				for (SimulatorDeviceType deviceType in getDeviceTypes()) {
+				for (SimulatorDeviceType deviceType in deviceTypes) {
 
 					if (deviceType.canCreateWithRuntime(runtime)) {
 						logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
@@ -391,76 +430,29 @@ class SimulatorControl {
 	void pair() {
 		parse() // read the created ids again
 
-		def versionPairing = [
-			"9.0" : "watchOS 2.0",
-			"10.0" : "watchOS 3.0",
-			"11.0" : "watchOS 4.0",
-			"11.1" : "watchOS 4.1",
-			"12.0" : "watchOS 5.0"
-		]
+		SimulatorRuntime iOSRuntime = getMostRecentRuntime(Type.iOS)
+		SimulatorRuntime watchOSRuntime = getMostRecentRuntime(Type.watchOS)
 
-		def pairing = [
-			"9.0": [
-				"iPhone 6": "Apple Watch - 38mm",
-				"iPhone 6 Plus": "Apple Watch - 42mm"
-			],
-			"10.0": [
-				"iPhone 6s": "Apple Watch - 38mm",
-				"iPhone 6s Plus": "Apple Watch - 42mm",
-				"iPhone 7": "Apple Watch Series 2 - 38mm",
-				"iPhone 7 Plus": "Apple Watch Series 2 - 42mm"
-			],
-			"11.0": [
-				"iPhone 6s": "Apple Watch - 38mm",
-				"iPhone 6s Plus": "Apple Watch - 42mm",
-				"iPhone 7": "Apple Watch Series 2 - 38mm",
-				"iPhone 7 Plus": "Apple Watch Series 2 - 42mm",
-			],
-			"11.1": [
-			    "iPhone 7": "Apple Watch Series 2 - 38mm",
-			    "iPhone 7 Plus": "Apple Watch Series 2 - 42mm",
-			    "iPhone 8": "Apple Watch Series 3 - 38mm",
-			    "iPhone 8 Plus": "Apple Watch Series 3 - 42mm"
+		def identifiers = getPairingIdentifiers(iOSRuntime.version)
 
-			],
-			"12.0": [
-				"iPhone 7" : "Apple Watch Series 2 - 38mm",
-				"iPhone 7 Plus" : "Apple Watch Series 2 - 42mm",
-				"iPhone X" : "Apple Watch Series 3 - 38mm",
-				"iPhone XS" : "Apple Watch Series 4 - 40mm",
-				"iPhone XS Max" : "Apple Watch Series 4 - 44mm"
-			]
+		identifiers.each {phoneIdentifierString, watchIdentifierString ->
 
-		]
+			def phone = getDeviceWithTypeIdentifier(phoneIdentifierString, Type.iOS)
+			def watch = getDeviceWithTypeIdentifier(watchIdentifierString, Type.watchOS)
 
-		getRuntimes(Type.iOS).each { iOSRuntime ->
-			def iOSVersionString = iOSRuntime.version.toString()
-			def watchOS = versionPairing[iOSVersionString]
-			if (watchOS == null) {
-				logger.debug("no watchOS pairing found")
-				return
-			}
-
-			def watchOSRuntimes = getRuntimes(watchOS)
-			if (watchOSRuntimes == null) {
-				logger.debug("no watchOSRuntimes found")
-				return
-			}
-
-			watchOSRuntimes.each { watchOSRuntime ->
-				pairing.get(iOSVersionString).each { phone, watch ->
-					SimulatorDevice phoneDevice = getDevice(iOSRuntime, phone)
-					SimulatorDevice watchDevice = getDevice(watchOSRuntime, watch)
-					logger.debug("pair phone: {}", phoneDevice)
-					logger.debug("with watch: {}", watchDevice)
-					try {
-						simctl("pair", phoneDevice.identifier, watchDevice.identifier)
-					} catch (CommandRunnerException ex) {
-						println "Unable to pair watch '" + watchDevice.name + "' with phone '" + phoneDevice.name + "'"
-					}
+			if (phone != null && watch != null) {
+				logger.debug("pair phone: {}", phone)
+				logger.debug("with watch: {}", watch)
+				try {
+					simctl("pair", phone.identifier, watch.identifier)
+				} catch (CommandRunnerException ignored) {
+					println "Unable to pair watch '" + watch.name + "' with phone '" + phone.name + "'"
 				}
 			}
+
+
 		}
+
 	}
 
 
@@ -539,5 +531,92 @@ class SimulatorControl {
 			allDestinations << destination
 		}
 		return allDestinations
+	}
+
+
+	SimulatorDeviceType getDeviceType(String identifier) {
+		for (SimulatorDeviceType type : deviceTypes) {
+			if (type.identifier == identifier) {
+				return type
+			}
+			if (type.shortIdentifier == identifier) {
+				return type
+			}
+		}
+		return null
+	}
+
+
+	List<SimulatorDeviceType> getDeviceTypes(List<String> identifiers) {
+		def result = new ArrayList<SimulatorDeviceType>()
+		for (String identifier : identifiers) {
+			def type = getDeviceType(identifier)
+			if (type != null) {
+				result << type
+			}
+		}
+		return result
+	}
+
+	SimulatorDevice getDeviceWithTypeIdentifier(String identifier, Type type) {
+		SimulatorDeviceType deviceType = getDeviceType(identifier)
+		SimulatorRuntime runtime = getMostRecentRuntime(type)
+		for (SimulatorDevice device : getDevices(runtime)) {
+			if (device.name == deviceType.name) {
+				return device
+			}
+		}
+		return null
+	}
+
+	Map<String, String> getPairingIdentifiers(Version iOSVersion) {
+
+		def pairing = [
+			"9"   : [
+				"iPhone-6"     : "Apple-Watch-38mm",
+				"iPhone-6-Plus": "Apple-Watch-42mm"
+			],
+			"10"  : [
+				"iPhone-6s"     : "Apple-Watch-38mm",
+				"iPhone-6s-Plus": "Apple-Watch-42mm",
+				"iPhone-7"      : "Apple-Watch-Series-2-38mm",
+				"iPhone-7-Plus" : "Apple-Watch-Series-2-42mm"
+			],
+			"11"  : [
+				"iPhone-6s"     : "Apple-Watch-38mm",
+				"iPhone-6s-Plus": "Apple-Watch-42mm",
+				"iPhone-7"      : "Apple-Watch-Series-2-38mm",
+				"iPhone-7-Plus" : "Apple-Watch-Series-2-42mm"
+			],
+			"11.1": [
+				"iPhone-7"     : "Apple-Watch-Series-2-38mm",
+				"iPhone-7-Plus": "Apple-Watch-Series-2-42mm",
+				"iPhone-8"     : "Apple-Watch-Series-3-38mm",
+				"iPhone-8-Plus": "Apple-Watch-Series-3-42mm"
+			],
+			"12"  : [
+				"iPhone-7"     : "Apple-Watch-Series-2-38mm",
+				"iPhone-7-Plus": "Apple-Watch-Series-2-42mm",
+				"iPhone-X"     : "Apple-Watch-Series-3-38mm",
+				"iPhone-XS"    : "Apple-Watch-Series-4-40mm",
+				"iPhone-XS-Max": "Apple-Watch-Series-4-44mm"
+			],
+			"13"  : [
+				"iPhone-11": "Apple-Watch-Series-5-40mm",
+				"iPhone-11-Pro-Max": "Apple-Watch-Series-5-44mm"
+			],
+			"14"  : [
+				"iPhone-12-mini": "Apple-Watch-Series-5-40mm",
+				"iPhone-12": "Apple-Watch-Series-5-44mm",
+				"iPhone-12-Pro": "Apple-Watch-Series-6-40mm",
+				"iPhone-12-Pro-Max": "Apple-Watch-Series-6-44mm"
+			]
+		]
+
+		if (iOSVersion.major == 11 && iOSVersion.minor > 0) {
+			return pairing["11.1"]
+		}
+
+		return pairing[iOSVersion.major.toString()]
 	}
 }

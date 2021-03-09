@@ -104,7 +104,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name             | identifier
@@ -136,7 +136,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name                                    | identifier
@@ -161,7 +161,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name                          | identifier
@@ -183,7 +183,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.pair()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "pair", phoneIdentifier, watchIdentifier])
+		1 * commandRunner.run([SIMCTL, "pair", phoneIdentifier, watchIdentifier])
 
 		where:
 		phoneIdentifier                        | watchIdentifier
@@ -204,7 +204,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name                     | identifier

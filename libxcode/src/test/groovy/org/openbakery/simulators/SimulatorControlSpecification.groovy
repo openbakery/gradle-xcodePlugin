@@ -148,20 +148,19 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 4s", "com.apple.CoreSimulator.SimDeviceType.iPhone-4s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
-
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 4s", "com.apple.CoreSimulator.SimDeviceType.iPhone-4s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-9-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-2-0"])
 
 	}
 
@@ -173,9 +172,8 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([simctlCommand, "pair", "86895139-2FA4-4E97-A91A-C088A02F7BCD", "FE4BE76C-A3A1-4FB0-8BD4-7B87B4ACEDB2"])
-		1 * commandRunner.runWithResult([simctlCommand, "pair", "2A40D83C-EF8E-46AB-9C50-7DA01DA0B01F", "6F866EE0-55E8-439C-95F4-3FF19DAF553F"])
-
+		1 * commandRunner.run([simctlCommand, "pair", "86895139-2FA4-4E97-A91A-C088A02F7BCD", "FE4BE76C-A3A1-4FB0-8BD4-7B87B4ACEDB2"])
+		1 * commandRunner.run([simctlCommand, "pair", "2A40D83C-EF8E-46AB-9C50-7DA01DA0B01F", "6F866EE0-55E8-439C-95F4-3FF19DAF553F"])
 	}
 
 
@@ -379,33 +377,25 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Pro (9.7-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPad Pro (12.9-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-
-
-
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 7 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "iPhone 7", "com.apple.CoreSimulator.SimDeviceType.iPhone-7", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
-
-
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
-
-
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch Series 2 - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple Watch Series 2 - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
-
-		1 * commandRunner.runWithResult([simctlCommand, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 5", "com.apple.CoreSimulator.SimDeviceType.iPhone-5", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 5s", "com.apple.CoreSimulator.SimDeviceType.iPhone-5s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6", "com.apple.CoreSimulator.SimDeviceType.iPhone-6", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6s Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 6s", "com.apple.CoreSimulator.SimDeviceType.iPhone-6s", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad 2", "com.apple.CoreSimulator.SimDeviceType.iPad-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Retina", "com.apple.CoreSimulator.SimDeviceType.iPad-Retina", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Air", "com.apple.CoreSimulator.SimDeviceType.iPad-Air", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Air 2", "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Pro (9.7-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPad Pro (12.9-inch)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 7 Plus", "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "iPhone 7", "com.apple.CoreSimulator.SimDeviceType.iPhone-7", "com.apple.CoreSimulator.SimRuntime.iOS-10-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple Watch - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple Watch - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple Watch Series 2 - 38mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-38mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple Watch Series 2 - 42mm", "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-2-42mm", "com.apple.CoreSimulator.SimRuntime.watchOS-3-0"])
+		1 * commandRunner.run([simctlCommand, "create", "Apple TV 1080p", "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p", "com.apple.CoreSimulator.SimRuntime.tvOS-10-0"])
 
 	}
 
@@ -491,7 +481,7 @@ class SimulatorControlSpecification extends Specification {
 		simulatorControl.pair()
 
 		then:
-		1 * commandRunner.runWithResult([simctlCommand, "pair", phoneIdentifier, watchIdentifier])
+		1 * commandRunner.run([simctlCommand, "pair", phoneIdentifier, watchIdentifier])
 
 		where:
 		phoneIdentifier                        | watchIdentifier

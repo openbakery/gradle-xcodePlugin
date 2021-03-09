@@ -56,7 +56,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		task.run()
 
 		then:
-		1* simulatorControl.simctl(["install", "booted", project.xcodebuild.applicationBundle.absolutePath])
+		1* simulatorControl.simctlWithResult(["install", "booted", project.xcodebuild.applicationBundle.absolutePath])
 	}
 
 	def "codesign is not null"() {

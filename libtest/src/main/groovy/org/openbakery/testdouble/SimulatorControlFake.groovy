@@ -19,7 +19,7 @@ class SimulatorControlFake extends SimulatorControl {
 
 
 	@Override
-	String simctl(String... commands) {
+	String simctlWithResult(String... commands) {
 		if (commands == ["list"]) {
 			return FileUtils.readFileToString(simctlListOutput)
 		}

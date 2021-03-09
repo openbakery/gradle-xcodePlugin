@@ -26,7 +26,7 @@ class SimulatorInstallAppTask extends AbstractSimulatorTask {
 			logger.lifecycle("Signing " + project.xcodebuild.applicationBundle.absolutePath)
 			getCodesign().sign(new Bundle(project.xcodebuild.applicationBundle, Type.iOS, plistHelper))
 			logger.lifecycle("Installing " + project.xcodebuild.applicationBundle.absolutePath)
-			simulatorControl.simctl("install", "booted", project.xcodebuild.applicationBundle.absolutePath)
+			simulatorControl.simctlWithResult("install", "booted", project.xcodebuild.applicationBundle.absolutePath)
 		} catch (CommandRunnerException ex) {
 			println "Unable to install" + project.xcodebuild.applicationBundle.absolutePath
 			throw ex

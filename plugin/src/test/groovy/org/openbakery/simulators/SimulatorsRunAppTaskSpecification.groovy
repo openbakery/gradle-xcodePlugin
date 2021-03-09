@@ -80,7 +80,7 @@ class SimulatorsRunAppTaskSpecification extends Specification {
 		task.run()
 
 		then:
-		1 * simulatorControl.simctl("launch", "booted", "com.example.Example")
+		1 * simulatorControl.simctlWithResult("launch", "booted", "com.example.Example")
 	}
 
 

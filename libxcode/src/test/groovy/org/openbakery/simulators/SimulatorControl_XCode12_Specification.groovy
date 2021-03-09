@@ -19,8 +19,6 @@ class SimulatorControl_XCode12_Specification extends Specification {
 
 	def setup() {
 		xcode = new XcodeFake("12.0")
-		//xcode.getSimctl() >> SIMCTL
-		//xcode.getPath() >> "/Applications/Xcode.app"
 		simulatorControl = new SimulatorControl(commandRunner, xcode)
 
 	}
@@ -256,6 +254,103 @@ class SimulatorControl_XCode12_Specification extends Specification {
 		2     | "E69B935F-ACE1-4B6E-BCAC-0B2569391628" | "214C3EDF-B3E0-4385-B984-41D49255AF37" | "CCDBE676-F230-430A-BA18-E6122A291572"
 		3     | "6EA69788-B203-4A34-A088-067560A060F2" | "3D1028F3-D08F-4509-A5D9-B6DE883BDF45" | "870044FE-3FF1-4984-A95B-2F46CF04BAB0"
 
+	}
+
+
+	def "has 64 devices types"() {
+		given:
+		mockSimctlList()
+
+		when:
+		simulatorControl.parse()
+
+		then:
+		simulatorControl.deviceTypes.size() == 64
+	}
+
+	def "has devices types values"() {
+		given:
+		mockSimctlList()
+
+		expect:
+		simulatorControl.deviceTypes[index].identifier == identifier
+		simulatorControl.deviceTypes[index].name == name
+		simulatorControl.deviceTypes[index].shortIdentifier == shortIdentifier
+
+		where:
+		index | identifier                                                          | name                          | shortIdentifier
+		0     | "com.apple.CoreSimulator.SimDeviceType.iPhone-4s"                   | "iPhone 4s"                   | "iPhone-4s"
+		10    | "com.apple.CoreSimulator.SimDeviceType.iPhone-8"                    | "iPhone 8"                    | "iPhone-8"
+		24    | "com.apple.CoreSimulator.SimDeviceType.iPod-touch--7th-generation-" | "iPod touch (7th generation)" | "iPod-touch--7th-generation-"
+		49    | "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-1080p"           | "Apple TV 4K (at 1080p)"      | "Apple-TV-4K-1080p"
+		63    | "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-44mm"   | "Apple Watch Series 6 - 44mm" | "Apple-Watch-Series-6-44mm"
+
+	}
+
+
+	def "create creates only 16+4 Xcode12 devices"() {
+		// given
+		def runtime = "com.apple.CoreSimulator.SimRuntime.iOS-14-4"
+		mockSimctlList()
+		simulatorControl.parse()
+
+		when:
+		simulatorControl.createAll()
+
+		then:
+		20 * commandRunner.run(_)
+		// 16 sim create and 4 pairing
+	}
+
+
+	def "create creates only Xcode12 devices"() {
+		// given
+		def runtime = "com.apple.CoreSimulator.SimRuntime.iOS-14-4"
+		mockSimctlList()
+		simulatorControl.parse()
+
+		when:
+		simulatorControl.createAll()
+
+		then:
+		1 * commandRunner.run([xcode.getSimctl(), "create", name, identifier, runtime])
+
+		where:
+		name                                    | identifier
+		"iPhone 8"                              | "com.apple.CoreSimulator.SimDeviceType.iPhone-8"
+		"iPhone 8 Plus"                         | "com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus"
+		"iPhone 11"                             | "com.apple.CoreSimulator.SimDeviceType.iPhone-11"
+		"iPhone 11 Pro"                         | "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro"
+		"iPhone 11 Pro Max"                     | "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro-Max"
+		"iPhone SE (2nd generation)"            | "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-"
+		"iPhone 12 mini"                        | "com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini"
+		"iPhone 12"                             | "com.apple.CoreSimulator.SimDeviceType.iPhone-12"
+		"iPhone 12 Pro"                         | "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro"
+		"iPhone 12 Pro Max"                     | "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro-Max"
+		"iPod touch (7th generation)"           | "com.apple.CoreSimulator.SimDeviceType.iPod-touch--7th-generation-"
+		"iPad Pro (9.7-inch)"                   | "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-"
+		"iPad Pro (11-inch) (2nd generation)"   | "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-"
+		"iPad Pro (12.9-inch) (4th generation)" | "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-"
+		"iPad (8th generation)"                 | "com.apple.CoreSimulator.SimDeviceType.iPad--8th-generation-"
+		"iPad Air (4th generation)"             | "com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-"
+
+	}
+
+
+	def "pair iPhone and Watch"() {
+		// given
+		def runtime = "com.apple.CoreSimulator.SimRuntime.iOS-14-4"
+		mockSimctlList()
+		simulatorControl.parse()
+
+		when:
+		simulatorControl.createAll()
+
+		then:
+		1 * commandRunner.run([xcode.getSimctl(), "pair", "870044FE-3FF1-4984-A95B-2F46CF04BAB0", "3D1028F3-D08F-4509-A5D9-B6DE883BDF45"])
+		1 * commandRunner.run([xcode.getSimctl(), "pair", "CCDBE676-F230-430A-BA18-E6122A291572", "214C3EDF-B3E0-4385-B984-41D49255AF37"])
+		1 * commandRunner.run([xcode.getSimctl(), "pair", "996BF83A-74B2-4DF3-8ED7-2FD867C4608D", "5B1C6FB9-B24F-420E-A2E5-1CF3C1E4F0DF"])
+		1 * commandRunner.run([xcode.getSimctl(), "pair", "94F067EA-00BE-4EC2-A9C9-E9EEFCB3AC47", "868033F9-BC38-4DED-AAD0-0D7022A8C627"])
 	}
 
 }
