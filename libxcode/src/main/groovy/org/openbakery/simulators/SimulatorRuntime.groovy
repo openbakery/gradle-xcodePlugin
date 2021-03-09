@@ -12,6 +12,18 @@ class SimulatorRuntime {
 	boolean available = true
 	Type type
 
+
+	public SimulatorRuntime(String name, String version, String buildNumber, String identifier, boolean available) {
+		this.name = name
+		if (version != null) {
+			this.version = new Version(version)
+		}
+		this.buildNumber = buildNumber
+		this.identifier = identifier
+		this.shortIdentifier = identifier - "com.apple.CoreSimulator.SimRuntime."
+		this.type = Type.typeFromString(name)
+	}
+
 	public SimulatorRuntime(String line) {
 
 		def tokenizer = new StringTokenizer(line, "()")
@@ -80,5 +92,5 @@ class SimulatorRuntime {
 		return identifier.hashCode()
 	}
 
-	
+
 }

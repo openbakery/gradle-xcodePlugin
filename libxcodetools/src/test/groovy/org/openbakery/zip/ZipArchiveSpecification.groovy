@@ -31,11 +31,9 @@ class ZipArchiveSpecification extends Specification {
 				commandList = arguments[1]
 		}
 		commandList == [
-			"/usr/bin/zip",
-			"--symlinks",
-			"--recurse-paths",
-			new File("Test.zip").absolutePath,
-			"Test.txt"
+			xcode.getSimctl(),
+			"list",
+			"--json"
 		]
 	}
 

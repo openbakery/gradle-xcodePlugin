@@ -9,6 +9,13 @@ class SimulatorDevice {
 	public String state
 	public boolean available = true
 
+	public SimulatorDevice(String name, String identifier, String state, boolean available) {
+		this.name = name
+		this.identifier = identifier
+		this.state = state
+		this.available = available
+	}
+
 	public SimulatorDevice(String line) {
 		//   iPhone 4s (73C126C8-FD53-44EA-80A3-84F5F19508C0) (Shutdown)
     // or

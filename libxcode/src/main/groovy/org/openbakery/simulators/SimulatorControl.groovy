@@ -1,5 +1,6 @@
 package org.openbakery.simulators
 
+import groovy.json.JsonSlurper
 import org.openbakery.*
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
@@ -49,12 +50,11 @@ class SimulatorControl {
 
 
 
-
-
 	public SimulatorControl(CommandRunner commandRunner, Xcode xcode) {
 		this.commandRunner = commandRunner
 		this.xcode = xcode
 	}
+
 
 	void parse() {
 		runtimes = new ArrayList<>()
@@ -63,7 +63,63 @@ class SimulatorControl {
     identifierToDevice = new HashMap<>()
 		devicePairs = new ArrayList<>()
 
+		if (xcode.version.major < 12) {
+			parseLegacy()
+		} else {
+			parseJson()
+		}
+	}
 
+	void parseJson() {
+		String simctlList = simctl("list", "--json")
+
+		def jsonSlurper = new JsonSlurper()
+		def jsonData = jsonSlurper.parseText(simctlList)
+
+		if (jsonData.runtimes instanceof ArrayList) {
+			jsonData.runtimes.eachWithIndex { item, index ->
+				def runtime = new SimulatorRuntime(
+					item.name,
+					item.version,
+					item.buildversion,
+					item.identifier,
+					item.isAvailable)
+				this.runtimes << runtime
+			}
+		}
+
+
+		if (jsonData.devices instanceof Map) {
+
+			jsonData.devices.each { key, value ->
+				def runtimeDevices = new ArrayList<>()
+
+				value.eachWithIndex { item, index ->
+					def device = new SimulatorDevice(item.name, item.udid, item.state, item.isAvailable)
+					runtimeDevices << device
+				}
+
+				SimulatorRuntime runtime = getRuntimeFromIdentifier(key.toString())
+				if (runtime != null) {
+					devices[runtime] = runtimeDevices
+				}
+			}
+		}
+
+		if (jsonData.pairs instanceof Map) {
+			jsonData.pairs.each { identifier, value ->
+				def watch = getDeviceWithIdentifier(value.watch.udid)
+				def phone = getDeviceWithIdentifier(value.phone.udid)
+
+				if (watch != null && phone != null) {
+					devicePairs << new SimulatorDevicePair(identifier, watch, phone)
+				}
+			}
+		}
+
+	}
+
+	void parseLegacy() {
 		Section section = null
 		String simctlList = simctl("list")
 
@@ -147,6 +203,15 @@ class SimulatorControl {
 	SimulatorRuntime parseDevicesRuntime(String line) {
 		for (SimulatorRuntime runtime in runtimes) {
 			if (line.equals("-- " + runtime.name + " --")) {
+				return runtime
+			}
+		}
+		return null
+	}
+
+	SimulatorRuntime getRuntimeFromIdentifier(String identifier) {
+		for (SimulatorRuntime runtime in runtimes) {
+			if (runtime.identifier == identifier) {
 				return runtime
 			}
 		}
