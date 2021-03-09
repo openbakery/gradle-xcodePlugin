@@ -10,13 +10,7 @@ import org.openbakery.AbstractXcodeTask
 import org.openbakery.XcodeBuildPluginExtension
 import org.openbakery.codesign.Security
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 23.08.13
- * Time: 11:39
- * To change this template use File | Settings | File Templates.
- */
+
 abstract class AbstractKeychainTask extends AbstractXcodeTask {
 
 	Security security
@@ -42,7 +36,7 @@ abstract class AbstractKeychainTask extends AbstractXcodeTask {
 	 */
 	def removeGradleKeychainsFromSearchList() {
 		List<File>keychainList = getKeychainList()
-		logger.debug("project.xcodebuild.signing.keychain should not be removed: {}", project.xcodebuild.signing.keychainPathInternal)
+		logger.debug("project.xcodebuild.signing.keychain should be removed: {}", project.xcodebuild.signing.keychainPathInternal)
 		if (project.xcodebuild.signing.keychainPathInternal != null) {
 			keychainList.remove(project.xcodebuild.signing.keychainPathInternal)
 		}
