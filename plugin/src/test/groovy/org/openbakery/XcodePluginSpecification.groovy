@@ -21,6 +21,14 @@ import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.simulators.SimulatorBootTask
+import org.openbakery.simulators.SimulatorInstallAppTask
+import org.openbakery.simulators.SimulatorKillTask
+import org.openbakery.simulators.SimulatorRunAppTask
+import org.openbakery.simulators.SimulatorStartTask
+import org.openbakery.simulators.SimulatorsCleanTask
+import org.openbakery.simulators.SimulatorsCreateTask
+import org.openbakery.simulators.SimulatorsListTask
 import spock.lang.Specification
 
 import static org.hamcrest.Matchers.hasItem
@@ -224,6 +232,23 @@ class XcodePluginSpecification extends Specification {
 		project.tasks.findByName('carthageUpdate') instanceof CarthageUpdateTask
 	}
 
+
+	def "has simulator tasks"() {
+		expect:
+		// adds _Decorated to the class name
+		project.tasks.findByName(name).getClass().getName().startsWith(classType.getName())
+
+		where:
+		name                  | classType
+		"simulatorsList"      | SimulatorsListTask.class
+		"simulatorsCreate"    | SimulatorsCreateTask.class
+		"simulatorsClean"     | SimulatorsCleanTask.class
+		"simulatorStart"      | SimulatorStartTask.class
+		"simulatorInstallApp" | SimulatorInstallAppTask.class
+		"simulatorRunApp"     | SimulatorRunAppTask.class
+		"simulatorKill"       | SimulatorKillTask.class
+		"simulatorBoot"       | SimulatorBootTask.class
+	}
 
 
 }

@@ -7,7 +7,6 @@ import org.openbakery.xcode.Destination
 
 class AbstractSimulatorTask extends AbstractXcodeTask {
 
-
 	public AbstractSimulatorTask() {
 	}
 

@@ -14,8 +14,6 @@ class SimulatorStartTask extends AbstractSimulatorTask {
 
 	@TaskAction
 	void run() {
-
-
 		Destination destination = getDestination()
 
 		SimulatorDevice device = simulatorControl.getDevice(destination)

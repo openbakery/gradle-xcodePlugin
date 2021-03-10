@@ -69,7 +69,7 @@ class SimulatorControl {
 	}
 
 	void parseJson() {
-		String simctlList = simctlWithResult("list", "--json")
+		String simctlList = executeWithResult("list", "--json")
 
 		def jsonSlurper = new JsonSlurper()
 		def jsonData = jsonSlurper.parseText(simctlList)
@@ -125,7 +125,7 @@ class SimulatorControl {
 
 	void parseLegacy() {
 		Section section = null
-		String simctlList = simctlWithResult("list")
+		String simctlList = executeWithResult("list")
 
 		ArrayList<SimulatorDevice> simulatorDevices = null
 
@@ -350,7 +350,7 @@ class SimulatorControl {
 	}
 
 
-	String simctlWithResult(String... commands) {
+	String executeWithResult(String... commands) {
 		ArrayList<String>parameters = new ArrayList<>()
 		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
@@ -358,7 +358,7 @@ class SimulatorControl {
 	}
 
 
-	void simctl(String... commands) {
+	void execute(String... commands) {
 		ArrayList<String>parameters = new ArrayList<>()
 		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
@@ -366,6 +366,9 @@ class SimulatorControl {
 	}
 
 
+	void boot(String deviceIdentifier) {
+		execute("boot", deviceIdentifier)
+	}
 
 	void deleteAll() {
 
@@ -373,7 +376,7 @@ class SimulatorControl {
 			for (SimulatorDevice device in entry.getValue()) {
 				if (device.available) {
 					println "Delete simulator: '" + device.name + "' " + device.identifier
-					simctlWithResult("delete", device.identifier)
+					executeWithResult("delete", device.identifier)
 				}
 			}
 		}
@@ -415,7 +418,7 @@ class SimulatorControl {
 					if (deviceType.canCreateWithRuntime(runtime)) {
 						logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
 						try {
-							simctl("create", deviceType.name, deviceType.identifier, runtime.identifier)
+							execute("create", deviceType.name, deviceType.identifier, runtime.identifier)
 							println "Create simulator: '" + deviceType.name + "' for " + runtime.version
 						} catch (CommandRunnerException ex) {
 							println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
@@ -444,7 +447,7 @@ class SimulatorControl {
 				logger.debug("pair phone: {}", phone)
 				logger.debug("with watch: {}", watch)
 				try {
-					simctl("pair", phone.identifier, watch.identifier)
+					execute("pair", phone.identifier, watch.identifier)
 				} catch (CommandRunnerException ignored) {
 					println "Unable to pair watch '" + watch.name + "' with phone '" + phone.name + "'"
 				}
@@ -461,7 +464,7 @@ class SimulatorControl {
 			for (SimulatorDevice device in entry.getValue()) {
 				if (device.available) {
 					println "Erase simulator: '" + device.name + "' " + device.identifier
-					simctl("erase", device.identifier)
+					execute("erase", device.identifier)
 				}
 			}
 		}

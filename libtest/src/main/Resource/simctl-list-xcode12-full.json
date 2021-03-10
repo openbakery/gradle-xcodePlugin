@@ -546,8 +546,8 @@
     "com.apple.CoreSimulator.SimRuntime.iOS-14-3" : [
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/23B73C37-9C99-43A0-82C9-12E34E5D9FDA\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/23B73C37-9C99-43A0-82C9-12E34E5D9FDA",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/23B73C37-9C99-43A0-82C9-12E34E5D9FDA\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/23B73C37-9C99-43A0-82C9-12E34E5D9FDA",
         "udid" : "23B73C37-9C99-43A0-82C9-12E34E5D9FDA",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-8",
@@ -556,8 +556,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/F839E94D-3B0F-4E34-9282-44159E1ACC4B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/F839E94D-3B0F-4E34-9282-44159E1ACC4B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/F839E94D-3B0F-4E34-9282-44159E1ACC4B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/F839E94D-3B0F-4E34-9282-44159E1ACC4B",
         "udid" : "F839E94D-3B0F-4E34-9282-44159E1ACC4B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus",
@@ -566,8 +566,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/428F9D6D-EA51-4523-AE1F-EFA5F4659EB9\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/428F9D6D-EA51-4523-AE1F-EFA5F4659EB9",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/428F9D6D-EA51-4523-AE1F-EFA5F4659EB9\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/428F9D6D-EA51-4523-AE1F-EFA5F4659EB9",
         "udid" : "428F9D6D-EA51-4523-AE1F-EFA5F4659EB9",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
@@ -576,8 +576,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/1E1AE1C8-6498-48F5-9514-1CB831762E1D\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/1E1AE1C8-6498-48F5-9514-1CB831762E1D",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/1E1AE1C8-6498-48F5-9514-1CB831762E1D\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/1E1AE1C8-6498-48F5-9514-1CB831762E1D",
         "udid" : "1E1AE1C8-6498-48F5-9514-1CB831762E1D",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro",
@@ -586,8 +586,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/EC51E33A-3EC7-4F90-B8CB-DEA79245DAEE\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/EC51E33A-3EC7-4F90-B8CB-DEA79245DAEE",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/EC51E33A-3EC7-4F90-B8CB-DEA79245DAEE\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/EC51E33A-3EC7-4F90-B8CB-DEA79245DAEE",
         "udid" : "EC51E33A-3EC7-4F90-B8CB-DEA79245DAEE",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro-Max",
@@ -596,8 +596,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/E63B85A7-D7C5-451C-BCBD-24D5266FD0B8\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/E63B85A7-D7C5-451C-BCBD-24D5266FD0B8",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/E63B85A7-D7C5-451C-BCBD-24D5266FD0B8\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/E63B85A7-D7C5-451C-BCBD-24D5266FD0B8",
         "udid" : "E63B85A7-D7C5-451C-BCBD-24D5266FD0B8",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-",
@@ -606,8 +606,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A5533CD2-491E-49C0-AB01-66F6FEC4F443\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A5533CD2-491E-49C0-AB01-66F6FEC4F443",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A5533CD2-491E-49C0-AB01-66F6FEC4F443\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A5533CD2-491E-49C0-AB01-66F6FEC4F443",
         "udid" : "A5533CD2-491E-49C0-AB01-66F6FEC4F443",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini",
@@ -616,8 +616,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/8108419B-9F4C-4367-8D78-3BD8DB8F0C14\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/8108419B-9F4C-4367-8D78-3BD8DB8F0C14",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/8108419B-9F4C-4367-8D78-3BD8DB8F0C14\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/8108419B-9F4C-4367-8D78-3BD8DB8F0C14",
         "udid" : "8108419B-9F4C-4367-8D78-3BD8DB8F0C14",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12",
@@ -626,8 +626,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/BF3AB503-2E1A-4D24-819B-CE2238CBB5A9\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/BF3AB503-2E1A-4D24-819B-CE2238CBB5A9",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/BF3AB503-2E1A-4D24-819B-CE2238CBB5A9\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/BF3AB503-2E1A-4D24-819B-CE2238CBB5A9",
         "udid" : "BF3AB503-2E1A-4D24-819B-CE2238CBB5A9",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro",
@@ -636,8 +636,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/7DD6C139-6387-44D8-A1EE-6336B2F1527C\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/7DD6C139-6387-44D8-A1EE-6336B2F1527C",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/7DD6C139-6387-44D8-A1EE-6336B2F1527C\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/7DD6C139-6387-44D8-A1EE-6336B2F1527C",
         "udid" : "7DD6C139-6387-44D8-A1EE-6336B2F1527C",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro-Max",
@@ -646,8 +646,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/7F64A7C5-2E67-49DC-8D2C-61433F10F919\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/7F64A7C5-2E67-49DC-8D2C-61433F10F919",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/7F64A7C5-2E67-49DC-8D2C-61433F10F919\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/7F64A7C5-2E67-49DC-8D2C-61433F10F919",
         "udid" : "7F64A7C5-2E67-49DC-8D2C-61433F10F919",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPod-touch--7th-generation-",
@@ -656,8 +656,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A78610F4-FD74-44D6-B2A8-446564854F9A\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A78610F4-FD74-44D6-B2A8-446564854F9A",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A78610F4-FD74-44D6-B2A8-446564854F9A\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A78610F4-FD74-44D6-B2A8-446564854F9A",
         "udid" : "A78610F4-FD74-44D6-B2A8-446564854F9A",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-",
@@ -666,8 +666,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/98D91467-E887-4437-83AC-FD17438ECB29\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/98D91467-E887-4437-83AC-FD17438ECB29",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/98D91467-E887-4437-83AC-FD17438ECB29\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/98D91467-E887-4437-83AC-FD17438ECB29",
         "udid" : "98D91467-E887-4437-83AC-FD17438ECB29",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-",
@@ -676,8 +676,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/1EE858B1-A9AA-48D2-959F-2838B9860768\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/1EE858B1-A9AA-48D2-959F-2838B9860768",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/1EE858B1-A9AA-48D2-959F-2838B9860768\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/1EE858B1-A9AA-48D2-959F-2838B9860768",
         "udid" : "1EE858B1-A9AA-48D2-959F-2838B9860768",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-",
@@ -686,8 +686,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/02D25DD2-8EF2-4EAF-A4A7-6DF5B847996B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/02D25DD2-8EF2-4EAF-A4A7-6DF5B847996B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/02D25DD2-8EF2-4EAF-A4A7-6DF5B847996B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/02D25DD2-8EF2-4EAF-A4A7-6DF5B847996B",
         "udid" : "02D25DD2-8EF2-4EAF-A4A7-6DF5B847996B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--8th-generation-",
@@ -696,8 +696,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/AB3682D9-5316-4424-91C7-CCE21D871510\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/AB3682D9-5316-4424-91C7-CCE21D871510",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/AB3682D9-5316-4424-91C7-CCE21D871510\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/AB3682D9-5316-4424-91C7-CCE21D871510",
         "udid" : "AB3682D9-5316-4424-91C7-CCE21D871510",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-",
@@ -708,8 +708,8 @@
     "com.apple.CoreSimulator.SimRuntime.watchOS-7-1" : [
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/91B6EF7B-41EA-49BD-A487-532DF6B9C041\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/91B6EF7B-41EA-49BD-A487-532DF6B9C041",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/91B6EF7B-41EA-49BD-A487-532DF6B9C041\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/91B6EF7B-41EA-49BD-A487-532DF6B9C041",
         "udid" : "91B6EF7B-41EA-49BD-A487-532DF6B9C041",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-3-38mm",
@@ -718,8 +718,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/6B60CD3E-AAAF-4C68-8131-2B32B305B803\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/6B60CD3E-AAAF-4C68-8131-2B32B305B803",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/6B60CD3E-AAAF-4C68-8131-2B32B305B803\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/6B60CD3E-AAAF-4C68-8131-2B32B305B803",
         "udid" : "6B60CD3E-AAAF-4C68-8131-2B32B305B803",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-3-42mm",
@@ -728,8 +728,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/2F7CD26C-4FAD-4107-80C4-8E996A785FCF\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/2F7CD26C-4FAD-4107-80C4-8E996A785FCF",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/2F7CD26C-4FAD-4107-80C4-8E996A785FCF\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/2F7CD26C-4FAD-4107-80C4-8E996A785FCF",
         "udid" : "2F7CD26C-4FAD-4107-80C4-8E996A785FCF",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-4-40mm",
@@ -738,8 +738,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/22684ADD-A4F4-496F-9290-35BC8596A28B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/22684ADD-A4F4-496F-9290-35BC8596A28B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/22684ADD-A4F4-496F-9290-35BC8596A28B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/22684ADD-A4F4-496F-9290-35BC8596A28B",
         "udid" : "22684ADD-A4F4-496F-9290-35BC8596A28B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-4-44mm",
@@ -748,8 +748,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/6296C5CD-C58D-4B1E-8C7E-8F97C64F0A09\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/6296C5CD-C58D-4B1E-8C7E-8F97C64F0A09",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/6296C5CD-C58D-4B1E-8C7E-8F97C64F0A09\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/6296C5CD-C58D-4B1E-8C7E-8F97C64F0A09",
         "udid" : "6296C5CD-C58D-4B1E-8C7E-8F97C64F0A09",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-5-40mm",
@@ -758,8 +758,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/628B8216-6947-4B9C-9ADB-9C316A5CF37D\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/628B8216-6947-4B9C-9ADB-9C316A5CF37D",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/628B8216-6947-4B9C-9ADB-9C316A5CF37D\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/628B8216-6947-4B9C-9ADB-9C316A5CF37D",
         "udid" : "628B8216-6947-4B9C-9ADB-9C316A5CF37D",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-5-44mm",
@@ -768,8 +768,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/741E292C-0152-444B-9622-07F8B84F0BF6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/741E292C-0152-444B-9622-07F8B84F0BF6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/741E292C-0152-444B-9622-07F8B84F0BF6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/741E292C-0152-444B-9622-07F8B84F0BF6",
         "udid" : "741E292C-0152-444B-9622-07F8B84F0BF6",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-40mm",
@@ -778,8 +778,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/D70E6F7D-FF64-4533-B9A0-FDF6586666B9\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/D70E6F7D-FF64-4533-B9A0-FDF6586666B9",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/D70E6F7D-FF64-4533-B9A0-FDF6586666B9\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/D70E6F7D-FF64-4533-B9A0-FDF6586666B9",
         "udid" : "D70E6F7D-FF64-4533-B9A0-FDF6586666B9",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-44mm",
@@ -788,8 +788,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A58557DC-1C6C-4234-BA26-7B0FC2E8FFFE\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A58557DC-1C6C-4234-BA26-7B0FC2E8FFFE",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A58557DC-1C6C-4234-BA26-7B0FC2E8FFFE\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A58557DC-1C6C-4234-BA26-7B0FC2E8FFFE",
         "udid" : "A58557DC-1C6C-4234-BA26-7B0FC2E8FFFE",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-40mm",
@@ -798,8 +798,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/9B5B2EA0-8B51-4B2F-AFA5-1F0CF4B73FF4\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/9B5B2EA0-8B51-4B2F-AFA5-1F0CF4B73FF4",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/9B5B2EA0-8B51-4B2F-AFA5-1F0CF4B73FF4\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/9B5B2EA0-8B51-4B2F-AFA5-1F0CF4B73FF4",
         "udid" : "9B5B2EA0-8B51-4B2F-AFA5-1F0CF4B73FF4",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-44mm",
@@ -810,8 +810,8 @@
     "com.apple.CoreSimulator.SimRuntime.tvOS-14-2" : [
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A8A5E3D1-BBBE-4B66-80E9-A5302E871EB6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A8A5E3D1-BBBE-4B66-80E9-A5302E871EB6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A8A5E3D1-BBBE-4B66-80E9-A5302E871EB6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A8A5E3D1-BBBE-4B66-80E9-A5302E871EB6",
         "udid" : "A8A5E3D1-BBBE-4B66-80E9-A5302E871EB6",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p",
@@ -820,8 +820,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/D0341024-ADD0-4F47-A392-CC455601F882\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/D0341024-ADD0-4F47-A392-CC455601F882",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/D0341024-ADD0-4F47-A392-CC455601F882\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/D0341024-ADD0-4F47-A392-CC455601F882",
         "udid" : "D0341024-ADD0-4F47-A392-CC455601F882",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-4K",
@@ -830,8 +830,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/5F947B2E-251B-4D5A-A4B0-4B956F582A0C\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/5F947B2E-251B-4D5A-A4B0-4B956F582A0C",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/5F947B2E-251B-4D5A-A4B0-4B956F582A0C\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/5F947B2E-251B-4D5A-A4B0-4B956F582A0C",
         "udid" : "5F947B2E-251B-4D5A-A4B0-4B956F582A0C",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-1080p",
@@ -841,8 +841,8 @@
     ],
     "com.apple.CoreSimulator.SimRuntime.tvOS-14-3" : [
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/8C0D3467-D5EA-464F-8F71-7144763B01FD\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/8C0D3467-D5EA-464F-8F71-7144763B01FD",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/8C0D3467-D5EA-464F-8F71-7144763B01FD\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/8C0D3467-D5EA-464F-8F71-7144763B01FD",
         "udid" : "8C0D3467-D5EA-464F-8F71-7144763B01FD",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p",
@@ -850,8 +850,8 @@
         "name" : "Apple TV"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/FFE00484-096C-4DB2-BAA6-5EBC1EB9B719\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/FFE00484-096C-4DB2-BAA6-5EBC1EB9B719",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/FFE00484-096C-4DB2-BAA6-5EBC1EB9B719\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/FFE00484-096C-4DB2-BAA6-5EBC1EB9B719",
         "udid" : "FFE00484-096C-4DB2-BAA6-5EBC1EB9B719",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-4K",
@@ -859,8 +859,8 @@
         "name" : "Apple TV 4K"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/02599420-FFE9-4728-9E90-94061F380356\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/02599420-FFE9-4728-9E90-94061F380356",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/02599420-FFE9-4728-9E90-94061F380356\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/02599420-FFE9-4728-9E90-94061F380356",
         "udid" : "02599420-FFE9-4728-9E90-94061F380356",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-1080p",
@@ -870,8 +870,8 @@
     ],
     "com.apple.CoreSimulator.SimRuntime.watchOS-7-2" : [
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/1D53C6C4-78FA-46B3-B513-F71BBE7E091A\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/1D53C6C4-78FA-46B3-B513-F71BBE7E091A",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/1D53C6C4-78FA-46B3-B513-F71BBE7E091A\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/1D53C6C4-78FA-46B3-B513-F71BBE7E091A",
         "udid" : "1D53C6C4-78FA-46B3-B513-F71BBE7E091A",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-3-38mm",
@@ -879,8 +879,8 @@
         "name" : "Apple Watch Series 3 - 38mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/EA883D28-13AC-4A39-A09A-4DF5C4888ED3\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/EA883D28-13AC-4A39-A09A-4DF5C4888ED3",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/EA883D28-13AC-4A39-A09A-4DF5C4888ED3\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/EA883D28-13AC-4A39-A09A-4DF5C4888ED3",
         "udid" : "EA883D28-13AC-4A39-A09A-4DF5C4888ED3",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-3-42mm",
@@ -888,8 +888,8 @@
         "name" : "Apple Watch Series 3 - 42mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/1D459A74-3E59-4A5A-A01C-6659E8E4D30C\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/1D459A74-3E59-4A5A-A01C-6659E8E4D30C",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/1D459A74-3E59-4A5A-A01C-6659E8E4D30C\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/1D459A74-3E59-4A5A-A01C-6659E8E4D30C",
         "udid" : "1D459A74-3E59-4A5A-A01C-6659E8E4D30C",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-4-40mm",
@@ -897,8 +897,8 @@
         "name" : "Apple Watch Series 4 - 40mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/08E3C57C-9DAE-4379-B989-02F4EA4EC3BC\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/08E3C57C-9DAE-4379-B989-02F4EA4EC3BC",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/08E3C57C-9DAE-4379-B989-02F4EA4EC3BC\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/08E3C57C-9DAE-4379-B989-02F4EA4EC3BC",
         "udid" : "08E3C57C-9DAE-4379-B989-02F4EA4EC3BC",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-4-44mm",
@@ -906,8 +906,8 @@
         "name" : "Apple Watch Series 4 - 44mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/3D1028F3-D08F-4509-A5D9-B6DE883BDF45\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/3D1028F3-D08F-4509-A5D9-B6DE883BDF45",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/3D1028F3-D08F-4509-A5D9-B6DE883BDF45\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/3D1028F3-D08F-4509-A5D9-B6DE883BDF45",
         "udid" : "3D1028F3-D08F-4509-A5D9-B6DE883BDF45",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-5-40mm",
@@ -915,8 +915,8 @@
         "name" : "Apple Watch Series 5 - 40mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/214C3EDF-B3E0-4385-B984-41D49255AF37\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/214C3EDF-B3E0-4385-B984-41D49255AF37",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/214C3EDF-B3E0-4385-B984-41D49255AF37\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/214C3EDF-B3E0-4385-B984-41D49255AF37",
         "udid" : "214C3EDF-B3E0-4385-B984-41D49255AF37",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-5-44mm",
@@ -924,8 +924,8 @@
         "name" : "Apple Watch Series 5 - 44mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/B73771A9-BDDB-4379-B5EF-5C74D780F14A\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/B73771A9-BDDB-4379-B5EF-5C74D780F14A",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/B73771A9-BDDB-4379-B5EF-5C74D780F14A\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/B73771A9-BDDB-4379-B5EF-5C74D780F14A",
         "udid" : "B73771A9-BDDB-4379-B5EF-5C74D780F14A",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-40mm",
@@ -933,8 +933,8 @@
         "name" : "Apple Watch SE - 40mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/8D3C8CD8-273A-4330-8C3C-4B14BA855F1F\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/8D3C8CD8-273A-4330-8C3C-4B14BA855F1F",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/8D3C8CD8-273A-4330-8C3C-4B14BA855F1F\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/8D3C8CD8-273A-4330-8C3C-4B14BA855F1F",
         "udid" : "8D3C8CD8-273A-4330-8C3C-4B14BA855F1F",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-SE-44mm",
@@ -942,8 +942,8 @@
         "name" : "Apple Watch SE - 44mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/5B1C6FB9-B24F-420E-A2E5-1CF3C1E4F0DF\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/5B1C6FB9-B24F-420E-A2E5-1CF3C1E4F0DF",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/5B1C6FB9-B24F-420E-A2E5-1CF3C1E4F0DF\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/5B1C6FB9-B24F-420E-A2E5-1CF3C1E4F0DF",
         "udid" : "5B1C6FB9-B24F-420E-A2E5-1CF3C1E4F0DF",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-40mm",
@@ -951,8 +951,8 @@
         "name" : "Apple Watch Series 6 - 40mm"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/868033F9-BC38-4DED-AAD0-0D7022A8C627\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/868033F9-BC38-4DED-AAD0-0D7022A8C627",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/868033F9-BC38-4DED-AAD0-0D7022A8C627\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/868033F9-BC38-4DED-AAD0-0D7022A8C627",
         "udid" : "868033F9-BC38-4DED-AAD0-0D7022A8C627",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-44mm",
@@ -963,8 +963,8 @@
     "com.apple.CoreSimulator.SimRuntime.iOS-14-2" : [
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/EBFF1AE0-B56F-4973-9CE3-70232052D77E\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/EBFF1AE0-B56F-4973-9CE3-70232052D77E",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/EBFF1AE0-B56F-4973-9CE3-70232052D77E\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/EBFF1AE0-B56F-4973-9CE3-70232052D77E",
         "udid" : "EBFF1AE0-B56F-4973-9CE3-70232052D77E",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-6s",
@@ -973,8 +973,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/BEF9130D-25FD-4A0C-A93E-E849EC934985\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/BEF9130D-25FD-4A0C-A93E-E849EC934985",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/BEF9130D-25FD-4A0C-A93E-E849EC934985\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/BEF9130D-25FD-4A0C-A93E-E849EC934985",
         "udid" : "BEF9130D-25FD-4A0C-A93E-E849EC934985",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus",
@@ -983,8 +983,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/85523DD1-0829-48E7-8EFA-122E69D3C8EF\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/85523DD1-0829-48E7-8EFA-122E69D3C8EF",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/85523DD1-0829-48E7-8EFA-122E69D3C8EF\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/85523DD1-0829-48E7-8EFA-122E69D3C8EF",
         "udid" : "85523DD1-0829-48E7-8EFA-122E69D3C8EF",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-SE",
@@ -993,8 +993,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/3301AE1A-D487-4B57-929B-53A56CCF1719\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/3301AE1A-D487-4B57-929B-53A56CCF1719",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/3301AE1A-D487-4B57-929B-53A56CCF1719\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/3301AE1A-D487-4B57-929B-53A56CCF1719",
         "udid" : "3301AE1A-D487-4B57-929B-53A56CCF1719",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-7",
@@ -1003,8 +1003,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/FC9E8C8D-B9C2-45D1-8C46-D4C93F769B08\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/FC9E8C8D-B9C2-45D1-8C46-D4C93F769B08",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/FC9E8C8D-B9C2-45D1-8C46-D4C93F769B08\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/FC9E8C8D-B9C2-45D1-8C46-D4C93F769B08",
         "udid" : "FC9E8C8D-B9C2-45D1-8C46-D4C93F769B08",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus",
@@ -1013,8 +1013,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/E296F082-F360-425E-9845-0934E8569F2C\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/E296F082-F360-425E-9845-0934E8569F2C",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/E296F082-F360-425E-9845-0934E8569F2C\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/E296F082-F360-425E-9845-0934E8569F2C",
         "udid" : "E296F082-F360-425E-9845-0934E8569F2C",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-8",
@@ -1023,8 +1023,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/01355938-619E-41A4-9D2C-DA23DF599372\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/01355938-619E-41A4-9D2C-DA23DF599372",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/01355938-619E-41A4-9D2C-DA23DF599372\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/01355938-619E-41A4-9D2C-DA23DF599372",
         "udid" : "01355938-619E-41A4-9D2C-DA23DF599372",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus",
@@ -1033,8 +1033,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/F6521C62-60AB-4F6D-BC61-59B2C3D7698B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/F6521C62-60AB-4F6D-BC61-59B2C3D7698B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/F6521C62-60AB-4F6D-BC61-59B2C3D7698B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/F6521C62-60AB-4F6D-BC61-59B2C3D7698B",
         "udid" : "F6521C62-60AB-4F6D-BC61-59B2C3D7698B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-X",
@@ -1043,8 +1043,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/860F376C-4D0A-4002-A93F-550ECC2C7761\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/860F376C-4D0A-4002-A93F-550ECC2C7761",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/860F376C-4D0A-4002-A93F-550ECC2C7761\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/860F376C-4D0A-4002-A93F-550ECC2C7761",
         "udid" : "860F376C-4D0A-4002-A93F-550ECC2C7761",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-XS",
@@ -1053,8 +1053,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/3A7B4B1A-76C3-4F23-94CC-B1488E2F952F\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/3A7B4B1A-76C3-4F23-94CC-B1488E2F952F",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/3A7B4B1A-76C3-4F23-94CC-B1488E2F952F\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/3A7B4B1A-76C3-4F23-94CC-B1488E2F952F",
         "udid" : "3A7B4B1A-76C3-4F23-94CC-B1488E2F952F",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-XS-Max",
@@ -1063,8 +1063,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/85D2EF7C-354D-4A08-BBE7-5C730E07A6C4\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/85D2EF7C-354D-4A08-BBE7-5C730E07A6C4",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/85D2EF7C-354D-4A08-BBE7-5C730E07A6C4\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/85D2EF7C-354D-4A08-BBE7-5C730E07A6C4",
         "udid" : "85D2EF7C-354D-4A08-BBE7-5C730E07A6C4",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-XR",
@@ -1073,8 +1073,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/300B5130-F450-413C-B4EC-A98858119D35\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/300B5130-F450-413C-B4EC-A98858119D35",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/300B5130-F450-413C-B4EC-A98858119D35\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/300B5130-F450-413C-B4EC-A98858119D35",
         "udid" : "300B5130-F450-413C-B4EC-A98858119D35",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
@@ -1083,8 +1083,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A766DDF2-6C00-4D04-BC8A-169C29FD897E\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A766DDF2-6C00-4D04-BC8A-169C29FD897E",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A766DDF2-6C00-4D04-BC8A-169C29FD897E\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A766DDF2-6C00-4D04-BC8A-169C29FD897E",
         "udid" : "A766DDF2-6C00-4D04-BC8A-169C29FD897E",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro",
@@ -1093,8 +1093,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/8919DDC7-FEFA-4D0D-8BEE-4B11A64DD690\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/8919DDC7-FEFA-4D0D-8BEE-4B11A64DD690",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/8919DDC7-FEFA-4D0D-8BEE-4B11A64DD690\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/8919DDC7-FEFA-4D0D-8BEE-4B11A64DD690",
         "udid" : "8919DDC7-FEFA-4D0D-8BEE-4B11A64DD690",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro-Max",
@@ -1103,8 +1103,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/BAC55E8A-D064-4B8B-91FA-3236C8178256\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/BAC55E8A-D064-4B8B-91FA-3236C8178256",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/BAC55E8A-D064-4B8B-91FA-3236C8178256\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/BAC55E8A-D064-4B8B-91FA-3236C8178256",
         "udid" : "BAC55E8A-D064-4B8B-91FA-3236C8178256",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-",
@@ -1113,8 +1113,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/24FB8FCD-51DD-4E44-8785-F8F68E8840DD\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/24FB8FCD-51DD-4E44-8785-F8F68E8840DD",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/24FB8FCD-51DD-4E44-8785-F8F68E8840DD\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/24FB8FCD-51DD-4E44-8785-F8F68E8840DD",
         "udid" : "24FB8FCD-51DD-4E44-8785-F8F68E8840DD",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini",
@@ -1123,8 +1123,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/322E70AA-E3C5-4C79-88FE-D91E24100E53\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/322E70AA-E3C5-4C79-88FE-D91E24100E53",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/322E70AA-E3C5-4C79-88FE-D91E24100E53\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/322E70AA-E3C5-4C79-88FE-D91E24100E53",
         "udid" : "322E70AA-E3C5-4C79-88FE-D91E24100E53",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12",
@@ -1133,8 +1133,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/B4577E20-A6C1-44C7-A695-2541CA816804\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/B4577E20-A6C1-44C7-A695-2541CA816804",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/B4577E20-A6C1-44C7-A695-2541CA816804\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/B4577E20-A6C1-44C7-A695-2541CA816804",
         "udid" : "B4577E20-A6C1-44C7-A695-2541CA816804",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro",
@@ -1143,8 +1143,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/3A672E44-162A-4376-A888-D5CBD713C741\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/3A672E44-162A-4376-A888-D5CBD713C741",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/3A672E44-162A-4376-A888-D5CBD713C741\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/3A672E44-162A-4376-A888-D5CBD713C741",
         "udid" : "3A672E44-162A-4376-A888-D5CBD713C741",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro-Max",
@@ -1153,8 +1153,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/4A3C33DF-2E85-4934-8C92-BFE43A739F1C\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/4A3C33DF-2E85-4934-8C92-BFE43A739F1C",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/4A3C33DF-2E85-4934-8C92-BFE43A739F1C\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/4A3C33DF-2E85-4934-8C92-BFE43A739F1C",
         "udid" : "4A3C33DF-2E85-4934-8C92-BFE43A739F1C",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-mini-4",
@@ -1163,8 +1163,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/B5B6D98B-3390-44CF-BE0E-F343C1A84FA6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/B5B6D98B-3390-44CF-BE0E-F343C1A84FA6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/B5B6D98B-3390-44CF-BE0E-F343C1A84FA6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/B5B6D98B-3390-44CF-BE0E-F343C1A84FA6",
         "udid" : "B5B6D98B-3390-44CF-BE0E-F343C1A84FA6",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2",
@@ -1173,8 +1173,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/ECFDEA9C-CDB9-4438-95CF-67D81C0C30D5\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/ECFDEA9C-CDB9-4438-95CF-67D81C0C30D5",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/ECFDEA9C-CDB9-4438-95CF-67D81C0C30D5\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/ECFDEA9C-CDB9-4438-95CF-67D81C0C30D5",
         "udid" : "ECFDEA9C-CDB9-4438-95CF-67D81C0C30D5",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-",
@@ -1183,8 +1183,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/B62E5AE9-DCEE-4ACE-B541-E3BFD9418568\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/B62E5AE9-DCEE-4ACE-B541-E3BFD9418568",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/B62E5AE9-DCEE-4ACE-B541-E3BFD9418568\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/B62E5AE9-DCEE-4ACE-B541-E3BFD9418568",
         "udid" : "B62E5AE9-DCEE-4ACE-B541-E3BFD9418568",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro",
@@ -1193,8 +1193,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/4CD035F7-173B-410B-8B81-6832CF809B7B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/4CD035F7-173B-410B-8B81-6832CF809B7B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/4CD035F7-173B-410B-8B81-6832CF809B7B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/4CD035F7-173B-410B-8B81-6832CF809B7B",
         "udid" : "4CD035F7-173B-410B-8B81-6832CF809B7B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--5th-generation-",
@@ -1203,8 +1203,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/BACCFA83-B3F7-46C5-9782-7E021E66417D\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/BACCFA83-B3F7-46C5-9782-7E021E66417D",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/BACCFA83-B3F7-46C5-9782-7E021E66417D\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/BACCFA83-B3F7-46C5-9782-7E021E66417D",
         "udid" : "BACCFA83-B3F7-46C5-9782-7E021E66417D",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---2nd-generation-",
@@ -1213,8 +1213,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/4AB8870E-1E64-4FB6-8686-9123838ADB9D\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/4AB8870E-1E64-4FB6-8686-9123838ADB9D",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/4AB8870E-1E64-4FB6-8686-9123838ADB9D\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/4AB8870E-1E64-4FB6-8686-9123838ADB9D",
         "udid" : "4AB8870E-1E64-4FB6-8686-9123838ADB9D",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--10-5-inch-",
@@ -1223,8 +1223,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/1AD3FCAE-A1F6-4EE4-BCB9-D7CF6E432B2B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/1AD3FCAE-A1F6-4EE4-BCB9-D7CF6E432B2B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/1AD3FCAE-A1F6-4EE4-BCB9-D7CF6E432B2B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/1AD3FCAE-A1F6-4EE4-BCB9-D7CF6E432B2B",
         "udid" : "1AD3FCAE-A1F6-4EE4-BCB9-D7CF6E432B2B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--6th-generation-",
@@ -1233,8 +1233,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/C0E770AD-E16C-4BB5-91AA-EB04F8E071E6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/C0E770AD-E16C-4BB5-91AA-EB04F8E071E6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/C0E770AD-E16C-4BB5-91AA-EB04F8E071E6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/C0E770AD-E16C-4BB5-91AA-EB04F8E071E6",
         "udid" : "C0E770AD-E16C-4BB5-91AA-EB04F8E071E6",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--7th-generation-",
@@ -1243,8 +1243,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/2325C934-ED45-4F45-8714-D50D3B04CFD3\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/2325C934-ED45-4F45-8714-D50D3B04CFD3",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/2325C934-ED45-4F45-8714-D50D3B04CFD3\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/2325C934-ED45-4F45-8714-D50D3B04CFD3",
         "udid" : "2325C934-ED45-4F45-8714-D50D3B04CFD3",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch-",
@@ -1253,8 +1253,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/FABD1D26-967A-4C86-900A-924999BDC49F\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/FABD1D26-967A-4C86-900A-924999BDC49F",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/FABD1D26-967A-4C86-900A-924999BDC49F\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/FABD1D26-967A-4C86-900A-924999BDC49F",
         "udid" : "FABD1D26-967A-4C86-900A-924999BDC49F",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---3rd-generation-",
@@ -1263,8 +1263,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/061174EA-B461-4655-96B8-3A43536886E1\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/061174EA-B461-4655-96B8-3A43536886E1",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/061174EA-B461-4655-96B8-3A43536886E1\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/061174EA-B461-4655-96B8-3A43536886E1",
         "udid" : "061174EA-B461-4655-96B8-3A43536886E1",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-",
@@ -1273,8 +1273,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/D829583B-F764-480E-A883-2E2B998BC7E8\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/D829583B-F764-480E-A883-2E2B998BC7E8",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/D829583B-F764-480E-A883-2E2B998BC7E8\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/D829583B-F764-480E-A883-2E2B998BC7E8",
         "udid" : "D829583B-F764-480E-A883-2E2B998BC7E8",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-",
@@ -1283,8 +1283,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/30C01D12-D40F-4C44-943D-ECB97ADBCF7B\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/30C01D12-D40F-4C44-943D-ECB97ADBCF7B",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/30C01D12-D40F-4C44-943D-ECB97ADBCF7B\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/30C01D12-D40F-4C44-943D-ECB97ADBCF7B",
         "udid" : "30C01D12-D40F-4C44-943D-ECB97ADBCF7B",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-mini--5th-generation-",
@@ -1293,8 +1293,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/1037C943-9BAA-4B90-A4AD-4BF0495A04CA\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/1037C943-9BAA-4B90-A4AD-4BF0495A04CA",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/1037C943-9BAA-4B90-A4AD-4BF0495A04CA\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/1037C943-9BAA-4B90-A4AD-4BF0495A04CA",
         "udid" : "1037C943-9BAA-4B90-A4AD-4BF0495A04CA",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air--3rd-generation-",
@@ -1303,8 +1303,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/2AE07578-C6FB-4A2A-AD9A-E6832183A19A\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/2AE07578-C6FB-4A2A-AD9A-E6832183A19A",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/2AE07578-C6FB-4A2A-AD9A-E6832183A19A\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/2AE07578-C6FB-4A2A-AD9A-E6832183A19A",
         "udid" : "2AE07578-C6FB-4A2A-AD9A-E6832183A19A",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--8th-generation-",
@@ -1313,8 +1313,8 @@
       },
       {
         "availabilityError" : "runtime profile not found",
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/84DAC981-BBB6-4A26-822C-4F44FB7687A5\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/84DAC981-BBB6-4A26-822C-4F44FB7687A5",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/84DAC981-BBB6-4A26-822C-4F44FB7687A5\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/84DAC981-BBB6-4A26-822C-4F44FB7687A5",
         "udid" : "84DAC981-BBB6-4A26-822C-4F44FB7687A5",
         "isAvailable" : false,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-",
@@ -1324,8 +1324,8 @@
     ],
     "com.apple.CoreSimulator.SimRuntime.iOS-14-4" : [
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/DB4FB61B-6A35-4D3F-BA3E-8041E42CAE85\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/DB4FB61B-6A35-4D3F-BA3E-8041E42CAE85",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/DB4FB61B-6A35-4D3F-BA3E-8041E42CAE85\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/DB4FB61B-6A35-4D3F-BA3E-8041E42CAE85",
         "udid" : "DB4FB61B-6A35-4D3F-BA3E-8041E42CAE85",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-6s",
@@ -1333,8 +1333,8 @@
         "name" : "iPhone 6s"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A3047E64-65FD-4A12-BC4F-C1BCCB5E7382\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A3047E64-65FD-4A12-BC4F-C1BCCB5E7382",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A3047E64-65FD-4A12-BC4F-C1BCCB5E7382\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A3047E64-65FD-4A12-BC4F-C1BCCB5E7382",
         "udid" : "A3047E64-65FD-4A12-BC4F-C1BCCB5E7382",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-6s-Plus",
@@ -1342,8 +1342,8 @@
         "name" : "iPhone 6s Plus"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/D475FFC7-C11B-4999-B3AC-91574A2BB718\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/D475FFC7-C11B-4999-B3AC-91574A2BB718",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/D475FFC7-C11B-4999-B3AC-91574A2BB718\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/D475FFC7-C11B-4999-B3AC-91574A2BB718",
         "udid" : "D475FFC7-C11B-4999-B3AC-91574A2BB718",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-SE",
@@ -1351,8 +1351,8 @@
         "name" : "iPhone SE (1st generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/CC7E349F-043B-474C-8755-B052F673D0FE\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/CC7E349F-043B-474C-8755-B052F673D0FE",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/CC7E349F-043B-474C-8755-B052F673D0FE\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/CC7E349F-043B-474C-8755-B052F673D0FE",
         "udid" : "CC7E349F-043B-474C-8755-B052F673D0FE",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-7",
@@ -1360,8 +1360,8 @@
         "name" : "iPhone 7"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/86CCE3A4-1C03-4F23-B829-35C08B093B6E\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/86CCE3A4-1C03-4F23-B829-35C08B093B6E",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/86CCE3A4-1C03-4F23-B829-35C08B093B6E\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/86CCE3A4-1C03-4F23-B829-35C08B093B6E",
         "udid" : "86CCE3A4-1C03-4F23-B829-35C08B093B6E",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-7-Plus",
@@ -1369,8 +1369,8 @@
         "name" : "iPhone 7 Plus"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/C962F0C8-F67A-4EFD-A951-A0947F6488B1\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/C962F0C8-F67A-4EFD-A951-A0947F6488B1",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/C962F0C8-F67A-4EFD-A951-A0947F6488B1\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/C962F0C8-F67A-4EFD-A951-A0947F6488B1",
         "udid" : "C962F0C8-F67A-4EFD-A951-A0947F6488B1",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-8",
@@ -1378,8 +1378,8 @@
         "name" : "iPhone 8"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/3CA11092-DA30-43BE-9596-6458CF6E876E\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/3CA11092-DA30-43BE-9596-6458CF6E876E",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/3CA11092-DA30-43BE-9596-6458CF6E876E\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/3CA11092-DA30-43BE-9596-6458CF6E876E",
         "udid" : "3CA11092-DA30-43BE-9596-6458CF6E876E",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus",
@@ -1387,8 +1387,8 @@
         "name" : "iPhone 8 Plus"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/C44E8BA0-C24F-4C9E-B7FE-2AD1E75E6BF4\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/C44E8BA0-C24F-4C9E-B7FE-2AD1E75E6BF4",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/C44E8BA0-C24F-4C9E-B7FE-2AD1E75E6BF4\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/C44E8BA0-C24F-4C9E-B7FE-2AD1E75E6BF4",
         "udid" : "C44E8BA0-C24F-4C9E-B7FE-2AD1E75E6BF4",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-X",
@@ -1396,8 +1396,8 @@
         "name" : "iPhone X"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/923D2FE6-6E68-44BF-AB9B-F5D9B8A46128\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/923D2FE6-6E68-44BF-AB9B-F5D9B8A46128",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/923D2FE6-6E68-44BF-AB9B-F5D9B8A46128\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/923D2FE6-6E68-44BF-AB9B-F5D9B8A46128",
         "udid" : "923D2FE6-6E68-44BF-AB9B-F5D9B8A46128",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-XS",
@@ -1405,8 +1405,8 @@
         "name" : "iPhone Xs"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/63BF7F27-9C59-43E3-8D6D-6A372E9A73DF\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/63BF7F27-9C59-43E3-8D6D-6A372E9A73DF",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/63BF7F27-9C59-43E3-8D6D-6A372E9A73DF\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/63BF7F27-9C59-43E3-8D6D-6A372E9A73DF",
         "udid" : "63BF7F27-9C59-43E3-8D6D-6A372E9A73DF",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-XS-Max",
@@ -1414,8 +1414,8 @@
         "name" : "iPhone Xs Max"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/D8B44976-3AE3-4CC8-B1A7-D5FFC9F0E556\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/D8B44976-3AE3-4CC8-B1A7-D5FFC9F0E556",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/D8B44976-3AE3-4CC8-B1A7-D5FFC9F0E556\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/D8B44976-3AE3-4CC8-B1A7-D5FFC9F0E556",
         "udid" : "D8B44976-3AE3-4CC8-B1A7-D5FFC9F0E556",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-XR",
@@ -1423,8 +1423,8 @@
         "name" : "iPhone Xʀ"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/903CEC28-F7E2-47ED-AC80-3C54CC79F117\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/903CEC28-F7E2-47ED-AC80-3C54CC79F117",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/903CEC28-F7E2-47ED-AC80-3C54CC79F117\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/903CEC28-F7E2-47ED-AC80-3C54CC79F117",
         "udid" : "903CEC28-F7E2-47ED-AC80-3C54CC79F117",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
@@ -1432,8 +1432,8 @@
         "name" : "iPhone 11"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/FCE5A775-9044-46EA-8F0B-03D94D3BD78E\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/FCE5A775-9044-46EA-8F0B-03D94D3BD78E",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/FCE5A775-9044-46EA-8F0B-03D94D3BD78E\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/FCE5A775-9044-46EA-8F0B-03D94D3BD78E",
         "udid" : "FCE5A775-9044-46EA-8F0B-03D94D3BD78E",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro",
@@ -1441,8 +1441,8 @@
         "name" : "iPhone 11 Pro"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/6BEC0E18-24BF-4E47-8957-745C2925CF70\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/6BEC0E18-24BF-4E47-8957-745C2925CF70",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/6BEC0E18-24BF-4E47-8957-745C2925CF70\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/6BEC0E18-24BF-4E47-8957-745C2925CF70",
         "udid" : "6BEC0E18-24BF-4E47-8957-745C2925CF70",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-11-Pro-Max",
@@ -1450,8 +1450,8 @@
         "name" : "iPhone 11 Pro Max"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/ACCAA130-3CCF-4ACD-A469-63A51359EAB4\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/ACCAA130-3CCF-4ACD-A469-63A51359EAB4",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/ACCAA130-3CCF-4ACD-A469-63A51359EAB4\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/ACCAA130-3CCF-4ACD-A469-63A51359EAB4",
         "udid" : "ACCAA130-3CCF-4ACD-A469-63A51359EAB4",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-",
@@ -1459,8 +1459,8 @@
         "name" : "iPhone SE (2nd generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/870044FE-3FF1-4984-A95B-2F46CF04BAB0\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/870044FE-3FF1-4984-A95B-2F46CF04BAB0",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/870044FE-3FF1-4984-A95B-2F46CF04BAB0\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/870044FE-3FF1-4984-A95B-2F46CF04BAB0",
         "udid" : "870044FE-3FF1-4984-A95B-2F46CF04BAB0",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini",
@@ -1468,8 +1468,8 @@
         "name" : "iPhone 12 mini"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/CCDBE676-F230-430A-BA18-E6122A291572\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/CCDBE676-F230-430A-BA18-E6122A291572",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/CCDBE676-F230-430A-BA18-E6122A291572\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/CCDBE676-F230-430A-BA18-E6122A291572",
         "udid" : "CCDBE676-F230-430A-BA18-E6122A291572",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12",
@@ -1477,8 +1477,8 @@
         "name" : "iPhone 12"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/996BF83A-74B2-4DF3-8ED7-2FD867C4608D\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/996BF83A-74B2-4DF3-8ED7-2FD867C4608D",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/996BF83A-74B2-4DF3-8ED7-2FD867C4608D\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/996BF83A-74B2-4DF3-8ED7-2FD867C4608D",
         "udid" : "996BF83A-74B2-4DF3-8ED7-2FD867C4608D",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro",
@@ -1486,8 +1486,8 @@
         "name" : "iPhone 12 Pro"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/94F067EA-00BE-4EC2-A9C9-E9EEFCB3AC47\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/94F067EA-00BE-4EC2-A9C9-E9EEFCB3AC47",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/94F067EA-00BE-4EC2-A9C9-E9EEFCB3AC47\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/94F067EA-00BE-4EC2-A9C9-E9EEFCB3AC47",
         "udid" : "94F067EA-00BE-4EC2-A9C9-E9EEFCB3AC47",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPhone-12-Pro-Max",
@@ -1495,8 +1495,8 @@
         "name" : "iPhone 12 Pro Max"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/D9CC14DD-C513-4CF3-99E1-B3FDC77DDDF6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/D9CC14DD-C513-4CF3-99E1-B3FDC77DDDF6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/D9CC14DD-C513-4CF3-99E1-B3FDC77DDDF6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/D9CC14DD-C513-4CF3-99E1-B3FDC77DDDF6",
         "udid" : "D9CC14DD-C513-4CF3-99E1-B3FDC77DDDF6",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-mini-4",
@@ -1504,8 +1504,8 @@
         "name" : "iPad mini 4"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/30AF79BF-C959-47C6-8E61-BD9385FCE4CF\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/30AF79BF-C959-47C6-8E61-BD9385FCE4CF",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/30AF79BF-C959-47C6-8E61-BD9385FCE4CF\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/30AF79BF-C959-47C6-8E61-BD9385FCE4CF",
         "udid" : "30AF79BF-C959-47C6-8E61-BD9385FCE4CF",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air-2",
@@ -1513,8 +1513,8 @@
         "name" : "iPad Air 2"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/9210D665-00A8-4037-80E1-72E1B44A3DF6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/9210D665-00A8-4037-80E1-72E1B44A3DF6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/9210D665-00A8-4037-80E1-72E1B44A3DF6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/9210D665-00A8-4037-80E1-72E1B44A3DF6",
         "udid" : "9210D665-00A8-4037-80E1-72E1B44A3DF6",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--9-7-inch-",
@@ -1522,8 +1522,8 @@
         "name" : "iPad Pro (9.7-inch)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/E6BBC60C-5176-449C-A837-A408E3BF46C4\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/E6BBC60C-5176-449C-A837-A408E3BF46C4",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/E6BBC60C-5176-449C-A837-A408E3BF46C4\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/E6BBC60C-5176-449C-A837-A408E3BF46C4",
         "udid" : "E6BBC60C-5176-449C-A837-A408E3BF46C4",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro",
@@ -1531,8 +1531,8 @@
         "name" : "iPad Pro (12.9-inch) (1st generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/941CA0CC-BECD-4B14-8E41-D561AFFEBA67\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/941CA0CC-BECD-4B14-8E41-D561AFFEBA67",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/941CA0CC-BECD-4B14-8E41-D561AFFEBA67\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/941CA0CC-BECD-4B14-8E41-D561AFFEBA67",
         "udid" : "941CA0CC-BECD-4B14-8E41-D561AFFEBA67",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--5th-generation-",
@@ -1540,8 +1540,8 @@
         "name" : "iPad (5th generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/A1EB9F65-8BE0-443F-9E30-1F5CB41793D3\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/A1EB9F65-8BE0-443F-9E30-1F5CB41793D3",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/A1EB9F65-8BE0-443F-9E30-1F5CB41793D3\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/A1EB9F65-8BE0-443F-9E30-1F5CB41793D3",
         "udid" : "A1EB9F65-8BE0-443F-9E30-1F5CB41793D3",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---2nd-generation-",
@@ -1549,8 +1549,8 @@
         "name" : "iPad Pro (12.9-inch) (2nd generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/922394E2-D5AE-473C-BFF6-96C1BD563354\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/922394E2-D5AE-473C-BFF6-96C1BD563354",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/922394E2-D5AE-473C-BFF6-96C1BD563354\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/922394E2-D5AE-473C-BFF6-96C1BD563354",
         "udid" : "922394E2-D5AE-473C-BFF6-96C1BD563354",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--10-5-inch-",
@@ -1558,8 +1558,8 @@
         "name" : "iPad Pro (10.5-inch)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/72B54B94-7B87-4F23-BD12-8E15DB703D47\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/72B54B94-7B87-4F23-BD12-8E15DB703D47",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/72B54B94-7B87-4F23-BD12-8E15DB703D47\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/72B54B94-7B87-4F23-BD12-8E15DB703D47",
         "udid" : "72B54B94-7B87-4F23-BD12-8E15DB703D47",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--6th-generation-",
@@ -1567,8 +1567,8 @@
         "name" : "iPad (6th generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/F4DC82F9-AAB8-4A82-B5F8-591B00923867\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/F4DC82F9-AAB8-4A82-B5F8-591B00923867",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/F4DC82F9-AAB8-4A82-B5F8-591B00923867\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/F4DC82F9-AAB8-4A82-B5F8-591B00923867",
         "udid" : "F4DC82F9-AAB8-4A82-B5F8-591B00923867",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--7th-generation-",
@@ -1576,8 +1576,8 @@
         "name" : "iPad (7th generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/5667C3D3-95F8-49C1-924E-74A680D422D3\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/5667C3D3-95F8-49C1-924E-74A680D422D3",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/5667C3D3-95F8-49C1-924E-74A680D422D3\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/5667C3D3-95F8-49C1-924E-74A680D422D3",
         "udid" : "5667C3D3-95F8-49C1-924E-74A680D422D3",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch-",
@@ -1585,8 +1585,8 @@
         "name" : "iPad Pro (11-inch) (1st generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/00A265E8-9D4B-4B3C-A55C-0281B1342A60\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/00A265E8-9D4B-4B3C-A55C-0281B1342A60",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/00A265E8-9D4B-4B3C-A55C-0281B1342A60\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/00A265E8-9D4B-4B3C-A55C-0281B1342A60",
         "udid" : "00A265E8-9D4B-4B3C-A55C-0281B1342A60",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---3rd-generation-",
@@ -1594,8 +1594,8 @@
         "name" : "iPad Pro (12.9-inch) (3rd generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/E1EA6964-9EE9-4B92-929D-5A378C8F7BC6\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/E1EA6964-9EE9-4B92-929D-5A378C8F7BC6",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/E1EA6964-9EE9-4B92-929D-5A378C8F7BC6\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/E1EA6964-9EE9-4B92-929D-5A378C8F7BC6",
         "udid" : "E1EA6964-9EE9-4B92-929D-5A378C8F7BC6",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--11-inch---2nd-generation-",
@@ -1603,8 +1603,8 @@
         "name" : "iPad Pro (11-inch) (2nd generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/90555774-692B-471A-93FC-863B9613B20F\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/90555774-692B-471A-93FC-863B9613B20F",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/90555774-692B-471A-93FC-863B9613B20F\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/90555774-692B-471A-93FC-863B9613B20F",
         "udid" : "90555774-692B-471A-93FC-863B9613B20F",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---4th-generation-",
@@ -1612,8 +1612,8 @@
         "name" : "iPad Pro (12.9-inch) (4th generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/E7AD42CD-1C74-4BCB-83EF-06BE902BA1A9\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/E7AD42CD-1C74-4BCB-83EF-06BE902BA1A9",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/E7AD42CD-1C74-4BCB-83EF-06BE902BA1A9\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/E7AD42CD-1C74-4BCB-83EF-06BE902BA1A9",
         "udid" : "E7AD42CD-1C74-4BCB-83EF-06BE902BA1A9",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-mini--5th-generation-",
@@ -1621,8 +1621,8 @@
         "name" : "iPad mini (5th generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/F3C226B5-20BC-4C58-B914-060D5A09E512\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/F3C226B5-20BC-4C58-B914-060D5A09E512",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/F3C226B5-20BC-4C58-B914-060D5A09E512\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/F3C226B5-20BC-4C58-B914-060D5A09E512",
         "udid" : "F3C226B5-20BC-4C58-B914-060D5A09E512",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air--3rd-generation-",
@@ -1630,8 +1630,8 @@
         "name" : "iPad Air (3rd generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/6A14C413-1A86-457A-9EAF-530006566C76\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/6A14C413-1A86-457A-9EAF-530006566C76",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/6A14C413-1A86-457A-9EAF-530006566C76\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/6A14C413-1A86-457A-9EAF-530006566C76",
         "udid" : "6A14C413-1A86-457A-9EAF-530006566C76",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad--8th-generation-",
@@ -1639,8 +1639,8 @@
         "name" : "iPad (8th generation)"
       },
       {
-        "dataPath" : "\/Users\/rene\/Library\/Developer\/CoreSimulator\/Devices\/8CE9D844-2D15-43D5-B392-10BE249AE30A\/data",
-        "logPath" : "\/Users\/rene\/Library\/Logs\/CoreSimulator\/8CE9D844-2D15-43D5-B392-10BE249AE30A",
+        "dataPath" : "\/Users\/me\/Library\/Developer\/CoreSimulator\/Devices\/8CE9D844-2D15-43D5-B392-10BE249AE30A\/data",
+        "logPath" : "\/Users\/me\/Library\/Logs\/CoreSimulator\/8CE9D844-2D15-43D5-B392-10BE249AE30A",
         "udid" : "8CE9D844-2D15-43D5-B392-10BE249AE30A",
         "isAvailable" : true,
         "deviceTypeIdentifier" : "com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-",

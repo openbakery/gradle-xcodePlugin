@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils
 /*
  * User: rene
  */
-class 	Destination {
+class Destination {
 
 	String platform = null
 	String name = null

@@ -41,6 +41,6 @@ class SimulatorRunAppTask extends AbstractSimulatorTask {
 
     }
 
-    simulatorControl.simctlWithResult("launch", "booted", bundleIdentifier)
+    simulatorControl.execute("launch", "booted", bundleIdentifier)
   }
 }

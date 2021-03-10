@@ -26,7 +26,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		project = ProjectBuilder.builder().withProjectDir(projectDir).build()
 		project.apply plugin: org.openbakery.XcodePlugin
 
-		task = project.tasks.findByName(XcodePlugin.SIMULATORS_INSTALL_APP_TASK_NAME)
+		task = project.tasks.findByName(XcodePlugin.SIMULATORS_INSTALL_APP_TASK_NAME) as SimulatorInstallAppTask
 
 	}
 	def "create"() {
@@ -56,7 +56,7 @@ class SimulatorInstallAppTaskSpecification extends Specification {
 		task.run()
 
 		then:
-		1* simulatorControl.simctlWithResult(["install", "booted", project.xcodebuild.applicationBundle.absolutePath])
+		1* simulatorControl.execute(["install", "booted", project.xcodebuild.applicationBundle.absolutePath])
 	}
 
 	def "codesign is not null"() {

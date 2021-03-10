@@ -58,6 +58,7 @@ import org.openbakery.packaging.PackageTask
 import org.openbakery.signing.KeychainRemoveFromSearchListTask
 import org.openbakery.signing.ProvisioningCleanupTask
 import org.openbakery.signing.ProvisioningInstallTask
+import org.openbakery.simulators.SimulatorBootTask
 import org.openbakery.simulators.SimulatorKillTask
 import org.openbakery.simulators.SimulatorsCleanTask
 import org.openbakery.simulators.SimulatorsCreateTask
@@ -96,6 +97,7 @@ class XcodePlugin implements Plugin<Project> {
 	public static final String SIMULATORS_INSTALL_APP_TASK_NAME = "simulatorInstallApp"
 	public static final String SIMULATORS_RUN_APP_TASK_NAME = "simulatorRunApp"
 	public static final String SIMULATORS_KILL_TASK_NAME = "simulatorKill"
+	public static final String SIMULATORS_BOOT_TASK_NAME = "simulatorBoot"
 	public static final String XCODE_BUILD_TASK_NAME = "xcodebuild"
 	public static final String XCODE_CLEAN_TASK_NAME = "xcodebuildClean"
 	public static final String XCODE_CONFIG_TASK_NAME = "xcodebuildConfig"
@@ -456,6 +458,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.task(SIMULATORS_RUN_APP_TASK_NAME, type: SimulatorRunAppTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_INSTALL_APP_TASK_NAME, type: SimulatorInstallAppTask, group: SIMULATORS_LIST_TASK_NAME)
 		project.task(SIMULATORS_KILL_TASK_NAME, type: SimulatorKillTask, group: SIMULATORS_LIST_TASK_NAME)
+		project.task(SIMULATORS_BOOT_TASK_NAME, type: SimulatorBootTask, group: SIMULATORS_LIST_TASK_NAME)
 	}
 
 

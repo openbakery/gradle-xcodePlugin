@@ -43,7 +43,7 @@ abstract class AbstractXcodeTask extends DefaultTask {
 
 	public PlistHelper plistHelper
 	public Xcode xcode
-	protected SimulatorControl simulatorControl
+  public SimulatorControl simulatorControl
 	protected DestinationResolver destinationResolver
 
 	@Internal
