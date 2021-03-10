@@ -25,8 +25,8 @@ class TestResultParserSpecification extends Specification {
 
 		xcresulttoolPath = new Xcode(new CommandRunner(), "12").getXcresulttool()
 
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 	}
 
 	List<Destination> getDestinations(String simctlList) {
@@ -48,88 +48,11 @@ class TestResultParserSpecification extends Specification {
 		FileUtils.deleteDirectory(outputDirectory)
 	}
 
-
-
 	def "parse with no result"() {
 		when:
 		testResultParser.store(outputDirectory)
 		then:
 		true // no exception should be raised
-	}
-
-	def "parse success result"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Passed) == 2
-		testResultParser.number(result, TestResult.State.Failed) == 0
-	}
-
-	def "parse failure result"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Passed) == 0
-		testResultParser.number(result, TestResult.State.Failed) == 2
-	}
-
-	def "parse failure result with partial suite"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Passed) == 0
-		testResultParser.number(result, TestResult.State.Failed) == 2
-	}
-
-	def "parse success result xcode 6.1"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-xcode6_1.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Passed) == 8
-		testResultParser.number(result, TestResult.State.Failed) == 0
-	}
-
-	def "parse complex test output"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-complex-test.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Failed) == 0
-	}
-
-	def "parse success result for tests written in swift using Xcode 6.1"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Passed) == 2
-		testResultParser.number(result, TestResult.State.Failed) == 0
-	}
-
-	def "parse legacy test summary has result"() {
-		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Legacy/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
-
-		when:
-		testResultParser.parse()
-
-		then:
-		testResultParser.testResults != null
-		testResultParser.testResults.size() > 0
-	}
-
-	def "parse test summary has result"() {
-		when:
-		testResultParser.parse()
-
-		then:
-		testResultParser.testResults != null
-		testResultParser.testResults.size() > 0
 	}
 
 	def "parse new xcresult test summary has result"() {
@@ -138,7 +61,7 @@ class TestResultParserSpecification extends Specification {
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
-		testResultParser.parse()
+		testResultParser.parse(outputDirectory)
 
 		then:
 		testResultParser.testResults != null
@@ -166,7 +89,7 @@ class TestResultParserSpecification extends Specification {
 
 		then:
 		testResultParser.testResults.size() == 1
-		testResultParser.testResults.keySet()[0].name == "iPad 2"
+		testResultParser.testResults.keySet()[0].name == "iPhone 8"
 	}
 
 	def "parse test summary and verify number test results"() {
@@ -175,73 +98,62 @@ class TestResultParserSpecification extends Specification {
 
 		def firstKey = testResultParser.testResults.keySet()[0]
 		then:
-		testResultParser.testResults.get(firstKey).size() == 5
-		testResultParser.number(TestResult.State.Passed) == 37
+		testResultParser.testResults.get(firstKey).size() == 2
+		testResultParser.number(TestResult.State.Passed) == 4
 
 	}
 
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Failure")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
+		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse()
 
 		def firstKey = testResultParser.testResults.keySet()[0]
 		then:
-		testResultParser.testResults.get(firstKey).size() == 5
-		testResultParser.number(TestResult.State.Passed) == 36
+		testResultParser.testResults.get(firstKey).size() == 2
+		testResultParser.number(TestResult.State.Passed) == 3
 		testResultParser.number(TestResult.State.Failed) == 1
 
 	}
 
-	HashMap<Destination, ArrayList<TestClass>> getMergedResult() {
+	def "parse test summary that has attachment"() {
+		given:
+		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Attachment")
+		Destination destination = new Destination("iPhone X")
+		destination.id = "9F93F05E-3450-43BD-92FE-0F99212DB8B6"
+		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, [destination])
 
+		expect:
+		outputDirectory.listFiles().size() == 0
+
+		when:
+		testResultParser.parse(outputDirectory)
+
+		def firstKey = testResultParser.testResults.keySet()[0]
+		then:
+		testResultParser.testResults.get(firstKey).size() == 1
+		testResultParser.number(TestResult.State.Passed) == 2
+		testResultParser.number(TestResult.State.Failed) == 0
+		outputDirectory.listFiles().size() == 1
+		outputDirectory.listFiles().first().name.contains(".html")
+	}
+
+
+	def "test xcresults - has duration"() {
+		when:
 		testResultParser.parse()
 
-		def resultFromOutput = testResultParser.parseResult(new File("../plugin/src/test/Resource/TestLogs/Legacy/Success/xcodebuild-output.txt"))
-		testResultParser.mergeResult(testResultParser.testResults, resultFromOutput)
-		return testResultParser.testResults
-	}
-
-	def "test merged results"() {
-		when:
-		def mergedResult = getMergedResult()
-
-		def firstKey = mergedResult.keySet()[0]
+		def firstKey = testResultParser.testResults.keySet()[0]
 		then:
-		mergedResult.get(firstKey).size() == 5
-		testResultParser.number(TestResult.State.Passed) == 37
+		testResultParser.testResults.get(firstKey).size() == 2
 
+		TestClass testClass = testResultParser.testResults.get(firstKey)[0]
+		testClass.results.size() == 2
+		testClass.results[0].duration == 0.00077807903.toFloat()
 	}
-
-	def "test merged results - has duration"() {
-		when:
-		def mergedResult = getMergedResult()
-
-		def firstKey = mergedResult.keySet()[0]
-		then:
-		mergedResult.get(firstKey).size() == 5
-
-		TestClass testClass = mergedResult.get(firstKey)[0]
-		testClass.results.size() == 1
-		testClass.results[0].duration == 0.01.toFloat()
-		testClass.results[0].output.startsWith("Test Case")
-
-	}
-
-
-	def "parse skipped result from xcodeoutput"() {
-		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-skipped.txt"))
-
-		then:
-		testResultParser.number(result, TestResult.State.Passed) == 0
-		testResultParser.number(result, TestResult.State.Failed) == 0
-		testResultParser.number(result, TestResult.State.Skipped) == 10
-	}
-
 
 	def "parse xcresult scheme with skipped test"() {
 		given:
@@ -260,6 +172,4 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.number(TestResult.State.Passed) == 1
 		testResultParser.number(TestResult.State.Skipped) == 1
 	}
-
-
 }
