@@ -14,35 +14,47 @@ class DestinationResolver {
 		this.simulatorControl = simulatorControl
 	}
 
-	List<Destination> allFor(XcodebuildParameters parameters) {
-		if (parameters.type == Type.iOS && !parameters.simulator) {
+	List<Destination> getAllDestinations(Type type, boolean isSimulator) {
+		if (type == Type.iOS && !isSimulator) {
 			return []
 		}
-		return simulatorControl.getAllDestinations(parameters.type)
+		return simulatorControl.getAllDestinations(type)
 	}
 
 	List<Destination> getDestinations(XcodebuildParameters parameters) {
+		Type type = parameters.type
+		Boolean isSimulator = parameters.simulator
+		if (type == null) {
+			type = Type.iOS
+		}
+		if (isSimulator == null) {
+			isSimulator = Boolean.FALSE
+		}
+		return getDestinations(type, isSimulator, parameters.configuredDestinations)
+	}
 
-		logger.debug("getAvailableDestinations for {}", parameters)
+
+	List<Destination> getDestinations(Type type, boolean isSimulator, Set<Destination> configuredDestinations) {
+		logger.debug("getAvailableDestinations for type={}, isSimulator={}, configuredDestinations={}", type, isSimulator, configuredDestinations)
 		def availableDestinations = []
-		if (parameters.type == Type.macOS) {
+		if (type == Type.macOS) {
 			logger.debug("is macOS build")
 			availableDestinations << new Destination("OS X", "OS X", "10.x")
 			return availableDestinations
 		}
 
-		def allDestinations = allFor(parameters)
-		def runtime = simulatorControl.getMostRecentRuntime(parameters.type)
+		def allDestinations = getAllDestinations(type, isSimulator)
+		def runtime = simulatorControl.getMostRecentRuntime(type)
 
 
-		boolean isSimulatorBuild = isSimulatorBuild(parameters)
+		boolean isSimulatorBuild = isSimulatorBuild(type, isSimulator)
 		logger.debug("isSimulatorBuild {}", isSimulatorBuild)
 
 		if (isSimulatorBuild) {
 			// filter only on simulator builds
-			if (parameters.configuredDestinations != null) {
-				logger.debug("checking destinations if they are available: {}", parameters.configuredDestinations)
-				for (Destination destination in parameters.configuredDestinations) {
+			if (configuredDestinations != null) {
+				logger.debug("checking destinations if they are available: {}", configuredDestinations)
+				for (Destination destination in configuredDestinations) {
 
 					if (destination.os == null) {
 						destination.os = runtime.version.toString()
@@ -57,7 +69,7 @@ class DestinationResolver {
 				// e.g. is 'iPad Pro' was specified and a 'iPad Pro (11-inch)' is present, than this is used
 				if (availableDestinations.size() == 0) {
 					logger.debug("find similar destination")
-					for (Destination destination in parameters.configuredDestinations) {
+					for (Destination destination in configuredDestinations) {
 						if (destination.os == null) {
 							destination.os = runtime.version.toString()
 						}
@@ -73,33 +85,17 @@ class DestinationResolver {
 				logger.debug("availableDestinations {}", availableDestinations)
 
 				if (availableDestinations.isEmpty()) {
-					logger.error("No matching simulators found for specified destinations: {}", parameters.configuredDestinations)
+					logger.error("No matching simulators found for specified destinations: {}", configuredDestinations)
 					throw new IllegalStateException("No matching simulators found!")
 				}
 			} else {
-
-				logger.info("There was no destination configured that matches the available. Therefor all available destinations where taken.")
-
-				switch (parameters.devices) {
-					case Devices.PHONE:
-						availableDestinations = allDestinations.findAll {
-							d -> d.name.contains("iPhone")
-						}
-						break
-					case Devices.PAD:
-						availableDestinations = allDestinations.findAll {
-							d -> d.name.contains("iPad")
-						}
-						break
-					default:
-						availableDestinations.addAll(allDestinations)
-						break
-				}
+				logger.info("There was no destination configured that matches the available. Therefore all available destinations where taken.")
+				availableDestinations.addAll(allDestinations)
 			}
-		} else if (parameters.configuredDestinations != null) {
+		} else if (configuredDestinations != null) {
 			logger.debug("is a device build so add all given device destinations")
 			// on the device build add the given destinations
-			availableDestinations.addAll(parameters.configuredDestinations)
+			availableDestinations.addAll(configuredDestinations)
 		}
 
 
@@ -108,11 +104,13 @@ class DestinationResolver {
 		return availableDestinations
 	}
 
-	private boolean isSimulatorBuild(XcodebuildParameters parameters) {
-		boolean result = parameters.isSimulatorBuildOf(Type.iOS) || parameters.isSimulatorBuildOf(Type.tvOS)
-		logger.debug("is simulator build: {}", result)
-		return result
+	private boolean isSimulatorBuild(Type type, boolean isSimulator) {
+		if (type == Type.iOS || type == Type.tvOS) {
+			return isSimulator
+		}
+		return false
 	}
+
 
 	private List<Destination> findMatchingDestinations(Destination destination, List<Destination> allDestinations, boolean exact) {
 		List<Destination> result = []

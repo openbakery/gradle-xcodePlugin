@@ -311,7 +311,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 			// create zip archive
 			String zipFileName = parameters.bundleName
 			if (project.xcodebuild.bundleNameSuffix != null) {
-				zipFileName += project.xcodebuild.bundleNameSuffix
+				simulator				zipFileName += project.xcodebuild.bundleNameSuffix
 			}
 			zipFileName += ".zip"
 

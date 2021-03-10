@@ -30,7 +30,11 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 
 		if (parameters.type == Type.tvOS) {
 			// Get all destinations available for tvOS projects
-			destinations = getDestinationResolver().allFor(parameters)
+			Boolean isSimulator = parameters.simulator
+			if (isSimulator == null) {
+				isSimulator = Boolean.FALSE
+			}
+			destinations = getDestinationResolver().getAllDestinations(parameters.type, isSimulator)
 		}
 
 		return new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, destinations)
