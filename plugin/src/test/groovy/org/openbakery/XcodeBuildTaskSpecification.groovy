@@ -6,7 +6,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
-import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
 import org.openbakery.testdouble.XcodeDummy
@@ -625,14 +624,6 @@ class XcodeBuildTaskSpecification extends Specification {
 		then:
 		xcodeBuildTask.parameters.configuredDestinations.size() == 1
 		xcodeBuildTask.parameters.configuredDestinations[0] == destination
-	}
-
-	def "set devices"() {
-		when:
-		xcodeBuildTask.devices = Devices.WATCH
-
-		then:
-		xcodeBuildTask.parameters.devices == Devices.WATCH
 	}
 
 

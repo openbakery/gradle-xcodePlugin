@@ -7,7 +7,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.openbakery.xcode.Devices
 import spock.lang.Specification
 
 class XcodeProjectFileSpecification extends Specification {
@@ -221,31 +220,5 @@ class XcodeProjectFileSpecification extends Specification {
 		configuration.entitlements == "Example/Example.entitlements"
 	}
 
-	def "devices for target"() {
-		when:
-		BuildConfiguration configuration = xcodeProjectFile.getBuildConfiguration("Example", "Debug")
-
-		then:
-		configuration.devices == Devices.UNIVERSAL
-	}
-
-	def "devices for target WatchKit App"() {
-		when:
-		BuildConfiguration configuration = xcodeProjectFile.getBuildConfiguration("Example WatchKit App", "Debug")
-
-		then:
-		configuration.devices == Devices.WATCH
-	}
-
-
-	def "devices for target  "() {
-		project.xcodebuild.target = "Example WatchKit App"
-
-		when:
-		xcodeProjectFile.parse()
-
-		then:
-		project.xcodebuild.devices == Devices.WATCH
-	}
 
 }

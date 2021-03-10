@@ -3,7 +3,6 @@ package org.openbakery
 import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
-import org.openbakery.xcode.Devices
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -114,8 +113,6 @@ class XcodeProjectFile {
 
 		if (StringUtils.isNotEmpty(sdkRoot) && sdkRoot.equalsIgnoreCase("macosx")) {
 			this.isOSX = true
-		} else {
-			project.xcodebuild.devices = settings.devices
 		}
 
 		if (project.xcodebuild.infoPlist == null) {
@@ -154,18 +151,6 @@ class XcodeProjectFile {
 			buildSettings.productType = "appex"
 		} else {
 			buildSettings.productType = "app"
-		}
-
-
-		String deviceFamily =  getBuildSetting(buildConfiguration, "TARGETED_DEVICE_FAMILY")
-		if (deviceFamily == "1") {
-			buildSettings.devices = Devices.PHONE
-		} else if (deviceFamily == "2") {
-			buildSettings.devices = Devices.PAD
-		} else if (deviceFamily == "4") {
-			buildSettings.devices = Devices.WATCH
-		} else {
-			buildSettings.devices = Devices.UNIVERSAL
 		}
 
 	}

@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.xcode.Destination
-import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
@@ -78,7 +77,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		release.bundleIdentifier = "org.openbakery.gxp.Example"
 		release.productName = "Example"
 		release.sdkRoot = "iphoneos"
-		release.devices = Devices.UNIVERSAL
 
 
 		BuildTargetConfiguration watchAppConfiguration = new BuildTargetConfiguration()
@@ -95,7 +93,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		watchAppConfigurationRelease.bundleIdentifier = "org.openbakery.gxp.Example.watchkitapp"
 		watchAppConfigurationRelease.productName = "Example WatchKit App"
 		watchAppConfigurationRelease.sdkRoot = "watchos"
-		watchAppConfigurationRelease.devices = Devices.WATCH
 
 		BuildTargetConfiguration extensionConfiguration = new BuildTargetConfiguration()
 		BuildConfiguration extensionConfigurationRelease = new BuildConfiguration("Example WatchKit Extension")
@@ -111,7 +108,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		extensionConfigurationRelease.bundleIdentifier = "org.openbakery.gxp.Example.watchkitapp.watchkitextension"
 		extensionConfigurationRelease.productName = "Example WatchKit Extension"
 		extensionConfigurationRelease.sdkRoot = "watchos"
-		extensionConfigurationRelease.devices = Devices.WATCH
 
 
 		result.put("Example", appConfiguration)
@@ -497,7 +493,6 @@ class XcodeBuildPluginExtensionSpecification extends Specification {
 		parameters.arch.size() == 1
 		parameters.arch[0] == "i386"
 
-		parameters.devices ==  Devices.UNIVERSAL
 	}
 
 	def "XcodebuildParameters get workspace from project"() {

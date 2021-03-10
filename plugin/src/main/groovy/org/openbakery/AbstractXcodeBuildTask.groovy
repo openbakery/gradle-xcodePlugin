@@ -13,7 +13,6 @@ import org.gradle.util.ConfigureUtil
 import org.openbakery.codesign.Security
 import org.openbakery.output.XcodeBuildOutputAppender
 import org.openbakery.xcode.Destination
-import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.XcodebuildParameters
 
@@ -130,15 +129,6 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		return parameters.configuredDestinations
 	}
 
-	void setDevices(Devices devices) {
-		parameters.devices = devices
-	}
-
-	@Input
-	@Optional
-	Devices getDevices() {
-		return parameters.devices
-	}
 
 	void destination(Closure closure) {
 		Destination destination = new Destination()

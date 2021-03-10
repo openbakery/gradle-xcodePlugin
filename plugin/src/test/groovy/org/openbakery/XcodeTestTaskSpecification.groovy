@@ -7,7 +7,6 @@ import org.openbakery.simulators.SimulatorControl
 import org.openbakery.test.TestResultParser
 import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
-import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import spock.lang.Specification
 
@@ -469,14 +468,6 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		xcodeTestTask.parameters.configuredDestinations.size() == 1
 		xcodeTestTask.parameters.configuredDestinations[0] == destination
-	}
-
-	def "set devices"() {
-		when:
-		xcodeTestTask.devices = Devices.WATCH
-
-		then:
-		xcodeTestTask.parameters.devices == Devices.WATCH
 	}
 
 

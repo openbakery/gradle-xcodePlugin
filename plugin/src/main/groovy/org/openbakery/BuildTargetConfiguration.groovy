@@ -1,6 +1,5 @@
 package org.openbakery
 
-import org.openbakery.xcode.Devices
 
 class BuildConfiguration {
 	String target
@@ -9,7 +8,6 @@ class BuildConfiguration {
 	String bundleIdentifier
 	String productName
 	String sdkRoot
-	Devices devices
 	String entitlements
 	String productType
 

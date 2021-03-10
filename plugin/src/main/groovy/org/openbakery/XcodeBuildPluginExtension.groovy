@@ -21,7 +21,6 @@ import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing
 import org.openbakery.xcode.Destination
-import org.openbakery.xcode.Devices
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
 import org.openbakery.xcode.XcodebuildParameters
@@ -98,8 +97,6 @@ class XcodeBuildPluginExtension {
 
 	boolean useXcodebuildArchive = false
 
-
-	Devices devices = Devices.UNIVERSAL
 
 	CommandRunner commandRunner
 	PlistHelper plistHelper
@@ -477,7 +474,6 @@ class XcodeBuildPluginExtension {
 		result.sharedPrecompsDir = this.getSharedPrecompsDir()
 		result.derivedDataPath = this.getDerivedDataPath()
 		result.additionalParameters = this.additionalParameters
-		result.devices = this.devices
 		result.configuredDestinations = this.destinations
 		result.bitcode = this.bitcode
 		result.applicationBundle = getApplicationBundle()

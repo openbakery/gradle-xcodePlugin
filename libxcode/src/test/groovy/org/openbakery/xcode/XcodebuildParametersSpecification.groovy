@@ -16,7 +16,6 @@ class XcodebuildParametersSpecification extends Specification {
 		first.workspace = "workspace"
 		first.configuration = "configuration"
 		first.additionalParameters = "additionalParameters"
-		first.devices =  Devices.UNIVERSAL
 		first.configuredDestinations = ["iPhone 4s"]
 
 	}
@@ -120,14 +119,6 @@ class XcodebuildParametersSpecification extends Specification {
 		first.configuredDestinations[0] == "iPad 2"
 	}
 
-	def "devices is merged"() {
-		when:
-		second.devices = Devices.WATCH
-		first.merge(second)
-
-		then:
-		first.devices == Devices.WATCH
-	}
 
 	def "bitcode is merged"() {
 		when:

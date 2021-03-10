@@ -23,7 +23,6 @@ class XcodebuildParameters {
 	List<String> arch
 	def additionalParameters
 	Set<Destination> configuredDestinations
-	Devices devices
 	List<File> xctestrun
 	Boolean bitcode
 	File applicationBundle
@@ -84,9 +83,6 @@ class XcodebuildParameters {
 		}
 		if (other.configuredDestinations != null) {
 			configuredDestinations = other.configuredDestinations
-		}
-		if (other.devices != null) {
-			devices = other.devices
 		}
 		if (other.bitcode != null) {
 			bitcode = other.bitcode

@@ -3,7 +3,6 @@ package org.openbakery
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.openbakery.xcode.Devices
 import spock.lang.Specification
 
 import static org.hamcrest.Matchers.*
@@ -80,17 +79,6 @@ class XcodeProjectFile_WatchSpecification extends Specification {
 	}
 
 
-	def "BundleName Watchkit App Devices"() {
-		given:
-		project.xcodebuild.target = "Example WatchKit App"
-
-		when:
-		xcodeProjectFile.parse()
-
-		then:
-		project.xcodebuild.devices == Devices.WATCH
-	}
-
 
 	def "all targets"() {
 		when:
@@ -125,7 +113,6 @@ class XcodeProjectFile_WatchSpecification extends Specification {
 		projectSettings["Example"].buildSettings["Release"].bundleIdentifier == "org.openbakery.gxp.Example"
 		projectSettings["Example"].buildSettings["Release"].productName == "Example"
 		projectSettings["Example"].buildSettings["Release"].sdkRoot == "iphoneos"
-		projectSettings["Example"].buildSettings["Release"].devices == Devices.UNIVERSAL
 
 	}
 
@@ -143,7 +130,6 @@ class XcodeProjectFile_WatchSpecification extends Specification {
 		projectSettings["Example WatchKit App"].buildSettings["Release"].bundleIdentifier == "org.openbakery.gxp.Example.watchkitapp"
 		projectSettings["Example WatchKit App"].buildSettings["Release"].productName == "Example WatchKit App"
 		projectSettings["Example WatchKit App"].buildSettings["Release"].sdkRoot == "watchos"
-		projectSettings["Example WatchKit App"].buildSettings["Release"].devices == Devices.WATCH
 
 	}
 
