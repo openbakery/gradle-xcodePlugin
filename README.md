@@ -34,9 +34,17 @@ Here a brief overview of the features:
 ### Current stable version is 0.20.1
 
 
-## Documentation
+## Parameters Documentation
 
-* [Documentation](https://openbakery.org/gxp/)
+* [xcodebuild](Documentation/xcodebuild.md)
+* [signing](Documentation/signing.md)
+* [infoplist](Documentation/infolist.md)
+* [appstore](Documentation/appstore.md)
+* [deploygate](Documentation/deploygate.md)
+* [crashlytics](Documentation/crashlytics.md)
+* [coverage](Documentation/coverage.md)
+* [oclint](Documentation/oclint.md)
+
 
 
 ## Usage
