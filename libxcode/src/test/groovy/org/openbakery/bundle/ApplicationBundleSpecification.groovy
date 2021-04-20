@@ -46,6 +46,38 @@ class ApplicationBundleSpecification  extends Specification {
 		bundle.mainBundle.path == new File("Example.app")
 	}
 
+	def "application has plugin bundle"() {
+		when:
+		File path = applicationDummy.create()
+		applicationDummy.createPluginBundle()
+		def bundle  = createApplicationBundle(path.absolutePath)
+
+		then:
+		bundle.getBundles().size() == 2
+	}
+
+
+	def "application bundle first is plugin bundle"() {
+		when:
+		File path = applicationDummy.create()
+		applicationDummy.createPluginBundle()
+		def bundle  = createApplicationBundle(path.absolutePath)
+
+		then:
+		!bundle.getBundles().first().isMain
+	}
+
+
+	def "application bundle last is main bundle"() {
+		when:
+		applicationDummy.create()
+		applicationDummy.createPluginBundle()
+		def bundle  = createApplicationBundle("Example.app")
+
+		then:
+		bundle.getBundles().last().isMain
+	}
+
 
 
 }

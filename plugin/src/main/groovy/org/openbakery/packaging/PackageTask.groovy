@@ -12,6 +12,7 @@ import org.openbakery.CommandRunnerException
 import org.openbakery.assemble.AppPackage
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
+import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.tools.CommandLineTools
 import org.openbakery.tools.Lipo
@@ -113,13 +114,14 @@ class PackageTask extends AbstractDistributeTask {
 
 		Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, new XcodebuildParameters())
 		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcodebuild))
-		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), codesignParameters, tools)
+		Codesign codesign = new Codesign(xcode, codesignParameters, tools.commandRunner, tools.plistHelper)
+		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), tools, codesign)
 
 		appPackage.addSwiftSupport()
 		appPackage.prepareBundles()
 
 		if (signSettingsAvailable) {
-			appPackage.codesign(applicationBundle, xcode)
+			appPackage.codesign()
 		} else {
 			String message = "Bundle not signed: " + applicationBundle
 			output.withStyle(StyledTextOutput.Style.Failure).println(message)

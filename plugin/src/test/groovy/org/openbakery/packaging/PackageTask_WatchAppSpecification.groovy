@@ -181,7 +181,7 @@ class PackageTask_WatchAppSpecification extends Specification {
 	def "codesign watchkit app"() {
 		given:
 		createExampleApp()
-		//def commandList
+
 		def codesignAppCommand = codesignCommand("Payload/ExampleWatchKit.app", "entitlements_test.plist")
 		def codesignWatchKitAppCommand = codesignCommand("Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app", "entitlements_exampleWatchkit.plist")
 		def codesignWatchKitExtensionCommand = codesignCommand("Payload/ExampleWatchKit.app/Watch/ExampleWatchkit WatchKit App.app/PlugIns/ExampleWatchkit WatchKit Extension.appex", "entitlements_exampleWatchkitExtension.plist")
@@ -193,8 +193,6 @@ class PackageTask_WatchAppSpecification extends Specification {
 		1 * commandRunner.run(codesignAppCommand, _)
 		1 * commandRunner.run(codesignWatchKitAppCommand, _)
 		1 * commandRunner.run(codesignWatchKitExtensionCommand, _)
-		//1 * commandRunner.run(_, _) >> { arguments -> commandList = arguments[0] }
-		//commandList == codesignWatchKitExtensionCommand
 	}
 
 

@@ -372,7 +372,7 @@ class CodesignSpecification extends  Specification {
 		]
 
 		when:
-		codesign.sign(bundle)
+		codesign.sign(bundle, "org.openbakery.test.Test")
 
 		then:
 
@@ -388,7 +388,8 @@ class CodesignSpecification extends  Specification {
 		commandList[2] == "--entitlements"
 		entitlementsFile.exists()
 		entitlements.containsKey("keychain-access-groups")
-
+		entitlements.getStringArray("keychain-access-groups").length == 1
+		entitlements.getStringArray("keychain-access-groups").contains("AAAAAAAAAAA.org.openbakery.test.Test")
 	}
 
 
