@@ -79,12 +79,12 @@ class ConfigurationFromMapSpecification extends Specification {
 		configuration.getStringArray("array") instanceof List<String>
 	}
 
-	def "getStringArray returns null if value is not an array"() {
+	def "getStringArray returns array if value is not an array"() {
 		when:
 		Map<String, Object> data = ["test": "test"]
 		def configuration = new ConfigurationFromMap(data)
 		then:
-		configuration.getStringArray("test") == []
+		configuration.getStringArray("test") == ["test"]
 	}
 
 	def "containsKey return true if key is present"() {
