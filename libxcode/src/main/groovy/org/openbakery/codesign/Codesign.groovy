@@ -94,7 +94,7 @@ class Codesign {
 		logger.info("createConfiguration for {}", bundle)
 		if (bundle.absolutePath.endsWith("appex")) {
 			if (codesignParameters.entitlements != null) {
-				def map = ["keychain-access-groups": "\$(AppIdentifierPrefix)" + mainBundleIdentifier]
+				def map = ["keychain-access-groups": ["\$(AppIdentifierPrefix)" + mainBundleIdentifier]]
 				return new ConfigurationFromMap(map)
 			}
 			return new ConfigurationFromMap([:])
@@ -353,12 +353,14 @@ class Codesign {
 
 
 	List<String> getKeychainAccessGroupFromEntitlements(Configuration configuration, String applicationPrefix) {
+		logger.info("getKeychainAccessGroupFromEntitlements configuration {}", configuration)
 		List<String> result = []
 		applicationPrefix = applicationPrefix + "."
 
+		logger.info("configuration keys: {}", configuration.keys)
 		logger.info("using application prefix: {}", applicationPrefix)
-			List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
-		logger.info("keychain-access-group from configuration: {}", result)
+		List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
+		logger.info("keychain-access-groups from configuration: {}", result)
 
 		keychainAccessGroups.each { item ->
 			if (StringUtils.isNotEmpty(applicationPrefix) && item.startsWith(applicationPrefix)) {
