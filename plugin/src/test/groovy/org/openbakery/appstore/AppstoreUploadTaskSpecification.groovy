@@ -98,4 +98,48 @@ class AppstoreUploadTaskSpecification extends Specification {
 
 	}
 
+
+	def "test when Xcode 13 then add type parameter is added for IPA upload"() {
+		given:
+		project.appstore.username = "user"
+		project.appstore.password = "pass"
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/altool",
+													 "--upload-app",
+													 "--type",
+													 "ios",
+													 "--username",
+													 "user",
+													 "--password",
+													 "pass",
+													 "--file",
+													 ipaBundle.absolutePath], _)
+	}
+
+	def "test when Xcode 12 then add type parameter is not added for IPA upload"() {
+		given:
+		project.appstore.username = "user"
+		project.appstore.password = "pass"
+		task.xcode = new XcodeFake("12")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/altool",
+													 "--upload-app",
+													 "--username",
+													 "user",
+													 "--password",
+													 "pass",
+													 "--file",
+													 ipaBundle.absolutePath], _)
+	}
+
+
 }

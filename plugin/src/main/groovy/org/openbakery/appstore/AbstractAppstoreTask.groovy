@@ -11,8 +11,6 @@ class AbstractAppstoreTask extends AbstractDistributeTask {
 	}
 
 	def runAltool(String action) {
-		File ipa = getIpaBundle()
-
 
 		if (project.appstore.apiIssuer != null && project.appstore.apiKey == null) {
 			throw new IllegalArgumentException("Appstore apiKey is missing. Parameter: appstore.apiKey")
@@ -31,10 +29,29 @@ class AbstractAppstoreTask extends AbstractDistributeTask {
 			}
 		}
 
+		File ipa = getIpaBundle()
+		if (ipa.exists()) {
+			runAltoolForIpa(ipa, action)
+		} else {
+			throw new IllegalStateException("IPA not found. Only uploading IPA is suppored")
+		}
+
+	}
+
+	def runAltoolForIpa(File ipa, String action) {
+
 		def commandList = [
 			xcode.getAltool(),
 			action
 		]
+
+
+		if (xcode.version.major > 12) {
+			commandList << "--type"
+			commandList << "ios"
+		}
+
+
 
 		if (project.appstore.apiIssuer != null && project.appstore.apiKey != null) {
 			commandList << "--apiKey"
