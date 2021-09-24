@@ -298,7 +298,7 @@ class SimulatorControl_XCode12_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		20 * commandRunner.run(_)
+		23 * commandRunner.run(_)
 		// 16 sim create and 4 pairing
 	}
 
@@ -335,6 +335,25 @@ class SimulatorControl_XCode12_Specification extends Specification {
 		"iPad Air (4th generation)"             | "com.apple.CoreSimulator.SimDeviceType.iPad-Air--4th-generation-"
 
 	}
+
+	def "create creates only Xcode12 TV devices"() {
+			// given
+			def runtime = "com.apple.CoreSimulator.SimRuntime.tvOS-14-3"
+			mockSimctlList()
+			simulatorControl.parse()
+
+			when:
+			simulatorControl.createAll()
+
+			then:
+			1 * commandRunner.run([xcode.getSimctl(), "create", name, identifier, runtime])
+
+			where:
+			name                                    | identifier
+			"Apple TV"                              | "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p"
+			"Apple TV 4K"                           | "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-4K"
+			"Apple TV 4K (at 1080p)"                | "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-1080p"
+		}
 
 
 	def "pair iPhone and Watch"() {

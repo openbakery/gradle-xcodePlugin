@@ -389,22 +389,62 @@ class SimulatorControl {
 			return
 		}
 
-		def types = getDeviceTypes(["iPhone-8",
-																"iPhone-8-Plus",
-																"iPhone-11",
-																"iPhone-11-Pro",
-																"iPhone-11-Pro-Max",
-																"iPhone-SE--2nd-generation-",
-																"iPhone-12-mini",
-																"iPhone-12",
-																"iPhone-12-Pro",
-																"iPhone-12-Pro-Max",
-																"iPod-touch--7th-generation-",
-																"iPad-Pro--9-7-inch-",
-																"iPad-Pro--11-inch---2nd-generation-",
-																"iPad-Pro--12-9-inch---4th-generation-",
-																"iPad--8th-generation-",
-																"iPad-Air--4th-generation-"])
+		def deviceList = []
+
+		if (xcode.version.major == 12) {
+			deviceList = ["iPhone-8",
+										"iPhone-8-Plus",
+										"iPhone-11",
+										"iPhone-11-Pro",
+										"iPhone-11-Pro-Max",
+										"iPhone-SE--2nd-generation-",
+										"iPhone-12-mini",
+										"iPhone-12",
+										"iPhone-12-Pro",
+										"iPhone-12-Pro-Max",
+										"iPod-touch--7th-generation-",
+										"iPad-Pro--9-7-inch-",
+										"iPad-Pro--11-inch---2nd-generation-",
+										"iPad-Pro--12-9-inch---4th-generation-",
+										"iPad--8th-generation-",
+										"iPad-Air--4th-generation-",
+										"Apple-TV-1080p",
+										"Apple-TV-4K-4K",
+										"Apple-TV-4K-1080p"
+			]
+		} else {
+			deviceList = ["iPhone-8",
+										"iPhone-8-Plus",
+										"iPhone-11",
+										"iPhone-11-Pro",
+										"iPhone-11-Pro-Max",
+										"iPhone-SE--2nd-generation-",
+										"iPhone-12-mini",
+										"iPhone-12",
+										"iPhone-12-Pro",
+										"iPhone-12-Pro-Max",
+										"iPhone-13-mini",
+										"iPhone-13",
+										"iPhone-13-Pro",
+										"iPhone-13-Pro-Max",
+										"iPod-touch--7th-generation-",
+										"iPad-Pro--9-7-inch-",
+										"iPad-Pro--11-inch---2nd-generation-",
+										"iPad-Pro--12-9-inch---4th-generation-",
+										"iPad--8th-generation-",
+										"iPad-Air--4th-generation-",
+										"iPad-Pro-11-inch-3rd-generation",
+										"iPad-Pro-12-9-inch-5th-generation",
+										"iPad-mini-6th-generation",
+										"Apple-TV-1080p",
+										"Apple-TV-4K-4K",
+										"Apple-TV-4K-1080p",
+										"Apple-TV-4K-2nd-generation-4K",
+										"Apple-TV-4K-2nd-generation-1080p"
+			]
+		}
+
+		def types = getDeviceTypes(deviceList)
 		create(types)
 	}
 
@@ -613,6 +653,14 @@ class SimulatorControl {
 				"iPhone-12": "Apple-Watch-Series-5-44mm",
 				"iPhone-12-Pro": "Apple-Watch-Series-6-40mm",
 				"iPhone-12-Pro-Max": "Apple-Watch-Series-6-44mm"
+			],
+			"15"  : [
+				"iPhone-12-Pro": "Apple-Watch-Series-5-40mm",
+				"iPhone-12-Pro-Max": "Apple-Watch-Series-5-44mm",
+				"iPhone-13-Pro": "Apple-Watch-Series-6-40mm",
+				"iPhone-13-Pro-Max": "Apple-Watch-Series-6-44mm",
+				"iPhone-13-mini": "Apple-Watch-Series-7-41mm",
+				"iPhone-13": "Apple-Watch-Series-7-45mm"
 			]
 		]
 
