@@ -276,7 +276,7 @@ class XcodeBuildArchiveTask extends AbstractXcodeBuildTask {
 
 		Extension extension = Extension.extensionFromIdentifier(extensionIdentifier)
 		if (extension == null) {
-			logger.warn("Extension type not supported", extensionIdentifier)
+			logger.warn("Extension type not supported {}", extensionIdentifier)
 			return
 		}
 
