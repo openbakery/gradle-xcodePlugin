@@ -2,7 +2,7 @@ allprojects {
 	apply plugin: 'java-gradle-plugin'
 	apply plugin: 'groovy'
 
-	def versionNumber = "0.21.1"
+	def versionNumber = "0.21.2"
 
 	if (project.hasProperty("versionNumber")) {
 		versionNumber = project.versionNumber
