@@ -100,9 +100,13 @@ publishing {
 
 	repositories {
 		maven {
-			name = 'localPluginRepository'
-				url = '/Users/rene/tmp/repository'
-		}
+			//url = '~/tmp/repository'
+			url "${publishURL}"
+      credentials {
+            username = "${publishUser}" 
+            password = "${publishPassword}"
+        }
+    }
 	}
 }
 
