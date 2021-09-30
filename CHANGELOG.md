@@ -1,4 +1,4 @@
-# 0.21.0 (TBA)
+# 0.21.0 (30.9.2021)
 
 Changes
 * Added support for xcframeworks when using carthage
