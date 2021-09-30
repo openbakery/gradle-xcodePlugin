@@ -1,5 +1,6 @@
 plugins {
-	id "com.gradle.plugin-publish" version "0.12.0"
+	id 'maven-publish'
+	id 'com.gradle.plugin-publish' version '0.16.0'
 }
 
 
@@ -17,9 +18,6 @@ if (project.hasProperty("publishPassword")) {
 	publishPassword = project.publishPassword
 }
 
-
-
-//cobertura.coverageFormats = ['html', 'xml']
 
 apply plugin: 'maven'
 
@@ -61,44 +59,58 @@ install {
 	}
 }
 
-uploadArchives {
+
+
+publishing {
+	publications {
+
+		
+
+		maven(MavenPublication) {
+			groupId = 'org.openbakery.xcode-plugin'
+				artifactId = 'xcode-plugin'
+				version = project.version
+
+				pom {
+					pom.withXml {
+
+						asNode().dependencies.'*'.findAll() {
+							it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+								return true
+							}
+						}.each { 
+							if (it.artifactId.text().startsWith("libxcode")) {
+								it.scope*.value = 'compile'
+							}
+						}
+
+					}
+					licenses {
+						license {
+							name = 'The Apache License, Version 2.0'
+								url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+						}
+					}
+					developers {
+						developer {
+							id = 'renep'
+								name = 'René Pirringer'
+								email = 'rene@openbakery.org'
+						}
+					}
+				}
+			from components.java
+		}
+	}
+
 	repositories {
-		mavenDeployer {
-			configuration = configurations.deployerJars
-
-			repository(url: publishURL) {
-				authentication(userName: publishUser, password: publishPassword)
-			}
-
-			modifyPom(pom)
-
-			pom.project {
-				licenses {
-					license {
-						name 'The Apache Software License, Version 2.0'
-						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-						distribution 'repo'
-					}
-				}
-				developers {
-					developer {
-						id "renep"
-						name "René Pirringer"
-						email "rene@openbakery.org"
-					}
-				}
-			}
+		maven {
+			name = 'localPluginRepository'
+				url = '/Users/rene/tmp/repository'
 		}
 	}
 }
 
-def modifyPom(MavenPom pom) {
-	pom.whenConfigured { p -> 
-		p.dependencies = p.dependencies.findAll { dep -> 
-			dep.artifactId != "libxcode" && dep.artifactId != "libxcodetools"
-		}
-	}
-}
 
 pluginBundle {
 	website = 'https://openbakery.org/gxp/'
