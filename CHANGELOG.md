@@ -1,4 +1,4 @@
-# 0.21.0 (30.9.2021)
+# 0.21.0 (Sep 30, 2021)
 
 Changes
 * Added support for xcframeworks when using carthage
@@ -8,7 +8,9 @@ Changes
 * Change that app extensions gets only the keychain-access-group of the main bundle set.
 * Updated appstore upload task so that it works with Xcode13
 
-# 0.20.1 (2. Dec, 2020)
+# 0.21.0 (Jun 28, 2021)
+
+# 0.20.1 (Dec 2, 2020)
 
 Changes
 * Added notarize task for notarizing macOS applications
@@ -17,7 +19,7 @@ Changes
 * Added support for skipped tests, that they are not shown as failures.
 * Added carthage archive task, so that a binary framework can be build.
 
-# 0.20.0 (2 June, 2020)
+# 0.20.0 (June 2, 2020)
 
 Changes
 * Added 'COMPILER_INDEX_STORE_ENABLE=NO' to disable indexing during build to speed up the build
