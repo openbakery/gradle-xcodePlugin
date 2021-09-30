@@ -53,11 +53,6 @@ task sourcesJar(type: Jar) {
 	classifier = 'sources'
 }
 
-install {
-	repositories.mavenInstaller {
-		modifyPom(pom)
-	}
-}
 
 
 
