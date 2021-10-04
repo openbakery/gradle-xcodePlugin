@@ -82,7 +82,7 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 
 	private fun copyDsyms(archiveDirectory: File, dSymDirectory: File) {
 		archiveDirectory.walk().forEach {
-			if (it.isDirectory && it.extension.toLowerCase() == "dsym") {
+			if (it.isDirectory && it.extension.lowercase() == "dsym") {
 				fileHelper.copyTo(it, dSymDirectory)
 			}
 		}
@@ -102,7 +102,7 @@ class Archive(applicationBundleFile: File, archiveName: String, type: Type, simu
 		var libNames = ArrayList<String>()
 
 		applicationBundle.frameworksPath.walk().forEach {
-			if (it.extension.toLowerCase() == "dylib") {
+			if (it.extension.lowercase() == "dylib") {
 				libNames.add(it.name)
 			}
 		}

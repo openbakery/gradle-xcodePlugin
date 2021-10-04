@@ -43,6 +43,12 @@ class AntBuilderStub extends AntBuilder {
 
 	}
 
+	void importBuild(Object o, String s) {
+	}
+
+	void importBuild(Object o, String s, org.gradle.api.Transformer t) {
+	}
+
 	@Override
 	void setLifecycleLogLevel(AntMessagePriority antMessagePriority) {
 
