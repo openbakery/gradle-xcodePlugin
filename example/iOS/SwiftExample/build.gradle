@@ -21,6 +21,7 @@ buildscript {
 	repositories {
 		maven {
 			url('http://repository.openbakery.org')
+			allowInsecureProtocol = true
 		}
 		mavenCentral()
   }
