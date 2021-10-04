@@ -69,7 +69,7 @@ publishing {
 				pom.withXml {
 
 					asNode().dependencies.'*'.findAll() {
-						it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+						it.scope.text() == 'runtime' && project.configurations.implementation.allDependencies.find { dep ->
 							return true
 						}
 					}.each { 
