@@ -19,8 +19,6 @@ if (project.hasProperty("publishPassword")) {
 }
 
 
-apply plugin: 'maven'
-
 repositories {
 	mavenCentral()
 }
@@ -33,14 +31,16 @@ configurations {
 
 
 dependencies {
-	compile gradleApi()
-	compile 'com.squareup.okhttp3:okhttp:4.2.0'
-	compile 'org.openbakery.coverage:CoverageReport:0.9.4'
+	implementation gradleApi()
+	implementation 'com.squareup.okhttp3:okhttp:4.2.0'
+	implementation 'org.openbakery.coverage:CoverageReport:0.9.4'
 	deployerJars 'org.apache.maven.wagon:wagon-ssh:3.3.2'
 }
 
+
+project.archivesBaseName = 'xcode-plugin'
+
 jar {
-	baseName 'xcode-plugin'
 	from project.sourceSets.main.output
 	from project(":libxcode").sourceSets.main.output
 	from project(":libxcodetools").sourceSets.main.output
@@ -59,41 +59,40 @@ task sourcesJar(type: Jar) {
 publishing {
 	publications {
 
-		
 
 		maven(MavenPublication) {
 			groupId = 'org.openbakery.xcode-plugin'
-				artifactId = 'xcode-plugin'
-				version = project.version
+			artifactId = 'xcode-plugin'
+			version = project.version
 
-				pom {
-					pom.withXml {
+			pom {
+				pom.withXml {
 
-						asNode().dependencies.'*'.findAll() {
-							it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
-								return true
-							}
-						}.each { 
-							if (it.artifactId.text().startsWith("libxcode")) {
-								it.scope*.value = 'compile'
-							}
+					asNode().dependencies.'*'.findAll() {
+						it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+							return true
 						}
-
-					}
-					licenses {
-						license {
-							name = 'The Apache License, Version 2.0'
-								url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}.each { 
+						if (it.artifactId.text().startsWith("libxcode")) {
+							it.scope*.value = 'compile'
 						}
 					}
-					developers {
-						developer {
-							id = 'renep'
-								name = 'René Pirringer'
-								email = 'rene@openbakery.org'
-						}
+
+				}
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+							url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 					}
 				}
+				developers {
+					developer {
+						id = 'renep'
+							name = 'René Pirringer'
+							email = 'rene@openbakery.org'
+					}
+				}
+			}
 			from components.java
 		}
 	}
