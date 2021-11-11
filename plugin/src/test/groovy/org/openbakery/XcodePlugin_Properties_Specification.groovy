@@ -4,16 +4,15 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class XcodePlugin_Properties_Specification extends Specification {
 
-
-	@Rule TemporaryFolder testProjectDir = new TemporaryFolder()
+	@TempDir
+	File testProjectDir
  	File buildFile
 
 	Project project
@@ -21,8 +20,9 @@ class XcodePlugin_Properties_Specification extends Specification {
 	void setup() {
 		project = ProjectBuilder.builder().build()
 
-		buildFile = testProjectDir.newFile('build.gradle')
-		        buildFile << """
+		buildFile = new File(testProjectDir, "build.gradle")
+
+		buildFile << """
 		            plugins {
 		                id 'org.openbakery.xcode-plugin'
 		            }
@@ -32,7 +32,7 @@ class XcodePlugin_Properties_Specification extends Specification {
 
 	BuildResult run(String parameter)  {
 		return GradleRunner.create()
-					.withProjectDir(testProjectDir.root)
+					.withProjectDir(testProjectDir)
 					.withArguments('showProperty', parameter)
 					.withPluginClasspath()
 					.build()

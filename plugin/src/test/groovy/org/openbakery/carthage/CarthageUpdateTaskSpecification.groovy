@@ -3,8 +3,6 @@ package org.openbakery.carthage
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Rule
-import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.output.ConsoleOutputAppender
@@ -23,8 +21,6 @@ class CarthageUpdateTaskSpecification extends Specification {
 
 	CommandRunner commandRunner = Mock(CommandRunner)
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none()
 
 	def setup() {
 		projectDir = File.createTempDir()

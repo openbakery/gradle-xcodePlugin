@@ -4,11 +4,11 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.openbakery.testdouble.SimulatorControlFake
 import org.openbakery.xcode.Destination
 import org.openbakery.testdouble.ProgressLoggerStub
-import org.junit.Test
-import org.junit.Before
 import org.openbakery.xcode.DestinationResolver
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,7 +44,7 @@ class TestBuildOutputAppenderTest {
 	Project project
 	List<Destination> destinations
 
-	@Before
+	@BeforeEach
 	void setup() {
 		project = ProjectBuilder.builder().build()
 		project.buildDir = new File('build').absoluteFile

@@ -1,19 +1,13 @@
 package org.openbakery.output
 
 import org.apache.commons.io.FileUtils
+import org.junit.jupiter.api.Test
 import org.openbakery.testdouble.ProgressLoggerStub
-import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
 
-/**
- * Created with IntelliJ IDEA.
- * User: rene
- * Date: 02.10.13
- * Time: 11:15
- * To change this template use File | Settings | File Templates.
- */
+
 class XcodeBuildOutputAppenderTest {
 
 	def data = "CompileC build/obj/FOO.build/Debug-iphonesimulator/FOO-DMS.build/Objects-normal/i386/ClipboardListViewController.o FOO-iPad/Source/View\\ Controllers/ClipboardListViewController.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler\n" +

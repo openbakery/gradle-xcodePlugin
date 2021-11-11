@@ -4,9 +4,6 @@ import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import spock.lang.Specification
 
 class XcodeProjectFileSpecification extends Specification {

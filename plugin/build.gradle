@@ -1,6 +1,8 @@
 plugins {
 	id 'maven-publish'
-	id 'com.gradle.plugin-publish' version '0.16.0'
+	id 'java-gradle-plugin'
+	id "com.gradle.plugin-publish" version "0.17.0"
+	id 'java-library'
 }
 
 
@@ -52,8 +54,27 @@ task sourcesJar(type: Jar) {
 	from project(":libxcodetools").sourceSets.main.allSource
 	classifier = 'sources'
 }
-
-
+/*
+sourceSets {
+	main {
+		groovy {
+			srcDirs = [
+				'src/main/groovy',
+				'../libxcode/src/main/groovy'
+			]
+		}
+		kotlin {
+			srcDirs = [
+				'../libxcode/src/main/kotlin',
+				'../libxcodetools/src/main/kotlin'
+			]
+		}
+		resources {
+			srcDir 'src/main/resource'
+		}
+	}
+}
+*/
 
 
 publishing {
@@ -72,7 +93,7 @@ publishing {
 						it.scope.text() == 'runtime' && project.configurations.implementation.allDependencies.find { dep ->
 							return true
 						}
-					}.each { 
+					}.each {
 						if (it.artifactId.text().startsWith("libxcode")) {
 							it.scope*.value = 'compile'
 						}
@@ -102,7 +123,7 @@ publishing {
 			//url = '~/tmp/repository'
 			url "${publishURL}"
       credentials {
-            username = "${publishUser}" 
+            username = "${publishUser}"
             password = "${publishPassword}"
         }
     }
@@ -110,16 +131,26 @@ publishing {
 }
 
 
+gradlePlugin {
+	plugins {
+		xcodePlugin {
+			id = 'org.openbakery.xcode-plugin'
+			implementationClass = 'org.openbakery.XcodePlugin'
+		}
+	}
+}
+
+
+
 pluginBundle {
 	website = 'https://openbakery.org/gxp/'
 	vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
 	description = 'A gradle plugin for building Xcode projects!'
-	tags = ['xcode', 'iOS', 'os x', "osx", "mac", "iphone", "ipad"]
 
 	plugins {
 		xcodePlugin {
-			id = 'org.openbakery.xcode-plugin'
 			displayName = 'Gradle Xcode plugin'
+			tags = ['xcode', 'iOS', 'os x', "osx", "mac", "iphone", "ipad"]
 		}
 	}
 }

@@ -4,8 +4,6 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Rule
-import org.junit.rules.ExpectedException
 import org.openbakery.CommandRunner
 import org.openbakery.output.ConsoleOutputAppender
 import org.openbakery.testdouble.XcodeFake
@@ -26,8 +24,6 @@ class CarthageArchiveTaskSpecification extends Specification {
 	Project project
 	File xcconfigPath
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none()
 
 	void setup() {
 		projectDir = File.createTempDir()

@@ -4,7 +4,6 @@ import groovy.mock.interceptor.MockFor
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Test
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import spock.lang.Specification

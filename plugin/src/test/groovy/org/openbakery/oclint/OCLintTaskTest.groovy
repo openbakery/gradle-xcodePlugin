@@ -5,12 +5,12 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.openbakery.CommandRunner
 import org.openbakery.XcodePlugin
 import org.openbakery.testdouble.AntBuilderStub
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*
@@ -34,7 +34,8 @@ class OCLintTaskTest {
 	String savedOSVersion
 
 	def commandRunnerMock
-	@Before
+
+	@BeforeEach
 	void setUp() {
 		savedOSVersion = System.getProperty("os.version")
 
@@ -56,7 +57,7 @@ class OCLintTaskTest {
 
 	}
 
-	@After
+	@AfterEach
 	void cleanup() {
 		System.setProperty("os.version", savedOSVersion)
 		FileUtils.deleteDirectory(projectDir)
