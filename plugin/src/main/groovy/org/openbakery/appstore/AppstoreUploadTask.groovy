@@ -27,7 +27,40 @@ class AppstoreUploadTask extends AbstractAppstoreTask {
 
 	@TaskAction
 	def upload() {
-		runAltool("--upload-app")
+		if (xcode.version.major > 12) {
+			if (project.appstore.publicId == null) {
+				throw new IllegalArgumentException("Appstore Public Id is missing. Parameter: appstore.publicId")
+			}
+			if (project.appstore.appleId == null) {
+				throw new IllegalArgumentException("Appstore Apple Id is missing. Parameter: appstore.appleId")
+			}
+			if (project.appstore.bundleVersion == null) {
+				throw new IllegalArgumentException("Appstore Bundle Version is missing. Parameter: appstore.bundleVersion")
+			}
+			if (project.appstore.shortBundleVersion == null) {
+				throw new IllegalArgumentException("Appstore Short Bundle Version is missing. Parameter: appstore.shortBundleVersion")
+			}
+			if (project.appstore.bundleIdentifier == null) {
+				throw new IllegalArgumentException("Appstore Bundle Identifier is missing. Parameter: appstore.bundleIdentifier")
+			}
+
+			String[] parameters = [
+				"--asc-public-id",
+				project.appstore.publicId,
+				"--apple-id",
+				project.appstore.appleId,
+				"--bundle-version",
+				project.appstore.bundleVersion,
+				"--bundle-short-version-string",
+				project.appstore.shortBundleVersion,
+				"--bundle-id",
+				project.appstore.bundleIdentifier
+			]
+
+			runAltool("--upload-package", parameters)
+		} else {
+			runAltool("--upload-app")
+		}
 	}
 
 }

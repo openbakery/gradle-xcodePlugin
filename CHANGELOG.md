@@ -1,4 +1,9 @@
-# 0.21.0 (Sep 30, 2021)
+# 0.21.2 (TBA)
+
+Changes
+* Update the appstore upload to use the new --upload-package API
+
+# 0.21.1 (Sep 30, 2021)
 
 Changes
 * Added support for xcframeworks when using carthage

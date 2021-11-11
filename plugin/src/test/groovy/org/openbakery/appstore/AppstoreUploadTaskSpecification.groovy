@@ -31,6 +31,15 @@ class AppstoreUploadTaskSpecification extends Specification {
 		ipaBundle = new File(project.getBuildDir(), "package/Test.ipa")
 		FileUtils.writeStringToFile(ipaBundle, "dummy")
 
+
+		project.appstore.username = "user"
+		project.appstore.password = "pass"
+		project.appstore.publicId = "1"
+		project.appstore.appleId = "1"
+		project.appstore.bundleVersion = "1"
+		project.appstore.shortBundleVersion = "1"
+		project.appstore.bundleIdentifier = "org.openbakery.example.App"
+
 	}
 
 	def cleanup() {
@@ -101,24 +110,22 @@ class AppstoreUploadTaskSpecification extends Specification {
 
 	def "test when Xcode 13 then add type parameter is added for IPA upload"() {
 		given:
+		String[] commandList
+
 		project.appstore.username = "user"
 		project.appstore.password = "pass"
+		project.appstore.publicId = "23"
 		task.xcode = new XcodeFake("13")
 
 		when:
 		task.upload()
 
 		then:
-		1 * commandRunner.run(["/Applications/Xcode.app/Contents/Developer/usr/bin/altool",
-													 "--upload-app",
-													 "--type",
-													 "ios",
-													 "--username",
-													 "user",
-													 "--password",
-													 "pass",
-													 "--file",
-													 ipaBundle.absolutePath], _)
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.join(" ").contains("--type ios")
 	}
 
 	def "test when Xcode 12 then add type parameter is not added for IPA upload"() {
@@ -140,6 +147,180 @@ class AppstoreUploadTaskSpecification extends Specification {
 													 "--file",
 													 ipaBundle.absolutePath], _)
 	}
+
+
+	def "when xcode 13 and publicId is missing an exception is thrown"() {
+		given:
+		project.appstore.publicId = null
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		def exception = thrown(IllegalArgumentException.class)
+		exception.message.contains("appstore.publicId")
+	}
+
+	def "when xcode 13 and appleId is missing an exception is thrown"() {
+		given:
+		project.appstore.appleId = null
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		def exception = thrown(IllegalArgumentException.class)
+		exception.message.contains("appstore.appleId")
+	}
+
+	def "when xcode 13 and bundleVersion is missing an exception is thrown"() {
+		given:
+		project.appstore.bundleVersion = null
+
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		def exception = thrown(IllegalArgumentException.class)
+		exception.message.contains("appstore.bundleVersion")
+	}
+
+
+	def "when xcode 13 and shortBundleVersion is missing an exception is thrown"() {
+		given:
+		project.appstore.shortBundleVersion = null
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		def exception = thrown(IllegalArgumentException.class)
+		exception.message.contains("appstore.shortBundleVersion")
+	}
+
+
+	def "when xcode 13 and Bundle Identifier is missing an exception is thrown"() {
+		given:
+		project.appstore.bundleIdentifier = null
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		def exception = thrown(IllegalArgumentException.class)
+		exception.message.contains("appstore.bundleIdentifier")
+	}
+
+
+	def "When Xcode 13 use the new upload-package parameter to upload the IPA"() {
+		given:
+		String[] commandList
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+
+		commandList.contains("/Applications/Xcode.app/Contents/Developer/usr/bin/altool")
+		commandList.contains("--upload-package")
+	}
+
+	def "When Xcode 13 use the new upload-package with --asc-public-id parameter"() {
+		given:
+		String[] commandList
+		project.appstore.publicId = "4567"
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.join(" ").contains("--asc-public-id 4567")
+	}
+
+
+	def "When Xcode 13 use the new upload-package with --apple-id parameter"() {
+		given:
+		String[] commandList
+		project.appstore.appleId = "myId"
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.join(" ").contains("--apple-id myId")
+	}
+
+	def "When Xcode 13 use the new upload-package with --bundle-version parameter"() {
+		given:
+		String[] commandList
+		project.appstore.bundleVersion = "1.2.3"
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.join(" ").contains("--bundle-version 1.2.3")
+	}
+
+	def "When Xcode 13 use the new upload-package with --short-bundle-version parameter"() {
+		given:
+		String[] commandList
+		project.appstore.shortBundleVersion = "1.2.3.4"
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.join(" ").contains("--bundle-short-version-string 1.2.3.4")
+	}
+
+	def "When Xcode 13 use the new upload-package with --bundle-id parameter"() {
+		given:
+		String[] commandList
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.join(" ").contains("--bundle-id org.openbakery.example.App")
+	}
+
 
 
 }
