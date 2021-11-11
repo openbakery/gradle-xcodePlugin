@@ -114,7 +114,7 @@ class ProvisioningInstallTaskSpecification extends Specification {
 
 	def "has provisionprofile extension"() {
 		given:
-		File testMobileprovision = new File("../plugin/src/test/Resource/test-wildcard-mac.provisionprofile")
+		File testMobileprovision = new File("../xcode-plugin/src/test/Resource/test-wildcard-mac.provisionprofile")
 		project.xcodebuild.signing.mobileProvisionURI = testMobileprovision.toURI().toString()
 
 		ProvisioningProfileReader provisioningProfileIdReader = new ProvisioningProfileReader(testMobileprovision, commandRunner)

@@ -26,7 +26,7 @@ class TestResultParserSpecification extends Specification {
 		xcresulttoolPath = new Xcode(new CommandRunner()).getXcresulttool()
 
 
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Legacy/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
 	}
 
@@ -60,7 +60,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse success result"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Passed) == 2
@@ -69,7 +69,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse failure result"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output-test-failed.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Passed) == 0
@@ -78,7 +78,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse failure result with partial suite"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output-test-failed-partial.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Passed) == 0
@@ -87,7 +87,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse success result xcode 6.1"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-xcode6_1.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output-xcode6_1.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Passed) == 8
@@ -96,7 +96,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse complex test output"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-complex-test.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output-complex-test.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Failed) == 0
@@ -104,7 +104,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse success result for tests written in swift using Xcode 6.1"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output-swift-tests-xcode6_1.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Passed) == 2
@@ -113,7 +113,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse legacy test summary has result"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/Legacy/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/Legacy/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
 
 		when:
@@ -135,7 +135,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse new xcresult test summary has result"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
@@ -149,7 +149,7 @@ class TestResultParserSpecification extends Specification {
 	//
 	def "parse new xcresult scheme and verify result count"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
@@ -183,7 +183,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Legacy/Failure")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Legacy/Failure")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode7.txt"))
 
 		when:
@@ -201,7 +201,7 @@ class TestResultParserSpecification extends Specification {
 
 		testResultParser.parse()
 
-		def resultFromOutput = testResultParser.parseResult(new File("../plugin/src/test/Resource/TestLogs/Legacy/Success/xcodebuild-output.txt"))
+		def resultFromOutput = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/TestLogs/Legacy/Success/xcodebuild-output.txt"))
 		testResultParser.mergeResult(testResultParser.testResults, resultFromOutput)
 		return testResultParser.testResults
 	}
@@ -235,7 +235,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse skipped result from xcodeoutput"() {
 		when:
-		def result = testResultParser.parseResult(new File("../plugin/src/test/Resource/xcodebuild-output-test-skipped.txt"))
+		def result = testResultParser.parseResult(new File("../xcode-plugin/src/test/Resource/xcodebuild-output-test-skipped.txt"))
 
 		then:
 		testResultParser.number(result, TestResult.State.Passed) == 0
@@ -246,7 +246,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse xcresult scheme with skipped test"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Skipped")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Skipped")
 		Destination destination = new Destination("iPhone X")
 		destination.id = "7B40DCDA-3380-4BB9-AB92-1E3D1AC7B3BB"
 

@@ -195,7 +195,7 @@ class CodesignSpecification extends  Specification {
 
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 		File xcent =  new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
-		FileUtils.copyFile(new File("../plugin/src/test/Resource/archived-expanded-entitlements.xcent"), xcent)
+		FileUtils.copyFile(new File("../xcode-plugin/src/test/Resource/archived-expanded-entitlements.xcent"), xcent)
 
 		when:
 

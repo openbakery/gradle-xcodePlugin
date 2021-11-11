@@ -53,7 +53,7 @@ allprojects {
 
 
 
-project(':plugin') {
+project(':xcode-plugin') {
 	dependencies {
 		implementation project(':libxcode')
 		implementation project(':libxcodetools')

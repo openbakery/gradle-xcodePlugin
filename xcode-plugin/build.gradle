@@ -54,78 +54,22 @@ task sourcesJar(type: Jar) {
 	from project(":libxcodetools").sourceSets.main.allSource
 	classifier = 'sources'
 }
-/*
-sourceSets {
-	main {
-		groovy {
-			srcDirs = [
-				'src/main/groovy',
-				'../libxcode/src/main/groovy'
-			]
-		}
-		kotlin {
-			srcDirs = [
-				'../libxcode/src/main/kotlin',
-				'../libxcodetools/src/main/kotlin'
-			]
-		}
-		resources {
-			srcDir 'src/main/resource'
-		}
-	}
-}
-*/
+
 
 
 publishing {
-	publications {
-
-
-		maven(MavenPublication) {
-			groupId = 'org.openbakery.xcode-plugin'
-			artifactId = 'xcode-plugin'
-			version = project.version
-
-			pom {
-				pom.withXml {
-
-					asNode().dependencies.'*'.findAll() {
-						it.scope.text() == 'runtime' && project.configurations.implementation.allDependencies.find { dep ->
-							return true
-						}
-					}.each {
-						if (it.artifactId.text().startsWith("libxcode")) {
-							it.scope*.value = 'compile'
-						}
-					}
-
-				}
-				licenses {
-					license {
-						name = 'The Apache License, Version 2.0'
-							url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-					}
-				}
-				developers {
-					developer {
-						id = 'renep'
-							name = 'René Pirringer'
-							email = 'rene@openbakery.org'
-					}
-				}
-			}
-			from components.java
-		}
-	}
 
 	repositories {
 		maven {
-			//url = '~/tmp/repository'
+			url = '/Users/rene/tmp/repository'
+			/*
 			url "${publishURL}"
       credentials {
             username = "${publishUser}"
             password = "${publishPassword}"
         }
+
+			 */
     }
 	}
 }
