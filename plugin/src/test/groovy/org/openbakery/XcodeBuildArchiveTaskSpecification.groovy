@@ -1,8 +1,8 @@
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang3.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.testdouble.PlistHelperStub
@@ -328,7 +328,8 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 		File infoPlist = new File(projectDir, "build/archive/Example.xcarchive/Info.plist")
 
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(infoPlist)
+		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration()
+		config.read(new FileReader(infoPlist))
 		List icons = config.getList("ApplicationProperties.IconPaths")
 
 		then:

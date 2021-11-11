@@ -2,8 +2,7 @@ package org.openbakery.test
 
 import groovy.json.JsonSlurper
 import groovy.xml.MarkupBuilder
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.gradle.api.tasks.testing.Test
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Destination
 import org.slf4j.Logger
@@ -86,7 +85,9 @@ public class TestResultParser {
 
 		logger.debug("parsing xcresult scheme version < 3")
 		testSummariesArray.toList().each {
-			def testResult = new XMLPropertyListConfiguration(it)
+			def testResult = new XMLPropertyListConfiguration()
+			testResult.read(new FileReader(it))
+
 			def identifier = testResult.getString("RunDestination.TargetDevice.Identifier")
 
 			Destination destination = findDestinationForIdentifier(destinations, identifier)

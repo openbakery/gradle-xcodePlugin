@@ -1,6 +1,6 @@
 package org.openbakery
 
-	import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.openbakery.xcode.Destination
@@ -85,7 +85,6 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 				String path = new File(it).parent
 				copy(source, new File(testBundleFile, path))
 			}
-			//createZip(new File(testBundleFile.absolutePath + ".zip"), testBundleFile)
 		}
 	}
 
@@ -94,20 +93,21 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		logger.debug("getAppBundles for {}", xcrunfile)
 
 		List<String> result = []
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(xcrunfile)
-		for (def item : config.getRoot().getChildren()) {
-			if (item.getChildrenCount("DependentProductPaths") > 0) {
-				List dependencies = item.getChildren("DependentProductPaths")
-				if (dependencies.size() > 0) {
-					for (def dependency in dependencies[0].value) {
-						String value = dependency - "__TESTROOT__/"
-						result << value
-					}
+		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration()
+		config.read(new FileReader(xcrunfile))
+
+		for (key in config.getKeys()) {
+			if (key.endsWith(".DependentProductPaths")) {
+				String[] items = config.getStringArray(key)
+				for (def item in items) {
+					result << item - "__TESTROOT__/"
 				}
+				logger.debug("result appBundles for {}", result)
+				return result
 			}
 		}
-		logger.debug("result appBundles for {}", result)
-		return result
+		logger.debug("result appBundles for {} is empty")
+		return []
 	}
 
 

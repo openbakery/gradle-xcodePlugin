@@ -1,6 +1,7 @@
 package org.openbakery.configuration
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
+
 
 class ConfigurationFromPlist implements Configuration {
 
@@ -15,7 +16,9 @@ class ConfigurationFromPlist implements Configuration {
 		if (!plistFile.exists()) {
 			throw new FileNotFoundException(plistFile.path)
 		}
-		configuration = new XMLPropertyListConfiguration(plistFile)
+		configuration = new XMLPropertyListConfiguration()
+		configuration.read(new FileReader(plistFile))
+
 	}
 
 	@Override

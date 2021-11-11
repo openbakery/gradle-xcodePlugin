@@ -1,6 +1,6 @@
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -73,7 +73,8 @@ class XcodeBuildArchiveTaskOSXSpecification extends Specification {
 
 		File infoPlist = new File(projectDir, "build/archive/Example.xcarchive/Info.plist")
 
-		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration(infoPlist)
+		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration()
+		config.read(new FileReader(infoPlist))
 
 		then:
 		infoPlist.exists()

@@ -1,8 +1,5 @@
 package org.openbakery
 
-import groovy.xml.MarkupBuilder
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.lang.time.DurationFormatUtils
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -11,14 +8,8 @@ import org.gradle.internal.logging.progress.ProgressLoggerFactory
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.openbakery.output.TestBuildOutputAppender
-import org.openbakery.test.TestClass
-import org.openbakery.test.TestResult
-import org.openbakery.test.TestResultParser
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Xcodebuild
-
-
-
 
 
 

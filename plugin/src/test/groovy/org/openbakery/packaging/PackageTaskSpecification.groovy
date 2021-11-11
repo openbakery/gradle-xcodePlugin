@@ -2,11 +2,10 @@ package org.openbakery.packaging
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang3.RandomStringUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
-import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.test.ApplicationDummy
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Type

@@ -16,7 +16,7 @@
 package org.openbakery
 
 import org.apache.commons.io.filefilter.SuffixFileFilter
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 import org.openbakery.signing.Signing

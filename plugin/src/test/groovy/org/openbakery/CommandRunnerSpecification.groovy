@@ -72,7 +72,7 @@ class CommandRunnerSpecification extends Specification {
 		commandRunner.run(["find", "/usr/bin"])
 
 		then:
-		commandRunner.commandOutputBuffer.size() == 20
+		commandRunner.commandOutputBuffer.size() == 40
 
 	}
 

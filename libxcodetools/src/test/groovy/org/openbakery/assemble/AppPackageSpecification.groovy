@@ -1,14 +1,11 @@
 package org.openbakery.assemble
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
-import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.test.ApplicationDummy
-import org.openbakery.testdouble.LipoFake
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.CommandLineTools
 import org.openbakery.tools.Lipo
@@ -127,7 +124,6 @@ class AppPackageSpecification extends Specification {
 		given:
 		def commandList
 		File entitlementsFile
-		XMLPropertyListConfiguration entitlements
 
 		codesignParameters.entitlements = [
 				"keychain-access-groups"  : ["\$(AppIdentifierPrefix)org.openbakery.test.Example",

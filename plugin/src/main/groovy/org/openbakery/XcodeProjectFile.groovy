@@ -1,7 +1,7 @@
 package org.openbakery
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
+import org.apache.commons.lang3.StringUtils
 import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -54,7 +54,10 @@ class XcodeProjectFile {
 		// convert ascii plist to xml so that commons configuration can parse it!
 		commandRunner.run(["plutil", "-convert", "xml1", projectFile.absolutePath, "-o", projectPlistFile.absolutePath])
 
-		config = new XMLPropertyListConfiguration(projectPlistFile)
+		config = new XMLPropertyListConfiguration()
+		config.read(new FileReader(projectPlistFile))
+
+
 		rootObjectKey = getString("rootObject")
 	}
 

@@ -1,14 +1,12 @@
 package org.openbakery.signing
 
-import ch.qos.logback.core.util.FileUtil
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.ProvisioningProfileReader
 import org.openbakery.codesign.ProvisioningProfileType
-import org.openbakery.configuration.Configuration
 import org.openbakery.configuration.ConfigurationFromMap
 import org.openbakery.configuration.ConfigurationFromPlist
 import org.openbakery.xcode.Type
@@ -180,7 +178,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
 		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, null)
 
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -254,7 +253,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = new File(projectDir, "entitlements.plist")
 		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", keychainAccessGroups, null)
 
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -575,7 +575,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File xcent = new File("src/test/Resource/archived-expanded-entitlements.xcent")
 		reader.extractEntitlements(entitlementsFile, "org.openbakery.test.Example", null, new ConfigurationFromPlist(xcent))
 
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -608,8 +609,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
-
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 		then:
 		entitlementsFile.exists()
 		entitlements.getList("com..apple..developer..icloud-container-identifiers").contains("iCloud.com.example.Test")
@@ -622,7 +623,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -635,7 +637,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -649,7 +652,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -662,7 +666,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -677,7 +682,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()
@@ -694,7 +700,8 @@ class ProvisioningProfileReaderSpecification extends Specification {
 		File entitlementsFile = setupForEntitlementTest(data)
 
 		when:
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
 
 		then:
 		entitlementsFile.exists()

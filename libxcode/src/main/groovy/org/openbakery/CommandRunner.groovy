@@ -73,7 +73,7 @@ class CommandRunner {
 		}
 
 		if (commandOutputBuffer == null) {
-			commandOutputBuffer = new CircularFifoBuffer(20);
+			commandOutputBuffer = new CircularFifoBuffer(40);
 		}
 
 		def commandsAsStrings = commandList.collect { it.toString() } // GStrings don't play well with ProcessBuilder
