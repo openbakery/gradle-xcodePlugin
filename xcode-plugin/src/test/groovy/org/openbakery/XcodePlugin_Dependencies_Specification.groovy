@@ -42,4 +42,7 @@ class XcodePlugin_Dependencies_Specification extends Specification {
 		cleanTask.getTaskDependencies().getDependencies() contains(carthageCleanTask)
 
 	}
+
+
+
 }

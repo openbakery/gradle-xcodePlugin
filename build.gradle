@@ -52,7 +52,6 @@ allprojects {
 }
 
 
-
 project(':xcode-plugin') {
 	dependencies {
 		implementation project(':libxcode')
