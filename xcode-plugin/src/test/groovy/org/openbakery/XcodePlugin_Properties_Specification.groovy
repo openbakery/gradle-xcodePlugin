@@ -1,17 +1,16 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
-import spock.lang.TempDir
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class XcodePlugin_Properties_Specification extends Specification {
 
-	@TempDir
 	File testProjectDir
  	File buildFile
 
@@ -19,6 +18,9 @@ class XcodePlugin_Properties_Specification extends Specification {
 
 	void setup() {
 		project = ProjectBuilder.builder().build()
+
+		testProjectDir = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
+		testProjectDir.mkdirs()
 
 		buildFile = new File(testProjectDir, "build.gradle")
 
@@ -28,6 +30,12 @@ class XcodePlugin_Properties_Specification extends Specification {
 		            }
 		        """
 
+	}
+
+	def cleanup() {
+		FileUtils.deleteDirectory(testProjectDir)
+		buildFile = null
+		project = null
 	}
 
 	BuildResult run(String parameter)  {

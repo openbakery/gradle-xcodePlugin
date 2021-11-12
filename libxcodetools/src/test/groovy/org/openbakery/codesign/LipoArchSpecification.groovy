@@ -1,5 +1,6 @@
 package org.openbakery.codesign
 
+import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.Lipo
@@ -12,15 +13,17 @@ class LipoArchSpecification extends Specification {
 
 	Lipo lipo
 	CommandRunner commandRunner = Mock(CommandRunner)
+	File tmpDirectory
 
 	def setup() {
-		def tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
+		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
 		def xcodebuild = new Xcodebuild(tmpDirectory, commandRunner, new XcodeFake(), new XcodebuildParameters(), [])
 		commandRunner.runWithResult(_,["xcodebuild", "clean", "-showBuildSettings"]) >> ""
 		lipo = new Lipo(xcodebuild)
 	}
 
 	def cleanup() {
+		FileUtils.deleteDirectory(tmpDirectory)
 		lipo = null
 		commandRunner = null
 	}

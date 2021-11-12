@@ -21,4 +21,8 @@ class CarthageParameters {
 
 		return this
 	}
+
+	public String toString() {
+		return "CarthageParameters[cache=${cache}, xcframework=${xcframework}, command=${command}]"
+	}
 }
