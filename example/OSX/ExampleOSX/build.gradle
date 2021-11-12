@@ -8,7 +8,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.21.2"
+	    classpath "org.openbakery:xcode-plugin:0.21.+"
 	}
 }
 apply plugin: 'org.openbakery.xcode-plugin'
