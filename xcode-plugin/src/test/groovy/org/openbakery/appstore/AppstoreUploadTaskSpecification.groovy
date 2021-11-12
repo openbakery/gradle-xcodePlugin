@@ -39,6 +39,7 @@ class AppstoreUploadTaskSpecification extends Specification {
 		project.appstore.bundleVersion = "1"
 		project.appstore.shortBundleVersion = "1"
 		project.appstore.bundleIdentifier = "org.openbakery.example.App"
+		project.appstore.useNewUpload = true
 
 	}
 
@@ -338,6 +339,26 @@ class AppstoreUploadTaskSpecification extends Specification {
 				commandList = arguments[0]
 		}
 		commandList.join(" ").contains("--bundle-id org.openbakery.example.App")
+	}
+
+
+
+	def "When Xcode 13 use old upload if legacyUpload is true"() {
+		given:
+		String[] commandList
+		task.xcode = new XcodeFake("13")
+		project.appstore.useNewUpload = null
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+		commandList.contains("--upload-app")
+		commandList.contains("--file")
 	}
 
 

@@ -76,6 +76,7 @@ class XcodePlugin_Properties_Specification extends Specification {
 		"appstore.bundleVersion"                 | "bundleVersion"
 		"appstore.shortBundleVersion"            | "shortBundleVersion"
 		"appstore.bundleIdentifier"              | "bundleIdentifier"
+		"appstore.useNewUpload"                  | true
 		"infoplist.bundleIdentifier"             | "bundleIdentifier"
 		"infoplist.bundleIdentifierSuffix"       | "bundleIdentifierSuffix"
 		"infoplist.bundleDisplayName"            | "bundleDisplayName"

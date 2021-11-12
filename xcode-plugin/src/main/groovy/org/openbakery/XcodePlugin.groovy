@@ -355,6 +355,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('appstore.bundleIdentifier')) {
 				project.appstore.bundleIdentifier = project['appstore.bundleIdentifier']
 			}
+			if (project.hasProperty('appstore.useNewUpload')) {
+				project.appstore.useNewUpload = project['appstore.useNewUpload']
+			}
 			if (project.hasProperty('oclint.reportType')) {
 				project.oclint.reportType = project['oclint.reportType'];
 			}

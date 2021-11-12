@@ -27,7 +27,7 @@ class AppstoreUploadTask extends AbstractAppstoreTask {
 
 	@TaskAction
 	def upload() {
-		if (xcode.version.major > 12) {
+		if (xcode.version.major > 12 && project.appstore.useNewUpload) {
 			if (project.appstore.publicId == null) {
 				throw new IllegalArgumentException("Appstore Public Id is missing. Parameter: appstore.publicId")
 			}

@@ -14,6 +14,7 @@ class AppstorePluginExtension {
 	def String bundleVersion = null
 	def String shortBundleVersion = null
 	def String bundleIdentifier = null
+	def Boolean useNewUpload = null
 
 	public AppstorePluginExtension(Project project) {
 	}
