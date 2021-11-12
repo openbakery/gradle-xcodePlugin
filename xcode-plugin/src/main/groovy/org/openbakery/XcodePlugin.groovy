@@ -337,8 +337,24 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('appstore.password')) {
 				project.appstore.password = project['appstore.password']
 			}
-
-
+			if (project.hasProperty('appstore.publicId')) {
+				project.appstore.publicId = project['appstore.publicId']
+			}
+			if (project.hasProperty('appstore.appleId')) {
+				project.appstore.appleId = project['appstore.appleId']
+			}
+			if (project.hasProperty('appstore.ascProvider')) {
+				project.appstore.ascProvider = project['appstore.ascProvider']
+			}
+			if (project.hasProperty('appstore.bundleVersion')) {
+				project.appstore.bundleVersion = project['appstore.bundleVersion']
+			}
+			if (project.hasProperty('appstore.shortBundleVersion')) {
+				project.appstore.shortBundleVersion = project['appstore.shortBundleVersion']
+			}
+			if (project.hasProperty('appstore.bundleIdentifier')) {
+				project.appstore.bundleIdentifier = project['appstore.bundleIdentifier']
+			}
 			if (project.hasProperty('oclint.reportType')) {
 				project.oclint.reportType = project['oclint.reportType'];
 			}

@@ -55,8 +55,6 @@ task sourcesJar(type: Jar) {
 	classifier = 'sources'
 }
 
-
-
 publishing {
 
 	repositories {
