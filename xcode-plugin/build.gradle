@@ -61,14 +61,12 @@ publishing {
 
 	repositories {
 		maven {
-			url = '/Users/rene/tmp/repository'
-			/*
+			//url = '/Users/rene/tmp/repository'
 			url "${publishURL}"
       credentials {
             username = "${publishUser}"
             password = "${publishPassword}"
         }
-				*/
     }
 	}
 }
