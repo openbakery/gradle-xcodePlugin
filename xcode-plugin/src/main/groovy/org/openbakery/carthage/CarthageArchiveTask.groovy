@@ -12,10 +12,7 @@ class CarthageArchiveTask extends AbstractCarthageTaskBase {
 			hasCartfile()
 		}
 		serializeDebugging = true
-		println "HERE!!!!"
-		println "parameters: " + parameters
-		parameters.cache = true
-		println "parameters: " + parameters
+		parameters.cache = false
 	}
 
 
