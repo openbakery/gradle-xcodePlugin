@@ -45,6 +45,10 @@ class AbstractAppstoreTask extends AbstractDistributeTask {
 			action
 		]
 
+		if (action == "--upload-package") {
+			commandList << ipa.getAbsolutePath()
+		}
+
 		commandList.addAll(parameters)
 
 		if (xcode.version.major > 12) {
@@ -69,9 +73,10 @@ class AbstractAppstoreTask extends AbstractDistributeTask {
 		}
 
 
-
-		commandList << "--file"
-		commandList << ipa.getAbsolutePath()
+		if (action != "--upload-package") {
+			commandList << "--file"
+			commandList << ipa.getAbsolutePath()
+		}
 
 
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(AbstractAppstoreTask.class)

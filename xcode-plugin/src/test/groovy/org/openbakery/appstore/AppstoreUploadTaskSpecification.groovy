@@ -236,6 +236,25 @@ class AppstoreUploadTaskSpecification extends Specification {
 		commandList.contains("--upload-package")
 	}
 
+
+	def "When Xcode 13 use the new upload-package followed by the IPA"() {
+		given:
+		String[] commandList
+		task.xcode = new XcodeFake("13")
+
+		when:
+		task.upload()
+
+		then:
+		1 * commandRunner.run(_, _) >> {
+			arguments ->
+				commandList = arguments[0]
+		}
+
+		commandList.join(" ").contains("--upload-package " + ipaBundle.absolutePath)
+		!commandList.contains("--file")
+	}
+
 	def "When Xcode 13 use the new upload-package with --asc-public-id parameter"() {
 		given:
 		String[] commandList
