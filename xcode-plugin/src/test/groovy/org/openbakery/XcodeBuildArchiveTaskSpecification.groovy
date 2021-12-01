@@ -619,8 +619,7 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 
 
 	def "create archive using xcodebuild"() {
-		def commandList
-		def expectedCommandList
+		String command
 
 		given:
 		xcodeBuildArchiveTask.destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode7.txt"))
@@ -638,28 +637,18 @@ class XcodeBuildArchiveTaskSpecification extends Specification {
 		xcodeBuildArchiveTask.archive()
 
 		then:
-		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-		interaction {
-			expectedCommandList = ['xcodebuild',
-														 "-scheme", 'myscheme',
-														 "-workspace", 'myworkspace',
-														 "-configuration", "Debug",
-														 "CODE_SIGN_IDENTITY=",
-														 "CODE_SIGNING_REQUIRED=NO",
-														 "CODE_SIGNING_ALLOWED=NO",
-														 "-derivedDataPath", new File(project.buildDir, "derivedData").absolutePath,
-														 "DSTROOT=" + new File(project.buildDir, "dst").absolutePath,
-														 "OBJROOT=" + new File(project.buildDir, "obj").absolutePath,
-														 "SYMROOT=" + new File(project.buildDir, "sym").absolutePath,
-														 "SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath,
-														 "archive",
-														 "-archivePath",
-														 new File(project.buildDir, "archive/Example.xcarchive").absolutePath
-
-			]
-		}
-		commandList == expectedCommandList
-
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> command = arguments[1].join(" ") }
+		command.startsWith("xcodebuild -scheme myscheme -workspace myworkspace")
+		command.contains("-configuration Debug")
+		command.contains("CODE_SIGN_IDENTITY=")
+		command.contains("CODE_SIGNING_REQUIRED=NO")
+		command.contains("CODE_SIGNING_ALLOWED=NO")
+		command.contains("-derivedDataPath " + new File(project.buildDir, "derivedData").absolutePath)
+		command.contains("DSTROOT=" + new File(project.buildDir, "dst").absolutePath)
+		command.contains("OBJROOT=" + new File(project.buildDir, "obj").absolutePath)
+		command.contains("SYMROOT=" + new File(project.buildDir, "sym").absolutePath)
+		command.contains("SHARED_PRECOMPS_DIR=" + new File(project.buildDir, "shared").absolutePath)
+		command.endsWith("archive -archivePath " + new File(project.buildDir, "archive/Example.xcarchive").absolutePath)
 	}
 
 

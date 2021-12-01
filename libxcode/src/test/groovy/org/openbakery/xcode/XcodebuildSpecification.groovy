@@ -757,7 +757,7 @@ class XcodebuildSpecification extends Specification {
 					"-workspace", "myworkspace",
 					"-configuration", 'Debug')
 
-			expectedCommandList << "-destination" << "id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+			expectedCommandList << "-destination" << "generic/platform=iOS"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
 			expectedCommandList << "-enableCodeCoverage" << "yes"
@@ -881,8 +881,7 @@ class XcodebuildSpecification extends Specification {
 
 
 	def "run build-for-testing"() {
-		def commandList
-		def expectedCommandList
+		String command
 
 		def destination = new Destination()
 		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
@@ -896,29 +895,20 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.target = 'Test';
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
-		xcodebuild.parameters.simulator = false
+		xcodebuild.parameters.simulator = true
 
 		when:
 		xcodebuild.executeBuildForTesting(outputAppender, null)
 
 		then:
-		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-
-
-		interaction {
-			expectedCommandList = createCommandWithDisabledCodesign('script', '-q', '/dev/null',
-							"xcodebuild",
-							"-scheme", 'myscheme',
-							"-workspace", "myworkspace",
-							"-configuration", 'Debug')
-
-			expectedCommandList << "-destination" << "id=83384347-6976-4E70-A54F-1CFECD1E02B1"
-			addDerivedDataPathParameters(expectedCommandList)
-			addDefaultDirectoriesParameters(expectedCommandList)
-			expectedCommandList << "-enableCodeCoverage" << "yes"
-		}
-		Collections.indexOfSubList(commandList, expectedCommandList) == 0
-		commandList.contains("build-for-testing")
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> command = arguments[1].join(" ") }
+		command.startsWith("script -q /dev/null xcodebuild")
+		command.contains("-scheme myscheme")
+		command.contains("-workspace myworkspace")
+		command.contains("-destination id=83384347-6976-4E70-A54F-1CFECD1E02B1")
+		command.contains("-enableCodeCoverage yes")
+		command.contains("-derivedDataPath " + new File("build/derivedData").absolutePath)
+		command.endsWith("build-for-testing")
 	}
 
 
@@ -947,7 +937,7 @@ class XcodebuildSpecification extends Specification {
 		interaction {
 			expectedCommandList << 'script' << '-q' << '/dev/null'
 			expectedCommandList <<  "xcodebuild"
-			expectedCommandList << "-destination" << "id=83384347-6976-4E70-A54F-1CFECD1E02B1"
+			expectedCommandList << "-destination" << "generic/platform=iOS"
 			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
 			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "COMPILER_INDEX_STORE_ENABLE=NO"
@@ -1140,4 +1130,24 @@ class XcodebuildSpecification extends Specification {
 		commandList.contains('COMPILER_INDEX_STORE_ENABLE=NO')
 	}
 
+	// If this is not done, then a device build on an Apple Silicon machine does not work properly
+	// The actool to compile the Assets gets the wrong parameters and the Assets.car is not correct.
+	def "use default destination generic for iOS when no destination was specified"() {
+		String command
+
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.simulator = false
+
+
+		when:
+		xcodebuild.execute(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments ->
+			command = arguments[1].join(" ")
+		}
+		command.contains("-destination generic/platform=iOS")
+	}
 }

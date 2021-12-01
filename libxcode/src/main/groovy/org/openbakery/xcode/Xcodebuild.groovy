@@ -54,7 +54,7 @@ class Xcodebuild {
 		addDisableCodeSigning(commandList)
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
-		addDestinationSettingsForBuild(commandList)
+		addDestinationSettings(commandList)
 		addDisableIndexing(commandList)
 
 		commandRunner.run(projectDirectory.absolutePath, commandList, environment, outputAppender)
@@ -66,7 +66,7 @@ class Xcodebuild {
 		commandList << 'script' << '-q' << '/dev/null'
 		addBuildSettings(commandList)
 		addDisableCodeSigning(commandList)
-		addDestinationSettingsForTest(commandList)
+		addDestinationSettings(commandList)
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
 		addCoverageSettings(commandList)
@@ -98,7 +98,7 @@ class Xcodebuild {
 			def commandList = []
 			commandList << 'script' << '-q' << '/dev/null'
 			commandList << xcode.xcodebuild
-			addDestinationSettingsForTest(commandList)
+			addDestinationSettings(commandList)
 			commandList.add("-derivedDataPath")
 			commandList.add(parameters.derivedDataPath.absolutePath)
 			addAdditionalParameters(commandList)
@@ -121,7 +121,7 @@ class Xcodebuild {
 		addDisableCodeSigning(commandList)
 		addAdditionalParameters(commandList)
 		addBuildPath(commandList)
-		addDestinationSettingsForBuild(commandList)
+		addDestinationSettings(commandList)
 		commandList << "archive"
 		commandList << '-archivePath'
 		commandList << archivePath
@@ -223,28 +223,20 @@ class Xcodebuild {
 		}
 	}
 
-
-	def addDestinationSettingsForBuild(ArrayList commandList) {
-		if (isSimulator()) {
-			Destination destination = this.destinations.last()
-			commandList.add("-destination")
-			commandList.add(getDestinationCommandParameter(destination))
-		}
-		if (parameters.type == Type.macOS) {
-			commandList.add("-destination")
-			commandList.add("platform=OS X,arch=x86_64")
-		}
-	}
-
-	def addDestinationSettingsForTest(ArrayList commandList) {
+	def addDestinationSettings(ArrayList commandList) {
 		switch (parameters.type) {
 			case Type.iOS:
 			case Type.tvOS:
+				if (!this.simulator) {
+					commandList.add("-destination")
+					commandList.add("generic/platform=" + parameters.type.value)
+					break
+				}
 				this.destinations.each { destination ->
 					commandList.add("-destination")
 					commandList.add(getDestinationCommandParameter(destination))
 				}
-				break;
+				break
 
 			case Type.macOS:
 				commandList.add("-destination")
