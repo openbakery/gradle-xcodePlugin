@@ -2,6 +2,7 @@
 
 Changes
 * Update the appstore upload to use the new --upload-package API
+* The Assets.car is now propery created an an Apple Silicon machine.
 
 # 0.21.1 (Sep 30, 2021)
 

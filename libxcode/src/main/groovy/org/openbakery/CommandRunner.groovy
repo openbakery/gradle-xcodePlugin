@@ -66,7 +66,7 @@ class CommandRunner {
 
 	def run(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
 
-		logger.debug("Run command: {}", commandListToString(commandList))
+		logger.info("Run command: {}", commandListToString(commandList))
 		logger.debug("with working directory: {} ({})", directory, new File(directory).absoluteFile);
 		if (environment != null) {
 			logger.debug("with additional environment variables: {}", environment)
