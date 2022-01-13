@@ -313,4 +313,24 @@ class XcodeSpecification extends Specification {
 	}
 
 
+	def "can parse version string for Xcode 13.2.1"() {
+		given:
+		def versionString = """
+objc[98772]: Class AMSupportURLConnectionDelegate is implemented in both /usr/lib/libauthinstall.dylib (0x20d84ab90) and /Library/Apple/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice (0x1068242c8). One of the two will be used. Which one is undefined.
+objc[98772]: Class AMSupportURLSession is implemented in both /usr/lib/libauthinstall.dylib (0x20d84abe0) and /Library/Apple/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice (0x106824318). One of the two will be used. Which one is undefined.
+Xcode 13.2.1
+Build version 13C100"""
+
+		commandRunner.runWithResult("xcodebuild", "-version") >> versionString
+
+		when:
+		def version = xcode.getVersion()
+
+		then:
+		version.major == 13
+		version.minor == 2
+		version.maintenance == 1
+
+	}
+
 }

@@ -117,7 +117,7 @@ class Xcode {
 		}
 
 		Matcher matcher = VERSION_PATTERN.matcher(xcodeVersion)
-		if (matcher.matches()) {
+		if (matcher.find()) {
 			def versionString = matcher.group(1)
 			logger.debug("versionString {}", versionString)
 			Version version = new Version(versionString)
