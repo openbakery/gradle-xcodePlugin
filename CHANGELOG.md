@@ -1,8 +1,9 @@
-# 0.21.2 (TBA)
+# 0.22.0 (Jan 13, 2022)
 
 Changes
 * Update the appstore upload to use the new --upload-package API
 * The Assets.car is now propery created an an Apple Silicon machine.
+* Added support for Xcode 13.2.1.  
 
 # 0.21.1 (Sep 30, 2021)
 
