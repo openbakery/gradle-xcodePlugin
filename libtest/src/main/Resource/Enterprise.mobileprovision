@@ -38,7 +38,7 @@
 
 	</dict>
 	<key>ExpirationDate</key>
-	<date>2022-01-12T23:59:59Z</date>
+	<date>2032-01-12T23:59:59Z</date>
 	<key>Name</key>
 	<string>Example App</string>
 	<key>ProvisionsAllDevices</key>
