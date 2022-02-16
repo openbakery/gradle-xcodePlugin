@@ -462,6 +462,7 @@ class XcodeBuildPluginExtension {
 
 	XcodebuildParameters getXcodebuildParameters() {
 		def result = new XcodebuildParameters()
+		result.projectFile = this.projectFile
 		result.scheme = this.scheme
 		result.target = this.target
 		result.simulator = this.simulator

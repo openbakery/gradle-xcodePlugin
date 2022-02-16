@@ -33,7 +33,15 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		super()
 	}
 
+	void setProjectFile(String projectFile) {
+		parameters.projectFile = projectFile
+	}
 
+	@Input
+	@Optional
+	String getProjectFile() {
+		return parameters.projectFile
+	}
 
 	void setTarget(String target) {
 		parameters.target = target
