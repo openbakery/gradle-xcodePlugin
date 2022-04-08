@@ -24,7 +24,7 @@ Here a brief overview of the features:
 
 ## Requirements
 
- Xcode 7 or greater
+ Xcode 12 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
 
