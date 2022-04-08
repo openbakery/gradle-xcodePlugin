@@ -10,6 +10,7 @@ public class TestResult {
 
 	String method;
 	String output = "";
+	TestResultAttachment[] attachments = [];
 	float duration;
 	State state = State.Passed
 
@@ -24,4 +25,28 @@ public class TestResult {
 	}
 }
 
+class TestResultAdditionalInfo {
+	String name = ""
+	TestResultAttachment[] testResultAttachments = []
 
+	@Override
+	public String toString() {
+		return "TestResultAdditionalInfo{" +
+			"name='" + name + '\'' +
+			", testResultAttachments=" + Arrays.toString(testResultAttachments) +
+			'}';
+	}
+}
+
+class TestResultAttachment {
+	String name = ""
+	String id = ""
+
+	@Override
+	public String toString() {
+		return "TestResultAttachment{" +
+			"name='" + name + '\'' +
+			", id='" + id + '\'' +
+			'}';
+	}
+}
