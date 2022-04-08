@@ -2,6 +2,7 @@ package org.openbakery.xcode
 
 import org.openbakery.CommandRunner
 import org.openbakery.output.OutputAppender
+import org.openbakery.testdouble.SimulatorControlFake
 import spock.lang.Specification
 import org.openbakery.testdouble.XcodeFake
 
@@ -34,7 +35,7 @@ class Xcodebuild_Xcode10_Specification extends Specification {
 						new Destination("iPhone XR")
 		]
 // iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389
-		destinationResolver = new DestinationResolver(new SimulatorControlStub("simctl-list-xcode10.txt"))
+		destinationResolver = new DestinationResolver(new SimulatorControlFake("simctl-list-xcode10.txt"))
 		xcodebuild = new Xcodebuild(new File("buildDirectory"), commandRunner, new XcodeFake("10.0"), parameters, destinationResolver.getDestinations(parameters))
 		xcodebuild.parameters.type = Type.iOS
 		xcodebuild.parameters.target = 'Test';
@@ -71,38 +72,26 @@ class Xcodebuild_Xcode10_Specification extends Specification {
 	}
 
 	def "test command for iOS device has parallel testing disabled"() {
-			def commandList
-			def expectedCommandList
+		String command
 
-			def destination = new Destination()
-			destination.id = '93552145-0476-432B-B9E4-99BDF458F557'
+		def destination = new Destination()
+		destination.id = '93552145-0476-432B-B9E4-99BDF458F557'
 
-			parameters.destination  = [ destination ]
-			parameters.simulator = false
-
-
-			when:
-			xcodebuild.executeTest(outputAppender, null)
-
-			then:
-			1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		parameters.destination  = [ destination ]
+		parameters.simulator = true
 
 
-			interaction {
-				expectedCommandList = createCommandWithDisabledCodesign('script', '-q', '/dev/null',
-						"xcodebuild",
-						"-scheme", 'myscheme',
-						"-workspace", "myworkspace",
-						"-configuration", 'Debug')
+		when:
+		xcodebuild.executeTest(outputAppender, null)
 
-				expectedCommandList << "-destination" << "platform=iOS Simulator,id=93552145-0476-432B-B9E4-99BDF458F557"
-				addDerivedDataPathParameters(expectedCommandList)
-				addDefaultDirectoriesParameters(expectedCommandList)
-				expectedCommandList << "-enableCodeCoverage" << "yes"
-			}
-			Collections.indexOfSubList(commandList, expectedCommandList) == 0
-			commandList.removeLast() == 'test'
-			commandList.removeLast() == '-disable-concurrent-destination-testing'
-		}
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> command = arguments[1].join(" ") }
+		command.startsWith("script -q /dev/null xcodebuild")
+		command.contains("-scheme myscheme")
+		command.contains("-workspace myworkspace")
+		command.contains("-destination platform=iOS Simulator,id=93552145-0476-432B-B9E4-99BDF458F557")
+		command.contains("-enableCodeCoverage yes")
+		command.endsWith("-disable-concurrent-destination-testing test")
+	}
 
 }

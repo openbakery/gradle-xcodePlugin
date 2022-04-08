@@ -1,11 +1,11 @@
 package org.openbakery.xcode
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 /*
  * User: rene
  */
-class 	Destination {
+class Destination {
 
 	String platform = null
 	String name = null

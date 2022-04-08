@@ -66,14 +66,14 @@ class CommandRunner {
 
 	def run(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {
 
-		logger.debug("Run command: {}", commandListToString(commandList))
+		logger.info("Run command: {}", commandListToString(commandList))
 		logger.debug("with working directory: {} ({})", directory, new File(directory).absoluteFile);
 		if (environment != null) {
 			logger.debug("with additional environment variables: {}", environment)
 		}
 
 		if (commandOutputBuffer == null) {
-			commandOutputBuffer = new CircularFifoBuffer(20);
+			commandOutputBuffer = new CircularFifoBuffer(40);
 		}
 
 		def commandsAsStrings = commandList.collect { it.toString() } // GStrings don't play well with ProcessBuilder

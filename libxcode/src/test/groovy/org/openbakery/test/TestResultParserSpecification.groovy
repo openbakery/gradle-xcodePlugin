@@ -23,9 +23,9 @@ class TestResultParserSpecification extends Specification {
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		xcresulttoolPath = new Xcode(new CommandRunner(), "12").getXcresulttool()
+		xcresulttoolPath = new Xcode(new CommandRunner()).getXcresulttool()
 
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 	}
 
@@ -57,7 +57,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse new xcresult test summary has result"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
@@ -71,7 +71,7 @@ class TestResultParserSpecification extends Specification {
 	//
 	def "parse new xcresult scheme and verify result count"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Success")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
@@ -105,7 +105,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse test summary that has failure"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Failure")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Failure")
 		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
@@ -121,7 +121,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse test summary that has attachment"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Attachment")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Attachment")
 		Destination destination = new Destination("iPhone X")
 		destination.id = "9F93F05E-3450-43BD-92FE-0F99212DB8B6"
 		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, [destination])
@@ -157,7 +157,7 @@ class TestResultParserSpecification extends Specification {
 
 	def "parse xcresult scheme with skipped test"() {
 		given:
-		File testSummaryDirectory = new File("../plugin/src/test/Resource/TestLogs/xcresult/Skipped")
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Skipped")
 		Destination destination = new Destination("iPhone X")
 		destination.id = "7B40DCDA-3380-4BB9-AB92-1E3D1AC7B3BB"
 

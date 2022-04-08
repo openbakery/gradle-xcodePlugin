@@ -2,15 +2,15 @@ package org.openbakery.util
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.openbakery.util.VariableResolver
 
 class VariableResolverTest {
 
 	File temporaryDirectory
 
-	@Before
+	@BeforeEach
 	void setUp() {
 		temporaryDirectory = new File(System.getProperty("java.io.tmpdir"), "gradle-xcodebuild")
 	}

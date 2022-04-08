@@ -16,14 +16,21 @@ public class Bundle {
 	public final File path;
 	public final Type type;
 
+	public final boolean isMain;
+
 
 	PlistHelper plistHelper;
 
 
-	public Bundle(File path, Type type, PlistHelper helper) {
+	public Bundle(File path, Type type, PlistHelper helper, boolean isMain) {
 		this.path = path;
 		this.type = type;
 		this.plistHelper = helper;
+		this.isMain = isMain;
+	}
+
+	public Bundle(File path, Type type, PlistHelper helper) {
+		this(path, type, helper, false);
 	}
 
 	public Bundle(String path, Type type, PlistHelper helper) {

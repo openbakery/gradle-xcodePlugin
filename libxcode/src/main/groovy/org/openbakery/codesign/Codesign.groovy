@@ -1,7 +1,7 @@
 package org.openbakery.codesign
 
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.Bundle
 import org.openbakery.configuration.Configuration
@@ -35,7 +35,12 @@ class Codesign {
 
 
 	void sign(Bundle bundle) {
+		this.sign(bundle, bundle.getBundleIdentifier())
+	}
+
+	void sign(Bundle bundle, String mainBundleIdentifier) {
 		logger.debug("Codesign with Identity: {}", codesignParameters.signingIdentity)
+		logger.debug("Codesign with mainBundleIdentifier: {}", mainBundleIdentifier)
 
 		codeSignEmbeddedBundle(bundle.path)
 
@@ -43,7 +48,7 @@ class Codesign {
 
 		File entitlements = null
 		if (codesignParameters.signingIdentity != null) {
-			entitlements = prepareEntitlementsForSigning(bundle.path)
+			entitlements = prepareEntitlementsForSigning(bundle, mainBundleIdentifier)
 		}
 
 		if (codesignParameters.type == Type.macOS) {
@@ -54,7 +59,7 @@ class Codesign {
 
 	}
 
-	private File prepareEntitlementsForSigning(File bundle) {
+	private File prepareEntitlementsForSigning(Bundle bundle, String mainBundleIdentifier) {
 		File entitlements = codesignParameters.entitlementsFile
 		logger.debug("prepareEntitlementsForSigning")
 		if (entitlements != null) {
@@ -64,11 +69,11 @@ class Codesign {
 			logger.info("Using given entitlements {}", entitlements)
 		} else {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
-			Configuration configuration = createConfiguration(bundle)
+			Configuration configuration = createConfiguration(bundle.path, mainBundleIdentifier)
 
 			logger.info("entitlements configuration for {}: {}", bundle, configuration)
 
-			String bundleIdentifier = getIdentifierForBundle(bundle)
+			String bundleIdentifier = getIdentifierForBundle(bundle.path)
 			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
 			if (entitlements != null) {
 				logger.info("Using entitlements extracted from the provisioning profile")
@@ -84,13 +89,13 @@ class Codesign {
 	 * @param bundle
 	 * @return
 	 */
-	private Configuration createConfiguration(File bundle) {
+	private Configuration createConfiguration(File bundle, String mainBundleIdentifier) {
 		// for now we disable the merging for extension, except for the keychain-access-groups parameter
 		logger.info("createConfiguration for {}", bundle)
 		if (bundle.absolutePath.endsWith("appex")) {
 			if (codesignParameters.entitlements != null) {
-				def subMap = codesignParameters.entitlements.subMap(["keychain-access-groups"])
-				return new ConfigurationFromMap(subMap)
+				def map = ["keychain-access-groups": ["\$(AppIdentifierPrefix)" + mainBundleIdentifier]]
+				return new ConfigurationFromMap(map)
 			}
 			return new ConfigurationFromMap([:])
 		}
@@ -107,7 +112,7 @@ class Codesign {
 				return new ConfigurationFromPlist(xcentFile)
 			}
 		}
-		logger.debug("No entitlements configuration found for mergeing, so use only the plain entitlements extracted from the provisioning profile")
+		logger.debug("No entitlements configuration found for merging, so use only the plain entitlements extracted from the provisioning profile")
 		return new ConfigurationFromMap([:])
 	}
 
@@ -348,12 +353,14 @@ class Codesign {
 
 
 	List<String> getKeychainAccessGroupFromEntitlements(Configuration configuration, String applicationPrefix) {
+		logger.info("getKeychainAccessGroupFromEntitlements configuration {}", configuration)
 		List<String> result = []
 		applicationPrefix = applicationPrefix + "."
 
+		logger.info("configuration keys: {}", configuration.keys)
 		logger.info("using application prefix: {}", applicationPrefix)
-			List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
-		logger.info("keychain-access-group from configuration: {}", result)
+		List<String> keychainAccessGroups = configuration.getStringArray("keychain-access-groups")
+		logger.info("keychain-access-groups from configuration: {}", result)
 
 		keychainAccessGroups.each { item ->
 			if (StringUtils.isNotEmpty(applicationPrefix) && item.startsWith(applicationPrefix)) {

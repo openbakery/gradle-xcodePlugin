@@ -4,9 +4,16 @@ import org.openbakery.util.StringHelper
 
 class SimulatorDeviceType {
 
+	public static final String IDENTIFIER_PREFIX = "com.apple.CoreSimulator.SimDeviceType."
 	public String name
 	public String identifier
 	public String shortIdentifier
+
+	public SimulatorDeviceType(String name, String identifier) {
+		this.name = name
+		this.identifier = identifier
+		this.shortIdentifier = identifier - IDENTIFIER_PREFIX
+	}
 
 	public SimulatorDeviceType(String line) {
 		//iPhone 4s (com.apple.CoreSimulator.SimDeviceType.iPhone-4s)
@@ -21,7 +28,7 @@ class SimulatorDeviceType {
 		}
 
 		identifier = StringHelper.removeBrackets(tokens[index])
-		shortIdentifier = identifier - "com.apple.CoreSimulator.SimDeviceType."
+		shortIdentifier = identifier - IDENTIFIER_PREFIX
 		name = tokens[0..index-1].join(" ").trim()
 
 	}
@@ -60,11 +67,11 @@ class SimulatorDeviceType {
 			return true
 		}
 
-
 		if (shortIdentifier.startsWith("iPhone") ||
-						shortIdentifier.startsWith("iPad") ||
-						shortIdentifier.endsWith("iPhone") ||
-						shortIdentifier.endsWith("iPad")) {
+			shortIdentifier.startsWith("iPad") ||
+			shortIdentifier.startsWith("iPod") ||
+			shortIdentifier.endsWith("iPhone") ||
+			shortIdentifier.endsWith("iPad")) {
 			return simulatorRuntime.shortIdentifier.startsWith("iOS")
 		}
 		return false

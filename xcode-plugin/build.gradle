@@ -1,0 +1,95 @@
+plugins {
+	id 'maven-publish'
+	id 'java-gradle-plugin'
+	id "com.gradle.plugin-publish" version "0.17.0"
+	id 'java-library'
+}
+
+
+def publishURL = System.getenv("PUBLISH_URL")
+def publishUser = System.getenv("PUBLISH_USER")
+def publishPassword = System.getenv("PUBLISH_PASSWORD")
+
+if (project.hasProperty("publishURL")) {
+	publishURL = project.publishURL
+}
+if (project.hasProperty("publishUser")) {
+	publishUser = project.publishUser
+}
+if (project.hasProperty("publishPassword")) {
+	publishPassword = project.publishPassword
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+
+configurations {
+	deployerJars
+}
+
+
+
+dependencies {
+	implementation gradleApi()
+	implementation 'com.squareup.okhttp3:okhttp:4.2.0'
+	implementation 'org.openbakery.coverage:CoverageReport:0.9.4'
+	deployerJars 'org.apache.maven.wagon:wagon-ssh:3.3.2'
+}
+
+
+project.archivesBaseName = 'xcode-plugin'
+
+jar {
+	from project.sourceSets.main.output
+	from project(":libxcode").sourceSets.main.output
+	from project(":libxcodetools").sourceSets.main.output
+}
+
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	from project(":libxcode").sourceSets.main.allSource
+	from project(":libxcodetools").sourceSets.main.allSource
+	classifier = 'sources'
+}
+
+publishing {
+
+	repositories {
+		maven {
+			//url = '/Users/rene/tmp/repository'
+			url "${publishURL}"
+      credentials {
+            username = "${publishUser}"
+            password = "${publishPassword}"
+        }
+    }
+	}
+}
+
+
+gradlePlugin {
+	plugins {
+		xcodePlugin {
+			id = 'org.openbakery.xcode-plugin'
+			implementationClass = 'org.openbakery.XcodePlugin'
+		}
+	}
+}
+
+
+
+pluginBundle {
+	website = 'https://openbakery.org/gxp/'
+	vcsUrl = 'https://github.com/openbakery/gradle-xcodePlugin'
+	description = 'A gradle plugin for building Xcode projects!'
+
+	plugins {
+		xcodePlugin {
+			displayName = 'Gradle Xcode plugin'
+			tags = ['xcode', 'iOS', 'os x', "osx", "mac", "iphone", "ipad"]
+		}
+	}
+}

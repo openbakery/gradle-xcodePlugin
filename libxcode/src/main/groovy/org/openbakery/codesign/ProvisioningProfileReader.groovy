@@ -15,10 +15,10 @@
  */
 package org.openbakery.codesign
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.configuration.Configuration
@@ -72,7 +72,7 @@ class ProvisioningProfileReader {
 		String text = load(provisioningProfile)
 		logger.debug("provisioningProfile content:\n{}\n--- END ---", text)
 		config = new XMLPropertyListConfiguration()
-		config.load(new StringReader(text))
+		config.read(new StringReader(text))
 
 		this.commandRunner = commandRunner
 

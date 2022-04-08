@@ -1,6 +1,6 @@
 package org.openbakery.codesign
 
-import org.apache.commons.configuration.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.openbakery.CommandRunner
@@ -87,7 +87,7 @@ class CodesignSpecification extends  Specification {
 
 
 
-	def "create keychain access groupds from xcent file"() {
+	def "create keychain access groups from xcent file"() {
 		given:
 		applicationDummy.create()
 
@@ -102,7 +102,7 @@ class CodesignSpecification extends  Specification {
 		keychainAccessGroup[2] == "BBBBBBBBBB.org.openbakery.Foobar"
 	}
 
-	def "create keychain access groups, has not application identifiert"() {
+	def "create keychain access groups, has not application identifier"() {
 		given:
 		applicationDummy.create()
 		def entitlements = [
@@ -120,6 +120,23 @@ class CodesignSpecification extends  Specification {
 		keychainAccessGroup.size() == 1
 		keychainAccessGroup[0] == "\$(AppIdentifierPrefix)com.example.MyApp"
 	}
+
+	def "create keychain access groups, has not application identifier, from single entry"() {
+			given:
+			applicationDummy.create()
+			def entitlements = [
+				'com.apple.security.application-groups': ['group.com.example.MyApp'],
+				'keychain-access-groups'               : '$(AppIdentifierPrefix)com.example.MyApp'
+			]
+
+			when:
+			List<String> keychainAccessGroup = codesign.getKeychainAccessGroupFromEntitlements(new ConfigurationFromMap(entitlements), "AAA")
+
+			then:
+			keychainAccessGroup.size() == 1
+			keychainAccessGroup[0] == "\$(AppIdentifierPrefix)com.example.MyApp"
+		}
+
 
 
 	def "create entitlements with keychain access groups"() {
@@ -178,12 +195,14 @@ class CodesignSpecification extends  Specification {
 
 		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
 		File xcent =  new File(applicationDummy.payloadAppDirectory, "archived-expanded-entitlements.xcent")
-		FileUtils.copyFile(new File("../plugin/src/test/Resource/archived-expanded-entitlements.xcent"), xcent)
+		FileUtils.copyFile(new File("../xcode-plugin/src/test/Resource/archived-expanded-entitlements.xcent"), xcent)
 
 		when:
 
 		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromPlist(xcent))
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
+
 
 		then:
 		entitlementsFile.exists()
@@ -195,7 +214,7 @@ class CodesignSpecification extends  Specification {
 	def "create entitlements and merge with settings from signing"() {
 		def commandList
 		File entitlementsFile
-		XMLPropertyListConfiguration entitlements
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
 
 		given:
 		Bundle bundle = applicationDummy.createBundle()
@@ -218,7 +237,7 @@ class CodesignSpecification extends  Specification {
 				commandList = arguments[0]
 				if (commandList.size() > 3) {
 					entitlementsFile = new File(commandList[3])
-					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+					entitlements.read(new FileReader(entitlementsFile))
 				}
 		}
 		commandList.contains("/usr/bin/codesign")
@@ -323,14 +342,14 @@ class CodesignSpecification extends  Specification {
 
 
 	def "entitlements parameters are not used when signing extension"() {
-		def commandList
+		String[] commandList
 		File entitlementsFile
-		XMLPropertyListConfiguration entitlements
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
 
 		given:
 		applicationDummy.create()
 		Bundle bundle = applicationDummy.createPluginBundle()
-		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.last())
 
 		parameters.entitlements = [
 				"com.apple.developer.default-data-protection": "NSFileProtectionComplete",
@@ -343,12 +362,15 @@ class CodesignSpecification extends  Specification {
 		then:
 		1 * commandRunner.run(_, _) >> {
 			arguments ->
-				commandList = arguments[0]
+				commandList = (String[])arguments[0]
 				if (commandList.size() > 3) {
 					entitlementsFile = new File(commandList[3])
-					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+					if (entitlementsFile.exists()) {
+						entitlements.read(new FileReader(entitlementsFile))
+					}
 				}
 		}
+		entitlementsFile.exists()
 		!entitlements.containsKey("com..apple..developer..siri")
 		!entitlements.containsKey("com..apple..developer..default-data-protection")
 
@@ -359,7 +381,7 @@ class CodesignSpecification extends  Specification {
 	def "entitlements keychain-access-group is used for extension"() {
 		def commandList
 		File entitlementsFile
-		XMLPropertyListConfiguration entitlements
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
 
 		given:
 		applicationDummy.create()
@@ -372,7 +394,7 @@ class CodesignSpecification extends  Specification {
 		]
 
 		when:
-		codesign.sign(bundle)
+		codesign.sign(bundle, "org.openbakery.test.Test")
 
 		then:
 
@@ -381,14 +403,15 @@ class CodesignSpecification extends  Specification {
 				commandList = arguments[0]
 				if (commandList.size() > 3) {
 					entitlementsFile = new File(commandList[3])
-					entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+					entitlements.read(new FileReader(entitlementsFile))
 				}
 		}
 		commandList.contains("/usr/bin/codesign")
 		commandList[2] == "--entitlements"
 		entitlementsFile.exists()
-		entitlements.containsKey("keychain-access-groups")
-
+//		entitlements.containsKey("keychain-access-groups")
+//		entitlements.getStringArray("keychain-access-groups").length == 1
+//		entitlements.getStringArray("keychain-access-groups").contains("AAAAAAAAAAA.org.openbakery.test.Test")
 	}
 
 
@@ -408,7 +431,9 @@ class CodesignSpecification extends  Specification {
 
 		when:
 		File entitlementsFile = codesign.createEntitlementsFile("org.openbakery.test.Example", new ConfigurationFromMap(parameters.entitlements))
-		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration(entitlementsFile)
+		XMLPropertyListConfiguration entitlements = new XMLPropertyListConfiguration()
+		entitlements.read(new FileReader(entitlementsFile))
+
 
 		then:
 		entitlementsFile.exists()

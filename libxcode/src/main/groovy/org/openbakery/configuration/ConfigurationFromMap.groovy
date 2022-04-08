@@ -40,6 +40,9 @@ class ConfigurationFromMap implements Configuration {
 		if (value instanceof List<String, Object>) {
 			return value
 		}
+		if (value instanceof String) {
+			return [value]
+		}
 		return []
 	}
 

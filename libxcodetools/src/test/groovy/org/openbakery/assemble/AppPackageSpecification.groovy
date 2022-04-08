@@ -3,9 +3,9 @@ package org.openbakery.assemble
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
+import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.test.ApplicationDummy
-import org.openbakery.testdouble.LipoFake
 import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.CommandLineTools
 import org.openbakery.tools.Lipo
@@ -23,6 +23,9 @@ class AppPackageSpecification extends Specification {
 	def lipo = Mock(Lipo.class)
 	File tmpDirectory
 	File applicationPath
+	CodesignParameters codesignParameters
+	ApplicationBundle applicationBundle
+	def codesign = Mock(Codesign.class)
 
 	def setup() {
 		tmpDirectory = new File(System.getProperty("java.io.tmpdir"), "gxp-test")
@@ -31,8 +34,8 @@ class AppPackageSpecification extends Specification {
 
 		def archiveAppPath = applicationDummy.create()
 		applicationDummy.createSwiftLibs()
+		applicationDummy.createPluginBundle()
 		def tools = new CommandLineTools(commandRunner, new PlistHelper(new CommandRunner()), lipo)
-
 
 		def applicationDestination = new File(tmpDirectory, "App")
 
@@ -41,10 +44,13 @@ class AppPackageSpecification extends Specification {
 
 		applicationPath = new File(applicationDestination, archiveAppPath.getName())
 
-		def applicationBundle = new ApplicationBundle(applicationPath, Type.iOS, false, tools.plistHelper)
+		applicationBundle = new ApplicationBundle(applicationPath, Type.iOS, false, tools.plistHelper)
 
+		codesignParameters = new CodesignParameters()
 
-		appPackage = new AppPackage(applicationBundle, archivePath, new CodesignParameters(), tools)
+		codesign.codesignParameters >> codesignParameters
+
+		appPackage = new AppPackage(applicationBundle, archivePath, tools, codesign)
 	}
 
 	def cleanup() {
@@ -106,5 +112,33 @@ class AppPackageSpecification extends Specification {
 		then:
 		0 * lipo.removeUnsupportedArchs(new File(applicationPath, "Frameworks/Test.framework"), ["armv7"])
 	}
+
+	def "applicationBundle has two bundles"() {
+		expect:
+		applicationBundle.bundles.size() == 2
+	}
+
+
+
+	def "entitlements keychain-access-group is used for extension"() {
+		given:
+		def commandList
+		File entitlementsFile
+
+		codesignParameters.entitlements = [
+				"keychain-access-groups"  : ["\$(AppIdentifierPrefix)org.openbakery.test.Example",
+											 "\$(AppIdentifierPrefix)org.openbakery.test.ExampleWidget"]
+		]
+
+		XcodeFake xcode = new XcodeFake()
+
+		when:
+		appPackage.codesign()
+
+		then:
+		2 * codesign.sign(_, "org.openbakery.test.Example")
+	}
+
+
 
 }

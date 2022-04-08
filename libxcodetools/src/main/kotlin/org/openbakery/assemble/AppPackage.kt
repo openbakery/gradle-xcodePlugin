@@ -18,7 +18,11 @@ import org.openbakery.xcode.Xcode
 import org.slf4j.LoggerFactory
 import java.io.File
 
-class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignParameters: CodesignParameters, tools: CommandLineTools) {
+class AppPackage(
+	applicationBundle: ApplicationBundle,
+	archive: File,
+	tools: CommandLineTools,
+	codesign: Codesign) {
 
 	companion object {
 		val logger = LoggerFactory.getLogger("AppPackage")!!
@@ -27,8 +31,10 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 	private val archive: File = archive
 	private val tools: CommandLineTools = tools
 	private val fileHelper: FileHelper = FileHelper(CommandRunner())
-	private val codesignParameters: CodesignParameters = codesignParameters
+	private val codesignParameters: CodesignParameters = codesign.codesignParameters
 	private val applicationBundle: ApplicationBundle = applicationBundle
+	private val codesign: Codesign = codesign
+
 
 
 	private val mainBundleProvisioningProfileReader by lazy {
@@ -155,11 +161,11 @@ class AppPackage(applicationBundle: ApplicationBundle, archive: File, codesignPa
 		}
 	}
 
-	fun codesign(applicationBundle: ApplicationBundle, xcode: Xcode) {
-		logger.debug("codesign: {}", applicationBundle)
-		val codesign = Codesign(xcode, codesignParameters, tools.commandRunner, tools.plistHelper)
+
+	fun codesign() {
+		val mainBundleIdentifier = applicationBundle.mainBundle.bundleIdentifier
 		for (bundle in applicationBundle.bundles) {
-			codesign.sign(bundle)
+			codesign.sign(bundle, mainBundleIdentifier)
 		}
 	}
 

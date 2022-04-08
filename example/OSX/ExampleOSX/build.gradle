@@ -2,6 +2,7 @@ buildscript {
 	repositories {
 		maven {
 			url('http://repository.openbakery.org')
+			allowInsecureProtocol = true
 		}
 		mavenCentral()
   }
@@ -27,12 +28,9 @@ task release(dependsOn: ['archive', 'package']) {
 	description = 'Performs a release build and signed the created app using the provided sign settings'
 }
 
-
 gradle.taskGraph.whenReady { taskGraph ->
 
-	if (taskGraph.hasTask(package) || taskGraph.hasTask(release)) {
-
-
+	if (taskGraph.hasTask(release)) {
 		if (!project.hasProperty("signingCertificateURI")) {
 			signingCertificateURI = System.console().readLine("\nPlease enter the certificate URI: ")
 		}
@@ -48,6 +46,5 @@ gradle.taskGraph.whenReady { taskGraph ->
 				certificatePassword = signingCertificatePassword // e.g. 'secret'
 			}
 		}
-
 	}
 }

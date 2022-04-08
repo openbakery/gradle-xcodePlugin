@@ -1,8 +1,7 @@
 package org.openbakery.codesign
 
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.openbakery.CommandRunner
 import org.openbakery.util.DateHelper
 import org.slf4j.Logger

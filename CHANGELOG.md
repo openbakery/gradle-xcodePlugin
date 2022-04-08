@@ -1,11 +1,22 @@
-# 0.21.0 (TBA)
+# 0.21.2 (TBA)
+
+Changes
+* Update the appstore upload to use the new --upload-package API
+* The Assets.car is now propery created an an Apple Silicon machine.
+
+# 0.21.1 (Sep 30, 2021)
 
 Changes
 * Added support for xcframeworks when using carthage
 * Carthage bootstrap is executed also when only the Carthage.private file exists
 * Remove [Rome](https://github.com/tmspzz/Rome) support
+* Change that the altool use the apiKey and apiIssue. (username and password should still work)
+* Change that app extensions gets only the keychain-access-group of the main bundle set.
+* Updated appstore upload task so that it works with Xcode13
 
-# 0.20.1 (2. Dec, 2020)
+# 0.21.0 (Jun 28, 2021)
+
+# 0.20.1 (Dec 2, 2020)
 
 Changes
 * Added notarize task for notarizing macOS applications
@@ -14,7 +25,7 @@ Changes
 * Added support for skipped tests, that they are not shown as failures.
 * Added carthage archive task, so that a binary framework can be build.
 
-# 0.20.0 (2 June, 2020)
+# 0.20.0 (June 2, 2020)
 
 Changes
 * Added 'COMPILER_INDEX_STORE_ENABLE=NO' to disable indexing during build to speed up the build

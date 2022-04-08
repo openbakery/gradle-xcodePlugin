@@ -4,8 +4,6 @@ gradle-xcodePlugin
 [![Build Status](https://travis-ci.org/openbakery/gradle-xcodePlugin.svg?branch=master)](https://travis-ci.org/openbakery/gradle-xcodePlugin)
 [![Coverage Status](https://coveralls.io/repos/github/openbakery/gradle-xcodePlugin/badge.svg?branch=develop)](https://coveralls.io/github/openbakery/gradle-xcodePlugin?branch=develop)
 
-**Join the [gradle-xcode-plugin Slack channel](https://openbakery.slack.com/archives/gradle-xcode-plugin) for questions and discussions. [Send me a mail (rene@openbakery.org)](mailto:rene@openbakery.org) and I will send you an invitation**
-
 The gradle xcode plugin (gxp) makes it easier to build Xcode projects by specifying the build settings in a single configuration file. The goal is to keep the build file as simple as possible, but also enable a great flexibility for the build.
 
 The gxp uses the Apple command line tools (like xcodebuild) to perform the build.
@@ -34,9 +32,17 @@ Here a brief overview of the features:
 ### Current stable version is 0.20.1
 
 
-## Documentation
+## Parameters Documentation
 
-* [Documentation](https://openbakery.org/gxp/)
+* [xcodebuild](Documentation/xcodebuild.md)
+* [signing](Documentation/signing.md)
+* [infoplist](Documentation/infolist.md)
+* [appstore](Documentation/appstore.md)
+* [deploygate](Documentation/deploygate.md)
+* [crashlytics](Documentation/crashlytics.md)
+* [coverage](Documentation/coverage.md)
+* [oclint](Documentation/oclint.md)
+
 
 
 ## Usage
@@ -94,6 +100,10 @@ After you have fetched the example go to the `example/iOS/Example` directory and
 * Run the unit tests with `gradle test`
 * Perform a device build and upload it to App Center with `gradle integration`. Here you need to specify your sign settings first (see [Signing](Documentation/Parameters.md#sign-settings) ). Open the build.gradle file an follow the instructions.
 * Perform an appstore build with `gradle appstore`. (Also the sign settings are needed).
+
+# Need help?
+
+If you need help you can create an issue here on GitHub, you can [send me a mail](mailto:rene@openbakery.org) or [ask on twitter](https://twitter.com/rpirringer).
 
 # Collaborate
 

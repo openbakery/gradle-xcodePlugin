@@ -7,21 +7,34 @@ class SimulatorControlFake extends SimulatorControl {
 
 	File simctlListOutput
 
+	ArrayList<String>lastExecutedCommand
+
+	public SimulatorControlFake() {
+		super(null, new XcodeFake("12.0"))
+		simctlListOutput =  new File("../libtest/src/main/Resource/simctl-list-xcode12-full.json")
+	}
+
 	public SimulatorControlFake(String filename) {
-		this(new File("src/test/Resource/", filename))
+		this(new File("../libtest/src/main/Resource/", filename))
 	}
 
 	public SimulatorControlFake(File file) {
-		super(null, null)
+		super(null, new XcodeFake("11.0"))
 		simctlListOutput = file
 	}
 
 
 	@Override
-	String simctl(String... commands) {
-		if (commands == ["list"]) {
+	String executeWithResult(String... commands) {
+		lastExecutedCommand = commands
+		if (commands.first() == "list") {
 			return FileUtils.readFileToString(simctlListOutput)
 		}
 		return null;
+	}
+
+	@Override
+	void execute(String... commands) {
+		lastExecutedCommand = commands
 	}
 }

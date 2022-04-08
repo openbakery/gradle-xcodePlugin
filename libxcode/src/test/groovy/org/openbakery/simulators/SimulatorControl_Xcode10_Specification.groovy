@@ -2,6 +2,7 @@ package org.openbakery.simulators
 
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
+import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
@@ -17,6 +18,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 	def setup() {
 		xcode.getSimctl() >> SIMCTL
 		xcode.getPath() >> "/Applications/Xcode.app"
+		xcode.getVersion() >> new Version("11.0")
 		simulatorControl = new SimulatorControl(commandRunner, xcode)
 	}
 
@@ -25,7 +27,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 
 
 	void setupXcode10() {
-		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("src/test/Resource/simctl-list-xcode10.txt"))
+		commandRunner.runWithResult([SIMCTL, "list"]) >> FileUtils.readFileToString(new File("../libtest/src/main/Resource/simctl-list-xcode10.txt"))
 	}
 
 
@@ -102,7 +104,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name             | identifier
@@ -134,7 +136,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name                                    | identifier
@@ -159,7 +161,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name                          | identifier
@@ -181,7 +183,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.pair()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "pair", phoneIdentifier, watchIdentifier])
+		1 * commandRunner.run([SIMCTL, "pair", phoneIdentifier, watchIdentifier])
 
 		where:
 		phoneIdentifier                        | watchIdentifier
@@ -202,7 +204,7 @@ class SimulatorControl_Xcode10_Specification extends Specification {
 		simulatorControl.createAll()
 
 		then:
-		1 * commandRunner.runWithResult([SIMCTL, "create", name, identifier, runtime])
+		1 * commandRunner.run([SIMCTL, "create", name, identifier, runtime])
 
 		where:
 		name                     | identifier

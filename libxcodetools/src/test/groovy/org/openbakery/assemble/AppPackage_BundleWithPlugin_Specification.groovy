@@ -4,9 +4,11 @@ import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.bundle.ApplicationBundle
 import org.openbakery.bundle.Bundle
+import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
 import org.openbakery.codesign.ProvisioningProfileType
 import org.openbakery.test.ApplicationDummy
+import org.openbakery.testdouble.XcodeFake
 import org.openbakery.tools.CommandLineTools
 import org.openbakery.tools.Lipo
 import org.openbakery.util.FileHelper
@@ -50,7 +52,8 @@ class AppPackage_BundleWithPlugin_Specification extends Specification {
 
 		codesignParameters = new CodesignParameters()
 		codesignParameters.mobileProvisionFiles = applicationDummy.mobileProvisionFile
-		appPackage = new AppPackage(applicationBundle, archivePath, codesignParameters, tools)
+		def codesign = new Codesign(new XcodeFake(), codesignParameters, tools.commandRunner, tools.plistHelper)
+		appPackage = new AppPackage(applicationBundle, archivePath, tools, codesign)
 	}
 
 	def cleanup() {

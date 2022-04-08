@@ -26,7 +26,7 @@ class ApplicationBundle {
 		if (isDeviceBuildOf(Type.iOS)) {
 			addWatchToAppBundle(bundles)
 		}
-		bundles.add(new Bundle(applicationPath, type, this.plistHelper))
+		bundles.add(new Bundle(applicationPath, type, this.plistHelper, true))
 		return bundles
 	}
 
