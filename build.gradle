@@ -4,6 +4,7 @@ allprojects {
 
 	def versionNumber = "0.22.1"
 
+
 	if (project.hasProperty("versionNumber")) {
 		versionNumber = project.versionNumber
 	}
