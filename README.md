@@ -55,7 +55,7 @@ Here the minimal content you need in your build.gradle file:
 buildscript {
   repositories {
     maven {
-      url('http://repository.openbakery.org/')
+      url('https://openbakery.org/repository/')
     }
   mavenCentral()
   }
