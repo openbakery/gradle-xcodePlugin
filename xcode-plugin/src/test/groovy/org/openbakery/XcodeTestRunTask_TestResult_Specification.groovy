@@ -64,45 +64,6 @@ class XcodeTestRunTask_TestResult_Specification extends Specification {
 	}
 
 
-	def "Run test prints success result"() {
-		given:
-		def message
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/xcresult/Legacy/Success")
-		def printLogger = Mock(org.gradle.api.logging.Logger)
-		xcodeTestRunTestTask.printLogger = printLogger
-
-		when:
-		xcodeTestRunTestTask.processTestResult(testSummaryDirectory)
-
-		then:
-		1 * printLogger.lifecycle(_) >> {
-				arguments ->
-					message = arguments[0]
-			}
-		message ==	"All 37 tests were successful"
-	}
-
-	def "Run test prints failure result"() {
-		given:
-		def message
-		File testSummaryDirectory = new File("src/test/Resource/TestLogs/xcresult/Legacy/Failure")
-		def printLogger = Mock(org.gradle.api.logging.Logger)
-		xcodeTestRunTestTask.printLogger = printLogger
-
-		when:
-		try {
-			xcodeTestRunTestTask.processTestResult(testSummaryDirectory)
-		} catch (Exception exception) {
-			// expected
-		}
-
-		then:
-		1 * printLogger.lifecycle(_) >> {
-				arguments ->
-					message = arguments[0]
-			}
-		message ==	"36 tests were successful, and 1 failed"
-	}
 
 
 	def "Run test prints skipped result"() {

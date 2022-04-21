@@ -24,12 +24,12 @@ Here a brief overview of the features:
 
 ## Requirements
 
- Xcode 7 or greater
+ Xcode 12 or greater
 * [Gradle](http://gradle.org) 2.14 or greater
 * Java 1.6 or greater
 
 
-### Current stable version is 0.20.1
+### Current stable version is 0.22.1
 
 
 ## Parameters Documentation
@@ -52,29 +52,16 @@ Create a build.gradle file and place it in the same directory where xcodeproj fi
 Here the minimal content you need in your build.gradle file:
 
 ```
-plugins {
-  id "org.openbakery.xcode-plugin" version "0.20.2"
-}
-
-xcodebuild {
-  scheme = 'MY-SCHEMA'
-  target = 'MY-TARGET'
-}
-
-```
-
-You can also use the version that is deployed the repository on [openbakery.org](https://openbakery.org) with the following build.gradle file configuration:
-```
 buildscript {
   repositories {
     maven {
-      url('http://repository.openbakery.org/')
+      url('https://openbakery.org/repository/')
     }
   mavenCentral()
   }
 
   dependencies {
-    classpath "org.openbakery:xcode-plugin:0.20.+"
+    classpath "org.openbakery:xcode-plugin:0.22.+"
   }
 }
 
@@ -85,7 +72,7 @@ apply plugin: "org.openbakery.xcode-plugin"
 
 When using the [openbakery.org](https://openbakery.org) repository you can also get the latest develop version by including `develop` into the version pattern. e.g.: 
 ```
-classpath "org.openbakery:xcode-plugin:0.22.0.develop.+"
+classpath "org.openbakery:xcode-plugin:0.22.2.develop.+"
 ```
 
 The develop version contains all the changes from the develop branch, where all the fixes and feature are implemented. The development version is deployed automatically when all the projects unit tests are  successful, and also the if the example projects build. 
