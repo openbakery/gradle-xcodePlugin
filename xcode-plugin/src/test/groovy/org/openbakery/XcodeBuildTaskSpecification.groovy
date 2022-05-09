@@ -195,6 +195,24 @@ class XcodeBuildTaskSpecification extends Specification {
 		command.contains("-destination platform=iOS Simulator,id=5F371E1E-AFCE-4589-9158-8C439A468E61")
 	}
 
+	def "run command with -project "() {
+		String command
+
+		def target = 'mytarget'
+		project.xcodebuild.target = target
+
+		def projectFile = 'myproject.xcodeproj'
+		project.xcodebuild.projectFile = projectFile
+
+		when:
+		xcodeBuildTask.build()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> command = arguments[1].join(" ") }
+		command.contains("-project")
+		command.contains(projectFile)
+	}
+
 
 	def "run command without signIdentity"() {
 		def commandList
