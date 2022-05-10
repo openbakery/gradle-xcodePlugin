@@ -209,6 +209,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.scheme')) {
 				project.xcodebuild.scheme = project['xcodebuild.scheme']
 			}
+			if (project.hasProperty('xcodebuild.projectFile')) {
+				project.xcodebuild.projectFile = project['xcodebuild.projectFile']
+			}
 			if (project.hasProperty('xcodebuild.infoPlist')) {
 				project.xcodebuild.infoPlist = project['xcodebuild.infoPlist']
 			}

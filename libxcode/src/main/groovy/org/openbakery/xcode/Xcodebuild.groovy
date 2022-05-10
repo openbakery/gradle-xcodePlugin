@@ -159,6 +159,12 @@ class Xcodebuild {
 
 			commandList.add("-target")
 			commandList.add(parameters.target)
+			
+			if (parameters.projectFile != null) {
+				commandList.add("-project")
+				commandList.add(parameters.projectFile)
+			}
+			
 		}
 
 		if (parameters.bitcode) {
@@ -319,6 +325,11 @@ class Xcodebuild {
 
 	String loadBuildSettings() {
 		def commandList = [xcode.xcodebuild, "clean", "-showBuildSettings"]
+
+		if (parameters.projectFile != null) {
+			commandList.add("-project")
+			commandList.add(parameters.projectFile)
+		}
 
 		if (parameters.scheme != null && parameters.workspace != null) {
 			commandList.add("-scheme");

@@ -8,7 +8,7 @@ class XcodebuildParameters {
 
 	private static Logger logger = LoggerFactory.getLogger(XcodebuildParameters.class)
 
-
+	String projectFile
 	String scheme
 	String target
 	Boolean simulator
@@ -34,6 +34,7 @@ class XcodebuildParameters {
 	@Override
 	public String toString() {
 		return "XcodebuildParameters {" +
+						", projectFile='" + projectFile + '\'' +
 						", scheme='" + scheme + '\'' +
 						", target='" + target + '\'' +
 						", simulator=" + simulator +
@@ -57,6 +58,9 @@ class XcodebuildParameters {
 
 	XcodebuildParameters merge(XcodebuildParameters other) {
 
+		if (other.projectFile != null) {
+			projectFile = other.projectFile
+		}
 		if (other.target != null) {
 			target = other.target
 		}
