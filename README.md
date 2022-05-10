@@ -29,7 +29,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.22.1
+### Current stable version is 0.22.2
 
 
 ## Parameters Documentation

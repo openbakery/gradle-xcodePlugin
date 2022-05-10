@@ -1,3 +1,9 @@
+# 0.22.2
+
+Changes
+* added -project parameters, so that the project file can be outside the root directory: By amattil1, Issue #451
+
+
 # 0.22.1 
 
 # 0.22.0 (Jan 13, 2022)
