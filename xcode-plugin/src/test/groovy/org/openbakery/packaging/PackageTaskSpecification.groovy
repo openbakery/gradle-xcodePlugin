@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.openbakery.CommandRunner
 import org.openbakery.test.ApplicationDummy
+import org.openbakery.tools.Lipo
 import org.openbakery.xcode.Extension
 import org.openbakery.xcode.Type
 import org.openbakery.XcodeBuildArchiveTask
@@ -14,6 +15,7 @@ import org.openbakery.XcodePlugin
 import org.openbakery.output.StyledTextOutputStub
 import org.openbakery.testdouble.PlistHelperStub
 import org.openbakery.testdouble.XcodeFake
+import org.openbakery.xcode.Xcodebuild
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -572,5 +574,23 @@ class PackageTaskSpecification extends Specification {
 
 		then:
 		!entries.contains("MessagesApplicationExtensionSupport/MessagesApplicationExtensionStub")
+	}
+
+	class LipoDelegate extends Lipo {
+		LipoDelegate(Xcodebuild x) { super(x)	}
+	}
+
+	def "xcodebuild parameters from the project are given to Xcodebuild constructor"() {
+		given:
+		mockExampleApp(false, true)
+		GroovyMock(Lipo, global: true)
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		1 * new Lipo({
+			it.parameters == project.xcodebuild.xcodebuildParameters
+		}) >> { Xcodebuild xcodebuild -> new LipoDelegate(xcodebuild)}
 	}
 }
