@@ -1,3 +1,9 @@
+# 0.23.0 (Apr 24, 2023)
+
+Changes:
+- Test that are markted as expected failues, are marked as passed. Issue #460 
+
+
 # 0.22.2
 
 Changes
