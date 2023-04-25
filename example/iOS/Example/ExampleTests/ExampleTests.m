@@ -31,4 +31,10 @@
 	XCTSkip(@"This test is skipped");
 }
 
+- (void)testExpectedFailure {
+  XCTExpectFailureInBlock(@"This test expects a failure", ^{
+    XCTFail(@"fail");
+  });
+}
+
 @end

@@ -132,6 +132,8 @@ public class TestResultParser extends AbstractTestResultParser {
 			def value = testData.testStatus._value
 			if (value == "Success") {
 				state = TestResult.State.Passed
+			} else if (value == "Expected Failure") {
+				state = TestResult.State.Passed
 			} else if (value == "Skipped") {
 				state = TestResult.State.Skipped
 			} else {

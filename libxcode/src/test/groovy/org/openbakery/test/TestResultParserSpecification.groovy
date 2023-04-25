@@ -172,4 +172,23 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.number(TestResult.State.Passed) == 1
 		testResultParser.number(TestResult.State.Skipped) == 1
 	}
+
+	def "parse xcresult scheme with expected test failure"() {
+		given:
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/ExpectFailure")
+		Destination destination = new Destination("iPhone 12 Pro")
+		destination.id = "3BFE2E8C-CABE-4C8F-AE96-DC9C5F792289"
+
+		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, [destination])
+
+		when:
+		testResultParser.parse()
+
+		then:
+		testResultParser.testResults.size() == 1
+		testResultParser.testResults.keySet()[0].name == "iPhone 12 Pro"
+		testResultParser.number(TestResult.State.Failed) == 0
+		testResultParser.number(TestResult.State.Passed) == 2
+		testResultParser.number(TestResult.State.Skipped) == 1
+	}
 }
