@@ -1,6 +1,7 @@
 allprojects {
 	apply plugin: 'java-gradle-plugin'
 	apply plugin: 'groovy'
+	apply plugin: "maven"
 
 	def versionNumber = "0.22.1"
 
@@ -63,11 +64,9 @@ if (project.hasProperty("publish")) {
 project(':xcode-plugin') {
 	dependencies {
 		if (!publish) {
-			println("USE IMPLEMENTATION")
 			implementation project(':libxcode')
 			implementation project(':libxcodetools')
 		} else {
-			println "PUBLISH"
 			compileOnly project(':libxcode')
 			compileOnly project(':libxcodetools')
 		}

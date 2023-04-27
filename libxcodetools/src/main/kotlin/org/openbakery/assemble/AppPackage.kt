@@ -17,6 +17,7 @@ import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcode
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.FilenameFilter
 
 class AppPackage(
 	applicationBundle: ApplicationBundle,
@@ -90,6 +91,8 @@ class AppPackage(
 			zipArchive.add(bcSymbolMapsPath)
 		}
 
+		zipArchive.add(File(baseDirectory, "Symbols"))
+
 		zipArchive.create()
 	}
 
@@ -125,6 +128,32 @@ class AppPackage(
 
 		updateArchsForSwiftLibs(frameworksPath)
 		return File(applicationBundle.baseDirectory, "SwiftSupport")
+	}
+
+	fun addSymbols() {
+		val dSymPath = File(archive.absolutePath, "dSYMs")
+		if (dSymPath.exists()) {
+			logger.debug("Adding Symbols..")
+			tools.commandRunner.run("mkdir", "-p", "${applicationBundle.baseDirectory.absolutePath}/Symbols")
+			println(dSymPath.listFiles({ _, name -> name.endsWith(".dSYM")}).orEmpty().map { it.absolutePath })
+			for (dsym in dSymPath.listFiles({ _, name -> name.endsWith(".dSYM")}).orEmpty()) {
+				tools.commandRunner.run(
+					"xcrun",
+					"symbols",
+					"-noTextInSOD",
+					"-noDaemon",
+					"--arch",
+					"all",
+					"--symbolsPackageDir",
+					"${applicationBundle.baseDirectory}/Symbols",
+					dsym.absolutePath
+				)
+			}
+
+		} else {
+			logger.debug("Tried adding Symbols, but archive does not contain dSYMs to generate them.")
+		}
+
 	}
 
 

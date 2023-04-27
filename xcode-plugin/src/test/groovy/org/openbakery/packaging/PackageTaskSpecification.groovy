@@ -275,6 +275,36 @@ class PackageTaskSpecification extends Specification {
 		payloadDirectory.exists()
 	}
 
+	def "test symbols"() {
+		given:
+		mockExampleApp(false, false)
+		applicationDummy.createDsyms()
+		File symbolsDir = new File(outputPath.absolutePath, "Symbols")
+
+		when:
+		project.packaging.packageSymbols = true
+		packageTask.packageApplication()
+
+		then:
+		1 * commandRunner.run(["mkdir", "-p", "${outputPath.absolutePath}/Symbols"]) >> { symbolsDir.mkdirs() }
+		1 * commandRunner.run(symbolsCommandList(outputPath.absolutePath, archiveDirectory.absolutePath))
+		symbolsDir.exists()
+	}
+
+	List<String> symbolsCommandList(String outputPath, String dSYMPath) {
+		[
+			"xcrun",
+			"symbols",
+			"-noTextInSOD",
+			"-noDaemon",
+			"--arch",
+			"all",
+			"--symbolsPackageDir",
+			"${outputPath}/Symbols",
+			new File(dSYMPath, "dSYMs/Example.app.dSYM").absolutePath
+		]
+	}
+
 
 	def "test copy app"() {
 		given:
