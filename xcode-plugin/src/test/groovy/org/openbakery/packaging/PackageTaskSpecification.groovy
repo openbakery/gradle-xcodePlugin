@@ -301,7 +301,7 @@ class PackageTaskSpecification extends Specification {
 			"all",
 			"--symbolsPackageDir",
 			"${outputPath}/Symbols",
-			new File(dSYMPath, "dSYMs/Example.app.dSYM").absolutePath
+			new File(dSYMPath, "dSYMs/Example.app.dSYM/Contents/Resources/DWARF/Example").absolutePath
 		]
 	}
 

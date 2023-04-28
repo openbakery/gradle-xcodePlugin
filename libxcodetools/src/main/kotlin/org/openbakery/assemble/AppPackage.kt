@@ -135,8 +135,14 @@ class AppPackage(
 		if (dSymPath.exists()) {
 			logger.debug("Adding Symbols..")
 			tools.commandRunner.run("mkdir", "-p", "${applicationBundle.baseDirectory.absolutePath}/Symbols")
-			println(dSymPath.listFiles { _, name -> name.endsWith(".dSYM") }.orEmpty().map { it.absolutePath })
-			for (dsym in dSymPath.listFiles { _, name -> name.endsWith(".dSYM") }.orEmpty()) {
+
+			val dsyms = dSymPath.listFiles { _, name -> name.endsWith(".dSYM") }.orEmpty()
+			val bundleNames = dsyms.map { it.name.substringBefore(".")}
+			val dwarfs = dsyms.zip(bundleNames).map { pair -> File(pair.first.absolutePath, "Contents/Resources/DWARF/${pair.second}") }
+
+			logger.info("Found dSYMs at paths: ${dwarfs.map { it.absolutePath }}")
+
+			for (dsym in dwarfs) {
 				tools.commandRunner.run(
 					"xcrun",
 					"symbols",
