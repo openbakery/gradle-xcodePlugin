@@ -135,8 +135,8 @@ class AppPackage(
 		if (dSymPath.exists()) {
 			logger.debug("Adding Symbols..")
 			tools.commandRunner.run("mkdir", "-p", "${applicationBundle.baseDirectory.absolutePath}/Symbols")
-			println(dSymPath.listFiles({ _, name -> name.endsWith(".dSYM")}).orEmpty().map { it.absolutePath })
-			for (dsym in dSymPath.listFiles({ _, name -> name.endsWith(".dSYM")}).orEmpty()) {
+			println(dSymPath.listFiles { _, name -> name.endsWith(".dSYM") }.orEmpty().map { it.absolutePath })
+			for (dsym in dSymPath.listFiles { _, name -> name.endsWith(".dSYM") }.orEmpty()) {
 				tools.commandRunner.run(
 					"xcrun",
 					"symbols",
@@ -151,7 +151,7 @@ class AppPackage(
 			}
 
 		} else {
-			logger.debug("Tried adding Symbols, but archive does not contain dSYMs to generate them.")
+			throw IllegalStateException("Tried adding Symbols, but archive does not contain dSYMs to generate them in ${dSymPath.absolutePath}.")
 		}
 
 	}
