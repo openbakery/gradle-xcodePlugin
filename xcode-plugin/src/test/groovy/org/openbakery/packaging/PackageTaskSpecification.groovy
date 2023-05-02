@@ -84,7 +84,7 @@ class PackageTaskSpecification extends Specification {
 		keychain.delete()
 	}
 
-	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean adHoc = true, boolean withFramework = false, boolean bitcode = false) {
+	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean adHoc = true, boolean withFramework = false, boolean bitcode = false, boolean withDSYMs = true) {
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
@@ -114,6 +114,10 @@ class PackageTaskSpecification extends Specification {
 
 		if (withFramework) {
 			applicationDummy.createFramework()
+		}
+
+		if (withDSYMs) {
+			applicationDummy.createDsyms()
 		}
 
 		for (File mobileProvision in applicationDummy.mobileProvisionFile) {
@@ -278,11 +282,9 @@ class PackageTaskSpecification extends Specification {
 	def "test symbols"() {
 		given:
 		mockExampleApp(false, false)
-		applicationDummy.createDsyms()
 		File symbolsDir = new File(outputPath.absolutePath, "Symbols")
 
 		when:
-		project.packaging.packageSymbols = true
 		packageTask.packageApplication()
 
 		then:

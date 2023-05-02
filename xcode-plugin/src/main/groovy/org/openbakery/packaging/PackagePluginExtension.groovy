@@ -3,7 +3,7 @@ package org.openbakery.packaging
 import org.gradle.api.Project
 
 class PackagePluginExtension {
-	boolean packageSymbols
+	boolean packageSymbols = true
 
 	private final Project project
 
