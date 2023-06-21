@@ -97,7 +97,7 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 			throw new IllegalStateException("package does not exist: " + packageDirectory)
 		}
 
-		Pattern pattern = Pattern.compile(".*" + extension)
+		Pattern pattern = Pattern.compile(".*\." + extension + "$")
 		def fileList = packageDirectory.list(
 						[accept: { d, f -> f ==~ pattern }] as FilenameFilter
 		).toList()
@@ -105,6 +105,10 @@ class AbstractDistributeTask extends AbstractXcodeTask {
 
 		if (fileList.isEmpty()) {
 			throw new IllegalStateException("No bundle with extension '" + extension + "' found")
+		}
+
+		if (fileList.size() > 1) {
+			throw new IllegalStateException("Multiple bundles with extension '" + extension + "' found")
 		}
 
 		return new File(packageDirectory, fileList.get(0))
