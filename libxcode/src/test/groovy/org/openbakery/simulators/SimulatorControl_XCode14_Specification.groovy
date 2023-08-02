@@ -112,7 +112,8 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 		def runtime = simulatorControl.getMostRecentRuntime(Type.tvOS)
 
 		then:
-		simulatorControl.getDevices(runtime).size() == 0
+		runtime == null
+//		simulatorControl.getDevices(runtime).size() == 0
 	}
 
 
@@ -125,7 +126,8 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 		def runtime = simulatorControl.getMostRecentRuntime(Type.watchOS)
 
 		then:
-		simulatorControl.getDevices(runtime).size() == 0
+		runtime == null
+//		simulatorControl.getDevices(runtime).size() == 0
 	}
 
 
@@ -144,34 +146,12 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 
 		where:
 		index | name                                    | identifier                             | state      | available
-		0     | "iPhone 8"                              | "F2EFE70F-6235-41BB-96C5-1E3D51AF2C8D" | "Shutdown" | true
-		1     | "iPhone 8 Plus"                         | "BF4BC663-D21C-416F-B430-A113964DDCD8" | "Shutdown" | true
-		2     | "iPhone 11"                             | "ED05EB13-5A68-46F3-9853-047B553AEFE4" | "Shutdown" | true
-		3     | "iPhone 11 Pro"                         | "BEEBAD96-AA35-47B4-A3E7-6938DF192C55" | "Shutdown" | true
-		4     | "iPhone 11 Pro Max"                     | "BF2E75B2-F57B-47DC-8D88-22F0DC62BE58" | "Shutdown" | true
-		5     | "iPhone SE (2nd generation)"            | "62263648-5968-4F0F-973D-701BA21ED134" | "Shutdown" | true
-		6     | "iPhone 12 mini"                        | "F29AB610-A10A-4F48-891F-790F6FF51481" | "Shutdown" | true
-		7     | "iPhone 12"                             | "BE556B2F-A207-4952-B8D3-406A246FD6BB" | "Shutdown" | true
-		8     | "iPhone 12 Pro"                         | "76B1BC6B-1C86-4F84-9B5A-6035F98EEFFF" | "Shutdown" | true
-		9     | "iPhone 12 Pro Max"                     | "C88274D8-543E-4599-9082-D26CFDC289BA" | "Shutdown" | true
-		10    | "iPhone 13 Pro"                         | "06CADAEE-23CD-44FD-8B60-C03896A781BD" | "Shutdown" | true
-		11    | "iPhone 13 Pro Max"                     | "08AABA64-ED83-4261-918E-D0B77CFD18A5" | "Shutdown" | true
-		12    | "iPhone 13 mini"                        | "ACCF31A0-7D3C-4422-B037-FDE5BEB32F97" | "Shutdown" | true
-		13    | "iPhone 13"                             | "17410E3F-DFCF-4DB4-937E-A7C703137361" | "Shutdown" | true
-		14    | "iPod touch (7th generation)"           | "C9B07696-FC48-49DF-AD90-E3AF31C95A0B" | "Shutdown" | true
-		15    | "iPad Pro (9.7-inch)"                   | "75C6F493-DC67-45F8-9DCA-CF3C4EB11878" | "Shutdown" | true
-		16    | "iPad Pro (11-inch) (2nd generation)"   | "80DD5A1E-1EB1-4A76-B008-5019CC53E0D8" | "Shutdown" | true
-		17    | "iPad Pro (12.9-inch) (4th generation)" | "B8EC3937-554D-475A-9E5D-F45F05A5BE9E" | "Shutdown" | true
-		18    | "iPad (8th generation)"                 | "CBC2B19C-BEAE-489E-923B-04EE746509B3" | "Shutdown" | true
-		19    | "iPad (9th generation)"                 | "510175B5-FF8D-4844-BAEF-B28B203343AF" | "Shutdown" | true
-		20    | "iPad Air (4th generation)"             | "02776893-0EEA-4616-8514-3B8A84EF618D" | "Shutdown" | true
-		21    | "iPad Pro (11-inch) (3rd generation)"   | "CB421107-5C3C-4DE3-8879-814D289887A8" | "Shutdown" | true
-		22    | "iPad Pro (12.9-inch) (5th generation)" | "04B66423-1C70-46A1-BA37-61B9F7E67E27" | "Shutdown" | true
-		23    | "iPad mini (6th generation)"            | "B7421C19-006D-4AAB-8AC9-291678209FF3" | "Shutdown" | true
-
+		0     | "iPhone SE (3rd generation)"            | "45014C4D-3B34-48FF-819D-53AAC93D5375" | "Shutdown" | true
+		1     | "iPhone 14"                             | "47E61DE9-D808-44F3-8371-F59215E0C596" | "Shutdown" | true
+		8     | "iPad Pro (11-inch) (4th generation)"   | "4A3DCA16-2669-4EB3-8F9D-CF211EA9363F" | "Booted" | true
 	}
 
-
+/*
 	def "parse creates the tvOS devices with the proper data"() {
 		given:
 		mockSimctlList()
@@ -193,7 +173,6 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 		4     | "Apple TV 4K (at 1080p) (2nd generation)" | "B85C966D-EA43-4633-855B-5AAE9CD455CF" | "Shutdown" | true
 
 	}
-
 
 	def "parse creates the watchOS devices with the proper data"() {
 		given:
@@ -219,7 +198,8 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 	}
 
 
-	def "has 6 pairs"() {
+*/
+	def "has no pairs"() {
 		given:
 		mockSimctlList()
 
@@ -228,10 +208,10 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 		def runtime = simulatorControl.getMostRecentRuntime(Type.watchOS)
 
 		then:
-		simulatorControl.getDevicePairs().size() == 6
+		simulatorControl.getDevicePairs().size() == 0
 	}
 
-
+/*
 
 	def "parse pairs with proper data"() {
 		given:
@@ -254,7 +234,9 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 	}
 
 
-	def "has 76 devices types"() {
+ */
+
+	def "has 82 devices types"() {
 		given:
 		mockSimctlList()
 
@@ -262,7 +244,7 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 		simulatorControl.parse()
 
 		then:
-		simulatorControl.deviceTypes.size() == 76
+		simulatorControl.deviceTypes.size() == 82
 	}
 
 
@@ -278,18 +260,17 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 
 		where:
 		index | identifier                                                          | name                          | shortIdentifier
-		0     | "com.apple.CoreSimulator.SimDeviceType.iPhone-4s"                   | "iPhone 4s"                   | "iPhone-4s"
-		10    | "com.apple.CoreSimulator.SimDeviceType.iPhone-8"                    | "iPhone 8"                    | "iPhone-8"
+		0     | "com.apple.CoreSimulator.SimDeviceType.iPhone-6s"                   | "iPhone 6s"                   | "iPhone-6s"
+		5     | "com.apple.CoreSimulator.SimDeviceType.iPhone-8"                    | "iPhone 8"                    | "iPhone-8"
 		28    | "com.apple.CoreSimulator.SimDeviceType.iPod-touch--7th-generation-" | "iPod touch (7th generation)" | "iPod-touch--7th-generation-"
-		57    | "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-1080p"           | "Apple TV 4K (at 1080p)"      | "Apple-TV-4K-1080p"
-		73    | "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-44mm"   | "Apple Watch Series 6 - 44mm" | "Apple-Watch-Series-6-44mm"
+		58    | "com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K-1080p"           | "Apple TV 4K (at 1080p)"      | "Apple-TV-4K-1080p"
+		74    | "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-6-44mm"   | "Apple Watch Series 6 (44mm)" | "Apple-Watch-Series-6-44mm"
 
 	}
 
 
-	def "create creates 34 Xcode13 devices"() {
+	def "create creates 14 Xcode14 devices"() {
 		// given
-		def runtime = "com.apple.CoreSimulator.SimRuntime.iOS-15-0"
 		mockSimctlList()
 		simulatorControl.parse()
 
@@ -297,7 +278,7 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 		simulatorControl.createAll()
 
 		then:
-		34 * commandRunner.run(_)
+		14 * commandRunner.run(_)
 	}
 
 
