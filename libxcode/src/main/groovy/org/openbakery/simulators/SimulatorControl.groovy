@@ -391,7 +391,24 @@ class SimulatorControl {
 
 		def deviceList = []
 
-		if (xcode.version.major == 12) {
+		if (xcode.version.major == 14) {
+			deviceList = [
+				"iPad-Air-5th-generation",
+				"iPad-Pro-11-inch-4th-generation-8GB",
+				"iPad-Pro--12-9-inch---2nd-generation-",
+				"iPad-Pro-12-9-inch-6th-generation-8GB",
+				"iPad-mini-6th-generation",
+				"iPhone-8",
+				"iPhone-8-Plus",
+				"iPhone-11-Pro-Max",
+				"iPhone-12-Pro-Max",
+				"iPhone-14",
+				"iPhone-14-Plus",
+				"iPhone-14-Pro",
+				"iPhone-14-Pro-Max",
+				"iPhone-SE-3rd-generation"
+			]
+		} else if (xcode.version.major == 12) {
 			deviceList = ["iPhone-8",
 										"iPhone-8-Plus",
 										"iPhone-11",
