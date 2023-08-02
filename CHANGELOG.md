@@ -1,3 +1,8 @@
+# 0.23.1 (Aug 2, 2023)
+
+Changes:
+- Added Xcode 14 specific simulator list for iOS
+
 # 0.23.1 (Apr 25, 2023)
 
 Changes:
