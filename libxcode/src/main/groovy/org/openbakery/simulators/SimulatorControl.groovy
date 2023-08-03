@@ -88,7 +88,11 @@ class SimulatorControl {
 					item.buildversion,
 					item.identifier,
 					item.isAvailable)
-				this.runtimes << runtime
+
+				if (!runtimes.contains(runtime)) {
+					runtimes << runtime
+				}
+
 			}
 		}
 
@@ -389,7 +393,7 @@ class SimulatorControl {
 			return
 		}
 
-		def deviceList = []
+		def deviceList
 
 		if (xcode.version.major == 14) {
 			deviceList = [
