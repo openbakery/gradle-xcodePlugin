@@ -84,7 +84,7 @@ class PackageTaskSpecification extends Specification {
 		keychain.delete()
 	}
 
-	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean adHoc = true, boolean withFramework = false, boolean bitcode = false) {
+	void mockExampleApp(boolean withPlugin, boolean withSwift, boolean adHoc = true, boolean withFramework = false, boolean bitcode = false, boolean withDSYMs = true) {
 		outputPath = new File(project.getBuildDir(), packageTask.PACKAGE_PATH)
 
 		archiveDirectory = new File(project.getBuildDir(), XcodeBuildArchiveTask.ARCHIVE_FOLDER + "/Example.xcarchive")
@@ -114,6 +114,10 @@ class PackageTaskSpecification extends Specification {
 
 		if (withFramework) {
 			applicationDummy.createFramework()
+		}
+
+		if (withDSYMs) {
+			applicationDummy.createDsyms()
 		}
 
 		for (File mobileProvision in applicationDummy.mobileProvisionFile) {
@@ -273,6 +277,34 @@ class PackageTaskSpecification extends Specification {
 
 		then:
 		payloadDirectory.exists()
+	}
+
+	def "test symbols"() {
+		given:
+		mockExampleApp(false, false)
+		File symbolsDir = new File(outputPath.absolutePath, "Symbols")
+
+		when:
+		packageTask.packageApplication()
+
+		then:
+		1 * commandRunner.run(["mkdir", "-p", "${outputPath.absolutePath}/Symbols"]) >> { symbolsDir.mkdirs() }
+		1 * commandRunner.run(symbolsCommandList(outputPath.absolutePath, archiveDirectory.absolutePath))
+		symbolsDir.exists()
+	}
+
+	List<String> symbolsCommandList(String outputPath, String dSYMPath) {
+		[
+			"xcrun",
+			"symbols",
+			"-noTextInSOD",
+			"-noDaemon",
+			"--arch",
+			"all",
+			"--symbolsPackageDir",
+			"${outputPath}/Symbols",
+			new File(dSYMPath, "dSYMs/Example.app.dSYM/Contents/Resources/DWARF/Example").absolutePath
+		]
 	}
 
 

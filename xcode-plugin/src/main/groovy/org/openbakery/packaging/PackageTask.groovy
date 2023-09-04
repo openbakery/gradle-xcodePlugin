@@ -120,6 +120,12 @@ class PackageTask extends AbstractDistributeTask {
 		appPackage.addSwiftSupport()
 		appPackage.prepareBundles()
 
+		if (project.packaging.packageSymbols) {
+			appPackage.addSymbols()
+		} else {
+			logger.info("No symbols will be added to package because include symbols is not set")
+		}
+
 		if (signSettingsAvailable) {
 			appPackage.codesign()
 		} else {

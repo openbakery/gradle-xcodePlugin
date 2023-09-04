@@ -187,6 +187,10 @@ class ApplicationDummy {
 	void createDsyms() {
 		File dSymDirectory = new File(applicationBundle.parentFile, "Example.app.dSym")
 		dSymDirectory.mkdirs()
+		File testDysms = new File(directory, "dSYMs")
+		testDysms.mkdirs()
+		File dsyms = new File(testDysms.absolutePath, "Example.app.dSYM")
+		dsyms.mkdirs()
 	}
 
 	void createDsyms(Extension extension) {
