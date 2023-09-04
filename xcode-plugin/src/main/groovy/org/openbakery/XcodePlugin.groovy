@@ -52,6 +52,7 @@ import org.openbakery.deploygate.DeployGatePluginExtension
 import org.openbakery.deploygate.DeployGateUploadTask
 import org.openbakery.oclint.OCLintPluginExtension
 import org.openbakery.oclint.OCLintTask
+import org.openbakery.packaging.PackagePluginExtension
 import org.openbakery.signing.KeychainCleanupTask
 import org.openbakery.signing.KeychainCreateTask
 import org.openbakery.packaging.PackageTask
@@ -258,6 +259,9 @@ class XcodePlugin implements Plugin<Project> {
 			if (project.hasProperty('xcodebuild.signing.timeout')) {
 				project.xcodebuild.signing.timeout = project['signing.timeout']
 			}
+			if (project.hasProperty('packaging.packageSymbols')) {
+				project.package.packageSymbols = project['packaging.packageSymbols']
+			}
 
 			if (project.hasProperty('xcodebuild.additionalParameters')) {
 				project.xcodebuild.additionalParameters = project['xcodebuild.additionalParameters']
@@ -432,6 +436,7 @@ class XcodePlugin implements Plugin<Project> {
 		project.extensions.create("oclint", OCLintPluginExtension, project)
 		project.extensions.create("carthage", CarthagePluginExtension, project)
 		project.extensions.create("appcenter", AppCenterPluginExtension, project)
+		project.extensions.create("packaging", PackagePluginExtension, project)
 	}
 
 
