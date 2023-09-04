@@ -1,3 +1,8 @@
+# 0.23.3 (TBA)
+
+Changes:
+* Added symbols to the ipa: Issue #461
+
 # 0.23.2 (Aug 3, 2023)
 
 Changes:
