@@ -91,7 +91,7 @@ class SimulatorControl_XCode14_Specification extends spock.lang.Specification {
 
 
 
-	def "parse result has 24 iOS devices"() {
+	def "parse result has 10 iOS devices"() {
 		given:
 		mockSimctlList()
 

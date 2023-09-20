@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory
 class SimulatorControl {
 
 
-
 	enum Section {
 		DEVICE_TYPE("== Device Types =="),
 		RUNTIMES("== Runtimes =="),
@@ -20,6 +19,7 @@ class SimulatorControl {
 		DEVICE_PAIRS("== Device Pairs ==")
 
 		private final String identifier
+
 		Section(String identifier) {
 			this.identifier = identifier
 		}
@@ -46,7 +46,6 @@ class SimulatorControl {
 	ArrayList<SimulatorRuntime> runtimes
 	HashMap<SimulatorRuntime, List<SimulatorDevice>> devices
 	ArrayList<SimulatorDevicePair> devicePairs
-
 
 
 	public SimulatorControl(CommandRunner commandRunner, Xcode xcode) {
@@ -199,7 +198,7 @@ class SimulatorControl {
 			tokenizer.nextToken()
 		}
 		if (tokenizer.hasMoreTokens()) {
-			def identifier =  tokenizer.nextToken().trim()
+			def identifier = tokenizer.nextToken().trim()
 			return getDeviceWithIdentifier(identifier)
 		}
 		return null
@@ -281,7 +280,6 @@ class SimulatorControl {
 	}
 
 
-
 	SimulatorDevice getDevice(SimulatorRuntime simulatorRuntime, String name) {
 		for (SimulatorDevice device in getDevices(simulatorRuntime)) {
 			if (device.name.equalsIgnoreCase(name)) {
@@ -300,6 +298,7 @@ class SimulatorControl {
 		}
 		return null
 	}
+
 
 	SimulatorDevice getDevice(Destination destination) {
 		SimulatorRuntime runtime = getRuntime(destination);
@@ -326,7 +325,7 @@ class SimulatorControl {
 	}
 
 
-	List <SimulatorDevice> getDevices(SimulatorRuntime runtime) {
+	List<SimulatorDevice> getDevices(SimulatorRuntime runtime) {
 		return getDevices().get(runtime)
 	}
 
@@ -355,7 +354,7 @@ class SimulatorControl {
 
 
 	String executeWithResult(String... commands) {
-		ArrayList<String>parameters = new ArrayList<>()
+		ArrayList<String> parameters = new ArrayList<>()
 		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
 		return commandRunner.runWithResult(parameters)
@@ -363,7 +362,7 @@ class SimulatorControl {
 
 
 	void execute(String... commands) {
-		ArrayList<String>parameters = new ArrayList<>()
+		ArrayList<String> parameters = new ArrayList<>()
 		parameters.add(xcode.getSimctl())
 		parameters.addAll(commands)
 		commandRunner.run(parameters)
@@ -388,6 +387,11 @@ class SimulatorControl {
 
 	void createAll() {
 
+		if (xcode.version.major > 13) {
+			createAllSimulators()
+			return
+		}
+
 		if (xcode.version.major < 12) {
 			create(getDeviceTypes())
 			return
@@ -395,24 +399,7 @@ class SimulatorControl {
 
 		def deviceList
 
-		if (xcode.version.major == 14) {
-			deviceList = [
-				"iPad-Air-5th-generation",
-				"iPad-Pro-11-inch-4th-generation-8GB",
-				"iPad-Pro--12-9-inch---2nd-generation-",
-				"iPad-Pro-12-9-inch-6th-generation-8GB",
-				"iPad-mini-6th-generation",
-				"iPhone-8",
-				"iPhone-8-Plus",
-				"iPhone-11-Pro-Max",
-				"iPhone-12-Pro-Max",
-				"iPhone-14",
-				"iPhone-14-Plus",
-				"iPhone-14-Pro",
-				"iPhone-14-Pro-Max",
-				"iPhone-SE-3rd-generation"
-			]
-		} else if (xcode.version.major == 12) {
+		if (xcode.version.major == 12) {
 			deviceList = ["iPhone-8",
 										"iPhone-8-Plus",
 										"iPhone-11",
@@ -471,25 +458,27 @@ class SimulatorControl {
 
 	void create(List<SimulatorDeviceType> deviceTypes) {
 		for (SimulatorRuntime runtime in getRuntimes()) {
-
 			if (runtime.available) {
+				create(deviceTypes, runtime)
+			}
+		}
+	}
 
-				for (SimulatorDeviceType deviceType in deviceTypes) {
-
-					if (deviceType.canCreateWithRuntime(runtime)) {
-						logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
-						try {
-							execute("create", deviceType.name, deviceType.identifier, runtime.identifier)
-							println "Create simulator: '" + deviceType.name + "' for " + runtime.version
-						} catch (CommandRunnerException ex) {
-							println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
-						}
-					}
+	void create(List<SimulatorDeviceType> deviceTypes, SimulatorRuntime runtime) {
+		for (SimulatorDeviceType deviceType in deviceTypes) {
+			if (deviceType.canCreateWithRuntime(runtime)) {
+				logger.debug("create '" + deviceType.name + "' '" + deviceType.identifier + "' '" + runtime.identifier + "'")
+				try {
+					execute("create", deviceType.name, deviceType.identifier, runtime.identifier)
+					println "Create simulator: '" + deviceType.name + "' for " + runtime.version
+				} catch (CommandRunnerException ex) {
+					println "Unable to create simulator: '" + deviceType.name + "' for " + runtime.version
 				}
 			}
 		}
 		pair()
 	}
+
 
 	void pair() {
 		parse() // read the created ids again
@@ -499,7 +488,7 @@ class SimulatorControl {
 
 		def identifiers = getPairingIdentifiers(iOSRuntime.version)
 
-		identifiers.each {phoneIdentifierString, watchIdentifierString ->
+		identifiers.each { phoneIdentifierString, watchIdentifierString ->
 
 			def phone = getDeviceWithTypeIdentifier(phoneIdentifierString, Type.iOS)
 			def watch = getDeviceWithTypeIdentifier(watchIdentifierString, Type.watchOS)
@@ -666,22 +655,22 @@ class SimulatorControl {
 				"iPhone-XS-Max": "Apple-Watch-Series-4-44mm"
 			],
 			"13"  : [
-				"iPhone-11": "Apple-Watch-Series-5-40mm",
+				"iPhone-11"        : "Apple-Watch-Series-5-40mm",
 				"iPhone-11-Pro-Max": "Apple-Watch-Series-5-44mm"
 			],
 			"14"  : [
-				"iPhone-12-mini": "Apple-Watch-Series-5-40mm",
-				"iPhone-12": "Apple-Watch-Series-5-44mm",
-				"iPhone-12-Pro": "Apple-Watch-Series-6-40mm",
+				"iPhone-12-mini"   : "Apple-Watch-Series-5-40mm",
+				"iPhone-12"        : "Apple-Watch-Series-5-44mm",
+				"iPhone-12-Pro"    : "Apple-Watch-Series-6-40mm",
 				"iPhone-12-Pro-Max": "Apple-Watch-Series-6-44mm"
 			],
 			"15"  : [
-				"iPhone-12-Pro": "Apple-Watch-Series-5-40mm",
+				"iPhone-12-Pro"    : "Apple-Watch-Series-5-40mm",
 				"iPhone-12-Pro-Max": "Apple-Watch-Series-5-44mm",
-				"iPhone-13-Pro": "Apple-Watch-Series-6-40mm",
+				"iPhone-13-Pro"    : "Apple-Watch-Series-6-40mm",
 				"iPhone-13-Pro-Max": "Apple-Watch-Series-6-44mm",
-				"iPhone-13-mini": "Apple-Watch-Series-7-41mm",
-				"iPhone-13": "Apple-Watch-Series-7-45mm"
+				"iPhone-13-mini"   : "Apple-Watch-Series-7-41mm",
+				"iPhone-13"        : "Apple-Watch-Series-7-45mm"
 			]
 		]
 
@@ -691,4 +680,48 @@ class SimulatorControl {
 
 		return pairing[iOSVersion.major.toString()]
 	}
+
+	private SimulatorRuntime getRuntimeWithMajorVersion(int majorVersion) {
+		for (SimulatorRuntime runtime in getRuntimes()) {
+			if (runtime.type == Type.iOS && runtime.version.major == majorVersion) {
+				return runtime
+			}
+		}
+		return null
+	}
+
+	void createAllSimulators() {
+		SimulatorRuntime runtime = getRuntimeWithMajorVersion(17)
+		if (runtime != null) {
+			def types = getDeviceTypes([
+				"iPhone-15",
+				"iPhone-15-Plus",
+				"iPhone-15-Pro",
+				"iPhone-15-Pro-Max"
+			])
+			create(types, runtime)
+		}
+
+		runtime = getRuntimeWithMajorVersion(16)
+		if (runtime != null) {
+			def types = getDeviceTypes([
+				"iPad-Air-5th-generation",
+				"iPad-Pro-11-inch-4th-generation-8GB",
+				"iPad-Pro--12-9-inch---2nd-generation-",
+				"iPad-Pro-12-9-inch-6th-generation-8GB",
+				"iPad-mini-6th-generation",
+				"iPhone-11-Pro-Max",
+				"iPhone-12-Pro-Max",
+				"iPhone-14",
+				"iPhone-14-Plus",
+				"iPhone-14-Pro",
+				"iPhone-14-Pro-Max",
+				"iPhone-8",
+				"iPhone-8-Plus",
+				"iPhone-SE-3rd-generation"
+			])
+			create(types, runtime)
+		}
+	}
 }
+
