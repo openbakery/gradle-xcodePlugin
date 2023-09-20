@@ -29,7 +29,7 @@ buildscript {
   }
 
 	dependencies {
-	    classpath "org.openbakery:xcode-plugin:0.22.+"
+	    classpath "org.openbakery:xcode-plugin:0.23.+"
 	}
 }
 
