@@ -26,7 +26,7 @@ Here a brief overview of the features:
 * Java 1.6 or greater
 
 
-### Current stable version is 0.23.2
+### Current stable version is 0.23.3
 
 
 ## Parameters Documentation
