@@ -157,7 +157,7 @@ class AppPackage(
 			}
 
 		} else {
-			throw IllegalStateException("Tried adding Symbols, but archive does not contain dSYMs to generate them in ${dSymPath.absolutePath}.")
+			logger.info("Tried adding Symbols, but archive does not contain dSYMs to generate them in ${dSymPath.absolutePath}.")
 		}
 
 	}

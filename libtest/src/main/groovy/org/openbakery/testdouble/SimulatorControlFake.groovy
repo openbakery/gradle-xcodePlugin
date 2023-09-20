@@ -10,8 +10,16 @@ class SimulatorControlFake extends SimulatorControl {
 	ArrayList<String>lastExecutedCommand
 
 	public SimulatorControlFake() {
-		super(null, new XcodeFake("12.0"))
-		simctlListOutput =  new File("../libtest/src/main/Resource/simctl-list-xcode12-full.json")
+		this(12)
+	}
+
+	public SimulatorControlFake(int version) {
+		super(null, new XcodeFake("" + version + ".0"))
+		if (version == 15) {
+			simctlListOutput =  new File("../libtest/src/main/Resource/simctl-list-xcode15.json")
+		} else {
+			simctlListOutput =  new File("../libtest/src/main/Resource/simctl-list-xcode12-full.json")
+		}
 	}
 
 	public SimulatorControlFake(String filename) {

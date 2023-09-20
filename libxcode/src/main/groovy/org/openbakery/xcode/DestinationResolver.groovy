@@ -55,11 +55,11 @@ class DestinationResolver {
 			if (configuredDestinations != null) {
 				logger.debug("checking destinations if they are available: {}", configuredDestinations)
 				for (Destination destination in configuredDestinations) {
-
-					if (destination.os == null) {
-						destination.os = runtime.version.toString()
+					Destination exactDestination = destination.clone()
+					if (exactDestination.os == null) {
+						exactDestination.os = runtime.version.toString()
 					}
-					availableDestinations.addAll(findMatchingDestinations(destination, allDestinations, true))
+					availableDestinations.addAll(findMatchingDestinations(exactDestination, allDestinations, true))
 				}
 
 				logger.debug("availableDestinations {}", availableDestinations)
@@ -70,9 +70,6 @@ class DestinationResolver {
 				if (availableDestinations.size() == 0) {
 					logger.debug("find similar destination")
 					for (Destination destination in configuredDestinations) {
-						if (destination.os == null) {
-							destination.os = runtime.version.toString()
-						}
 
 						def similarDestination = findMatchingDestinations(destination, allDestinations, false)
 						if (similarDestination.size() > 0) {
@@ -85,7 +82,7 @@ class DestinationResolver {
 				logger.debug("availableDestinations {}", availableDestinations)
 
 				if (availableDestinations.isEmpty()) {
-					logger.error("No matching simulators found for specified destinations: {}", configuredDestinations)
+					logger.error("No matching simulators found for specified destinations: {}\navailable destinations are", configuredDestinations, allDestinations)
 					throw new IllegalStateException("No matching simulators found!")
 				}
 			} else {

@@ -89,6 +89,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		then:
 		xcodeTestRunTestTask.parameters.configuredDestinations.size() == 1
 		xcodeTestRunTestTask.parameters.configuredDestinations[0].name == "iPhone 6"
+		xcodeTestRunTestTask.parameters.configuredDestinations[0].os == null
 	}
 
 
@@ -455,6 +456,36 @@ class XcodeTestRunTaskSpecification extends Specification {
 		exception.message == "No tests found!"
 	}
 
+
+	def "destination for xcode15"() {
+		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlFake(15))
+
+		when:
+		xcodeTestRunTestTask.simulator = true
+		xcodeTestRunTestTask.destination = [
+			"iPhone 11 Pro Max"
+		]
+
+		then:
+		xcodeTestRunTestTask.getDestinations().size() == 1
+		xcodeTestRunTestTask.getDestinations()[0].name == "iPhone 11 Pro Max"
+		xcodeTestRunTestTask.getDestinations()[0].os == "16.4"
+	}
+
+	def "configuredDestination for xcode15"() {
+		xcodeTestRunTestTask.destinationResolver = new DestinationResolver(new SimulatorControlFake(15))
+
+		when:
+		xcodeTestRunTestTask.simulator = true
+		xcodeTestRunTestTask.destination = [
+			"iPhone 11 Pro Max"
+		]
+
+		then:
+		xcodeTestRunTestTask.configuredDestinations.size() == 1
+		xcodeTestRunTestTask.configuredDestinations[0].name == "iPhone 11 Pro Max"
+		xcodeTestRunTestTask.configuredDestinations[0].os == null
+	}
 
 
 }

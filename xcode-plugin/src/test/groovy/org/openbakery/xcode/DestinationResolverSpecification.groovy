@@ -236,4 +236,20 @@ class DestinationResolverSpecification extends Specification {
 		destinations[0].id == '49BE44FC-A802-4D79-9E7C-7D00D74061A4'
 	}
 
+
+	def "resolve iPhone 15"() {
+		given:
+		simulatorControl = new SimulatorControlFake(15)
+		destinationResolver = new DestinationResolver(simulatorControl)
+		extension.destination = ['iPhone 15']
+
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == 'iPhone 15'
+		destinations[0].id == '74BBFC84-7187-4DF3-A1D1-8B04ADAA4904'
+	}
+
 }

@@ -2,6 +2,7 @@
 
 Changes:
 * Added symbols to the ipa: Issue #461
+* When specifing a destination for iOS simulator not only the latest runtime is search, also older runtimes.
 
 # 0.23.2 (Aug 3, 2023)
 

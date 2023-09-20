@@ -68,11 +68,13 @@ class SimulatorControl {
 	}
 
 	void parseJson() {
-		String simctlList = executeWithResult("list", "--json")
+		String jsonString = executeWithResult("list", "--json")
+		parseJsonString(jsonString)
+	}
 
+	void parseJsonString(String jsonString) {
 		def jsonSlurper = new JsonSlurper()
-		def jsonData = jsonSlurper.parseText(simctlList)
-
+		def jsonData = jsonSlurper.parseText(jsonString)
 		if (jsonData.devicetypes instanceof ArrayList) {
 			jsonData.devicetypes.eachWithIndex { item, index ->
 				deviceTypes << new SimulatorDeviceType(item.name, item.identifier)
@@ -462,6 +464,7 @@ class SimulatorControl {
 				create(deviceTypes, runtime)
 			}
 		}
+		pair()
 	}
 
 	void create(List<SimulatorDeviceType> deviceTypes, SimulatorRuntime runtime) {
@@ -476,7 +479,6 @@ class SimulatorControl {
 				}
 			}
 		}
-		pair()
 	}
 
 
@@ -700,6 +702,7 @@ class SimulatorControl {
 				"iPhone-15-Pro-Max"
 			])
 			create(types, runtime)
+			pair()
 		}
 
 		runtime = getRuntimeWithMajorVersion(16)

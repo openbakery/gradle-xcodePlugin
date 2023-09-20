@@ -26,6 +26,7 @@ class Destination {
 		this.os = os
 	}
 
+
 	@Override
 	public java.lang.String toString() {
 		return "Destination{" +
@@ -79,5 +80,16 @@ class Destination {
 			builder.append(os)
 		}
 		return builder.toString()
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		Destination result = new Destination()
+		result.platform =	this.platform
+		result.name = this.name
+		result.os = this.os
+		result.arch = this.arch
+		result.id = this.id
+		return result
 	}
 }
