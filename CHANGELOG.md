@@ -1,4 +1,4 @@
-# 0.23.3 (Sep 20, 2023)
+# 0.23.3 (Sep 21, 2023)
 
 Changes:
 * Added symbols to the ipa: Issue #461
