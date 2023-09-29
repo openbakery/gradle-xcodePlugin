@@ -53,8 +53,12 @@ class SecuritySpecification extends Specification {
 			"notAfter=Mar 20 10:16:40 2118 GMT"
 
 
+	def mockOpensslCertificateConvert(String result = "", String password = "certificatePassword") {
+		commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath]) >> result
+	}
+
 	def mockOpensslCertificate(String result = DEFAULT_OPENSSL_OUTPUT, String password = "certificatePassword") {
-		commandRunner.run(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath])
+		commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath]) >> ""
 		commandRunner.runWithResult(["openssl",  "x509", "-in", pkcs12File.absolutePath, "-noout",  "-enddate"]) >> result
 	}
 
@@ -399,7 +403,7 @@ class SecuritySpecification extends Specification {
 
 		then:
 		interaction {
-			1 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+			1 * commandRunner.runWithResult(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
 			1 * commandRunner.runWithResult(["openssl", "x509", "-in", pkcs12File.absolutePath, "-noout", "-enddate"])
 		}
 
@@ -460,16 +464,18 @@ class SecuritySpecification extends Specification {
 		def exception = thrown(CertificateException)
 		exception.message == "Wrong password to open certificate."
 	}
-/*
-	def "test" () {
+
+	def "openssl shows error when converting to pkcs12, so try with legacy option" () {
 		given:
-		String opensslOutput = "Mac verify error: invalid password?"
-		security.commandRunner = new CommandRunner()
+		String opensslOutput = "Error outputting keys and certificates\n" +
+			"8020E9F201000000:error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:crypto/evp/evp_fetch.c:341:Global default library context, Algorithm (RC2-40-CBC : 0), Properties ()"
+		mockOpensslCertificateConvert(opensslOutput, "mypassword")
 
-		certificateFile = new File("/Users/stefangugarel/Projekte/ICS/Proofics/Proofmaker/build/codesign/Application_Drobnik_KG.p12")
-		expect:
-		security.checkIfCertificateIsValid(certificateFile, "magic123")
+		when:
+		security.checkIfCertificateIsValid(certificateFile, "mypassword")
 
+		then:
+		1 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+		thrown(CertificateException)
 	}
-	*/
 }

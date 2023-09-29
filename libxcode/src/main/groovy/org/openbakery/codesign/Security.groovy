@@ -119,8 +119,11 @@ class Security {
 		def pkcs12File = new File(tmpDir, "pkcs12File_" + FilenameUtils.getBaseName(certificate.path) + ".pfx")
 		pkcs12File.deleteOnExit()
 
-		commandRunner.run(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
-		def result = commandRunner.runWithResult(["openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
+		def result = commandRunner.runWithResult(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
+		if (result != null && result != "") {
+			commandRunner.run(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes", "-legacy",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
+		}
+		result = commandRunner.runWithResult(["openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
 
 		logger.debug("checkIfCertificateIsValid enddate: {}", result)
 
