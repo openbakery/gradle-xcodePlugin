@@ -478,4 +478,17 @@ class SecuritySpecification extends Specification {
 		1 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
 		thrown(CertificateException)
 	}
+
+	def "openssl shows error when converting to pkcs12, so try with legacy option" () {
+		given:
+		String opensslOutput = "MAC verified OK\n"
+		mockOpensslCertificateConvert(opensslOutput, "mypassword")
+
+		when:
+		security.checkIfCertificateIsValid(certificateFile, "mypassword")
+
+		then:
+		0 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+		thrown(CertificateException)
+	}
 }

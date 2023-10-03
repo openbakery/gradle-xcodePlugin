@@ -120,7 +120,7 @@ class Security {
 		pkcs12File.deleteOnExit()
 
 		def result = commandRunner.runWithResult(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
-		if (result != null && result != "") {
+		if (result != null && !result.startsWith("MAC verified OK")) {
 			commandRunner.run(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes", "-legacy",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
 		}
 		result = commandRunner.runWithResult(["openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
