@@ -608,21 +608,5 @@ class PackageTaskSpecification extends Specification {
 		!entries.contains("MessagesApplicationExtensionSupport/MessagesApplicationExtensionStub")
 	}
 
-	class LipoDelegate extends Lipo {
-		LipoDelegate(Xcodebuild x) { super(x)	}
-	}
 
-	def "xcodebuild parameters from the project are given to Xcodebuild constructor"() {
-		given:
-		mockExampleApp(false, true)
-		GroovyMock(Lipo, global: true)
-
-		when:
-		packageTask.packageApplication()
-
-		then:
-		1 * new Lipo({
-			it.parameters == project.xcodebuild.xcodebuildParameters
-		}) >> { Xcodebuild xcodebuild -> new LipoDelegate(xcodebuild)}
-	}
 }

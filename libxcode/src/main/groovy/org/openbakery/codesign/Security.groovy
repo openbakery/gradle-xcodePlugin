@@ -119,11 +119,11 @@ class Security {
 		def pkcs12File = new File(tmpDir, "pkcs12File_" + FilenameUtils.getBaseName(certificate.path) + ".pfx")
 		pkcs12File.deleteOnExit()
 
-		def result = commandRunner.runWithResult(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
+		def result = commandRunner.runWithResult(["/usr/bin/openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
 		if (result != null && !result.startsWith("MAC verified OK")) {
-			commandRunner.run(["openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes", "-legacy",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
+			commandRunner.run(["/usr/bin/openssl",  "pkcs12" ,  "-in", certificate.absolutePath, "-nodes", "-legacy",  "-passin", "pass:" + certificatePassword, "-out", pkcs12File.absolutePath])
 		}
-		result = commandRunner.runWithResult(["openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
+		result = commandRunner.runWithResult(["/usr/bin/openssl",  "x509",  "-in", pkcs12File.absolutePath , "-noout",  "-enddate"])
 
 		logger.debug("checkIfCertificateIsValid enddate: {}", result)
 

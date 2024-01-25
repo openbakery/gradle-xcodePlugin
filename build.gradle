@@ -3,7 +3,7 @@ allprojects {
 	apply plugin: 'groovy'
 	apply plugin: "maven"
 
-	def versionNumber = "0.23.3"
+	def versionNumber = "0.24.0"
 
 
 	if (project.hasProperty("versionNumber")) {

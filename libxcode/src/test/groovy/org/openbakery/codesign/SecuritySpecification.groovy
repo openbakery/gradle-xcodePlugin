@@ -54,12 +54,12 @@ class SecuritySpecification extends Specification {
 
 
 	def mockOpensslCertificateConvert(String result = "", String password = "certificatePassword") {
-		commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath]) >> result
+		commandRunner.runWithResult(["/usr/bin/openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath]) >> result
 	}
 
 	def mockOpensslCertificate(String result = DEFAULT_OPENSSL_OUTPUT, String password = "certificatePassword") {
-		commandRunner.runWithResult(["openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath]) >> ""
-		commandRunner.runWithResult(["openssl",  "x509", "-in", pkcs12File.absolutePath, "-noout",  "-enddate"]) >> result
+		commandRunner.runWithResult(["/usr/bin/openssl",  "pkcs12",  "-in",  certificateFile.absolutePath, "-nodes",  "-passin", "pass:" + password, "-out", pkcs12File.absolutePath]) >> ""
+		commandRunner.runWithResult(["/usr/bin/openssl",  "x509", "-in", pkcs12File.absolutePath, "-noout",  "-enddate"]) >> result
 	}
 
 	def "get keychain list"() {
@@ -403,8 +403,8 @@ class SecuritySpecification extends Specification {
 
 		then:
 		interaction {
-			1 * commandRunner.runWithResult(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
-			1 * commandRunner.runWithResult(["openssl", "x509", "-in", pkcs12File.absolutePath, "-noout", "-enddate"])
+			1 * commandRunner.runWithResult(["/usr/bin/openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+			1 * commandRunner.runWithResult(["/usr/bin/openssl", "x509", "-in", pkcs12File.absolutePath, "-noout", "-enddate"])
 		}
 
 
@@ -475,7 +475,7 @@ class SecuritySpecification extends Specification {
 		security.checkIfCertificateIsValid(certificateFile, "mypassword")
 
 		then:
-		1 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+		1 * commandRunner.run(["/usr/bin/openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
 		thrown(CertificateException)
 	}
 
@@ -488,7 +488,7 @@ class SecuritySpecification extends Specification {
 		security.checkIfCertificateIsValid(certificateFile, "mypassword")
 
 		then:
-		0 * commandRunner.run(["openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
+		0 * commandRunner.run(["/usr/bin/openssl", "pkcs12", "-in", certificateFile.absolutePath, "-nodes", "-legacy", "-passin", "pass:mypassword", "-out", pkcs12File.absolutePath])
 		thrown(CertificateException)
 	}
 }
