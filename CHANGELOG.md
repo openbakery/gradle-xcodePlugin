@@ -1,3 +1,9 @@
+# 0.24.0 (Jan 25, 2024)
+
+Changes:
+* The openssl command uses now an absolute path so that it does not conflict with the openssl version that is installed with brew.
+  The new openssl command cannot handle the p12 used for signing.
+
 # 0.23.3 (Sep 21, 2023)
 
 Changes:
