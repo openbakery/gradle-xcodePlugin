@@ -112,7 +112,7 @@ class PackageTask extends AbstractDistributeTask {
 		codesignParameters.type = project.xcodebuild.type
 		codesignParameters.keychain = project.xcodebuild.signing.keychainPathInternal
 
-		Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, new XcodebuildParameters())
+		Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, project.xcodebuild.xcodebuildParameters as XcodebuildParameters)
 		CommandLineTools tools = new CommandLineTools(commandRunner, plistHelper, new Lipo(xcodebuild))
 		Codesign codesign = new Codesign(xcode, codesignParameters, tools.commandRunner, tools.plistHelper)
 		AppPackage appPackage = new AppPackage(applicationBundle, getArchiveDirectory(), tools, codesign)
