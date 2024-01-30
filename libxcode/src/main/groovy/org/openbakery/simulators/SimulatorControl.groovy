@@ -696,10 +696,16 @@ class SimulatorControl {
 		SimulatorRuntime runtime = getRuntimeWithMajorVersion(17)
 		if (runtime != null) {
 			def types = getDeviceTypes([
+				"iPhone-SE-3rd-generation",
 				"iPhone-15",
 				"iPhone-15-Plus",
 				"iPhone-15-Pro",
-				"iPhone-15-Pro-Max"
+				"iPhone-15-Pro-Max",
+				"iPad-Air-5th-generation",
+				"iPad-10th-generation",
+				"iPad-mini-6th-generation",
+				"iPad-Pro-11-inch-4th-generation-8GB",
+				"iPad-Pro-12-9-inch-6th-generation-8GB"
 			])
 			create(types, runtime)
 			pair()

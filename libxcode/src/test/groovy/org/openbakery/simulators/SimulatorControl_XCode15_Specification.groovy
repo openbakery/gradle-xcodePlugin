@@ -206,10 +206,17 @@ class SimulatorControl_XCode15_Specification extends Specification {
 
 		where:
 		name                                    | identifier
+		"iPhone SE (3rd generation)"            | "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation"
 		"iPhone 15"                             | "com.apple.CoreSimulator.SimDeviceType.iPhone-15"
 		"iPhone 15 Plus"                        | "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Plus"
 		"iPhone 15 Pro"                         | "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro"
 		"iPhone 15 Pro Max"                     | "com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro-Max"
+		"iPad Air (5th generation)"             | "com.apple.CoreSimulator.SimDeviceType.iPad-Air-5th-generation"
+    "iPad (10th generation)"                | "com.apple.CoreSimulator.SimDeviceType.iPad-10th-generation"
+		"iPad mini (6th generation)"            | "com.apple.CoreSimulator.SimDeviceType.iPad-mini-6th-generation"
+		"iPad Pro (11-inch) (4th generation)"   | "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-4th-generation-8GB"
+		"iPad Pro (12.9-inch) (6th generation)" | "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-12-9-inch-6th-generation-8GB"
+
 	}
 
 	def "create creates only iOS 16.4 devices"() {
