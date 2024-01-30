@@ -1,3 +1,9 @@
+# 0.24.1 (Jan 30, 2024)
+
+Changes:
+* The simulatorCreator command creates all the default simulators for iOS 17 (iPad was missing)
+
+
 # 0.24.0 (Jan 25, 2024)
 
 Changes:
