@@ -1,3 +1,9 @@
+# 0.24.2 (TBA)
+
+Changes:
+* Added Support for the version 2 of the xctestrun, that the destinations path are properly read
+* Added that the testbundle now can be build using multiple xctestrun files
+
 # 0.24.1 (Jan 30, 2024)
 
 Changes:

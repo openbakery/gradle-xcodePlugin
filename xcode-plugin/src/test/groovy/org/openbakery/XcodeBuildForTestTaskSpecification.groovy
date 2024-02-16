@@ -289,4 +289,72 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		new File(testBundle, "Test-iphonesimulator/ExampleTodayWidget.appex").exists()
 		new File(testBundle, "Example_iphonesimulator.xctestrun").exists()
 	}
+
+
+	def "has app with dependecies in test bundle 1"() {
+		given:
+		project.xcodebuild.target = 'myscheme'
+		project.xcodebuild.productName = 'Example'
+		xcodeBuildForTestTask.parameters.simulator = true
+		xcodeBuildForTestTask.parameters.type = Type.iOS
+
+		File symDirectory = new File(project.getBuildDir(), "sym")
+		File sym = TestHelper.createDummyApp(new File(symDirectory, "Test-iphonesimulator"), "Example")
+		File extension = new File(symDirectory, "Test-iphonesimulator/ExampleTodayWidget.appex")
+		extension.mkdirs()
+		new File(symDirectory, "Debug-iphonesimulator/MyApp.app").mkdirs()
+		new File(symDirectory, "Debug-iphonesimulator/SystemTests-Runner.app").mkdirs()
+
+		File xctestrun = new File("src/test/Resource/UITests.xctestrun")
+		FileUtils.copyFile(xctestrun, new File(symDirectory, "UITests.xctestrun"))
+
+		xcodeBuildForTestTask.parameters.symRoot = sym
+
+		when:
+		xcodeBuildForTestTask.buildForTest()
+
+		File testBundle = new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle")
+
+		then:
+		testBundle.exists()
+		new File(testBundle, "Debug-iphonesimulator/MyApp.app").exists()
+		new File(testBundle, "Debug-iphonesimulator/SystemTests-Runner.app").exists()
+	}
+
+
+	def "process multiple xcrun files"() {
+		given:
+		project.xcodebuild.target = 'myscheme'
+		project.xcodebuild.productName = 'Example'
+		xcodeBuildForTestTask.parameters.simulator = true
+		xcodeBuildForTestTask.parameters.type = Type.iOS
+
+		File symDirectory = new File(project.getBuildDir(), "sym")
+		File sym = TestHelper.createDummyApp(new File(symDirectory, "Test-iphonesimulator"), "Example")
+		File extension = new File(symDirectory, "Test-iphonesimulator/ExampleTodayWidget.appex")
+		extension.mkdirs()
+		new File(symDirectory, "Debug-iphonesimulator/MyApp.app").mkdirs()
+		new File(symDirectory, "Debug-iphonesimulator/SystemTests-Runner.app").mkdirs()
+		new File(symDirectory, "Test-iphonesimulator/ExampleTodayWidget.appex").mkdirs()
+
+		File xctestrun1 = new File("src/test/Resource/UITests.xctestrun")
+		FileUtils.copyFile(xctestrun1, new File(symDirectory, "UITests.xctestrun"))
+		File xctestrun2 = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
+		FileUtils.copyFile(xctestrun2, new File(symDirectory, "Example_iphonesimulator.xctestrun"))
+
+		xcodeBuildForTestTask.parameters.symRoot = sym
+
+		when:
+		xcodeBuildForTestTask.buildForTest()
+
+		File testBundle = new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle")
+
+		then:
+		testBundle.exists()
+		new File(testBundle, "Debug-iphonesimulator/MyApp.app").exists()
+		new File(testBundle, "Debug-iphonesimulator/SystemTests-Runner.app").exists()
+		new File(testBundle, "Test-iphonesimulator/ExampleTodayWidget.appex").exists()
+
+	}
+
 }

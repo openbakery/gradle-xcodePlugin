@@ -1,8 +1,13 @@
 package org.openbakery
 
+import org.apache.commons.configuration2.BaseHierarchicalConfiguration
+import org.apache.commons.configuration2.HierarchicalConfiguration
 import org.apache.commons.configuration2.plist.XMLPropertyListConfiguration
+import org.apache.commons.configuration2.tree.ImmutableNode
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.util.Configurable
+import org.openbakery.configuration.Configuration
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.Type
 import org.openbakery.xcode.Xcodebuild
@@ -76,8 +81,7 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		testBundleFile.mkdirs()
 
 
-		File xcrunfile = getXcruntestFile()
-		if (xcrunfile != null) {
+		for (xcrunfile in getXcruntestFiles()) {
 			copy(xcrunfile, testBundleFile)
 			getAppBundles(xcrunfile).each {
 
@@ -92,27 +96,56 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 	List<String> getAppBundles(File xcrunfile) {
 		logger.debug("getAppBundles for {}", xcrunfile)
 
-		List<String> result = []
 		XMLPropertyListConfiguration config = new XMLPropertyListConfiguration()
 		config.read(new FileReader(xcrunfile))
 
-		for (key in config.getKeys()) {
-			if (key.endsWith(".DependentProductPaths")) {
-				String[] items = config.getStringArray(key)
-				for (def item in items) {
-					result << item - "__TESTROOT__/"
-				}
-				logger.debug("result appBundles for {}", result)
-				return result
-			}
+		Set<String> result = findDependentProductPaths(config)
+		if (result.size() == 0) {
+			logger.debug("result appBundles for {} is empty")
+		} else {
+			logger.debug("result appBundles for {}", result)
 		}
-		logger.debug("result appBundles for {} is empty")
-		return []
+		return result.toList()
 	}
 
+	private Set<String> findDependentProductPaths(BaseHierarchicalConfiguration configuration)  {
+
+		HashSet<String> result = []
+		for (key in configuration.keys) {
+			if (key.endsWith("DependentProductPaths")) {
+				String[] items = configuration.getStringArray(key)
+				for (item in items) {
+					result << item - "__TESTROOT__/"
+				}
+				break
+			}
+
+			if (key.endsWith("TestConfigurations") || key.endsWith("TestTargets")) {
+				def child = configuration.getProperty(key)
+				if (child instanceof Collection<BaseHierarchicalConfiguration>)	{
+					child.forEach {
+						def testTargets =  it.getProperty("TestTargets")
+						println("testTargets: $testTargets")
+						if (testTargets instanceof Collection<BaseHierarchicalConfiguration>) {
+							testTargets.forEach { targets ->
+								def items = targets.getStringArray("DependentProductPaths")
+								for (item in items) {
+									result << item - "__TESTROOT__/"
+								}
+								println("items: $items")
+							}
+						}
+
+					}
+				}
+			}
+
+		}
+		return result
+	}
 
 	@Internal
-	File getXcruntestFile() {
+	List<File> getXcruntestFiles() {
 		def fileList = parameters.symRoot.list(
 						[accept: { d, f -> f ==~ /.*xctestrun/ }] as FilenameFilter
 		)
@@ -120,7 +153,11 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 		if (fileList == null || fileList.toList().isEmpty()) {
 			return null
 		}
-		return new File(parameters.symRoot, fileList.toList().get(0))
+		List<File> result = new ArrayList<>()
+		for (item in fileList) {
+			result.add(new File(parameters.symRoot, item))
+		}
+		return result
 	}
 
 
