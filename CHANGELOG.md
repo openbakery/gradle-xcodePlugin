@@ -1,4 +1,4 @@
-# 0.24.2 (TBA)
+# 0.24.2 (Feb 16, 2024)
 
 Changes:
 * Added Support for the version 2 of the xctestrun, that the destinations path are properly read
