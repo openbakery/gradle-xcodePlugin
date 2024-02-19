@@ -208,6 +208,21 @@ class XcodeBuildForTestTaskSpecification extends Specification {
 		new File(project.getBuildDir(), "for-testing/Example-iOS-Simulator.testbundle").exists()
 	}
 
+	def "has test bundle uses scheme name for result"() {
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.productName = 'Example'
+		xcodeBuildForTestTask.parameters.simulator = true
+		xcodeBuildForTestTask.parameters.type = Type.iOS
+
+		TestHelper.createFile(new File(project.getBuildDir(), "sym/test.xctestrun"), "<plist version=\"1.0\"></plist>")
+
+		when:
+		xcodeBuildForTestTask.buildForTest()
+
+		then:
+		new File(project.getBuildDir(), "for-testing/myscheme-iOS-Simulator.testbundle").exists()
+	}
+
 	def "has test bundle as result for tvOS"() {
 		project.xcodebuild.target = 'myscheme'
 		project.xcodebuild.productName = 'Example'

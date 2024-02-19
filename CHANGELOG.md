@@ -1,3 +1,8 @@
+# 0.24.3 (Feb 19, 2024)
+
+Changes:
+* The testbundle has now the schema as name, so when multiple testbundles are build then, they have a unique name
+
 # 0.24.2 (Feb 16, 2024)
 
 Changes:

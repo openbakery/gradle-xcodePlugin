@@ -64,11 +64,16 @@ class XcodeBuildForTestTask extends AbstractXcodeBuildTask {
 
 		xcodebuild.executeBuildForTesting(createXcodeBuildOutputAppender("XcodeBuildForTestTask"), project.xcodebuild.environment)
 
-		createTestBundle()
+		createTestBundle(parameters.scheme)
 	}
 
-	def createTestBundle() {
-		String bundleDirectory = project.xcodebuild.bundleName
+	def createTestBundle(String scheme) {
+		String bundleDirectory
+		if (scheme != null) {
+			bundleDirectory = scheme
+		} else {
+			bundleDirectory = project.xcodebuild.bundleName
+		}
 
 		bundleDirectory += "-" + parameters.type
 
