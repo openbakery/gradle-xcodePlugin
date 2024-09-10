@@ -3,6 +3,7 @@ package org.openbakery.xcode
 import groovy.transform.CompileStatic
 import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting
 import org.openbakery.CommandRunner
+import org.openbakery.test.XCResultTool
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -162,12 +163,17 @@ class Xcode {
 		return getPath() + XCODE_CONTENT_XC_RUN
 	}
 
-	String getXcresulttool() {
+	private String getXcresulttoolPath() {
 		def xcresulttoolPath = getPath() + "/$XCODE_CONTENT_DEVELOPER/usr/bin/xcresulttool"
 		if(new File(xcresulttoolPath).exists()) {
 			return xcresulttoolPath
 		}
 		return "xcrun xcresulttool"
+	}
+
+	XCResultTool getXCResultTool() {
+		def legacy = getVersion().major > 15
+		return new XCResultTool(getXcresulttoolPath(), legacy)
 	}
 
 	String getSimctl() {

@@ -10,16 +10,14 @@ public class TestResultParser extends AbstractTestResultParser {
 
 	File testSummariesDirectory
 	List<Destination> destinations
-	String xcresulttoolPath
 
 	XCResultTool xcResultTool
 
-	public TestResultParser(File testSummariesDirectory, String xcresulttoolPath, List<Destination> destinations) {
+	public TestResultParser(File testSummariesDirectory, XCResultTool xcResultTool, List<Destination> destinations) {
 		super()
 		this.testSummariesDirectory = testSummariesDirectory
 		this.destinations = destinations
-		this.xcresulttoolPath = xcresulttoolPath
-		this.xcResultTool = new XCResultTool(xcresulttoolPath)
+		this.xcResultTool = xcResultTool
 	}
 
 	public void parseAndStore(File outputDirectory) {
@@ -44,7 +42,7 @@ public class TestResultParser extends AbstractTestResultParser {
 		logger.debug("Using new xcresult scheme version")
 		def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
 		files.each {
-			if (xcresulttoolPath == null) {
+			if (xcResultTool == null) {
 				logger.debug("No xcresulttool found.")
 				return
 			}

@@ -11,7 +11,7 @@ class AbstractXcodeTestTask extends AbstractXcodeBuildTask {
 	Logger printLogger = this.logger
 
 	void processTestResult(File testLogsDirectory) {
-		TestResultParser testResultParser = new TestResultParser(testLogsDirectory, xcode.getXcresulttool(), destinations)
+		TestResultParser testResultParser = new TestResultParser(testLogsDirectory, xcode.getXCResultTool(), destinations)
 		testResultParser.parseAndStore(outputDirectory)
 		int numberSuccess = testResultParser.number(TestResult.State.Passed)
 		int numberErrors = testResultParser.number(TestResult.State.Failed)

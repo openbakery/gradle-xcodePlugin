@@ -3,11 +3,9 @@ package org.openbakery.test
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.SimulatorControlFake
-import org.openbakery.testdouble.XcodeFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
-import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 import org.openbakery.xcode.XcodebuildParameters
 import spock.lang.Specification
@@ -16,17 +14,17 @@ class TestResultParserSpecification extends Specification {
 
 	TestResultParser testResultParser;
 	File outputDirectory
-	String xcresulttoolPath
+	XCResultTool xcresulttool
 
 	def setup() {
 
 		outputDirectory = new File(System.getProperty("java.io.tmpdir"), 'gradle-xcodebuild/outputDirectory').absoluteFile
 		outputDirectory.mkdirs();
 
-		xcresulttoolPath = new Xcode(new CommandRunner()).getXcresulttool()
+		xcresulttool = new Xcode(new CommandRunner()).getXCResultTool()
 
 		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttool, getDestinations("simctl-list-xcode11.txt"))
 	}
 
 	List<Destination> getDestinations(String simctlList) {
@@ -58,7 +56,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse new xcresult test summary has result"() {
 		given:
 		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttool, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse(outputDirectory)
@@ -72,7 +70,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse new xcresult scheme and verify result count"() {
 		given:
 		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttool, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse()
@@ -106,7 +104,7 @@ class TestResultParserSpecification extends Specification {
 	def "parse test summary that has failure"() {
 		given:
 		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Failure")
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, getDestinations("simctl-list-xcode11.txt"))
+		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttool, getDestinations("simctl-list-xcode11.txt"))
 
 		when:
 		testResultParser.parse()
@@ -124,7 +122,7 @@ class TestResultParserSpecification extends Specification {
 		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Attachment")
 		Destination destination = new Destination("iPhone X")
 		destination.id = "9F93F05E-3450-43BD-92FE-0F99212DB8B6"
-		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, [destination])
+		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttool, [destination])
 
 		expect:
 		outputDirectory.listFiles().size() == 0
@@ -161,7 +159,7 @@ class TestResultParserSpecification extends Specification {
 		Destination destination = new Destination("iPhone X")
 		destination.id = "7B40DCDA-3380-4BB9-AB92-1E3D1AC7B3BB"
 
-		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttoolPath, [destination])
+		testResultParser = new TestResultParser(testSummaryDirectory,xcresulttool, [destination])
 
 		when:
 		testResultParser.parse()
@@ -179,7 +177,7 @@ class TestResultParserSpecification extends Specification {
 		Destination destination = new Destination("iPhone 12 Pro")
 		destination.id = "3BFE2E8C-CABE-4C8F-AE96-DC9C5F792289"
 
-		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttoolPath, [destination])
+		testResultParser = new TestResultParser(testSummaryDirectory, xcresulttool, [destination])
 
 		when:
 		testResultParser.parse()
