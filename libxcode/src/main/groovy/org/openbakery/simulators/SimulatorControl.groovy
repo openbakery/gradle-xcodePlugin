@@ -693,7 +693,26 @@ class SimulatorControl {
 	}
 
 	void createAllSimulators() {
-		SimulatorRuntime runtime = getRuntimeWithMajorVersion(17)
+
+		SimulatorRuntime runtime = getRuntimeWithMajorVersion(18)
+		if (runtime != null) {
+			def types = getDeviceTypes([
+				"iPhone-SE-3rd-generation",
+				"iPhone-16",
+				"iPhone-16-Plus",
+				"iPhone-16-Pro",
+				"iPhone-16-Pro-Max",
+				"iPad-Air-5th-generation",
+				"iPad-10th-generation",
+				"iPad-mini-6th-generation",
+				"iPad-Pro-11-inch-4th-generation-8GB",
+				"iPad-Pro-12-9-inch-6th-generation-8GB"
+			])
+			create(types, runtime)
+			pair()
+		}
+
+		runtime = getRuntimeWithMajorVersion(17)
 		if (runtime != null) {
 			def types = getDeviceTypes([
 				"iPhone-SE-3rd-generation",
