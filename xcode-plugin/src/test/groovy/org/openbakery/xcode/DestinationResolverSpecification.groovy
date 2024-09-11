@@ -252,4 +252,18 @@ class DestinationResolverSpecification extends Specification {
 		destinations[0].id == '74BBFC84-7187-4DF3-A1D1-8B04ADAA4904'
 	}
 
+	def "set destinations with os"() {
+		given:
+
+		extension.destination = '{"name":"iPad Air", "os":"9.1"}'
+
+		when:
+		def destinations = destinationResolver.getDestinations(extension.getXcodebuildParameters())
+
+		then:
+		destinations.size() == 1
+		destinations[0].name == 'iPad Air'
+		destinations[0].os== '9.1'
+
+	}
 }

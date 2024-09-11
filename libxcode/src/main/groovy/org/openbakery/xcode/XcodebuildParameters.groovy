@@ -1,5 +1,6 @@
 package org.openbakery.xcode
 
+import groovy.json.JsonSlurper
 import org.apache.commons.io.FilenameUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -120,7 +121,17 @@ class XcodebuildParameters {
 		}
 
 		def newDestination = new Destination()
-		newDestination.name = destination.toString()
+
+		try {
+			def json = new JsonSlurper()
+			def object = json.parseText(destination.toString())
+			if (object instanceof Map) {
+				newDestination.name = object["name"]
+				newDestination.os = object["os"]
+			}
+		} catch (Exception ignored) {
+			newDestination.name = destination.toString()
+		}
 		configuredDestinations << newDestination
 	}
 
