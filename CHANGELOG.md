@@ -1,3 +1,14 @@
+# 0.24.5 (Feb 19, 2024)
+
+Changes:
+* The code coverage is disabled per default and can be enabled using the 'codeCoverage' parameter
+
+# 0.24.4 (Sep 11 19, 2024)
+
+Changes:
+* Added Xcode 16 simulator support
+
+
 # 0.24.3 (Feb 19, 2024)
 
 Changes:
