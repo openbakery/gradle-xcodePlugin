@@ -90,7 +90,6 @@ class Xcodebuild_Xcode10_Specification extends Specification {
 		command.contains("-scheme myscheme")
 		command.contains("-workspace myworkspace")
 		command.contains("-destination platform=iOS Simulator,id=93552145-0476-432B-B9E4-99BDF458F557")
-		command.contains("-enableCodeCoverage yes")
 		command.endsWith("-disable-concurrent-destination-testing test")
 	}
 

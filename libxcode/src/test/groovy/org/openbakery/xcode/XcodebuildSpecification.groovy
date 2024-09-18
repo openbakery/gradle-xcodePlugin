@@ -614,7 +614,6 @@ class XcodebuildSpecification extends Specification {
 			)
 			expectedCommandList << "-destination" << "platform=OS X,arch=x86_64"
 			addDefaultDirectoriesParameters(expectedCommandList)
-			expectedCommandList << "-enableCodeCoverage" << "yes"
 		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		commandList.contains("test")
@@ -652,7 +651,6 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=iOS Simulator,id=8C8C43D3-B53F-4091-8D7C-6A4B38051389"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
-			expectedCommandList << "-enableCodeCoverage" << "yes"
 		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		commandList.contains("test")
@@ -685,7 +683,6 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "platform=tvOS Simulator,id=4395107C-169C-43D7-A403-C9030B6A205D"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
-			expectedCommandList << "-enableCodeCoverage" << "yes"
 		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		expectedCommandList << "test"
@@ -760,7 +757,6 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList << "-destination" << "generic/platform=iOS"
 			addDerivedDataPathParameters(expectedCommandList)
 			addDefaultDirectoriesParameters(expectedCommandList)
-			expectedCommandList << "-enableCodeCoverage" << "yes"
 		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		commandList.contains("test")
@@ -896,6 +892,7 @@ class XcodebuildSpecification extends Specification {
 		xcodebuild.parameters.scheme = 'myscheme'
 		xcodebuild.parameters.workspace = 'myworkspace'
 		xcodebuild.parameters.simulator = true
+		xcodebuild.parameters.codeCoverage = true
 
 		when:
 		xcodebuild.executeBuildForTesting(outputAppender, null)
@@ -939,7 +936,6 @@ class XcodebuildSpecification extends Specification {
 			expectedCommandList <<  "xcodebuild"
 			expectedCommandList << "-destination" << "generic/platform=iOS"
 			expectedCommandList << "-derivedDataPath" << new File("build/derivedData").absolutePath
-			expectedCommandList << "-enableCodeCoverage" << "yes"
 			expectedCommandList << "COMPILER_INDEX_STORE_ENABLE=NO"
 			expectedCommandList << "-xctestrun" << new File("example.xctestrun").absolutePath
 			expectedCommandList << "test-without-building"

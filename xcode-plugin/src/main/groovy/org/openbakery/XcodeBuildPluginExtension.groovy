@@ -94,6 +94,7 @@ class XcodeBuildPluginExtension {
 	File projectFile
 
 	Boolean bitcode = false
+	Boolean codeCoverage = false
 
 	boolean useXcodebuildArchive = false
 
@@ -477,6 +478,7 @@ class XcodeBuildPluginExtension {
 		result.additionalParameters = this.additionalParameters
 		result.configuredDestinations = this.destinations
 		result.bitcode = this.bitcode
+		result.codeCoverage = this.codeCoverage
 		result.applicationBundle = getApplicationBundle()
 
 		if (this.arch != null) {

@@ -129,6 +129,15 @@ class XcodebuildParametersSpecification extends Specification {
 		first.bitcode == true
 	}
 
+	def "codeCoverage is merged"() {
+		when:
+		second.codeCoverage = true
+		first.merge(second)
+
+		then:
+		first.codeCoverage == true
+	}
+
 	def "applicationBundle is merged"() {
 		when:
 		second.applicationBundle = new File("MyApp.app")

@@ -188,6 +188,7 @@ class XcodeTestTaskSpecification extends Specification {
 
 		project.xcodebuild.type = 'macOS'
 		project.xcodebuild.target = 'Test'
+		project.xcodebuild.codeCoverage = true
 		mockXcodeVersionAndPath()
 
 
@@ -254,38 +255,11 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
-		interaction {
-			expectedCommandList << "-enableCodeCoverage" << "yes"
-		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		commandList.removeLast() == "test"
 	}
 
 
-	def "test command with coverage settings Xcode 6"() {
-		project.xcodebuild.commandRunner = commandRunner
-		def commandList
-		def expectedCommandList = setup_iOS_SimulatorBuild(
-						"-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1",
-						"-destination", "platform=iOS Simulator,id=5C8E1FF3-47B7-48B8-96E9-A12740DBC58A"
-		)
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
-		mockXcodeVersionAndPath()
-
-		when:
-		xcodeTestTask.test()
-
-		then:
-		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-
-		interaction {
-			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
-			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
-		}
-		Collections.indexOfSubList(commandList, expectedCommandList) == 0
-		commandList.removeLast() == "test"
-
-	}
 
 
 	def setupOSXBuild(String... commands) {
@@ -320,38 +294,11 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
-		interaction {
-			expectedCommandList << "-enableCodeCoverage" << "yes"
-		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		commandList.removeLast() == "test"
 
 	}
 
-	def "test command with coverage for OSX using Xcode 6"() {
-		project.xcodebuild.commandRunner = commandRunner
-		def commandList
-		def expectedCommandList = setupOSXBuild(
-						"-destination", "platform=OS X,arch=x86_64"
-		)
-
-		commandRunner.runWithResult("xcodebuild", "-version") >> ("Xcode 6.4\nBuild version 6E35b")
-		mockXcodeVersionAndPath()
-
-		when:
-		xcodeTestTask.test()
-
-		then:
-		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
-
-		interaction {
-			expectedCommandList << "GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES"
-			expectedCommandList << "GCC_GENERATE_TEST_COVERAGE_FILES=YES"
-		}
-		Collections.indexOfSubList(commandList, expectedCommandList) == 0
-		commandList.removeLast() == "test"
-
-	}
 
 
 	def "output file was set"() {
@@ -502,9 +449,6 @@ class XcodeTestTaskSpecification extends Specification {
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 
-		interaction {
-			expectedCommandList << "-enableCodeCoverage" << "yes"
-		}
 		Collections.indexOfSubList(commandList, expectedCommandList) == 0
 		commandList.removeLast() == "test"
 
@@ -543,5 +487,41 @@ class XcodeTestTaskSpecification extends Specification {
 		testResult.exists()
 	}
 
+	def "test disable code coverage"() {
+		project.xcodebuild.commandRunner = commandRunner
+		def commandList
+
+		project.xcodebuild.type = Type.iOS
+		project.xcodebuild.scheme = 'myscheme'
+		project.xcodebuild.workspace = 'myworkspace'
+		project.xcodebuild.codeCoverage = false
+
+		xcodeTestTask.scheme = "Foobar"
+		xcodeTestTask.destination {
+			name = "iPad 2"
+		}
+
+		def expectedCommandList = ['script', '-q', '/dev/null',
+															 "xcodebuild",
+															 "-scheme", "Foobar",
+															 "-workspace", "myworkspace",
+															 "-configuration", 'Debug',
+		]
+		expectedCommandList.addAll(["-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1"])
+		expectedCommandList.addAll(expectedDefaultDirectories())
+
+		mockXcodeVersionAndPath()
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+
+		Collections.indexOfSubList(commandList, expectedCommandList) == 0
+		commandList.removeLast() == "test"
+
+		expectedCommandList.contains("Foobar")
+	}
 
 }

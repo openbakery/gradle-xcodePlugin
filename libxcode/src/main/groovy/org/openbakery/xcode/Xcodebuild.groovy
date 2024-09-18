@@ -159,12 +159,12 @@ class Xcodebuild {
 
 			commandList.add("-target")
 			commandList.add(parameters.target)
-			
+
 			if (parameters.projectFile != null) {
 				commandList.add("-project")
 				commandList.add(parameters.projectFile)
 			}
-			
+
 		}
 
 		if (parameters.bitcode) {
@@ -255,10 +255,7 @@ class Xcodebuild {
 	}
 
 	void addCoverageSettings(ArrayList commandList) {
-		if (xcode.version.major < 7) {
-			commandList.add("GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES")
-			commandList.add("GCC_GENERATE_TEST_COVERAGE_FILES=YES")
-		} else {
+		if (parameters.codeCoverage) {
 			commandList.add("-enableCodeCoverage")
 			commandList.add("yes")
 		}

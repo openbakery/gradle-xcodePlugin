@@ -26,6 +26,7 @@ class XcodebuildParameters {
 	Set<Destination> configuredDestinations
 	List<File> xctestrun
 	Boolean bitcode
+	Boolean codeCoverage
 	File applicationBundle
 
 
@@ -91,6 +92,9 @@ class XcodebuildParameters {
 		}
 		if (other.bitcode != null) {
 			bitcode = other.bitcode
+		}
+		if (other.codeCoverage != null) {
+			codeCoverage = other.codeCoverage
 		}
 		if (other.applicationBundle != null) {
 			applicationBundle = other.applicationBundle
