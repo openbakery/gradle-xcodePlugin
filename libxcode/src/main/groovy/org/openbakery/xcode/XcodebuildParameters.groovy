@@ -28,6 +28,7 @@ class XcodebuildParameters {
 	Boolean bitcode
 	Boolean codeCoverage
 	File applicationBundle
+	String testPlan
 
 
 	public XcodebuildParameters() {
@@ -95,6 +96,9 @@ class XcodebuildParameters {
 		}
 		if (other.codeCoverage != null) {
 			codeCoverage = other.codeCoverage
+		}
+		if (other.testPlan != null) {
+			testPlan = other.testPlan
 		}
 		if (other.applicationBundle != null) {
 			applicationBundle = other.applicationBundle

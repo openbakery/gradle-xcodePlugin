@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+export JAVA_HOME=`/usr/libexec/java_home -v 11`
+
 #
 # Copyright 2015 the original author or authors.
 #

@@ -96,78 +96,6 @@ class XcodeTestTaskSpecification extends Specification {
 		xcodeTestTask.xcode != null
 	}
 
-	/*
-
-
-	def void addExpectedScheme() {
-		project.xcodebuild.scheme = 'myscheme'
-		expectedCommandList.add("-scheme")
-		expectedCommandList.add(project.xcodebuild.scheme)
-
-		project.xcodebuild.workspace = 'myworkspace'
-		expectedCommandList.add("-workspace")
-		expectedCommandList.add(project.xcodebuild.workspace)
-	}
-
-	def void addExpectedDefaultDirs() {
-		String currentDir = new File('').getAbsolutePath()
-		expectedCommandList.add("-derivedDataPath")
-		expectedCommandList.add(currentDir + "${File.separator}build${File.separator}derivedData")
-		expectedCommandList.add("DSTROOT=" + currentDir + "${File.separator}build${File.separator}dst")
-		expectedCommandList.add("OBJROOT=" + currentDir + "${File.separator}build${File.separator}obj")
-		expectedCommandList.add("SYMROOT=" + currentDir + "${File.separator}build${File.separator}sym")
-		expectedCommandList.add("SHARED_PRECOMPS_DIR=" + currentDir + "${File.separator}build${File.separator}shared")
-	}
-
-
-
-	TestResult testResult(String name, boolean success) {
-		TestResult testResult = new TestResult()
-		testResult.success = success
-		testResult.duration = 0.1
-		testResult.method = name
-		return testResult;
-	}
-
-	@Test
-	void createXMLOuput() {
-
-		TestClass testClass = new TestClass();
-		testClass.name = "HelloWorldTest"
-		for (int i=0; i<5; i++) {
-			testClass.results << testResult("testSuccess_" + i, true)
-		}
-		for (int i=0; i<3; i++) {
-			testClass.results << testResult("testError_" + i, false)
-		}
-
-		def allResults = [:]
-		def resultList = []
-		resultList << testClass
-
-		allResults.put(destinationPad, resultList)
-		allResults.put(destinationPhone, resultList)
-
-		xcodeTestTask.allResults = allResults
-		xcodeTestTask.store()
-
-		String testXML = new File('build/test/test-results.xml').text
-
-		assert StringUtils.countMatches(testXML, "<testcase") == 16
-
-		assert StringUtils.countMatches(testXML, "<error type='failure'") == 6
-
-
-		File junitXmlSchema = new File('src/test/Resource/junit-4.xsd')
-		def factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-		def schema = factory.newSchema(new StreamSource(new FileReader(junitXmlSchema)))
-		def validator = schema.newValidator()
-		validator.validate(new StreamSource(new StringReader(testXML)))
-
-	}
-	*/
-
-
 	def "depends on"() {
 		when:
 		def dependsOn  = xcodeTestTask.getDependsOn()
@@ -522,6 +450,26 @@ class XcodeTestTaskSpecification extends Specification {
 		commandList.removeLast() == "test"
 
 		expectedCommandList.contains("Foobar")
+	}
+
+
+	def "test has testplan"() {
+		ArrayList<String> commandList
+
+		project.xcodebuild.commandRunner = commandRunner
+		project.xcodebuild.testPlan = "myPlan"
+
+		setup_iOS_SimulatorBuild("-destination", "platform=iOS Simulator,id=83384347-6976-4E70-A54F-1CFECD1E02B1")
+		mockXcodeVersionAndPath()
+
+		when:
+		xcodeTestTask.test()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] as ArrayList<String> }
+
+		commandList.containsAll(["-testPlan", "myPlan"])
+		commandList.removeLast() == "test"
 	}
 
 }

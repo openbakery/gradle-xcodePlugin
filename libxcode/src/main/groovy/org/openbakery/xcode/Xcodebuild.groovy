@@ -71,6 +71,7 @@ class Xcodebuild {
 		addBuildPath(commandList)
 		addCoverageSettings(commandList)
 		addDisableIndexing(commandList)
+		addTestPlan(commandList)
 
 		logger.debug("xcode.version.major: " + xcode.version.major)
 		if (xcode.version.major > 9) {
@@ -187,6 +188,13 @@ class Xcodebuild {
 
 	def addDisableIndexing(ArrayList commandList) {
 		commandList.add('COMPILER_INDEX_STORE_ENABLE=NO')
+	}
+
+	def addTestPlan(ArrayList commandList) {
+		if (parameters.testPlan) {
+			commandList.add("-testPlan")
+			commandList.add(parameters.testPlan)
+		}
 	}
 
 	private boolean isSimulator() {

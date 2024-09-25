@@ -138,6 +138,15 @@ class XcodebuildParametersSpecification extends Specification {
 		first.codeCoverage == true
 	}
 
+	def "testPlanis merged"() {
+		when:
+		second.testPlan = "plan"
+		first.merge(second)
+
+		then:
+		first.testPlan == "plan"
+	}
+
 	def "applicationBundle is merged"() {
 		when:
 		second.applicationBundle = new File("MyApp.app")
