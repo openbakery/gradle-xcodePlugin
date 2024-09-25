@@ -1,4 +1,10 @@
-# 0.24.5 (Feb 19, 2024)
+# 0.24.6 (Sep 25 , 2024)
+
+Changes:
+* Added "testPlan" parameter
+
+
+# 0.24.5 (Sep 19, 2024)
 
 Changes:
 * The code coverage is disabled per default and can be enabled using the 'codeCoverage' parameter
