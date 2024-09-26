@@ -1,7 +1,9 @@
 package org.openbakery
 
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.logging.progress.ProgressLogger
 import org.gradle.internal.logging.progress.ProgressLoggerFactory
@@ -34,6 +36,17 @@ class XcodeTestTask extends AbstractXcodeTestTask {
 		)
 
 		this.description = "Runs the unit tests for the Xcode project"
+	}
+
+
+	void setTestPlan(String testPlan) {
+		parameters.testPlan = testPlan
+	}
+
+	@Input
+	@Optional
+	String getTestPlan() {
+		return parameters.testPlan
 	}
 
 	TestBuildOutputAppender createOutputAppender(List<Destination> destinations) {

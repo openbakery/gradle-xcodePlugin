@@ -472,4 +472,11 @@ class XcodeTestTaskSpecification extends Specification {
 		commandList.removeLast() == "test"
 	}
 
+	def "set testPlan"() {
+		when:
+		xcodeTestTask.testPlan = "plan"
+
+		then:
+		xcodeTestTask.parameters.testPlan == "plan"
+	}
 }
