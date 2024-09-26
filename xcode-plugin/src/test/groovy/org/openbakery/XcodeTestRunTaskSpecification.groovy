@@ -495,4 +495,19 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.parameters.testPlan == "plan"
 	}
 
+	def "run xcodebuild executeTestWithoutBuilding with testPlan"() {
+		given:
+		def commandList
+		createTestBundle("test")
+		xcodeTestRunTestTask.testPlan = "testplan"
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains("-testPlan")
+		commandList.contains("testplan")
+
+	}
 }

@@ -105,6 +105,7 @@ class Xcodebuild {
 			addAdditionalParameters(commandList)
 			addCoverageSettings(commandList)
 			addDisableIndexing(commandList)
+			addTestPlan(commandList)
 
 			commandList << "-xctestrun" << it.absolutePath
 			commandList << "test-without-building"
