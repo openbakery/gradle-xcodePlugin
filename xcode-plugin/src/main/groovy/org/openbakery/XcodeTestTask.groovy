@@ -39,16 +39,6 @@ class XcodeTestTask extends AbstractXcodeTestTask {
 	}
 
 
-	void setTestPlan(String testPlan) {
-		parameters.testPlan = testPlan
-	}
-
-	@Input
-	@Optional
-	String getTestPlan() {
-		return parameters.testPlan
-	}
-
 	TestBuildOutputAppender createOutputAppender(List<Destination> destinations) {
 		String name = getClass().getName()
 		StyledTextOutput output = getServices().get(StyledTextOutputFactory.class).create(getClass(), LogLevel.LIFECYCLE);

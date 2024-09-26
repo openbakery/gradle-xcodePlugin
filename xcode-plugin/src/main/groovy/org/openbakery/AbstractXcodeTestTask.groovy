@@ -1,7 +1,9 @@
 package org.openbakery
 
 import org.gradle.api.logging.Logger
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.openbakery.test.TestResult
 import org.openbakery.test.TestResultParser
 
@@ -9,6 +11,18 @@ class AbstractXcodeTestTask extends AbstractXcodeBuildTask {
 
 	@Internal
 	Logger printLogger = this.logger
+
+
+	void setTestPlan(String testPlan) {
+		parameters.testPlan = testPlan
+	}
+
+	@Input
+	@Optional
+	String getTestPlan() {
+		return parameters.testPlan
+	}
+
 
 	void processTestResult(File testLogsDirectory) {
 		TestResultParser testResultParser = new TestResultParser(testLogsDirectory, xcode.getXCResultTool(), destinations)

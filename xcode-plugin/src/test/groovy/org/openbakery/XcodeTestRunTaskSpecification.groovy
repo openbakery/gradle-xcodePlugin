@@ -487,5 +487,12 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.configuredDestinations[0].os == null
 	}
 
+	def "set testPlan"() {
+		when:
+		xcodeTestRunTestTask.testPlan = "plan"
+
+		then:
+		xcodeTestRunTestTask.parameters.testPlan == "plan"
+	}
 
 }
