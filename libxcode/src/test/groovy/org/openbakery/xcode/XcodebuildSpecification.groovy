@@ -926,7 +926,7 @@ class XcodebuildSpecification extends Specification {
 
 
 		when:
-		xcodebuild.executeTestWithoutBuilding(outputAppender, null)
+		xcodebuild.executeTestWithoutBuilding(outputAppender, null, new File("example.xctestrun"))
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
@@ -1119,7 +1119,7 @@ class XcodebuildSpecification extends Specification {
 		]
 
 		when:
-		xcodebuild.executeTestWithoutBuilding(outputAppender, null)
+		xcodebuild.executeTestWithoutBuilding(outputAppender, null, new File("example.xctestrun"))
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }

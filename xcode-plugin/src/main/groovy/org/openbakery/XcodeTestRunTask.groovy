@@ -71,7 +71,6 @@ class XcodeTestRunTask extends AbstractXcodeTestTask {
 		}
 
 		File testLogsDirectory = new File(parameters.derivedDataPath, "Logs/Test")
-		testLogsDirectory.deleteDir()
 
 		outputDirectory = new File(project.getBuildDir(), "test");
 		if (!outputDirectory.exists()) {

@@ -65,6 +65,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		FileUtils.copyFile(xctestrun, new File(testBundle, "${name}_iphonesimulator.xctestrun"))
 	}
 
+
 	def "instance is of type XcodeBuildForTestTask"() {
 		expect:
 		xcodeTestRunTestTask instanceof  XcodeTestRunTask
@@ -216,7 +217,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		((TestBuildOutputAppender)outputAppender).fullProgress == true
 	}
 
-	def "delete derivedData/Logs/Test before test is executed"() {
+	def "do not delete derivedData/Logs/Test before test is executed"() {
 		given:
 		createTestBundle("test")
 		project.xcodebuild.target = "Test"
@@ -229,7 +230,7 @@ class XcodeTestRunTaskSpecification extends Specification {
 		xcodeTestRunTestTask.testRun()
 
 		then:
-		!testDirectory.exists()
+		testDirectory.exists()
 	}
 
 
