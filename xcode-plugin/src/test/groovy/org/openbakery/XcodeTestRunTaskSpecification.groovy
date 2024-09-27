@@ -57,12 +57,12 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 
 
-	def createTestBundle(String directoryName) {
+	def createTestBundle(String directoryName, String name = "Example") {
 		File bundleDirectory = new File(project.getProjectDir(), directoryName)
 		File testBundle = new File(bundleDirectory, "Example.testbundle")
 		testBundle.mkdirs()
 		File xctestrun = new File("src/test/Resource/Example_iphonesimulator.xctestrun")
-		FileUtils.copyFile(xctestrun, new File(testBundle, "Example_iphonesimulator.xctestrun"))
+		FileUtils.copyFile(xctestrun, new File(testBundle, "${name}_iphonesimulator.xctestrun"))
 	}
 
 	def "instance is of type XcodeBuildForTestTask"() {
@@ -166,6 +166,22 @@ class XcodeTestRunTaskSpecification extends Specification {
 
 		then:
 		1 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
+		commandList.contains("test-without-building")
+		commandList.contains("-xctestrun")
+
+	}
+
+	def "run xcodebuild executeTestWithoutBuilding multiple test bundles"() {
+		given:
+		def commandList
+		createTestBundle("test", "first")
+		createTestBundle("test", "second")
+
+		when:
+		xcodeTestRunTestTask.testRun()
+
+		then:
+		2 * commandRunner.run(_, _, _, _) >> { arguments -> commandList = arguments[1] }
 		commandList.contains("test-without-building")
 		commandList.contains("-xctestrun")
 

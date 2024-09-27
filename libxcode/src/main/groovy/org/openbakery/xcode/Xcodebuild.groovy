@@ -93,9 +93,8 @@ class Xcodebuild {
 		commandRunner.run(this.projectDirectory.absolutePath, commandList, environment, outputAppender)
 	}
 
-	def executeTestWithoutBuilding(OutputAppender outputAppender, Map<String, String> environment) {
+	def executeTestWithoutBuilding(OutputAppender outputAppender, Map<String, String> environment, File xctestRun) {
 
-		parameters.xctestrun.each {
 			def commandList = []
 			commandList << 'script' << '-q' << '/dev/null'
 			commandList << xcode.xcodebuild
@@ -107,12 +106,9 @@ class Xcodebuild {
 			addDisableIndexing(commandList)
 			addTestPlan(commandList)
 
-			commandList << "-xctestrun" << it.absolutePath
+			commandList << "-xctestrun" << xctestRun.absolutePath
 			commandList << "test-without-building"
 			commandRunner.run(this.projectDirectory.absolutePath, commandList, environment, outputAppender)
-
-
-		}
 
 	}
 
