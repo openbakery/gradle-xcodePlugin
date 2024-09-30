@@ -1,5 +1,6 @@
 package org.openbakery
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -26,6 +27,7 @@ class AbstractXcodeTestTask extends AbstractXcodeBuildTask {
 
 	void processTestResult(File testLogsDirectory) {
 		TestResultParser testResultParser = new TestResultParser(testLogsDirectory, xcode.getXCResultTool(), destinations)
+		def outputDirectory = new File(project.getBuildDir(), "test")
 		testResultParser.parseAndStore(outputDirectory)
 		int numberSuccess = testResultParser.number(TestResult.State.Passed)
 		int numberErrors = testResultParser.number(TestResult.State.Failed)

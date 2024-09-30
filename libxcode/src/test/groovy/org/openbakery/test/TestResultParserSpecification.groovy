@@ -3,6 +3,7 @@ package org.openbakery.test
 import org.apache.commons.io.FileUtils
 import org.openbakery.CommandRunner
 import org.openbakery.testdouble.SimulatorControlFake
+import org.openbakery.testdouble.XCResultToolFake
 import org.openbakery.xcode.Destination
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
@@ -135,7 +136,7 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.testResults.get(firstKey).size() == 1
 		testResultParser.number(TestResult.State.Passed) == 2
 		testResultParser.number(TestResult.State.Failed) == 0
-		outputDirectory.listFiles().size() == 1
+		outputDirectory.listFiles().size() > 0
 		outputDirectory.listFiles().first().name.contains(".html")
 	}
 
@@ -189,4 +190,19 @@ class TestResultParserSpecification extends Specification {
 		testResultParser.number(TestResult.State.Passed) == 2
 		testResultParser.number(TestResult.State.Skipped) == 1
 	}
+
+	def "skip parsing of xcresult folder that does not contain an Info plist"() {
+		given:
+		File testSummaryDirectory = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/corrupt")
+		testResultParser = new TestResultParser(testSummaryDirectory, new XCResultToolFake(), getDestinations("simctl-list-xcode11.txt"))
+
+		when:
+		testResultParser.parse(outputDirectory)
+
+		then:
+		testResultParser.testResults != null
+		testResultParser.testResults.isEmpty()
+	}
+
+
 }

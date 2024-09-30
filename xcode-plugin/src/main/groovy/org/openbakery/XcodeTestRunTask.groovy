@@ -102,6 +102,7 @@ class XcodeTestRunTask extends AbstractXcodeTestTask {
 			Xcodebuild xcodebuild = new Xcodebuild(project.projectDir, commandRunner, xcode, parameters, destinations)
 
 			parameters.xctestrun.each {
+				testLogsDirectory.delete()
 				xcodebuild.executeTestWithoutBuilding(createOutputAppender(destinations), project.xcodebuild.environment, it)
 			}
 		} catch (CommandRunnerException ex) {

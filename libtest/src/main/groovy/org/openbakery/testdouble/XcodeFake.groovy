@@ -1,6 +1,7 @@
 package org.openbakery.testdouble
 
 import org.openbakery.CommandRunner
+import org.openbakery.test.XCResultTool
 import org.openbakery.xcode.Version
 import org.openbakery.xcode.Xcode
 
@@ -60,5 +61,10 @@ class XcodeFake extends Xcode {
 			", versionString='" + versionString + '\'' +
 			", xcodeVersionString='" + xcodeVersionString + '\'' +
 			'}';
+	}
+
+	@Override
+	XCResultTool getXCResultTool() {
+		return new XCResultToolFake()
 	}
 }

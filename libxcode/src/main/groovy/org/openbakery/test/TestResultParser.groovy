@@ -1,5 +1,6 @@
 package org.openbakery.test
 
+import org.apache.commons.io.FileUtils
 import org.openbakery.xcode.Destination
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -40,24 +41,40 @@ public class TestResultParser extends AbstractTestResultParser {
 
 	private void parseXcResult(File outputDirectory) {
 		logger.debug("Using new xcresult scheme version")
+
+		if (xcResultTool == null) {
+			logger.debug("No xcresulttool found.")
+			return
+		}
+
+
 		def files = testSummariesDirectory.listFiles({ d, f -> f.endsWith(".xcresult") } as FilenameFilter)
-		files.each {
-			if (xcResultTool == null) {
-				logger.debug("No xcresulttool found.")
-				return
+		for (file in files) {
+			def infoPlist = new File(file, "Info.plist")
+			if (!infoPlist.exists()) {
+				continue
 			}
-			def xcResult = xcResultTool.getObject(it)
-			def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
-			logger.debug("identifier {}", identifier)
-			Destination destination = findDestinationForIdentifier(destinations, identifier)
-			if (destination) {
-				def resultList = processTestSummary(xcResult, it)
-				testResults.put(destination, resultList)
-				exportAttachments(it, outputDirectory)
-			} else {
-				logger.debug("destination not found for identifier {}", identifier)
+			def xcResult = xcResultTool.getObject(file)
+			if (!xcResult.isEmpty()) {
+				def identifier = xcResult.actions._values.first().runDestination.targetDeviceRecord.identifier._value
+				logger.debug("identifier {}", identifier)
+				Destination destination = findDestinationForIdentifier(destinations, identifier)
+				if (destination) {
+					def resultList = processTestSummary(xcResult, file)
+					testResults.put(destination, resultList)
+					exportAttachments(file, outputDirectory)
+				} else {
+					logger.debug("destination not found for identifier {}", identifier)
+				}
 			}
 
+			if (outputDirectory != null) {
+				def destinationDirectory = new File(outputDirectory, "xcresult")
+				if (!destinationDirectory.exists()) {
+					destinationDirectory.mkdirs()
+				}
+				FileUtils.copyDirectoryToDirectory(file, destinationDirectory)
+			}
 		}
 	}
 

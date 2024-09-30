@@ -13,6 +13,7 @@ import org.openbakery.testdouble.XcodeFake
 import org.openbakery.util.PlistHelper
 import org.openbakery.xcode.DestinationResolver
 import org.openbakery.xcode.Type
+import org.openbakery.xcode.Xcode
 import spock.lang.Specification
 
 /**
@@ -527,4 +528,20 @@ class XcodeTestRunTaskSpecification extends Specification {
 		commandList.contains("testplan")
 
 	}
+
+	def "xcresult was stored in build/test"() {
+		given:
+
+		createTestBundle("test")
+		File xcresultSource = new File("../xcode-plugin/src/test/Resource/TestLogs/xcresult/Success/Test.xcresult")
+		project.xcodebuild.target = "Test"
+
+		when:
+		xcodeTestRunTestTask.processTestResult(xcresultSource.parentFile)
+
+		def testResult = new File(outputDirectory, "xcresult/Test.xcresult")
+		then:
+		testResult.exists()
+	}
+
 }

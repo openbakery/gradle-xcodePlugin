@@ -1,7 +1,10 @@
-# 0.24.6 (Sep 25 , 2024)
+
+
+# 0.24.6 (Sep 30, 2024)
 
 Changes:
 * Added "testPlan" parameter
+* Added support for test run to support multiple testplans and xcresult parsing
 
 
 # 0.24.5 (Sep 19, 2024)
