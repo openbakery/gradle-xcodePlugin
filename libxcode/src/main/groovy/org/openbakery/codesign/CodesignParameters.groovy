@@ -77,6 +77,7 @@ class CodesignParameters {
 			return result
 		}
 		logger.info("bundleEntitlements does not contain key: {}", bundleIdentifier)
+		logger.info("bundleEntitlements keys are: {}", bundleEntitlements.keySet())
 		return null
 	}
 
