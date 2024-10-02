@@ -145,6 +145,7 @@ class Signing {
 
 	void bundleEntitlements(Map<String, Map<String, Object>> entitlements) {
 		logger.info("set bundleEntitlements: {}", entitlements)
+		org.slf4j.LoggerFactory.getLogger(Signing.class).info("set bundleEntitlements: {}", entitlements)
 		this.bundleEntitlements =  entitlements
 	}
 

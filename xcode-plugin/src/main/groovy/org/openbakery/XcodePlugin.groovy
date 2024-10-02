@@ -141,6 +141,7 @@ class XcodePlugin implements Plugin<Project> {
 
 	XcodePlugin() {
 		org.openbakery.log.LoggerFactory.setFactory(new org.openbakery.log.SLF4JLoggerFactory())
+		org.openbakery.log.LoggerFactory.instance.getLogger("XcodePlugin").info("LoggerFactory configured")
 	}
 
 	void apply(Project project) {
