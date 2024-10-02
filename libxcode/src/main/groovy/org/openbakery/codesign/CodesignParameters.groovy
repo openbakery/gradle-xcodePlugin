@@ -2,8 +2,12 @@ package org.openbakery.codesign
 
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Type
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class CodesignParameters {
+
+	private static Logger logger = LoggerFactory.getLogger(CodesignParameters.class)
 
 	String signingIdentity
 	List<File> mobileProvisionFiles
@@ -62,12 +66,14 @@ class CodesignParameters {
 
 	}
 
-	Map<String, String>getEntitlements(String bundleIdentifier) {
+	Map<String, Object>getEntitlements(String bundleIdentifier) {
 		if (bundleEntitlements == null) {
 			return null
 		}
 		if (bundleEntitlements.containsKey(bundleIdentifier)) {
-			return bundleEntitlements[bundleIdentifier]
+			Map<String, Object> result = bundleEntitlements[bundleIdentifier]
+			logger.info("getEntitlements for {}", result)
+			return result
 		}
 		return null
 	}
