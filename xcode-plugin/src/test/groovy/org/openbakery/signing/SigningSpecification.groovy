@@ -139,4 +139,42 @@ class SigningSpecification extends Specification {
 		signing.codesignParameters.entitlementsFile instanceof File
 		signing.codesignParameters.entitlementsFile.path.endsWith("entitlements")
 	}
+
+
+	def "bundleEntitlements data set via closure using xcodebuild"() {
+
+		when:
+		project.xcodebuild.signing {
+			bundleEntitlements 'com.example.app': ['com.apple.security.application-groups': ['group.com.example.App']]
+		}
+
+		then:
+		project.xcodebuild.signing.bundleEntitlements instanceof Map<String, Object>
+		project.xcodebuild.signing.bundleEntitlements != null
+		project.xcodebuild.signing.bundleEntitlements.containsKey("com.example.app")
+		project.xcodebuild.signing.bundleEntitlements["com.example.app"] instanceof Map<String, Object>
+		project.xcodebuild.signing.bundleEntitlements["com.example.app"]["com.apple.security.application-groups"] instanceof List<String>
+	}
+
+	def "bundleEntitlements data set via closure"() {
+		when:
+		signing.bundleEntitlements('com.example.app': ['com.apple.security.application-groups': ['group.com.example.App']])
+
+		then:
+		signing.bundleEntitlements instanceof Map<String, Object>
+		signing.bundleEntitlements != null
+		signing.bundleEntitlements.containsKey("com.example.app")
+	}
+
+
+	def "bundleEntitlements data set via closure converted to Configuration"() {
+		when:
+		signing.bundleEntitlements('com.example.app': ['com.apple.security.application-groups': ['group.com.example.App']])
+
+		def configuration = new ConfigurationFromMap(signing.bundleEntitlements, "com.example.app")
+
+		then:
+		configuration.getStringArray("com.apple.security.application-groups") == ['group.com.example.App']
+
+	}
 }

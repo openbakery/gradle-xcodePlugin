@@ -15,7 +15,7 @@ class CodesignParameters {
 	 */
 	File entitlementsFile
 	Map<String, Object> entitlements
-	Map<String, Map<String, String>> bundleEntitlements
+	Map<String, Map<String, Object>> bundleEntitlements
 
 	CodesignParameters() {
 		security = new Security(new CommandRunner())

@@ -25,6 +25,7 @@ class Signing {
 	Object entitlementsFile
 
 	Map<String, Object> entitlements
+	Map<String, Map<String, Object>> bundleEntitlements
 
 	/**
 	 * internal parameters
@@ -134,9 +135,12 @@ class Signing {
 
 
 
-	public void entitlements(Map<String, Object> entitlements) {
+	void entitlements(Map<String, Object> entitlements) {
 		this.entitlements = entitlements
+	}
 
+	void bundleEntitlements(Map<String, Map<String, Object>> entitlements) {
+		this.bundleEntitlements =  entitlements
 	}
 
 	@Override

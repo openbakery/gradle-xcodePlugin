@@ -11,6 +11,14 @@ class ConfigurationFromMap implements Configuration {
 		this.configurationMap = configurationMap
 	}
 
+	ConfigurationFromMap(Map<String, Map<String, Object>> configurationMap, String bundleIdentifier) {
+		if (configurationMap.containsKey(bundleIdentifier)) {
+			this.configurationMap = configurationMap[bundleIdentifier]
+		} else {
+			throw new IllegalArgumentException("given configuration map is null")
+		}
+	}
+
 
 	@Override
 	Object get(String key) {
