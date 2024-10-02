@@ -3,6 +3,8 @@ package org.openbakery.signing
 import org.gradle.api.Project
 import org.openbakery.CommandRunner
 import org.openbakery.codesign.CodesignParameters
+import org.openbakery.log.Logger
+import org.openbakery.log.LoggerFactory
 
 /**
  *
@@ -10,6 +12,8 @@ import org.openbakery.codesign.CodesignParameters
  *
  */
 class Signing {
+
+	private Logger logger = LoggerFactory.getInstance().getLogger(Signing.class.name)
 
 	public final static KEYCHAIN_NAME_BASE = "gradle-"
 
@@ -140,6 +144,7 @@ class Signing {
 	}
 
 	void bundleEntitlements(Map<String, Map<String, Object>> entitlements) {
+		logger.info("set bundleEntitlements: {}", entitlements)
 		this.bundleEntitlements =  entitlements
 	}
 

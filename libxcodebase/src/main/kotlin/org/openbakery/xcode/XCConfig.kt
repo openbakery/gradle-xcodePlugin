@@ -1,8 +1,12 @@
 package org.openbakery.xcode
 
 import java.io.File
+import org.openbakery.log.LoggerFactory
+import org.openbakery.log.Logger
 
 public class XCConfig(public val file: File) {
+
+	private val logger = LoggerFactory.getInstance().getLogger(XCConfig::class.toString())
 
 	private val entries = mutableMapOf<String, String>()
 

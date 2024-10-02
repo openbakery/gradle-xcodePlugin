@@ -2,12 +2,12 @@ package org.openbakery.codesign
 
 import org.openbakery.CommandRunner
 import org.openbakery.xcode.Type
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.openbakery.log.LoggerFactory
+import org.openbakery.log.Logger
 
 class CodesignParameters {
 
-	private static Logger logger = LoggerFactory.getLogger(CodesignParameters.class)
+	private Logger logger = LoggerFactory.getInstance().getLogger(CodesignParameters.class.name)
 
 	String signingIdentity
 	List<File> mobileProvisionFiles

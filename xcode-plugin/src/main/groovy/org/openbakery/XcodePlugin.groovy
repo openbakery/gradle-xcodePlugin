@@ -139,6 +139,9 @@ class XcodePlugin implements Plugin<Project> {
 
 	public static final String SDK_IPHONESIMULATOR = "iphonesimulator"
 
+	XcodePlugin() {
+		org.openbakery.log.LoggerFactory.setFactory(new org.openbakery.log.SLF4JLoggerFactory())
+	}
 
 	void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class)
