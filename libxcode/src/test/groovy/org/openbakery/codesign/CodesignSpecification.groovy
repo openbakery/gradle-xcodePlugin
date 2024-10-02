@@ -579,4 +579,59 @@ class CodesignSpecification extends  Specification {
 		commandLists[0] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", new File(bundle, "Frameworks/Helper.app").absolutePath ]
 		commandLists[1] == ["/usr/bin/codesign", "--force", "--sign", "-", "--verbose", bundle.absolutePath ]
 	}
+
+
+	def "entitlements from build file, sets the keychain access group at the extension"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		Bundle bundle = applicationDummy.createPluginBundle()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+		parameters.entitlements = [:]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		codesign.configuration.getReplaceEntitlementsKeys().size() == 1
+		codesign.configuration.getReplaceEntitlementsKeys().contains("keychain-access-groups")
+	}
+
+	def "bundleEntitlements is used for extension"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		Bundle bundle = applicationDummy.createPluginBundle()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+		parameters.bundleEntitlements = ["org.openbakery.test.ExampleWidget": ["foo": "bar"]]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		codesign.configuration.getReplaceEntitlementsKeys().size() == 1
+		codesign.configuration.getReplaceEntitlementsKeys().contains("foo")
+	}
+
+	def "bundleEntitlements is used for app"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		Bundle bundle = applicationDummy.createBundle()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+		parameters.bundleEntitlements = ["org.openbakery.test.Example": ["key": "value"]]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		codesign.configuration.getReplaceEntitlementsKeys().size() == 1
+		codesign.configuration.getReplaceEntitlementsKeys().contains("key")
+	}
 }

@@ -69,6 +69,43 @@ default value: _empty_
 
 (since 0.14.6)
 
+
+### bundleEntitlements
+
+Replaces the `entitlements` setting. If this parameter is used, then the `entitlments` is ignored.
+The `bundleEntitlements` is used to manipulate the entitlement for the app and also for the app extension.
+You specify a map where the the key is the bundle identifier and the values is a map with the entitlement settings you 
+want to change.
+
+Example.
+```
+bundleEntitlements = [
+	"com.example.App": [
+		"com.apple.security.application-groups": [
+			"group.com.example.MyApp"
+		]
+	],
+	"com.example.App.Extenstion": [
+		"com.apple.security.application-groups": [
+			"group.com.example.MyApp"
+		]
+	],
+
+]
+```
+
+If you want to delete a value from the entitlements than you can set it to null and it will be deleted: e.g.
+```
+bundleEntitlements = [
+	"com.example.App": [
+		"com.apple.security.application-groups": null
+	],
+]
+```
+
+(since 0.24.6)
+
+
 ### entitlementsFile
 
 With this parameter a entitlements file can be specified that is used for codesigning. If you specify a file here only this settings are used and nothing is merged, that means that the `entitlements` parameter from above is ignored.

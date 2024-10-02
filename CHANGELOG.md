@@ -5,6 +5,7 @@
 Changes:
 * Added "testPlan" parameter
 * Added support for test run to support multiple testplans and xcresult parsing
+* Added bundleEntitlements parameters, so that also entitlements can be modified for extensions
 
 
 # 0.24.5 (Sep 19, 2024)

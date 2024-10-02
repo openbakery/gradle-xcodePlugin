@@ -172,4 +172,45 @@ class CodesignParametersSpecification extends Specification {
 		first.entitlements == [ "second": "value"]
 	}
 
+	def "test entitlements for bundle"() {
+		given:
+		def parameters = new CodesignParameters()
+
+		when:
+		parameters.bundleEntitlements = [ "com.test.foo" : ["key": "value"]]
+
+
+		then:
+		parameters.getEntitlements("com.test.foo") == [ "key": "value"]
+		parameters.getEntitlements("com.test.bar") == null
+	}
+
+
+	def "test merge bundleEntitlements when missing"() {
+		def first = new CodesignParameters()
+		def second = new CodesignParameters()
+		given:
+		first.bundleEntitlements = [ "com.test.foo" : ["key": "value"]]
+
+		when:
+		second.mergeMissing(first)
+
+		then:
+		second.getEntitlements("com.test.foo") == [ "key": "value"]
+	}
+
+
+	def "to not merge bundleEntitlements when already present missing"() {
+		def first = new CodesignParameters()
+		def second = new CodesignParameters()
+		given:
+		first.bundleEntitlements = [ "com.test.foo" : ["key": "value"]]
+		second.bundleEntitlements = [ "com.test.foo" : ["key": "second"]]
+
+		when:
+		second.mergeMissing(first)
+
+		then:
+		second.getEntitlements("com.test.foo") == [ "key": "second"]
+	}
 }

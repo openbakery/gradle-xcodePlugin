@@ -15,6 +15,7 @@ class CodesignParameters {
 	 */
 	File entitlementsFile
 	Map<String, Object> entitlements
+	Map<String, Map<String, String>> bundleEntitlements
 
 	CodesignParameters() {
 		security = new Security(new CommandRunner())
@@ -55,6 +56,20 @@ class CodesignParameters {
 			entitlements = parameters.entitlements
 		}
 
+		if (bundleEntitlements == null) {
+			bundleEntitlements = parameters.bundleEntitlements
+		}
+
+	}
+
+	Map<String, String>getEntitlements(String bundleIdentifier) {
+		if (bundleEntitlements == null) {
+			return null
+		}
+		if (bundleEntitlements.containsKey(bundleIdentifier)) {
+			return bundleEntitlements[bundleIdentifier]
+		}
+		return null
 	}
 
 }

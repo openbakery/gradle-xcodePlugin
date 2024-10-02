@@ -69,11 +69,11 @@ class Codesign {
 			logger.info("Using given entitlements {}", entitlements)
 		} else {
 			logger.debug("createEntitlementsFile no entitlementsFile specified")
-			Configuration configuration = createConfiguration(bundle.path, mainBundleIdentifier)
+			String bundleIdentifier = getIdentifierForBundle(bundle.path)
+			Configuration configuration = createConfiguration(bundle.path, mainBundleIdentifier, bundleIdentifier)
 
 			logger.info("entitlements configuration for {}: {}", bundle, configuration)
 
-			String bundleIdentifier = getIdentifierForBundle(bundle.path)
 			entitlements = createEntitlementsFile(bundleIdentifier, configuration)
 			if (entitlements != null) {
 				logger.info("Using entitlements extracted from the provisioning profile")
@@ -89,19 +89,25 @@ class Codesign {
 	 * @param bundle
 	 * @return
 	 */
-	private Configuration createConfiguration(File bundle, String mainBundleIdentifier) {
+	private Configuration createConfiguration(File bundle, String mainBundleIdentifier, String bundleIdentifier) {
 		// for now we disable the merging for extension, except for the keychain-access-groups parameter
 		logger.info("createConfiguration for {}", bundle)
 		if (bundle.absolutePath.endsWith("appex")) {
-			if (codesignParameters.entitlements != null) {
+			Map<String, String>entitlements = codesignParameters.getEntitlements(bundleIdentifier)
+			if (entitlements != null) {
+				return new ConfigurationFromMap(entitlements)
+			} else if (codesignParameters.entitlements != null) {
 				def map = ["keychain-access-groups": ["\$(AppIdentifierPrefix)" + mainBundleIdentifier]]
 				return new ConfigurationFromMap(map)
 			}
 			return new ConfigurationFromMap([:])
 		}
 
-
-		if (codesignParameters.entitlements != null) {
+		Map<String, String>entitlements = codesignParameters.getEntitlements(bundleIdentifier)
+		if (entitlements != null) {
+			logger.debug("entitlements to merge: " + entitlements)
+			return new ConfigurationFromMap(entitlements)
+		} else if (codesignParameters.entitlements != null) {
 			logger.info("Merging entitlements from the codesign parameters")
 			logger.debug("entitlements to merge: " + codesignParameters.entitlements)
 			return new ConfigurationFromMap(codesignParameters.entitlements)

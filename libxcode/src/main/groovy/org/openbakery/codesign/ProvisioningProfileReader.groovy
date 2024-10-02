@@ -324,7 +324,7 @@ class ProvisioningProfileReader {
 					plistHelper.addValueForPlist(entitlementFile, key, value)
 					break
 				case EntitlementAction.DELETE:
-					logger.info("delete to entitlement: {}", key)
+					logger.info("delete from entitlement: {}", key)
 					plistHelper.deleteValueFromPlist(entitlementFile, key)
 					break
 			}
