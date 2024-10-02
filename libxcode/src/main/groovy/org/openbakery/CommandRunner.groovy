@@ -14,29 +14,11 @@ class CommandRunner extends BaseCommandRunner {
 
 	Collection<String> commandOutputBuffer = null;
 
-	private File outputFile = null
 
 	Thread readerThread
 
 	public CommandRunner() {
 
-	}
-
-
-	void setOutputFile(File outputFile) {
-		if (outputFile.exists()) {
-
-			String outputFileAsString = outputFile.getAbsolutePath()
-			String basename = FilenameUtils.getBaseName(outputFileAsString)
-			String extension = "." + FilenameUtils.getExtension(outputFileAsString)
-			String path = FilenameUtils.getFullPath(outputFileAsString)
-
-			File movedOutputFile = File.createTempFile(basename, extension, new File(path))
-			FileUtils.copyFile(outputFile, movedOutputFile)
-			outputFile.delete()
-			logger.debug("moved existing file '{}' to '{}", outputFile, movedOutputFile)
-		}
-		this.outputFile = outputFile
 	}
 
 

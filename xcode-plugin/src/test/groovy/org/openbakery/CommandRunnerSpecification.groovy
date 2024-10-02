@@ -1,25 +1,25 @@
 package org.openbakery
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer
+import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
 class CommandRunnerSpecification extends Specification {
 
-	CommandRunner commandRunner;
+	CommandRunner commandRunner
 
+	File outputDirectory
 
 	void setup() {
 		commandRunner = new CommandRunner()
+		File temporaryDirectory = new File(System.getProperty("java.io.tmpdir"))
+
+		outputDirectory = new File(temporaryDirectory, "gradle-xcodebuild")
+		outputDirectory.mkdirs()
 	}
 
-
-	def "Run With Result"() {
-		when:
-		String result = commandRunner.runWithResult(["echo", "test"])
-
-		then:
-		result == "test"
-
+	def cleanup() {
+		FileUtils.deleteDirectory(outputDirectory)
 	}
 
 
@@ -76,4 +76,57 @@ class CommandRunnerSpecification extends Specification {
 	}
 
 
+	def "set outputFile"() {
+		given:
+		File output = new File(outputDirectory, "test.log")
+
+		when:
+		commandRunner.outputFile = output
+
+		then:
+		commandRunner.outputFile == output
+	}
+
+	def "exist"() {
+		given:
+		File output = new File(outputDirectory, "test.log")
+
+		when:
+		output.createNewFile()
+
+		then:
+		output.exists()
+	}
+
+
+	def "set outputFile using existing file"() {
+		given:
+		File output = new File(outputDirectory, "test.log")
+		output.write("foo")
+
+
+		when:
+		commandRunner.outputFile = output
+
+		then:
+		commandRunner.outputFile == output
+		outputDirectory.listFiles().size() == 1
+		outputDirectory.listFiles()[0].name.startsWith("test-")
+		outputDirectory.listFiles()[0].name.endsWith(".log")
+		!output.exists()
+	}
+
+
+	def "set outputFile is deleted when it cannot be renamed"() {
+		given:
+		File output = new File(outputDirectory, "test")
+		output.write("foo")
+
+
+		when:
+		commandRunner.outputFile = output
+
+		then:
+		!output.exists()
+	}
 }
