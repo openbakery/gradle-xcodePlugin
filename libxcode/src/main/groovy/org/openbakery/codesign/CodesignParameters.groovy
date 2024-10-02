@@ -5,7 +5,7 @@ import org.openbakery.xcode.Type
 import org.openbakery.log.LoggerFactory
 import org.openbakery.log.Logger
 
-class CodesignParameters {
+class CodesignParameters extends BaseCodesignParameters {
 
 	private Logger logger = LoggerFactory.getInstance().getLogger(CodesignParameters.class.name)
 
@@ -76,8 +76,7 @@ class CodesignParameters {
 			logger.info("{} == {}: {}", key, bundleIdentifier, key == bundleIdentifier)
 		}
 
-
-		if (bundleEntitlements.containsKey(bundleIdentifier)) {
+		if (bundleEntitlements.keySet().contains(bundleIdentifier)) {
 			Map<String, Object> result = bundleEntitlements[bundleIdentifier]
 			logger.info("getEntitlements for {}", result)
 			return result

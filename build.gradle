@@ -86,6 +86,7 @@ project(':libxcode') {
 
 project(':libxcodetools') {
 	dependencies {
+		implementation project(':libxcodebase')
 		implementation project(':libxcode')
 		testImplementation project(':libtest')
 	}

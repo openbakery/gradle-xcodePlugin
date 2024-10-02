@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 import java.security.cert.CertificateException
 import java.text.ParseException
 
-class Security {
+class Security extends BaseSecurity {
 	private static Logger logger = LoggerFactory.getLogger(Security.class)
 
 	private CommandRunner commandRunner
