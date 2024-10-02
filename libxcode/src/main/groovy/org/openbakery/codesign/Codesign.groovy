@@ -95,11 +95,14 @@ class Codesign {
 		if (bundle.absolutePath.endsWith("appex")) {
 			Map<String, String>entitlements = codesignParameters.getEntitlements(bundleIdentifier)
 			if (entitlements != null) {
+				logger.info("bundle entitlements ({}): {}", bundleIdentifier, entitlements)
 				return new ConfigurationFromMap(entitlements)
 			} else if (codesignParameters.entitlements != null) {
+				logger.info("entitlements: {}", entitlements)
 				def map = ["keychain-access-groups": ["\$(AppIdentifierPrefix)" + mainBundleIdentifier]]
 				return new ConfigurationFromMap(map)
 			}
+			logger.info("empty entitlements}")
 			return new ConfigurationFromMap([:])
 		}
 

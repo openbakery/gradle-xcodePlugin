@@ -44,12 +44,14 @@ project.archivesBaseName = 'xcode-plugin'
 
 jar {
 	from project.sourceSets.main.output
+	from project(":libxcodebase").sourceSets.main.output
 	from project(":libxcode").sourceSets.main.output
 	from project(":libxcodetools").sourceSets.main.output
 }
 
 task sourcesJar(type: Jar) {
 	from sourceSets.main.allSource
+	from project(":libxcodebase").sourceSets.main.allSource
 	from project(":libxcode").sourceSets.main.allSource
 	from project(":libxcodetools").sourceSets.main.allSource
 	classifier = 'sources'

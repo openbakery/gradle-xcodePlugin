@@ -64,9 +64,11 @@ if (project.hasProperty("publish")) {
 project(':xcode-plugin') {
 	dependencies {
 		if (!publish) {
+			implementation project(':libxcodebase')
 			implementation project(':libxcode')
 			implementation project(':libxcodetools')
 		} else {
+			compileOnly project(':libxcodebase')
 			compileOnly project(':libxcode')
 			compileOnly project(':libxcodetools')
 		}
@@ -77,6 +79,7 @@ project(':xcode-plugin') {
 
 project(':libxcode') {
 	dependencies {
+		implementation project(':libxcodebase')
 		testImplementation project(':libtest')
 	}
 }
