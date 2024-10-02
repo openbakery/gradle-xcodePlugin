@@ -177,4 +177,12 @@ class SigningSpecification extends Specification {
 		configuration.getStringArray("com.apple.security.application-groups") == ['group.com.example.App']
 
 	}
+
+	def "codesignParameters has bundleEntitlements"() {
+		when:
+		signing.bundleEntitlements('com.example.app': ['com.apple.security.application-groups': ['group.com.example.App']])
+
+		then:
+		signing.codesignParameters.bundleEntitlements == ['com.example.app': ['com.apple.security.application-groups': ['group.com.example.App']]]
+	}
 }

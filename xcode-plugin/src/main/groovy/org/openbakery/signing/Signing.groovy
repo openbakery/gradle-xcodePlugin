@@ -140,12 +140,12 @@ class Signing {
 
 
 	void entitlements(Map<String, Object> entitlements) {
+		logger.info("set entitlements: {}", entitlements)
 		this.entitlements = entitlements
 	}
 
 	void bundleEntitlements(Map<String, Map<String, Object>> entitlements) {
 		logger.info("set bundleEntitlements: {}", entitlements)
-		org.slf4j.LoggerFactory.getLogger(Signing.class).info("set bundleEntitlements: {}", entitlements)
 		this.bundleEntitlements =  entitlements
 	}
 
@@ -173,6 +173,9 @@ class Signing {
 		result.keychain = getKeychain()
 		if (entitlements != null) {
 			result.entitlements = entitlements.clone()
+		}
+		if (bundleEntitlements != null) {
+			result.bundleEntitlements = bundleEntitlements.clone()
 		}
 		result.entitlementsFile = getEntitlementsFile()
 		return result
