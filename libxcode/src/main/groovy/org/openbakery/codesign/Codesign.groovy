@@ -93,7 +93,7 @@ class Codesign {
 		// for now we disable the merging for extension, except for the keychain-access-groups parameter
 		logger.info("createConfiguration for Bundle {}", bundle)
 		if (bundle.absolutePath.endsWith("appex")) {
-			Map<String, String>entitlements = codesignParameters.getEntitlements(bundleIdentifier)
+			Map<String, Object>entitlements = codesignParameters.getEntitlements(bundleIdentifier)
 			if (entitlements != null) {
 				logger.info("bundle entitlements ({}): {}", bundleIdentifier, entitlements)
 				return new ConfigurationFromMap(entitlements)

@@ -68,6 +68,7 @@ class CodesignParameters {
 
 	Map<String, Object>getEntitlements(String bundleIdentifier) {
 		if (bundleEntitlements == null) {
+			logger.info("bundleEntitlements is null")
 			return null
 		}
 		if (bundleEntitlements.containsKey(bundleIdentifier)) {
@@ -75,6 +76,7 @@ class CodesignParameters {
 			logger.info("getEntitlements for {}", result)
 			return result
 		}
+		logger.info("bundleEntitlements does not contain key: {}", bundleIdentifier)
 		return null
 	}
 
