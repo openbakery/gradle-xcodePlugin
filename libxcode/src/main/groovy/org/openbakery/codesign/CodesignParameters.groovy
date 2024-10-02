@@ -71,6 +71,12 @@ class CodesignParameters {
 			logger.info("bundleEntitlements is null")
 			return null
 		}
+
+		bundleEntitlements.keySet().forEach { String key ->
+			logger.info("{} == {}: {}", key, bundleIdentifier, key == bundleIdentifier)
+		}
+
+
 		if (bundleEntitlements.containsKey(bundleIdentifier)) {
 			Map<String, Object> result = bundleEntitlements[bundleIdentifier]
 			logger.info("getEntitlements for {}", result)
