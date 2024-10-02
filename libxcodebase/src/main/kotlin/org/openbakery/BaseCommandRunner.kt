@@ -2,6 +2,6 @@ package org.openbakery
 
 import java.io.File
 
-open class BaseCommandRunner() {
+open class BaseCommandRunner(var defaultBaseDirectory: String = ".") {
 
 }

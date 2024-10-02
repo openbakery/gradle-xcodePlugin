@@ -72,9 +72,12 @@ class CodesignParameters extends BaseCodesignParameters {
 			return null
 		}
 
+		logger.info("bundleEntitlements {}", bundleEntitlements)
+		logger.info("bundleEntitlements class name{}", bundleEntitlements.getClass().name)
+
 		for (key in bundleEntitlements.keySet()) {
 			if (key.equalsIgnoreCase(bundleIdentifier)) {
-				Map<String, Object> result = bundleEntitlements[key]
+				Map<String, Object> result = bundleEntitlements.get(key)
 				logger.info("getEntitlements for {}", result)
 				return result
 			}

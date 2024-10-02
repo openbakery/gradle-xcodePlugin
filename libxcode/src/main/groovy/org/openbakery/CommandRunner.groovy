@@ -8,16 +8,13 @@ import org.openbakery.output.OutputAppender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class CommandRunner {
-
-	BaseCommandRunner baseCommandRunner = new BaseCommandRunner()
+class CommandRunner extends BaseCommandRunner {
 
 	private static Logger logger = LoggerFactory.getLogger(CommandRunner.class)
 
 	Collection<String> commandOutputBuffer = null;
 
 	private File outputFile = null
-	String defaultBaseDirectory = "."
 
 	Thread readerThread
 
