@@ -2,7 +2,6 @@ package org.openbakery.simulators
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.testkit.runner.GradleRunner
 import org.openbakery.CommandRunner
 import org.openbakery.CommandRunnerException
 import org.openbakery.XcodePlugin

@@ -634,4 +634,22 @@ class CodesignSpecification extends  Specification {
 		codesign.configuration.getReplaceEntitlementsKeys().size() == 1
 		codesign.configuration.getReplaceEntitlementsKeys().contains("key")
 	}
+
+	def "bundleEntitlements is used for app with lowercase identifier"() {
+		def commandList
+		File entitlementsFile
+		XMLPropertyListConfiguration entitlements
+
+		given:
+		Bundle bundle = applicationDummy.createBundle()
+		mockEntitlementsFromProvisioningProfile(applicationDummy.mobileProvisionFile.first())
+		parameters.bundleEntitlements = ["org.openbakery.test.example": ["key": "value"]]
+
+		when:
+		codesign.sign(bundle)
+
+		then:
+		codesign.configuration.getReplaceEntitlementsKeys().size() == 1
+		codesign.configuration.getReplaceEntitlementsKeys().contains("key")
+	}
 }

@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory
 
 class CommandRunner {
 
+	BaseCommandRunner baseCommandRunner = new BaseCommandRunner()
+
 	private static Logger logger = LoggerFactory.getLogger(CommandRunner.class)
 
 	Collection<String> commandOutputBuffer = null;
@@ -42,11 +44,7 @@ class CommandRunner {
 
 
 	private def commandListToString(List<String> commandList) {
-		def result = ""
-		commandList.each {
-			item -> result += item + " "
-		}
-		return "'" + result.trim() + "'"
+		return commandList.join(" ")
 	}
 
 	def run(String directory, List<String> commandList, Map<String, String> environment, OutputAppender outputAppender) {

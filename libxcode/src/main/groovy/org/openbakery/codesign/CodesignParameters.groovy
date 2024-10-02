@@ -72,15 +72,14 @@ class CodesignParameters extends BaseCodesignParameters {
 			return null
 		}
 
-		bundleEntitlements.keySet().forEach { String key ->
-			logger.info("{} == {}: {}", key, bundleIdentifier, key == bundleIdentifier)
+		for (key in bundleEntitlements.keySet()) {
+			if (key.equalsIgnoreCase(bundleIdentifier)) {
+				Map<String, Object> result = bundleEntitlements[key]
+				logger.info("getEntitlements for {}", result)
+				return result
+			}
 		}
 
-		if (bundleEntitlements.keySet().contains(bundleIdentifier)) {
-			Map<String, Object> result = bundleEntitlements[bundleIdentifier]
-			logger.info("getEntitlements for {}", result)
-			return result
-		}
 		logger.info("bundleEntitlements does not contain key: {}", bundleIdentifier)
 		logger.info("bundleEntitlements keys are: {}", bundleEntitlements.keySet())
 		return null

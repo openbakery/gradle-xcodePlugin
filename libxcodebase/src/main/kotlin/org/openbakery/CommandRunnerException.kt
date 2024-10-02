@@ -1,4 +1,5 @@
 package org.openbakery
 
-class CommandRunnerException {
+class CommandRunnerException(message: String? = null) : Exception(message) {
+
 }

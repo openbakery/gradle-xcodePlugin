@@ -25,21 +25,20 @@ class CommandRunnerSpecification extends Specification {
 
 	def "Run With Error"() {
 		given:
-		def cpErrorOutput = "Command failed to run (exit code 64): 'cp'\n"
+		def cpErrorOutput = "Command failed to run (exit code 64): cp\n"
 
 		when:
 		commandRunner.run(["cp"])
 
-
 		then:
 		def exception = thrown(CommandRunnerException.class)
-		exception.message.startsWith(cpErrorOutput)
+		exception.message.toString().startsWith(cpErrorOutput)
 
 	}
 
 	def "Run With Error on line"() {
 		given:
-		def cpErrorOutput = "Command failed to run (exit code 64): 'cp'\n"
+		def cpErrorOutput = "Command failed to run (exit code 64): cp\n"
 
 		when:
 		commandRunner.commandOutputBuffer = new CircularFifoBuffer(1)
@@ -47,7 +46,7 @@ class CommandRunnerSpecification extends Specification {
 
 		then:
 		def exception = thrown(CommandRunnerException.class)
-		exception.message.startsWith(cpErrorOutput)
+		exception.message.toString().startsWith(cpErrorOutput)
 
 	}
 

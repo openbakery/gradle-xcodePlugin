@@ -1,4 +1,7 @@
 package org.openbakery
 
-class BaseCommandRunner {
+import java.io.File
+
+open class BaseCommandRunner() {
+
 }

@@ -2,8 +2,9 @@ package org.openbakery.simulators
 
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.openbakery.XcodePlugin
 import org.openbakery.CommandRunnerException
+import org.openbakery.XcodePlugin
+
 import org.openbakery.bundle.Bundle
 import org.openbakery.codesign.Codesign
 import org.openbakery.codesign.CodesignParameters
