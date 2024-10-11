@@ -1146,4 +1146,57 @@ class XcodebuildSpecification extends Specification {
 		}
 		command.contains("-destination generic/platform=iOS")
 	}
+
+
+	def "no code coverage"() {
+		String command
+		def destination = new Destination()
+		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
+
+		parameters.destination = [destination]
+		parameters.simulator = false
+
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.target = 'Test';
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = true
+
+		when:
+		xcodebuild.executeBuildForTesting(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> command = arguments[1].join(" ") }
+		command.startsWith("script -q /dev/null xcodebuild")
+		command.endsWith("build-for-testing")
+	}
+
+	def "code coverage if off"() {
+		String command
+		def destination = new Destination()
+		destination.id = '83384347-6976-4E70-A54F-1CFECD1E02B1'
+
+		parameters.destination = [destination]
+		parameters.simulator = false
+
+		xcodebuild = new Xcodebuild(new File("."), commandRunner, new XcodeFake(), parameters, destinationResolver.getDestinations(parameters))
+
+		xcodebuild.parameters.type = Type.iOS
+		xcodebuild.parameters.target = 'Test';
+		xcodebuild.parameters.scheme = 'myscheme'
+		xcodebuild.parameters.workspace = 'myworkspace'
+		xcodebuild.parameters.simulator = true
+		xcodebuild.parameters.codeCoverage = false
+
+		when:
+		xcodebuild.executeBuildForTesting(outputAppender, null)
+
+		then:
+		1 * commandRunner.run(_, _, _, _) >> { arguments -> command = arguments[1].join(" ") }
+		command.startsWith("script -q /dev/null xcodebuild")
+		command.endsWith("build-for-testing")
+		command.contains("-enableCodeCoverage no")
+	}
 }

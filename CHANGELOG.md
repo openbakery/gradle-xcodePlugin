@@ -1,3 +1,7 @@
+# 0.24.7 (Oct 11, 2024)
+
+Changes:
+* The code coverage can be disabled 'codeCoverage = false' parameter
 
 
 # 0.24.6 (Sep 30, 2024)

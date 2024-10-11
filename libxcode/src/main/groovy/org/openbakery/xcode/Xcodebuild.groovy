@@ -260,9 +260,14 @@ class Xcodebuild {
 	}
 
 	void addCoverageSettings(ArrayList commandList) {
+		if (parameters.codeCoverage == null) {
+			return
+		}
+		commandList.add("-enableCodeCoverage")
 		if (parameters.codeCoverage) {
-			commandList.add("-enableCodeCoverage")
 			commandList.add("yes")
+		} else {
+			commandList.add("no")
 		}
 	}
 
