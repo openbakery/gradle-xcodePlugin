@@ -603,4 +603,13 @@ class XcodeBuildTaskSpecification extends Specification {
 		xcodeBuildTask.xcode.version.major == 7
 
 	}
+
+
+	def "set codeCoverage"() {
+		when:
+		xcodeBuildTask.codeCoverage = true
+
+		then:
+		xcodeBuildTask.parameters.codeCoverage == true
+	}
 }

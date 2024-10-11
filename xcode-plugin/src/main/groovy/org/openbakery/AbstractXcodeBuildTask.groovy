@@ -166,4 +166,13 @@ abstract class AbstractXcodeBuildTask extends AbstractXcodeTask {
 		return new XcodeBuildOutputAppender(progressLogger, output)
 	}
 
+	void setCodeCoverage(Boolean codeCoverage) {
+		parameters.codeCoverage = codeCoverage
+	}
+
+	@Input
+	@Optional
+	String getCodeCoverage() {
+		return parameters.codeCoverage
+	}
 }
