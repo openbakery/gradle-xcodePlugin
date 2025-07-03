@@ -1,3 +1,8 @@
+# 0.25.0 (Oct 11, 2024)
+
+Changes:
+* Added that the destination json now supports the id and platform
+
 # 0.24.7 (Oct 11, 2024)
 
 Changes:
