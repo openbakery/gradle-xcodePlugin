@@ -134,8 +134,10 @@ class XcodebuildParameters {
 			def json = new JsonSlurper()
 			def object = json.parseText(destination.toString())
 			if (object instanceof Map) {
+				newDestination.platform = object["platform"]
 				newDestination.name = object["name"]
 				newDestination.os = object["os"]
+				newDestination.id = object["id"]
 			}
 		} catch (Exception ignored) {
 			newDestination.name = destination.toString()

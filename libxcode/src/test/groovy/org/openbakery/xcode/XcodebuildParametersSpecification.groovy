@@ -202,4 +202,19 @@ class XcodebuildParametersSpecification extends Specification {
 		false     | "release"     | Type.macOS | "sym/release"
 	}
 
+	def "destination from json"() {
+		given:
+		def parameters =  new XcodebuildParameters()
+
+		when:
+		parameters.setDestination("{\"name\":\"foo\", \"os\":\"ios\", \"platform\":\"bar\", \"id\": \"id\"}")
+
+		then:
+		parameters.configuredDestinations.size() == 1
+		parameters.configuredDestinations.first().name == "foo"
+		parameters.configuredDestinations.first().os == "ios"
+		parameters.configuredDestinations.first().platform == "bar"
+		parameters.configuredDestinations.first().id == "id"
+	}
+
 }
